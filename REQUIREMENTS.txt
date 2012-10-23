@@ -1,0 +1,5 @@
+# Add your library requirements with versions
+
+1. Python 2.7
+2. Django 1.4
+3. MySQL 5.0
