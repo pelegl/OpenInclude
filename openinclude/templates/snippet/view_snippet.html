@@ -1,7 +1,10 @@
 {% extends "base.html" %}
+  {% block title %}OpenInclude|View Snippet{% endblock title %}
   {% block content %}
-    <h1>{{ snippet.title }} by {{ snippet.user.get_full_name }} on {{ snippet.created_at }}</h1>
-    <div>Profile: {{ snippet.profile_url }}</div>
+    <h1>{{ snippet.title }}</h1>
+    <div>Profile: <a href="{{ snippet.profile_url }}" title="Profile">{{ snippet.profile_url }}</a></div>
     <div>Description: {{ snippet.code_block|safe }}</div>
-    <div>License: {{ snippet.license_url }}</div>
+    <div>License: <a href="{{ snippet.license_url }}" title="License">{{ snippet.license_url }}</a></div>
+    <div>Author: {{ snippet.user }}</div>
+    <div>Created At: {{ snippet.created_at }}</div>
   {% endblock content %}

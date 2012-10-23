@@ -13,7 +13,7 @@ class UserSnippet(models.Model):
             CharField(max_length=100)
     profile_url = models.\
                     URLField(verbose_name='Profile Url',
-                             help_text='Please provide your LinedIn profile url or Github url. Example: https://github.com/XXXX')
+                             help_text='(Please provide your LinedIn profile url or Github url. Example: https://github.com/XXXX)')
     code_block = models.\
                     TextField()
     license_url = models.\

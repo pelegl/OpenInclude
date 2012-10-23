@@ -5,6 +5,8 @@ from django.conf.urls.defaults import (patterns,
                                         url)
 
 # Import our local imports here
+from django.conf import settings
+
 from views import *
 
 urlpatterns = patterns('',
@@ -17,3 +19,9 @@ urlpatterns = patterns('',
                        url(r'^view_snippet/(?P<snippet_id>\d+)/$',
                            view_snippet,
                            name='view_snippet'))
+
+urlpatterns += patterns('',
+                        url(r'^static/(.*)$',
+                            'django.views.static.serve',
+                            {'document_root': settings.STATIC_ROOT})
+                )
