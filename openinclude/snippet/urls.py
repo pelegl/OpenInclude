@@ -5,15 +5,15 @@ from django.conf.urls.defaults import (patterns,
                                         url)
 
 # Import our local imports here
-from snippet.views import *
+from views import *
 
-urlpatterns = patterns('snippet.views',
-                       url(r'^add/snippet/',
+urlpatterns = patterns('',
+                       url(r'^add_snippet/$',
                            add_snippet,
-                           name='add snippet'),
-                       url(r'all_snippets',
-                           'all_snippets',
-                           name='all snippets'),
-                       url(r'^view_snippet',
+                           name='add_snippet'),
+                       url(r'all_snippets/$',
+                           all_snippets,
+                           name='all_snippets'),
+                       url(r'^view_snippet/(?P<snippet_id>\d+)/$',
                            view_snippet,
-                           name='view snippet'))
+                           name='view_snippet'))

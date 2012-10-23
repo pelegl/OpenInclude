@@ -10,17 +10,21 @@
 <boby>
   <div class='headers'>
     <ul>		
-	  <li>All Snippets</li>
-	  <li>About</li>
-	  <li>Contact</li>
+	  <li>
+	    <a href="{% url add_snippet %}" title="Add snippet">All Snippets</a>
+	  </li>
+	  <li>
+	    <a href="#" title="About">About</a>
+	  </li>
+	  <li>
+	    <a href="#" title="Contact">Contact</a>
+	  </li>
     </ul>
   </div>
   <div class="mid">
     {% block content %}{% endblock content %}
   </div>
-  <div class="right-top">
-    <a href="{% url add_snippet %}" title="Add snippet">Add Snippet </a> 
-  </div>
+  <div class="right-top"></div>
   <div class="footer">
     <ul>		
 	  <li>About</li>

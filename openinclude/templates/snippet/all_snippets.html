@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+  {% block content %}
+    <h1>All snippets</h1>
+	<table>
+	  <th>
+	    <td>Serial No.</td>
+	    <td>Title</td>
+	    <td>Author</td>
+	    <td>Created At</td>
+	  </th>
+	  {% for snippet in snippets %}
+	  	<tr>
+	      <td>{{ forloop.counter }}</td>
+	      <td>
+	        <a href="{% url view_snippet snippet_id=snippet.id %}" title="View Snippet">{{ snippet.title }}</a>
+	      </td>
+	      <td>
+	        <a href="{{ snippet.profile_url }}" title="profile_url">{{ snippet.user }}</a>
+	      </td>
+	      <td>{{ snippet.created_at }}</td>
+	    </tr>  
+	  {% endfor %}
+	</table>
+  {% endblock content %}
