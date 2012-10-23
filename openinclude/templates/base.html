@@ -1,0 +1,31 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="keywords" content="Open Include" />
+  <meta name="description" content="Open Include" />
+  <link href="/static/app/stylesheet/style.css" rel="stylesheet" type="text/css" media="screen" />
+  <script type="text/javascript" src="/static/js/jquery-1.6.4.min.js"></script>
+</head>
+<boby>
+  <div class='headers'>
+    <ul>		
+	  <li>All Snippets</li>
+	  <li>About</li>
+	  <li>Contact</li>
+    </ul>
+  </div>
+  <div class="mid">
+    {% block content %}{% endblock content %}
+  </div>
+  <div class="right-top">
+    <a href="{% url add_snippet %}" title="Add snippet">Add Snippet </a> 
+  </div>
+  <div class="footer">
+    <ul>		
+	  <li>About</li>
+	  <li>Contact</li>
+    </ul>
+  </div>
+</body>
+</html>
