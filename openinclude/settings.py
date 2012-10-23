@@ -165,6 +165,8 @@ LOGGING = {
     }
 }
 
+LOGIN_REDIRECT_URL = '/add_snippet/'
+
 try:
     from local_settings import *
 except ImportError:
