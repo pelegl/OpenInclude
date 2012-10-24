@@ -1,7 +1,10 @@
 # Django settings for openinclude project.
+import sys
 from os import path
 
 PROJECT_ROOT = path.abspath(path.dirname(__file__))
+
+sys.path.append(PROJECT_ROOT)
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
