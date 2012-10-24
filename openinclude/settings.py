@@ -170,6 +170,9 @@ LOGGING = {
 
 LOGIN_REDIRECT_URL = '/add_snippet/'
 
+# for Sphinx Integration Settings
+SPHINX_API_VERSION = 0x116
+
 try:
     from local_settings import *
 except ImportError:
