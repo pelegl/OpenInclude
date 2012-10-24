@@ -140,6 +140,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
+    # for Sphinx
+    'djangosphinx',
     'snippet'
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
@@ -177,3 +179,11 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+# let django sphinx work for django 1.4
+DATABASE_ENGINE = DATABASES.get("default").get("ENGINE").split(".")[-1]
+DATABASE_HOST = DATABASES.get("default").get("HOST")
+DATABASE_PORT = DATABASES.get("default").get("PORT")
+DATABASE_NAME = DATABASES.get("default").get("NAME")
+DATABASE_USER = DATABASES.get("default").get("USER")
+DATABASE_PASSWORD = DATABASES.get("default").get("PASSWORD")

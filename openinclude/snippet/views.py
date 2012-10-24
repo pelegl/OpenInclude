@@ -52,3 +52,14 @@ def view_snippet(request,
                              context_data)
     return render_to_response(template_name,
                               context)    
+
+def search(request, query, template="snippet/search.html"):
+    try:
+        if(query == ''):
+            query = request.GET['query']
+        results = UserSnippet.search.query(query)
+        context = { 'snippets': list(results),'query': query, 'search_meta':results._sphinx }
+    except Exception as e:
+        context = { 'snippets': list() }
+            
+    return render_to_response(template, context, context_instance=RequestContext(request)) 

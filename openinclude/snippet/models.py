@@ -2,6 +2,7 @@
 Create your models here.
 '''
 from django.db import models
+from djangosphinx import SphinxSearch
 
 # import our local imports here
 from django.contrib.auth.models import User
@@ -30,3 +31,14 @@ class UserSnippet(models.Model):
                                 get_full_name(),
                                 self.\
                                 profile_url) 
+    
+    search = SphinxSearch(
+           index ='snippets', 
+           weights = { 
+               'user': 100,
+               'title': 80,
+               'profile_url': 70,
+               'code_block': 50,
+               'license_url': 20,
+           }
+       )
