@@ -9,10 +9,11 @@ openinclude.com
 (Suppose you're using Ubuntu to run the app.)
 
 1. install the needed softwares(lib, modules, etc.)
-    * mysql(apt-get for ubuntu)
+    * mysql-server(apt-get for ubuntu)
     * sphinxsearch(apt-get for ubuntu)
     * django-sphinx(pip/easy_install)
     * libmysqlclient-dev (apt-get for ubuntu)
+    * python-dev (apt-get for ubuntu)
     * mysql-python (mysql python binding, pip/easy_install or apt-get install python-mysqldb)
 2. Create database *openinclude* in mysql
 3. copy local_settings.mysql.py to local_settings.py
