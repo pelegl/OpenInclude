@@ -4,3 +4,5 @@
 2. Django 1.4
 3. MySQL 5.0
 4. django-sphinx
+5. python-mysql
+6. sphinxsearch

@@ -2,3 +2,24 @@ OpenInclude
 ===========
 
 openinclude.com
+
+
+# How To Run 
+
+1. install the needed softwares(lib, modules, etc.)
+    * mysql(apt-get for ubuntu)
+    * sphinxsearch(apt-get for ubuntu)
+    * django-sphinx(pip/easy_install)
+    * python-mysql (mysql python binding, pip/easy_install)
+2. copy local_settings.mysql.py to local_settings.py
+3. in root path of the project, run *python manage.py syncdb*   # make sure you create the super user for django admin
+4. load testing data by running *python manage.py loaddata fixtures/snippets.json*
+5. Config the sphinx to support search
+    * copy sphinx.conf to /etc/sphinxsearch/ if you're using ubuntu
+    * create directory /var/data/ if this folder doesn't exist
+    * copy stopwords.txt to /var/data/ folder by *sudo cp stopwords.txt /var/data/*
+    * run *sudo indexer snippet*
+    * run *sudo searchd*  to start the sphinx search daemon
+6. if things go well, open browser and type *http://127.0.0.1:8000/search/* to test the fulltext search
+7. type "code/java/python* etc. to make the testing
+    
