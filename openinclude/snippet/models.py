@@ -31,6 +31,9 @@ class UserSnippet(models.Model):
                                 get_full_name(),
                                 self.\
                                 profile_url) 
+    def get_absolute_url(self):
+        from django.core.urlresolvers import reverse
+        return reverse('view_snippet', kwargs={"snippet_id" : self.id })
     
     search = SphinxSearch(
            index ='snippets', 
