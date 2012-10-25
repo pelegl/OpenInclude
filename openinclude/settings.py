@@ -5,6 +5,7 @@ from os import path
 PROJECT_ROOT = path.abspath(path.dirname(__file__))
 
 sys.path.append(PROJECT_ROOT)
+sys.path.append(path.join(PROJECT_ROOT, "libs")) # add libs to the path
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -106,6 +107,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'openinclude.urls'
@@ -140,6 +142,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
+    # for debug toolbar
+    'debug_toolbar',
     # for Sphinx
     'djangosphinx',
     'snippet'
@@ -175,6 +179,12 @@ LOGIN_REDIRECT_URL = '/add_snippet/'
 # for Sphinx Integration Settings
 SPHINX_API_VERSION = 0x116
 
+# for debug toolbar
+INTERNAL_IPS = ('127.0.0.1',)
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False,
+}
+
 try:
     from local_settings import *
 except ImportError:
@@ -187,3 +197,4 @@ DATABASE_PORT = DATABASES.get("default").get("PORT")
 DATABASE_NAME = DATABASES.get("default").get("NAME")
 DATABASE_USER = DATABASES.get("default").get("USER")
 DATABASE_PASSWORD = DATABASES.get("default").get("PASSWORD")
+
