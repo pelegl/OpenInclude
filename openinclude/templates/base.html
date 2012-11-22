@@ -4,44 +4,37 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="keywords" content="Open Include" />
   <meta name="description" content="Open Include" />
-  <title>{% block title %}{% endblock title %}</title>
-  <link href="/static/css/style.css" rel="stylesheet" type="text/css" media="screen" />
+  <title>{% block title %}{% endblock %} - Open Include</title>
+  <link href="{{ STATIC_URL }}css/comm.css" rel="stylesheet" type="text/css" media="screen" />
   <script type="text/javascript" src="/static/js/jquery-1.8.2.min.js"></script>
-  {% block extra-js %}{% endblock extra-js %}
+  {% block extra-js %}{% endblock %}
 </head>
 <boby>
-  <div class='header'>
-    <ul>		
-	  <li>
-	    <a href="{% url all_snippets %}" title="All snippets">All Snippets</a>
-	  </li>
-	  <li>
-	    <a href="{% url add_snippet %}" title="Add snippet">Add Snippet</a>
-	  </li>
-	  <li>
-	    <a href="{% url snippet-search "" %}" title="Search">Search</a>
-	  </li>
-	  <li>
-	    <a href="#" title="About">About</a>
-	  </li>
-	  <li>
-	    <a href="#" title="Contact">Contact</a>
-	  </li>
-    </ul>
-  </div>
-  <div class="mid">
-    {% block content %}{% endblock content %}
-  </div>
-  <div class="right-top"></div>
-  <div class="footer">
-    <ul>		
-	  <li>
-	    <a href="#" title="About">About</a>
-	  </li>
-	  <li>
-	    <a href="#" title="Contact">Contact</a>
-	  </li>
-    </ul>
-  </div>
+    <!-- header start -->
+    {% block header %}
+
+    {% endblock %}
+    <!-- header start -->
+    
+    <!-- body start -->
+    {% block body %}
+
+    {% endblock %}
+    <!-- body start -->
+
+    <!-- footer start -->
+    {% block footer %}
+      <div class="footer">
+        <ul>		
+          <li>
+            <a href="#" title="About">About</a>
+          </li>
+          <li>
+            <a href="#" title="Contact">Contact</a>
+          </li>
+        </ul>
+      </div>
+    {% endblock %}
+    <!-- footer end -->
 </body>
 </html>

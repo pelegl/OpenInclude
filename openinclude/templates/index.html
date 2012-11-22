@@ -1,20 +1,13 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Open Include</title>
-<!--[if lt IE 9]>
-<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-<![endif]-->
-<link href="css/styles.css" rel="stylesheet" type="text/css">
-</head>
-<body>
+{% extends "base.html" %}
+{% block header %}
 <header>
   <div class="wrapper">
     <h1><a href="index.html" title="Open Include">Open Include</a></h1>
     <div class="sign-in"><a href="#" class="button">sign in</a></div>
   </div>
 </header>
+{% endblock %}
+{% block body %}
 <section class="contents">
   <div class="wrapper">
     <div class="features">
@@ -62,10 +55,11 @@
     </div>
   </div>
 </section>
+{% endblock %}
+{% block footer %}
 <footer>
   <div class="wrapper">
     <p>&copy; 2012 Open Include. All rights reserved.</p>
   </div>
 </footer>
-</body>
-</html>
+{% endblock %}
