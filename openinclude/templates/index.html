@@ -1,36 +1,28 @@
 {% extends "base.html" %}
-{% block header %}
-<header>
-  <div class="wrapper">
-    <h1><a href="index.html" title="Open Include">Open Include</a></h1>
-    <div class="sign-in"><a href="#" class="button">sign in</a></div>
-  </div>
-</header>
-{% endblock %}
 {% block body %}
 <section class="contents">
   <div class="wrapper">
     <div class="features">
       <ul>
-        <li> <a href="#">
+        <li> <a href="{% url discover %}">
           <div class="box"><img src="{{ STATIC_URL }}images/icon-discover.png" alt="">
             <h2>Discover</h2>
             <p>quality open source projects</p>
           </div>
           </a> </li>
-        <li> <a href="#">
+        <li> <a href="{% url demo %}">
           <div class="box"><img src="{{ STATIC_URL }}images/icon-demo.png" alt="">
             <h2>Demo</h2>
             <p>on our virtual machines</p>
           </div>
           </a> </li>
-        <li> <a href="#">
+        <li> <a href="{% url integrate %}">
           <div class="box"><img src="{{ STATIC_URL }}images/icon-integrate.png" alt="">
             <h2>Integrate</h2>
             <p>into your current work</p>
           </div>
           </a> </li>
-        <li> <a href="#">
+        <li> <a href="{% url contribute %}">
           <div class="box"><img src="{{ STATIC_URL }}images/icon-contribute.png" alt="">
             <h2>Contribute</h2>
             <p>code or cash to the open source ecosystem</p>
@@ -55,11 +47,4 @@
     </div>
   </div>
 </section>
-{% endblock %}
-{% block footer %}
-<footer>
-  <div class="wrapper">
-    <p>&copy; 2012 Open Include. All rights reserved.</p>
-  </div>
-</footer>
 {% endblock %}
