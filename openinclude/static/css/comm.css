@@ -144,10 +144,13 @@ section.contents .search {
 }
 section.contents .search .search-form {
 	width:700px;
-	overflow:hidden;
+	height:52px;
+	position:relative;
 }
 section.contents .search .search-form input[type=text] {
-	float:left;
+	position:absolute;
+	left:0;
+	top:0;
 	font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size:16px;
 	line-height:1;
@@ -181,7 +184,9 @@ section.contents .search .search-form input[type=text]:-ms-input-placeholder {
  color:#929292;
 }
 section.contents .search .search-form button {
-	float:right;
+	position:absolute;
+	right:0;
+	top:0;
 	font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size:16px;
 	line-height:1;
@@ -220,7 +225,7 @@ section.contents .search .search-form button:active {
 }
 section.contents .search .advanced {
 	position:absolute;
-	top:40px;
+	top:36px;
 	right:56px;
 	font-size:13px;
 	font-weight:500;
