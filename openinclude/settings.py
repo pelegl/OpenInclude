@@ -144,6 +144,8 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # for debug toolbar
     'debug_toolbar',
+    # south
+    'south',
     # for Sphinx
     'djangosphinx',
     'snippet'
