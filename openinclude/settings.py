@@ -148,7 +148,13 @@ INSTALLED_APPS = (
     'south',
     # for Sphinx
     'djangosphinx',
-    'snippet'
+
+    # apps
+    'snippet',
+    'member',
+    'project',
+    'payment',
+    'tag',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
