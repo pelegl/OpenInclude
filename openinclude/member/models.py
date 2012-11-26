@@ -8,7 +8,10 @@ from djangosphinx import SphinxSearch
 from django.contrib.auth.models import User
 
 class MemberManager(models.Manager):
-    pass
+    def new_member(self, username, password):
+        """create a new member
+        """
+        pass
 
 class Member(models.Model):
     """Member model

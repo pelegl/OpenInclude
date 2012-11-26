@@ -11,7 +11,9 @@ from const.choices import ProjectTypeChoices, ProjectLanguageChoices, ProjectLic
 from const.choices import ProjectSizeChoices
 
 class ProjectManager(models.Manager):
-    pass
+    def new_project(self, member, type, lang, license, intro, desc, size, link):
+        m = self.model(member, type, lang, license, intro, desc, size, link)
+        m.save()
     
 
 class Project(models.Model):
