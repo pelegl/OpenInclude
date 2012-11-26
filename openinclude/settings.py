@@ -142,6 +142,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
+    # django extensions
+    'django_extensions',
     # for debug toolbar
     'debug_toolbar',
     # south
