@@ -15,6 +15,8 @@ class ProjectManager(models.Manager):
     
 
 class Project(models.Model):
+    """Project model
+    """
     member = models.ForeignKey(Member, related_name="ProjectMember")
     type = models.IntegerField(choices=ProjectTypeChoices.CHOICES, default=ProjectTypeChoices.library)
     language = models.IntegerField(choices=ProjectLanguageChoices.CHOICES)

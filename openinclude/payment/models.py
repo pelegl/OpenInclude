@@ -12,6 +12,8 @@ class PaymentManager(models.Manager):
     pass
 
 class Payment(models.Model):
+    """Payment model
+    """
     member = models.ForeignKey(Member, related_name="PaymentMember")
     amount = models.FloatField()
     pay_time = models.DateTimeField()

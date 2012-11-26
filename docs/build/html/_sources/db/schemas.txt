@@ -37,3 +37,10 @@ Payment
     :language: python
     :linenos:
 
+
+Snippet
++++++++++
+.. literalinclude:: ../../../openinclude/snippet/models.py
+    :language: python
+    :linenos:
+

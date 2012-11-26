@@ -11,6 +11,8 @@ class MemberManager(models.Manager):
     pass
 
 class Member(models.Model):
+    """Member model
+    """
     user = models.ForeignKey(User, related_name="MemberUser")
     github_username = models.CharField(max_length=20)
     github_profile = models.URLField(blank=True, null=True)
