@@ -6,10 +6,17 @@ from djangosphinx import SphinxSearch
 
 # import our local imports here
 from django.contrib.auth.models import User
+from member.models import Member
 
-class Member(models.Model):
-    user = models.ForeignKey(User, related_name="MemberUser")
-    github_username = models.CharField(max_length=20)
+class PaymentManager(models.Manager):
+    pass
+
+class Payment(models.Model):
+    member = models.ForeignKey(Member, related_name="PaymentMember")
+    amount = models.FloatField()
+    pay_time = models.DateTimeField()
+
+    objects = PaymentManager()
     
     def __unicode__(self):
-        return self.github_username
+        return self.member
