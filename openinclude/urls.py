@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     url(r'^integrate/$', 'views.integrate', name="integrate"),
     url(r'^contribute/$', 'views.contribute', name="contribute"),
     url(r'^snippet/', include('snippet.urls')),
+    url(r'^project/', include('project.urls')),
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )

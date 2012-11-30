@@ -3,17 +3,17 @@
 {% block body %}
 
 <div>
-    <form action="/search/" method="GET">
+    <form action="{% url project-search %}" method="GET">
         <input type="text" name="query"/>
         <input type="submit">
     </form>
     
-    {% if snippets %}
+    {% if projects %}
         <p>Your search for &ldquo;<strong>{{ query }}</strong>&rdquo; had <strong>{{ search_meta.total_found }}</strong> results.</p>
         <p>search_meta object dump: {{ search_meta }}</p>
     {% endif %}
     <hr/>
-    {% for s in snippets %}
+    {% for s in projects %}
             <h3><a href="{{ s.get_absolute_url }}">{{ s.title }}</a></h3>
             <p>(weight: {{ s.sphinx.weight }})</p>
             <p>snippet.sphinx object dump: {{ s.sphinx }}</p>

@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from member.models import Member
 from const.choices import ProjectTypeChoices, ProjectLanguageChoices, ProjectLicenseChoices
 from const.choices import ProjectSizeChoices
+from datetime import datetime
 
 class ProjectManager(models.Manager):
     def new_project(self, member, type, lang, license, intro, desc, size, link):
@@ -27,8 +28,19 @@ class Project(models.Model):
     fulldesc = models.TextField()
     size = models.IntegerField(choices=ProjectSizeChoices.CHOICES)
     link = models.URLField()
+    created_at = models.DateTimeField(default=datetime.utcnow())
 
     objects = ProjectManager()
     
     def __unicode__(self):
         return "%s" % self.link
+
+    search = SphinxSearch(
+           index ='projects', 
+           weights = { 
+               'member': 100,
+               'intro': 70,
+               'fulldesc': 60,
+               'link': 50,
+           }
+       )
