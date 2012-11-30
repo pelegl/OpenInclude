@@ -81,7 +81,9 @@
 </li>
 <li><p class="first">in root path of the project, run <em>python manage.py syncdb</em>   # make sure you create the super user for django admin</p>
 </li>
-<li><p class="first">load testing data by running <em>python manage.py loaddata fixtures/snippets.json</em></p>
+<li><p class="first">run <em>python manage.py migrate</em>  to migrate the schemas</p>
+</li>
+<li><p class="first">load testing data by running <em>./loaddata.sh</em></p>
 </li>
 <li><dl class="first docutils">
 <dt>Config the sphinx to support search</dt>
@@ -90,6 +92,7 @@
 <li>create directory /var/data/ if this folder doesn&#8217;t exist</li>
 <li>copy stopwords.txt to /var/data/ folder by <em>sudo cp stopwords.txt /var/data/</em></li>
 <li>run <em>sudo indexer snippets</em></li>
+<li>run <em>sudo indexer projects</em></li>
 <li>run <em>sudo searchd</em>  to start the sphinx search daemon</li>
 </ul>
 </dd>
@@ -97,9 +100,11 @@
 </li>
 <li><p class="first">start django dev server by running <em>python manage.py runserver</em></p>
 </li>
-<li><p class="first">if things go well, open browser and type <em>http://127.0.0.1:8000/search/</em> to test the fulltext search</p>
+<li><p class="first">if things go well, open browser and type <em>http://127.0.0.1:8000/project/search/</em> to test the fulltext search for projects</p>
 </li>
-<li><p class="first">type &#8220;code/java/python&#8221; etc. to make the testing</p>
+<li><p class="first">if things go well, open browser and type <em>http://127.0.0.1:8000/snippet/search/</em> to test the fulltext search for snippets</p>
+</li>
+<li><p class="first">type &#8220;askbot&#8221; etc. to make the testing</p>
 </li>
 </ol>
 </div>
