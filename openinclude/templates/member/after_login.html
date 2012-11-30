@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>{{ title }}</h1>
+
+<div>
+<a href="https://github.com/login/oauth/authorize?client_id={{ CLIENT_ID }}&redirect_uri={{ REDIRECT_URL }}">Try Again</a>
+</div>
+{% endblock %}

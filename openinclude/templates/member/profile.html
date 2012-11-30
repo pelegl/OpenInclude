@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block body %}
+<h1>{{ title }}</h1>
+
+<div>
+<ul>
+    <li><img src="{{ member.avatar }}"></img></li>
+    <li>{{ member.github_username }}</li>
+    <li>{{ member.github_profile }}</li>
+</ul>
+
+</div>
+{% endblock %}
