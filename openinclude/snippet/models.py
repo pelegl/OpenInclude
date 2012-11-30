@@ -6,9 +6,10 @@ from djangosphinx import SphinxSearch
 
 # import our local imports here
 from django.contrib.auth.models import User
+from member.models import Member
 
 class UserSnippet(models.Model):
-    user = models.ForeignKey(User)
+    member = models.ForeignKey(Member, related_name="UserSnippetMember")
     title = models.CharField(max_length=100)
     profile_url = models.URLField(verbose_name='Profile Url',
                              help_text='(Please provide your LinedIn profile url or Github url. Example: https://github.com/XXXX)')
@@ -19,7 +20,7 @@ class UserSnippet(models.Model):
     
     
     def __unicode__(self):
-        return u'%s - %s' % (self.user.get_full_name(),
+        return u'%s - %s' % (self.member.user.get_full_name(),
                                 self.profile_url) 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse
@@ -28,7 +29,7 @@ class UserSnippet(models.Model):
     search = SphinxSearch(
            index ='snippets', 
            weights = { 
-               'user': 100,
+               'member': 100,
                'title': 80,
                'profile_url': 70,
                'code_block': 50,
