@@ -1,46 +1,112 @@
-items = \
-"""    {
-        "pk": %(id)s,
-        "model": "snippet.usersnippet",
-        "fields": {
-            "code_block": "%(code)s",
-            "title": "code sample %(id)s",
-            "created_at": "2012-10-23T20:17:10.516",
-            "license_url": "%(license_url)s",
-            "user": 1,
-            "approved": true,
-            "profile_url": "http://github.com/%(username)s"
+#!/usr/bin/env python
+import os, sys
+import random
+class Generator(object):
+    def __init__(self):
+        self.record_num = 100
+        self.do_init()
+        self.skeleton = None
+        self.load_skeleton()
+
+    def do_init(self):
+        self.skeleton_path = None    # skeleton file name to load
+
+    def load_skeleton(self):
+        if self.skeleton_path is None:
+            print "Need to specify skeleton path in child class"
+            sys.exit(0)
+        fh = open(self.skeleton_path)
+        self.skeleton = fh.read()
+        fh.close()
+
+    def gen_each_item(self, index):
+        return {
+            "id" : str(index),
         }
-    },
-"""
-out = ""
-licenses = ["http://opensource.org/licenses/Apache-2.0", "http://opensource.org/licenses/gpl-license",
-    "http://opensource.org/licenses/BSD-3-Clause", "http://opensource.org/licenses/lgpl-license",
-    "http://opensource.org/licenses/MIT", "http://opensource.org/licenses/MPL-2.0", 
-    "http://opensource.org/licenses/CDDL-1.0", "http://opensource.org/licenses/EPL-1.0"]
-codes = [
-    "This is javascript code sample",
-    "This is python code sample",
-    "This is ruby code sample",
-    "This is php code sample",
-    "This is java code sample",
-    "This is C++ code sample",
-    "This is C code sample",
-    "This is objective c code sample",
-    "This is c# code sample",
-]
-for i in range(1, 101):
-    import random
-    data = {
-        "id" : str(i),
-        "username" : "zhutao" + str(i),
-        "license_url" : random.choice(licenses),
-        "code" : random.choice(codes),
-    }
-    item = items % data
-    out += item
-ret = """[
+
+    def output(self):
+        out = ""
+        for i in range(1, self.record_num):
+            item = self.gen_each_item(i)
+            out += self.skeleton % item
+        return """[
 %s
-]"""
-print ret % out[:-2]
+]""" % out[:-2]
+            
+class UserGenerator(Generator):
+    def do_init(self):
+        self.skeleton_path = "skeletons/user.json"
+        
+class MemberGenerator(Generator):
+    def do_init(self):
+        self.skeleton_path = "skeletons/member.json"
+
+class ProjectGenerator(Generator):
+    def do_init(self):
+        self.skeleton_path = "skeletons/project.json"
+        self.record_num = 1000
+
+    def gen_each_item(self, index):
+        return {
+            "id" : index,
+            "lang" : random.randint(0, 5),
+            "license" : random.randint(0, 7),
+            "member" : random.randint(1, 100),
+            "type" : random.randint(0, 1),
+            "size" : random.randint(0, 5),
+        }
+
+class TagGenerator(Generator):
+    def do_init(self):
+        self.skeleton_path = "skeletons/tag.json"
+        self.record_num = 1000
+
+class TagProjectGenerator(Generator):
+    def do_init(self):
+        self.skeleton_path = "skeletons/tagproject.json"
+        self.record_num = 2000
+        
+    def gen_each_item(self, index):
+        return {
+            "id" : index,
+            "proj" : random.randint(1, 1000),
+            "tag" : randint.randint(1, 2000),
+        }
+
+class SnippetGenerator(Generator):
+    def do_init(self):
+        self.skeleton_path = "skeletons/snippet.json"
+        self.record_num = 2000
+    def gen_each_item(self,index):
+        licenses = ["http://opensource.org/licenses/Apache-2.0", "http://opensource.org/licenses/gpl-license",
+            "http://opensource.org/licenses/BSD-3-Clause", "http://opensource.org/licenses/lgpl-license",
+            "http://opensource.org/licenses/MIT", "http://opensource.org/licenses/MPL-2.0", 
+            "http://opensource.org/licenses/CDDL-1.0", "http://opensource.org/licenses/EPL-1.0"]
+        return {
+            "id" : index,
+            "license" : random.choice(licenses),
+            "member" : random.randint(1, 100),
+        }
+
+def error_msg():
+    print "Please specify the valid model name to continue"
+    print "valid model name: %s" % ",".join(valid_args)
+    sys.exit(0)
     
+
+if __name__ == "__main__":
+    valid_args = ["user", "member", "project", "tag", "tagproject", "snippet"]
+    if len(sys.argv) != 2 or sys.argv[1] not in valid_args:
+        error_msg()
+    arg = sys.argv[1]
+    cls = Generator
+    if arg == "user": cls = UserGenerator
+    elif arg == "member": cls = MemberGenerator
+    elif arg == "project": cls = ProjectGenerator
+    elif arg == "tag": cls = TagGenerator
+    elif arg == "tagproject": cls = TagProjectGenerator
+    elif arg == "snippet": cls = SnippetGenerator
+    else: error_msg()
+    gen = cls()
+    print gen.output()
+        

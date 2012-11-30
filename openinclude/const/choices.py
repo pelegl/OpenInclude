@@ -36,10 +36,22 @@ class ProjectLanguageChoices(Choices):
 class ProjectLicenseChoices(Choices):
     MIT = 0
     GPL = 1
+    Apache = 2
+    BSD = 3
+    LPGL = 4
+    MPL = 5
+    CDDL = 6
+    EPL = 7
 
     CHOICES = (
         (MIT, "MIT"),
         (GPL, "GPL"),
+        (Apache, "Apache"),
+        (BSD, "BSD"),
+        (LPGL, "LPGL"),
+        (MPL, "MPL"),
+        (CDDL, "CDDL"),
+        (EPL, "EPL"),
     )
     
 

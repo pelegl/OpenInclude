@@ -1,0 +1,7 @@
+    {
+        "pk": %(id)s, 
+        "model": "tag.tag", 
+        "fields": {
+            "name": "tag%(id)s"
+        }
+    }, 

@@ -5,7 +5,6 @@ from django.db import models
 from djangosphinx import SphinxSearch
 
 # import our local imports here
-from django.contrib.auth.models import User
 from member.models import Member
 
 class UserSnippet(models.Model):
@@ -20,7 +19,7 @@ class UserSnippet(models.Model):
     
     
     def __unicode__(self):
-        return u'%s - %s' % (self.member.user.get_full_name(),
+        return u'%s - %s' % (self.member.github_username,
                                 self.profile_url) 
     def get_absolute_url(self):
         from django.core.urlresolvers import reverse

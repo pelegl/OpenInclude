@@ -1,0 +1,13 @@
+    {
+        "pk": %(id)s, 
+        "model": "snippet.usersnippet", 
+        "fields": {
+            "code_block": "This is language%(id)s code sample", 
+            "title": "code sample %(id)s", 
+            "created_at": "2012-11-29T21:09:21.977", 
+            "member": %(member)s, 
+            "license_url": "%(license)s", 
+            "approved": true, 
+            "profile_url": "http://github.com/openinclude%(id)s"
+        }
+    },

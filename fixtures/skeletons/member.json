@@ -1,0 +1,9 @@
+    {
+        "pk": %(id)s, 
+        "model": "member.member", 
+        "fields": {
+            "github_profile": "https://github.com/openinclude%(id)s", 
+            "user": %(id)s, 
+            "github_username": "openinclude%(id)s"
+        }
+    },
