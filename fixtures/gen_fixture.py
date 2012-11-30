@@ -70,7 +70,7 @@ class TagProjectGenerator(Generator):
         return {
             "id" : index,
             "proj" : random.randint(1, 1000),
-            "tag" : randint.randint(1, 2000),
+            "tag" : random.randint(1, 2000),
         }
 
 class SnippetGenerator(Generator):
