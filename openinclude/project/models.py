@@ -31,4 +31,4 @@ class Project(models.Model):
     objects = ProjectManager()
     
     def __unicode__(self):
-        return self.member
+        return "%s" % self.link

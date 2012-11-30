@@ -1,0 +1,16 @@
+[
+    {
+        "pk": 1, 
+        "model": "project.project", 
+        "fields": {
+            "language": 3, 
+            "license": 0, 
+            "member": 1, 
+            "intro": "ASKBOT is a StackOverflow-like Q&A forum, based on CNPROG.", 
+            "link": "https://github.com/towerjoo/askbot-devel", 
+            "fulldesc": "Askbot - Q&A forum\r\nThis is Askbot project - open source Q&A system, like StackOverflow, Yahoo Answers and some others\r\n\r\nDemo site is http://askbot.org\r\n\r\nAll documentation is in the directory askbot/doc\r\n\r\naskbot-devel repository is open to anyone who wants to help develop Askbot - just drop us a note\r\n\r\nAskbot is based on code of CNPROG, originally created by Mike Chen and Sailing Cai and some code written for OSQA", 
+            "type": 0, 
+            "size": 4
+        }
+    }
+]
