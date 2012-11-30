@@ -3,7 +3,7 @@
 {% block body %}
 
 <div>
-    <form action="{% url project-search %}" method="GET">
+    <form action="{% url project-search '' %}" method="GET">
         <input type="text" name="query"/>
         <input type="submit">
     </form>
@@ -14,7 +14,7 @@
     {% endif %}
     <hr/>
     {% for s in projects %}
-            <h3><a href="{{ s.get_absolute_url }}">{{ s.title }}</a></h3>
+            <h3><a href="{{ s.get_absolute_url }}">{{ s.link }}</a></h3>
             <p>(weight: {{ s.sphinx.weight }})</p>
             <p>snippet.sphinx object dump: {{ s.sphinx }}</p>
     {% empty %}

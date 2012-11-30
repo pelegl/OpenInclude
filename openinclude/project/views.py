@@ -3,6 +3,7 @@ from django.shortcuts import render_to_response, HttpResponseRedirect, get_objec
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
+from project.models import Project
 
 # import our local imports here
 def index(request, template="project/index.html"):
@@ -11,7 +12,7 @@ def index(request, template="project/index.html"):
     }
     return render_to_response(template, data, context_instance=RequestContext(request))
 
-def search(request, template="project/search.html"):
+def search(request, query, template="project/search.html"):
     data = {
         "title" : "Project Search",
     }
@@ -25,3 +26,13 @@ def search(request, template="project/search.html"):
     context.update(data)
             
     return render_to_response(template, context, context_instance=RequestContext(request)) 
+
+def view_project(request, project_id):
+    template_name = 'project/view_project.html'
+    project = get_object_or_404(Project, id=project_id)
+    context_data = {'project': project}
+    context = RequestContext(request,
+                             context_data)
+    return render_to_response(template_name,
+                              context)    
+

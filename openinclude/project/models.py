@@ -35,6 +35,10 @@ class Project(models.Model):
     def __unicode__(self):
         return "%s" % self.link
 
+    def get_absolute_url(self):
+        from django.core.urlresolvers import reverse
+        return reverse('view_project', kwargs={"project_id" : self.id })
+
     search = SphinxSearch(
            index ='projects', 
            weights = { 
