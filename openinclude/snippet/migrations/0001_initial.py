@@ -11,7 +11,7 @@ class Migration(SchemaMigration):
         # Adding model 'UserSnippet'
         db.create_table('snippet_usersnippet', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('member', self.gf('django.db.models.fields.related.ForeignKey')(related_name='UserSnippetMember', to=orm['member.Member'])),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=100)),
             ('profile_url', self.gf('django.db.models.fields.URLField')(max_length=200)),
             ('code_block', self.gf('django.db.models.fields.TextField')()),
@@ -64,6 +64,13 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        'member.member': {
+            'Meta': {'object_name': 'Member'},
+            'github_profile': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
+            'github_username': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'MemberUser'", 'to': "orm['auth.User']"})
+        },
         'snippet.usersnippet': {
             'Meta': {'object_name': 'UserSnippet'},
             'approved': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
@@ -71,9 +78,9 @@ class Migration(SchemaMigration):
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'license_url': ('django.db.models.fields.URLField', [], {'max_length': '200'}),
+            'member': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'UserSnippetMember'", 'to': "orm['member.Member']"}),
             'profile_url': ('django.db.models.fields.URLField', [], {'max_length': '200'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         }
     }
 
