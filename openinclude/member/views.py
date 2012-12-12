@@ -40,6 +40,9 @@ def signout(request):
 @login_required
 def profile(request, template="member/profile.html"):
     member = Member.objects.get_member(request.user)
+    if member is None:
+        logout(request)
+        return HttpResponseRedirect("/")
     data = {
         "title" : member.github_username,
         "member" : member,
