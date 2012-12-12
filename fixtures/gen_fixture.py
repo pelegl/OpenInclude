@@ -44,14 +44,14 @@ class MemberGenerator(Generator):
 class ProjectGenerator(Generator):
     def do_init(self):
         self.skeleton_path = "skeletons/project.json"
-        self.record_num = 1000
+        self.record_num = 999
 
     def gen_each_item(self, index):
         return {
             "id" : index,
             "lang" : random.randint(0, 5),
             "license" : random.randint(0, 7),
-            "member" : random.randint(1, 100),
+            "member" : random.randint(1, 99),
             "type" : random.randint(0, 1),
             "size" : random.randint(0, 5),
         }
@@ -59,7 +59,7 @@ class ProjectGenerator(Generator):
 class TagGenerator(Generator):
     def do_init(self):
         self.skeleton_path = "skeletons/tag.json"
-        self.record_num = 1000
+        self.record_num = 999
 
 class TagProjectGenerator(Generator):
     def do_init(self):
@@ -69,7 +69,7 @@ class TagProjectGenerator(Generator):
     def gen_each_item(self, index):
         return {
             "id" : index,
-            "proj" : random.randint(1, 1000),
+            "proj" : random.randint(1, 999),
             "tag" : random.randint(1, 2000),
         }
 
@@ -85,7 +85,7 @@ class SnippetGenerator(Generator):
         return {
             "id" : index,
             "license" : random.choice(licenses),
-            "member" : random.randint(1, 100),
+            "member" : random.randint(1, 99),
         }
 
 def error_msg():
