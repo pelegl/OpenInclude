@@ -1,5 +1,6 @@
 #!/bin/sh
-cwd="$PWD/../"
+cwd="`pwd`/../"
+echo $cwd
 cd $cwd
 
 # pull codes
