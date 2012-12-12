@@ -31,8 +31,8 @@
       </ul>
     </div>
     <div class="search">
-      <form class="search-form">
-        <input type="text" placeholder="discover an open source project">
+      <form  class="search-form" action="{% url project-search '' %}" method="GET">
+        <input type="text" name="query" placeholder="discover an open source project">
         <button type="submit">search</button>
       </form>
       <a href="#" class="advanced">advanced search</a> </div>
