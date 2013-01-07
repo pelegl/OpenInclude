@@ -1,41 +1,61 @@
 {% extends "base.html" %}
 {% block body %}
 <section class="contents">
-  <div class="wrapper">
+  <div class="wrapper" {% if not is_open %}style="width:740px"{% endif %}>
     <div class="features">
       <ul>
-        <li> <a href="{% url discover %}">
+        <li> <a href="{% if is_open %}{% url discover %}{%endif%}">
           <div class="box"><img src="{{ STATIC_URL }}images/icon-discover.png" alt="">
             <h2>Discover</h2>
             <p>quality open source projects</p>
           </div>
           </a> </li>
-        <li> <a href="{% url demo %}">
+        <li> <a href="{% if is_open %}{% url demo %}{%endif%}">
           <div class="box"><img src="{{ STATIC_URL }}images/icon-demo.png" alt="">
             <h2>Demo</h2>
             <p>on our virtual machines</p>
           </div>
           </a> </li>
-        <li> <a href="{% url integrate %}">
+        <li> <a href="{% if is_open %}{% url integrate %}{%endif%}">
           <div class="box"><img src="{{ STATIC_URL }}images/icon-integrate.png" alt="">
             <h2>Integrate</h2>
             <p>into your current work</p>
           </div>
           </a> </li>
+{% if is_open %}
         <li> <a href="{% url contribute %}">
           <div class="box"><img src="{{ STATIC_URL }}images/icon-contribute.png" alt="">
             <h2>Contribute</h2>
             <p>code or cash to the open source ecosystem</p>
           </div>
           </a> </li>
+{% endif %}
       </ul>
     </div>
+
+
+{% if not is_open %}
+
+    <div class="email">
+      <form  class="email-form" action="/prelaunch/email/" method="POST">
+        <input type="text" name="email" placeholder="please submit your email to stay tuned.">
+        {% csrf_token %}
+        <button type="submit">submit</button>
+      </form>
+    </div>
+
+{% endif%}
+
+{% if is_open %}
+
     <div class="search">
       <form  class="search-form" action="{% url project-search '' %}" method="GET">
         <input type="text" name="query" placeholder="discover an open source project">
         <button type="submit">search</button>
       </form>
-      <a href="#" class="advanced">advanced search</a> </div>
+      <a href="#" class="advanced">advanced search</a>
+    </div>
+
     <div class="search-terms">
       <h3>sample search terms:</h3>
       <ul>
@@ -45,6 +65,10 @@
         <li><a href="#">sleek web design</a></li>
       </ul>
     </div>
+
+{% endif %}
+
+
   </div>
 </section>
 {% endblock %}

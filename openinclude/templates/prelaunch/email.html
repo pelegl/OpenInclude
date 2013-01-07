@@ -1,0 +1,11 @@
+{% block body %}
+
+    <div class="email">
+      <form  class="email-form" action="{% url prelaunch-email %}" method="GET">
+        <input type="text" name="password" placeholder="type password to get a normal interface">
+        {% csrf_token %}
+        <button type="submit">submit</button>
+      </form>
+    </div>
+
+{% endblock %}
