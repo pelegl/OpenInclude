@@ -14,7 +14,6 @@ class github_spider(CrawlSpider):
              ]
 
 
-
     def getLanguages(self, response):
         urls = []
         hxs = HtmlXPathSelector(response)
@@ -30,7 +29,7 @@ class github_spider(CrawlSpider):
 
     def parseModules(self, response):
         hxs = HtmlXPathSelector(response)
-        modules = hxs.select('/html/body/div/div[2]/div/div[2]/div/div/ul/li/h3/a/text()').extract()
+        modules = hxs.select('/html/body/div/div[2]/div/div[2]/div/div/ul/li/h3/a/@href').extract()
         more = hxs.select('/html/body/div/div[2]/div/div[2]/div/div/div/a/@href').extract()
         list(set(more))
         urls = []
@@ -42,13 +41,14 @@ class github_spider(CrawlSpider):
             yield Request(url, callback=self.parseMore)
         filename = 'github'
         for module in modules:
-            open(filename, 'a').write(module + "\n")
+            open(filename, 'a').write("https://github.com" + module + "\n")
+
 
     def parseMore(self, response):
         hxs = HtmlXPathSelector(response)
-        modules = hxs.select('/html/body/div/div[2]/div/div[2]/div/div/ul/li/h3/a/text()').extract()
+        modules = hxs.select('/html/body/div/div[2]/div/div[2]/div/div/ul/li/h3/a/@href').extract()
         filename = 'github'
         for module in modules:
-            open(filename, 'a').write(module + "\n")
+            open(filename, 'a').write("https://github.com/" + module + "\n")
 
 
