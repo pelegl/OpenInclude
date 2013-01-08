@@ -31,6 +31,22 @@ class github_spider(CrawlSpider):
     def parseModules(self, response):
         hxs = HtmlXPathSelector(response)
         modules = hxs.select('/html/body/div/div[2]/div/div[2]/div/div/ul/li/h3/a/text()').extract()
+        more = hxs.select('/html/body/div/div[2]/div/div[2]/div/div/div/a/@href').extract()
+        list(set(more))
+        urls = []
+        for i in more:
+            url = 'https://github.com' + i
+            print url
+            urls.append(url)
+        for url in urls:
+            yield Request(url, callback=self.parseMore)
+        filename = 'github'
+        for module in modules:
+            open(filename, 'a').write(module + "\n")
+
+    def parseMore(self, response):
+        hxs = HtmlXPathSelector(response)
+        modules = hxs.select('/html/body/div/div[2]/div/div[2]/div/div/ul/li/h3/a/text()').extract()
         filename = 'github'
         for module in modules:
             open(filename, 'a').write(module + "\n")
