@@ -44,7 +44,7 @@ class github_spider(CrawlSpider):
         for module in modules:
             open(filename, 'a').write("https://github.com" + module + "\n")
             url = "https://github.com/" + module
-            module_links.append(module)
+            module_links.append(url)
         for module_link in module_links:
             yield Request(module_link, callback=self.moduleDetails)
 
