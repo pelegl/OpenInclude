@@ -40,15 +40,32 @@ class github_spider(CrawlSpider):
         for url in urls:
             yield Request(url, callback=self.parseMore)
         filename = 'github'
+        module_links = []
         for module in modules:
             open(filename, 'a').write("https://github.com" + module + "\n")
+            url = "https://github.com/" + module
+            module_links.append(module)
+        for module_link in module_links:
+            yield Request(module_link, callback=self.moduleDetails)
 
 
     def parseMore(self, response):
         hxs = HtmlXPathSelector(response)
         modules = hxs.select('/html/body/div/div[2]/div/div[2]/div/div/ul/li/h3/a/@href').extract()
         filename = 'github'
+        module_links = []
         for module in modules:
             open(filename, 'a').write("https://github.com/" + module + "\n")
+            url = "https://github.com/" + module
+            module_links.append(module_links)
+        for module_link in module_links:
+            yield Request(module_link, callback=self.moduleDetails)
+
+    def moduleDetails(self, response):
+        hxs = HtmlXPathSelector(response)
+        module_url = response.url
+        name = module_url.split("/")[-1]
+        description = hxs.select('/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[2]/p/text()').extract()
+        readme = hxs.select('//*[@id="readme"]').select('string()').extract()
 
 
