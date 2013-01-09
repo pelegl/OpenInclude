@@ -10,7 +10,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from member.models import Member
 
+from common.utils import in_stealth_mode
+
 # import our local imports here
+@in_stealth_mode
 def after_login(request, template="member/after_login.html"):
     error = request.GET.get("error")
     code = request.GET.get("code", None)
@@ -27,16 +30,19 @@ def after_login(request, template="member/after_login.html"):
     r = Member.objects.login_user(request, resp)
     return r
 
+@in_stealth_mode
 def signin(request):
     url = "https://github.com/login/oauth/authorize?client_id=%s&redirect_uri=%s" % \
         (settings.CLIENT_ID, settings.REDIRECT_URL)
     return HttpResponseRedirect(url)
 
+@in_stealth_mode
 @login_required
 def signout(request):
     logout(request)
     return HttpResponseRedirect("/")
 
+@in_stealth_mode
 @login_required
 def profile(request, template="member/profile.html"):
     member = Member.objects.get_member(request.user)

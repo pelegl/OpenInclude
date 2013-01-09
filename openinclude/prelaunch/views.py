@@ -25,8 +25,8 @@ def email(request, template="prelaunch/email.html"):
         email = request.GET.get("email", None)
         password = request.GET.get("password", None)
         if email == "clear":
-            request.session["is_open"] = False
+            request.session["in_stealth_mode"] = True
         elif password == "admin":
-            request.session["is_open"] = True
+            request.session["in_stealth_mode"] = False
 
     return redirect("/")
