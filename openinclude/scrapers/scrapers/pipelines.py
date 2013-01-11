@@ -6,11 +6,13 @@ import sys
 import MySQLdb
 import hashlib
 from scrapy.exceptions import DropItem
+import settings
 
 
 class ScrapersPipeline(object):
     def __init__(self):
-        self.conn = MySQLdb.connect(host="localhost", user="root", passwd="mago.mere", db="github", charset='utf8', use_unicode=True)
+        #setting to be configured in settings.py
+        self.conn = MySQLdb.connect(host=settings.db_host, user=settings.db_user, passwd=settings.db_password, db=settings.db_name, charset='utf8', use_unicode=True)
         self.cursor = self.conn.cursor()
 
     def process_item(self, item, spider):

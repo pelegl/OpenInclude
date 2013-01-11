@@ -14,6 +14,13 @@ NEWSPIDER_MODULE = 'scrapers.spiders'
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'scrapers (+http://www.yourdomain.com)'
 
+db_username = ""
+db_password = ""
+db_host = "localhost"
+db_name = ""
+db_user = ""
+
 ITEM_PIPELINES = [
     'scrapers.pipelines.ScrapersPipeline',
 ]
+
