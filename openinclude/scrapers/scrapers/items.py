@@ -11,6 +11,4 @@ class ScrapersItem(Item):
     name = Field()
     github_url = Field()
     description = Field()
-    people_watching = Field()
-    forks = Field()
     readme = Field()

@@ -4,6 +4,8 @@ from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
 from scrapy.conf import settings
 from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request
+from scrapers.items import ScrapersItem
+from django.utils.encoding import smart_str
 
 class github_spider(CrawlSpider):
     name = 'github_spider'
@@ -42,8 +44,8 @@ class github_spider(CrawlSpider):
         filename = 'github'
         module_links = []
         for module in modules:
-            open(filename, 'a').write("https://github.com" + module + "\n")
-            url = "https://github.com/" + module
+            #open(filename, 'a').write("https://github.com" + module + "\n")
+            url = "https://github.com" + module
             module_links.append(url)
         for module_link in module_links:
             yield Request(module_link, callback=self.moduleDetails)
@@ -55,9 +57,9 @@ class github_spider(CrawlSpider):
         filename = 'github'
         module_links = []
         for module in modules:
-            open(filename, 'a').write("https://github.com/" + module + "\n")
-            url = "https://github.com/" + module
-            module_links.append(module_links)
+            #open(filename, 'a').write("https://github.com" + module + "\n")
+            url = "https://github.com" + module
+            module_links.append(url)
         for module_link in module_links:
             yield Request(module_link, callback=self.moduleDetails)
 
@@ -65,7 +67,17 @@ class github_spider(CrawlSpider):
         hxs = HtmlXPathSelector(response)
         module_url = response.url
         name = module_url.split("/")[-1]
-        description = hxs.select('/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[2]/p/text()').extract()
-        readme = hxs.select('//*[@id="readme"]').select('string()').extract()
-
-
+        unformatted_description = hxs.select('/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[2]/p/text()').extract()
+        description = " ".join(x for x in unformatted_description)
+        unformatted_readme = hxs.select('//*[@id="readme"]').select('string()').extract()
+        readme = smart_str(" ".join(i for i in unformatted_readme))
+        #filename = 'github'
+        #open(filename, 'a').write(name + "  " + readme + "\n")
+        items = []
+        item = ScrapersItem()
+        item['name'] = name
+        item['github_url'] = module_url
+        item['description'] = description
+        item['readme'] = readme
+        items.append(item)
+        return items
