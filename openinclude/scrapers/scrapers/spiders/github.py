@@ -68,6 +68,10 @@ class github_spider(CrawlSpider):
         module_url = response.url
         name = module_url.split("/")[-1]
         unformatted_description = hxs.select('/html/body/div/div[2]/div/div/div/div[2]/div[2]/div[2]/p/text()').extract()
+        stars = hxs.select('/html/body/div/div[2]/div/div/div/div/ul/li/span/a[2]/text()').extract()
+        forks = hxs.select('/html/body/div/div[2]/div/div/div/div/ul/li[2]/a[2]/text()').extract()
+        languages = hxs.select('/html/body/div/div[2]/div/div/div/div[2]/div[2]/div/div/span/text()').extract()
+        language_percentages = hxs.select('/html/body/div/div[2]/div/div/div/div[2]/div[2]/div/ol/li/a/span[3]/text()').extract()
         description = " ".join(x for x in unformatted_description)
         unformatted_readme = hxs.select('//*[@id="readme"]').select('string()').extract()
         readme = smart_str(" ".join(i for i in unformatted_readme))
@@ -79,5 +83,15 @@ class github_spider(CrawlSpider):
         item['github_url'] = module_url
         item['description'] = description
         item['readme'] = readme
+        item['stars'] = "".join(star for star in stars)
+        item['forks'] = "".join(fork for fork in forks)
+        language_list = []
+        count = 0
+        for language in languages:
+            entry = language + "-" + language_percentages[count]
+            language_list.append(entry)
+            count += 1
+        item['languages'] = ",".join(j for j in language_list)
         items.append(item)
         return items
+
