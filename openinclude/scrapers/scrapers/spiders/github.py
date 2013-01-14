@@ -5,6 +5,7 @@ from scrapy.conf import settings
 from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request
 from scrapers.items import ScrapersItem
+from scrapers.items import LanguageItem
 from django.utils.encoding import smart_str
 
 class github_spider(CrawlSpider):
@@ -96,4 +97,25 @@ class github_spider(CrawlSpider):
         item['languages'] = ",".join(j for j in language_list)
         items.append(item)
         return items
+
+class language_spider(BaseSpider):
+    name = 'language_spider'
+    allowed_domains = ['github.com']
+    #languages page
+    start_urls = ['https://github.com/languages/', ]
+
+    def parse(self, response):
+        urls = []
+        hxs = HtmlXPathSelector(response)
+        languages = hxs.select('//html/body/div/div[2]/div/div[2]/div/div/div/div[@class="right"]/ul/li/a/text()').extract()
+        items = []
+        print languages
+        for language in languages:
+            #create a new item object at every loop to avoid looping
+            #of the first round only
+            item = LanguageItem()
+            item['name'] = language
+            items.append(item)
+        return items
+
 

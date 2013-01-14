@@ -15,3 +15,6 @@ class ScrapersItem(Item):
     languages = Field()
     forks = Field()
     stars = Field()
+
+class LanguageItem(Item):
+    name = Field()
