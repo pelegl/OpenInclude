@@ -11,18 +11,17 @@ BOT_NAME = 'scrapers'
 SPIDER_MODULES = ['scrapers.spiders']
 NEWSPIDER_MODULE = 'scrapers.spiders'
 
-# Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'scrapers (+http://www.yourdomain.com)'
-
 #msql settings
-#db_username = "root"
-#db_password = "mago.mere"
+#db_username = ""
+#db_password = ""
 #db_host = "localhost"
-#db_name = "trial"
-#db_user = "root"
+#db_name = ""
 
+#mongodb settings
+LANGUAGE_DB = 'list'
+LANGUAGE_COLLECTION = 'names'
 
-
+#registering pipelines
 ITEM_PIPELINES = [
     'scrapers.pipelines.ScrapersPipeline',
 ]
