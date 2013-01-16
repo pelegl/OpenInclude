@@ -1,0 +1,1 @@
+scrapy crawl language_spider

@@ -1,0 +1,4 @@
+pymongo
+scrapy
+simplejson
+#mysql-python
