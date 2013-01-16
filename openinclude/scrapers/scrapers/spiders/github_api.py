@@ -13,13 +13,13 @@ AUTH_TOKEN = 'token 983108819e9f8a7709d0029d66939e7f2b5122ab'
 
 #database with language list
 connection = pymongo.Connection()
-db = connection['list']
-collection = db['names']
+db = connection['github_languages']
+collection = db['language_names']
 
 #database to save module details
 data_connection = pymongo.Connection()
-database = data_connection['modules']
-modules_collection = database['records']
+database = data_connection['github_modules']
+modules_collection = database['modules']
 
 #fetching the language list
 lang_list = list(collection.find())
@@ -57,6 +57,9 @@ for language in language_list:
                 print address
                 #save its repos' details
                 insert_module_details = modules_collection.insert({'module_name': module['name'], 'owner': module['owner'],
-                                        'description': module['description'], 'language': language})
+                                                                   'description': module['description'], 'language': language, 'watchers': module['watchers'],
+                                                                   'pushed_at': module['pushed_at'], 'forks': module['forks'], 'created': module['created'],
+                                                                   'pushed': module['pushed'], 'created': module['created'], 'is_a_fork': module['fork'],
+                                                                   'followers': module['followers'], 'username':module['username']})
         count += 1
 

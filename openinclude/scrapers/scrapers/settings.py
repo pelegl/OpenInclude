@@ -18,8 +18,8 @@ NEWSPIDER_MODULE = 'scrapers.spiders'
 #db_name = ""
 
 #mongodb settings
-LANGUAGE_DB = 'list'
-LANGUAGE_COLLECTION = 'names'
+LANGUAGE_DB = 'github_languages'
+LANGUAGE_COLLECTION = 'language_names'
 
 #registering pipelines
 ITEM_PIPELINES = [
