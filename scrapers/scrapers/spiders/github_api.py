@@ -89,8 +89,7 @@ for language in language_list:
     status = True
     while status:
         #get its repos
-        #address = "https://api.github.com/legacy/repos/search/:language=" + language + "?start_page=" + str(count)
-        address = "http://joseblog.netau.net/images/thumbnails/"
+        address = "https://api.github.com/legacy/repos/search/:language=" + language + "?start_page=" + str(count)
         print address
         request = urllib2.Request(address, headers=hdr)
         opener = urllib2.build_opener()
