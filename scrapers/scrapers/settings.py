@@ -11,18 +11,23 @@ BOT_NAME = 'scrapers'
 SPIDER_MODULES = ['scrapers.spiders']
 NEWSPIDER_MODULE = 'scrapers.spiders'
 
-#msql settings
-#db_username = ""
-#db_password = ""
-#db_host = "localhost"
-#db_name = ""
+# msql settings
+# db_username = ""
+# db_password = ""
+# db_host = "localhost"
+# db_name = ""
 
-#mongodb settings
+# mongodb settings
 LANGUAGE_DB = 'github_languages'
 LANGUAGE_COLLECTION = 'language_names'
 
-#registering pipelines
+# activestate settings
+ACTIVE_DB = 'active_recipes'
+ACTIVE_COLLECTION = 'active_collection'
+
+# registering pipelines
 ITEM_PIPELINES = [
     'scrapers.pipelines.ScrapersPipeline',
+    'scrapers.pipelines.ActivePipeline',
 ]
 

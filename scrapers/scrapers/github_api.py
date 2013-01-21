@@ -6,56 +6,11 @@ import simplejson
 import pymongo
 import time
 
-# retry decorator
-def retry(ExceptionToCheck, tries=10, delay=5, backoff=2, logger=None):
-    """Retry calling the decorated function using an exponential backoff.
-
-    http://www.saltycrane.com/blog/2009/11/trying-out-retry-decorator-python/
-    original from: http://wiki.python.org/moin/PythonDecoratorLibrary#Retry
-
-    :param ExceptionToCheck: the exception to check. may be a tuple of
-        excpetions to check
-    :type ExceptionToCheck: Exception or tuple
-    :param tries: number of times to try (not retry) before giving up
-    :type tries: int
-    :param delay: initial delay between retries in seconds
-    :type delay: int
-    :param backoff: backoff multiplier e.g. value of 2 will double the delay
-        each retry
-    :type backoff: int
-    :param logger: logger to use. If None, print
-    :type logger: logging.Logger instance
-    """
-    def deco_retry(f):
-        def f_retry(*args, **kwargs):
-            mtries, mdelay = tries, delay
-            try_one_last_time = True
-            while mtries > 1:
-                try:
-                    return f(*args, **kwargs)
-                    try_one_last_time = False
-                    break
-                except ExceptionToCheck, e:
-                    msg = "%s, Retrying in %d seconds..." % (str(e), mdelay)
-                    if logger:
-                        logger.warning(msg)
-                    else:
-                        print msg
-                    time.sleep(mdelay)
-                    mtries -= 1
-                    mdelay *= backoff
-            if try_one_last_time:
-                return f(*args, **kwargs)
-            return
-        return f_retry  # true decorator
-    return deco_retry
-# end of retry decorator
-
 # user agent to aoid blacklisting
 USER_AGENT = 'Mozilla/5.0'
 # github command line token to allow 5000 fetches per hour...non auth requests
 # allowd are only 60 per hour
-AUTH_TOKEN = 'token 983108819e9f8a7709d0029d66939e7f2b5122ab'
+AUTH_TOKEN = 'token f6eaceff9c2767553646f24b85306b7a2e136492'
 
 # database with language list
 connection = pymongo.Connection()
@@ -80,9 +35,7 @@ print language_list
 # headers for the request
 hdr = {'User-Agent': USER_AGENT, 'Authorization': AUTH_TOKEN }
 
-@retry((urllib2.HTTPError, urllib2.URLError), tries=10, delay=10)
-def url_open_with_retry(request, opener):
-    return opener.open(request)
+
 # For each language in the language list:
 for language in language_list:
     count = 1
@@ -93,7 +46,7 @@ for language in language_list:
         print address
         request = urllib2.Request(address, headers=hdr)
         opener = urllib2.build_opener()
-        response = url_open_with_retry(request, opener)
+        response = opener.open(request)
         modules_json = simplejson.load(response)
         modules_list = modules_json['repositories']
         if modules_json['repositories'] == []:

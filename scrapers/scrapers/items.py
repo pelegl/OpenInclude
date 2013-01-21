@@ -5,16 +5,26 @@
 
 from scrapy.item import Item, Field
 
-class ScrapersItem(Item):
+# class ScrapersItem(Item):
     # define the fields for your item here like:
     # name = Field()
-    name = Field()
-    github_url = Field()
-    description = Field()
-    readme = Field()
-    languages = Field()
-    forks = Field()
-    stars = Field()
+    # name = Field()
+    # github_url = Field()
+    # description = Field()
+    # readme = Field()
+    # languages = Field()
+    # forks = Field()
+    # stars = Field()
 
 class LanguageItem(Item):
     name = Field()
+
+class RecipeItem(Item):
+    language = Field()
+    name = Field()
+    tags = Field()
+    author = Field()
+    code = Field()
+
+
+
