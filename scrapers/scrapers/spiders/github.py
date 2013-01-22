@@ -123,9 +123,7 @@ class activestate_spider(CrawlSpider):
     name = 'active_spider'
     allowed_domains = ['code.activestate.com']
     start_urls = ['http://code.activestate.com/recipes/langs/']
-    # rules = [
-    #         Rule(SgmlLinkExtractor(allow=(r'recipes/langs/\w+'), callback='parse_item', follow=False),
-    #         ]
+    # settings.overrides['ITEM_PIPELINES'] = ActivePipeline
     rules = [
              Rule(SgmlLinkExtractor(allow=(r'\w+/',), restrict_xpaths=('//div[@id="as_sidebar"]')), callback='parse_item', follow=False),
              ]
@@ -135,7 +133,10 @@ class activestate_spider(CrawlSpider):
         languages = hxs.select('/html/body/div/div[2]/div[2]/div/ul/li/a/text()').extract()
         recipe_links = []
         for language in languages:
-            url = "https://code.activestate.com/recipes/langs/" + language.lower() + "/"
+            if language == "C++":
+                url = "https://code.activestate.com/recipes/langs/cpp/"
+            else:
+                url = "https://code.activestate.com/recipes/langs/" + language.lower() + "/"
             recipe_links.append(url)
         for recipe_link in recipe_links:
             yield Request(recipe_link, callback=self.recipeDetails)
@@ -166,6 +167,7 @@ class activestate_spider(CrawlSpider):
         except IndexError:
             pass
         recipes = hxs.select('/html/body/div/div[2]/div/div/div[2]/ul/li/div/span/a/@href').extract()
+        items = []
         for recipe in recipes:
             item = RecipeItem()
             recipe_title_unrefined = recipe.replace("-", " ").split("/")[2]
@@ -174,15 +176,7 @@ class activestate_spider(CrawlSpider):
             item['name'] = " ".join(j for j in title)
             item['language'] = language
             url = "http://code.activestate.com" + recipe
-            request = Request(url, callback=self.getCode)
-            request.meta['item'] = item
-            yield request
-            request = Request(url, callback=self.getAuthor)
-            request.meta['item'] = item
-            yield request
-            request = Request(url, callback=self.getTags)
-            request.meta['item'] = item
-            yield request
+            yield Request(url, callback=self.getCode, meta={'item': item})
 
     def moreRecipeDetails(self, response):
         hxs = HtmlXPathSelector(response)
@@ -197,16 +191,7 @@ class activestate_spider(CrawlSpider):
             item['name'] = " ".join(j for j in title)
             item['language'] = language
             url = "http://code.activestate.com" + recipe
-            request = Request(url, callback=self.getTags)
-            request.meta['item'] = item
-            yield request
-            request = Request(url, callback=self.getCode)
-            request.meta['item'] = item
-            yield request
-            request = Request(url, callback=self.getAuthor)
-            request.meta['item'] = item
-            yield request
-
+            yield Request(url, callback=self.getCode, meta={'item': item})
 
 
     def getCode(self, response):
@@ -214,24 +199,9 @@ class activestate_spider(CrawlSpider):
         hxs = HtmlXPathSelector(response)
         code = hxs.select('//*[@id="block-0"]/div[2]//text()').extract()
         item['code'] = " ".join(line for line in code)
-        return item
-
-    def getTags(self, response):
-        item = response.meta['item']
-        hxs = HtmlXPathSelector(response)
         tags = hxs.select('/html/body/div/div[2]/div[2]/div/div/div/ul/li/a/text()').extract()
-        print tags
         item['tags'] = " ".join(line for line in tags)
-        return item
-
-    def getAuthor(self, response):
-        item = response.meta['item']
-        hxs = HtmlXPathSelector(response)
         author = hxs.select('//*[@id="as_sidebar_dynamic"]/table[1]//text()').extract()[2]
         item['author'] = author
         return item
-
-
-
-
 

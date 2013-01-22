@@ -48,7 +48,7 @@ class ScrapersPipeline(object):
         insert_language = self.collection.insert({'name': item['name']})
         return item
 
- class ActivePipeline(self):
+class activestate_spiderPipeline(object):
      def __init__(self):
         # settings for mysql, we will use mongodb instead
         # self.conn = MySQLdb.connect(host=settings.db_host, user=settings.db_user, passwd=settings.db_password, db=settings.db_name, charset='utf8', use_unicode=True)
@@ -56,7 +56,7 @@ class ScrapersPipeline(object):
         self.connection = pymongo.Connection()
         db = self.connection[settings.ACTIVE_DB]
         self.collection = db[settings.ACTIVE_COLLECTION]
-        
+
      def process_item(self, item, spider):
-         insert_recipe = self.collection.insert({'recipe_name': item['name'], 'author': item['author'],'code': item['code'], 'tags': item['tags']})
+         insert_recipe = self.collection.insert({'recipe_name': item['name'], 'author': item['author'], 'code': item['code'], 'tags': item['tags']})
 

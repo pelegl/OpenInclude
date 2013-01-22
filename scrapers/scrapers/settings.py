@@ -28,6 +28,6 @@ ACTIVE_COLLECTION = 'active_collection'
 # registering pipelines
 ITEM_PIPELINES = [
     'scrapers.pipelines.ScrapersPipeline',
-    'scrapers.pipelines.ActivePipeline',
+    'scrapers.pipelines.activestate_spiderPipeline',
 ]
 
