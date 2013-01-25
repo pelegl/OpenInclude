@@ -25,6 +25,9 @@ class RecipeItem(Item):
     tags = Field()
     author = Field()
     code = Field()
+    score = Field()
+    views = Field()
+    download_link = Field()
 
 
 

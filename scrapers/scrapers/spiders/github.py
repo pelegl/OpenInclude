@@ -8,6 +8,7 @@ from scrapy.http import Request
 from scrapers.items import LanguageItem
 from django.utils.encoding import smart_str
 from scrapers.items import RecipeItem
+import re
 
 class github_spider(CrawlSpider):
     name = 'github_spider'
@@ -203,5 +204,13 @@ class activestate_spider(CrawlSpider):
         item['tags'] = " ".join(line for line in tags)
         author = hxs.select('//*[@id="as_sidebar_dynamic"]/table[1]//text()').extract()[2]
         item['author'] = author
+        score = hxs.select('//*[@id="recipe_scorevote"]/div/text()').extract()
+        item['score'] = score[0]
+        link = hxs.select('//*[@id="block-0"]/div[1]/div[1]/a/@href').extract()
+        download_link = "http://code.activestate.com" + link[0]
+        item['download_link'] = download_link
+        view = hxs.select('//*[@id="otherinfo"]/ul/li[3]/text()').extract()
+        views = re.findall('\d+', view[0])
+        item['views'] = views[0]
         return item
 
