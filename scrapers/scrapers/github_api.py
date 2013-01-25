@@ -5,6 +5,7 @@ import urllib2
 import simplejson
 import pymongo
 import time
+from retry import retry_on_exceptions
 
 # user agent to aoid blacklisting
 USER_AGENT = 'Mozilla/5.0'
@@ -35,6 +36,9 @@ print language_list
 # headers for the request
 hdr = {'User-Agent': USER_AGENT, 'Authorization': AUTH_TOKEN }
 
+@retry_on_exceptions(types=[urllib2.URLError, urllib2.HTTPError], tries=5, delay=5)
+def fetch(opener, request):
+    return opener.open(request)
 
 # For each language in the language list:
 for language in language_list:
@@ -46,9 +50,13 @@ for language in language_list:
         print address
         request = urllib2.Request(address, headers=hdr)
         opener = urllib2.build_opener()
-        response = opener.open(request)
+        response = fetch(opener, request)
         modules_json = simplejson.load(response)
         modules_list = modules_json['repositories']
+        modules = list(modules_collection.find())
+        mod_list = []
+        for mod in modules:
+            mod_list.append(mod['module_name'])
         if modules_json['repositories'] == []:
             # stop incrementing pages if it starts returning empty results
             status = False
@@ -59,6 +67,8 @@ for language in language_list:
                 print address
                 # save its repos' details
                 if module['fork'] == "true":
+                    pass
+                elif module['name'] in mod_list:
                     pass
                 else:
                     insert_module_details = modules_collection.insert({'module_name': module['name'], 'owner': module['owner'],
