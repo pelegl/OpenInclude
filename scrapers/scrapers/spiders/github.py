@@ -7,7 +7,7 @@ from scrapy.http import Request
 # from scrapers.items import ScrapersItem
 from scrapers.items import LanguageItem
 from django.utils.encoding import smart_str
-from scrapers.items import RecipeItem
+from scrapers.items import RecipeItem, LanguageItem
 import re
 
 class github_spider(CrawlSpider):
@@ -109,9 +109,9 @@ class language_spider(BaseSpider):
     def parse(self, response):
         urls = []
         hxs = HtmlXPathSelector(response)
-        languages = hxs.select('//html/body/div/div[2]/div/div[2]/div/div/div/div[@class="right"]/ul/li/a/text()').extract()
+        languages = hxs.select('//*[@id="languages"]/div/div[1]/div/ul/li//text()').extract()
+        del languages[0]
         items = []
-        print languages
         for language in languages:
             # create a new item object at every loop to avoid looping
             # of the first round only
@@ -120,97 +120,4 @@ class language_spider(BaseSpider):
             items.append(item)
         return items
 
-class activestate_spider(CrawlSpider):
-    name = 'active_spider'
-    allowed_domains = ['code.activestate.com']
-    start_urls = ['http://code.activestate.com/recipes/langs/']
-    # settings.overrides['ITEM_PIPELINES'] = ActivePipeline
-    rules = [
-             Rule(SgmlLinkExtractor(allow=(r'\w+/',), restrict_xpaths=('//div[@id="as_sidebar"]')), callback='parse_item', follow=False),
-             ]
-
-    def parse_item(self, response):
-        hxs = HtmlXPathSelector(response)
-        languages = hxs.select('/html/body/div/div[2]/div[2]/div/ul/li/a/text()').extract()
-        recipe_links = []
-        for language in languages:
-            if language == "C++":
-                url = "https://code.activestate.com/recipes/langs/cpp/"
-            else:
-                url = "https://code.activestate.com/recipes/langs/" + language.lower() + "/"
-            recipe_links.append(url)
-        for recipe_link in recipe_links:
-            yield Request(recipe_link, callback=self.recipeDetails)
-
-    def recipeDetails(self, response):
-        hxs = HtmlXPathSelector(response)
-        # fetching the doules from the recipes page
-        language = response.url.split("/")[-2]
-        more_recipes_links = hxs.select('/html/body/div/div[2]/div/div/div[2]/div[2]/div/div/a/text()').extract()
-        more_recipe_pages = []
-        for recipe_link in more_recipes_links:
-            try:
-                page = int(recipe_link)
-                more_recipe_pages.append(page)
-            except ValueError:
-                pass
-        try:
-            maximum_page = more_recipe_pages[-1]
-            links = []
-            for i in range(maximum_page):
-                if i == 1 or i == 0:
-                    pass
-                else:
-                    address = response.url + "?page=" + str(i)
-                    links.append(address)
-            for link in links:
-                yield Request(link, callback=self.moreRecipeDetails)
-        except IndexError:
-            pass
-        recipes = hxs.select('/html/body/div/div[2]/div/div/div[2]/ul/li/div/span/a/@href').extract()
-        items = []
-        for recipe in recipes:
-            item = RecipeItem()
-            recipe_title_unrefined = recipe.replace("-", " ").split("/")[2]
-            title = recipe_title_unrefined.split(" ")
-            del title[0]
-            item['name'] = " ".join(j for j in title)
-            item['language'] = language
-            url = "http://code.activestate.com" + recipe
-            yield Request(url, callback=self.getCode, meta={'item': item})
-
-    def moreRecipeDetails(self, response):
-        hxs = HtmlXPathSelector(response)
-        # fetching modules from language recipes page
-        language = response.url.split("/")[-2]
-        recipes = hxs.select('/html/body/div/div[2]/div/div/div[2]/ul/li/div/span/a/@href').extract()
-        for recipe in recipes:
-            item = RecipeItem()
-            recipe_title_unrefined = recipe.replace("-", " ").split("/")[2]
-            title = recipe_title_unrefined.split(" ")
-            del title[0]
-            item['name'] = " ".join(j for j in title)
-            item['language'] = language
-            url = "http://code.activestate.com" + recipe
-            yield Request(url, callback=self.getCode, meta={'item': item})
-
-
-    def getCode(self, response):
-        item = response.meta['item']
-        hxs = HtmlXPathSelector(response)
-        code = hxs.select('//*[@id="block-0"]/div[2]//text()').extract()
-        item['code'] = " ".join(line for line in code)
-        tags = hxs.select('/html/body/div/div[2]/div[2]/div/div/div/ul/li/a/text()').extract()
-        item['tags'] = " ".join(line for line in tags)
-        author = hxs.select('//*[@id="as_sidebar_dynamic"]/table[1]//text()').extract()[2]
-        item['author'] = author
-        score = hxs.select('//*[@id="recipe_scorevote"]/div/text()').extract()
-        item['score'] = score[0]
-        link = hxs.select('//*[@id="block-0"]/div[1]/div[1]/a/@href').extract()
-        download_link = "http://code.activestate.com" + link[0]
-        item['download_link'] = download_link
-        view = hxs.select('//*[@id="otherinfo"]/ul/li[3]/text()').extract()
-        views = re.findall('\d+', view[0])
-        item['views'] = views[0]
-        return item
 

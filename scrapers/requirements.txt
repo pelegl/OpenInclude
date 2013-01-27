@@ -2,4 +2,6 @@ mongodb
 pymongo
 scrapy
 simplejson
+retry_on_exceptions
+
 

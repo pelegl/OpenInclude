@@ -3,11 +3,12 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/topics/item-pipeline.html
 import sys
-import MySQLdb
+# import MySQLdb
 import hashlib
 from scrapy.exceptions import DropItem
 import settings
 import pymongo
+from scrapers.items import RecipeItem, LanguageItem
 
 # pipeline for the screen scraped repos
 # class ScrapersPipeline(object):
@@ -30,7 +31,7 @@ import pymongo
 
 # pipeline for the api fetched languages.
 class ScrapersPipeline(object):
-     def __init__(self):
+    def __init__(self):
         # settings for mysql, we will use mongodb instead
         # self.conn = MySQLdb.connect(host=settings.db_host, user=settings.db_user, passwd=settings.db_password,
         # db=settings.db_name, charset='utf8', use_unicode=True)
@@ -39,7 +40,7 @@ class ScrapersPipeline(object):
         db = self.connection[settings.LANGUAGE_DB]
         self.collection = db[settings.LANGUAGE_COLLECTION]
 
-     def process_item(self, item, spider):
+    def process_item(self, item, spider):
         # saving languages into mysql
         # try:
             # self.cursor.execute("""INSERT INTO langs (language) VALUES ( %s)""", (item['name']))
@@ -49,21 +50,23 @@ class ScrapersPipeline(object):
         # return item
 
         # saving languages into mongodb
-        insert_language = self.collection.insert({'name': item['name']})
-        return item
+        if isinstance(item, LanguageItem):
+            insert_language = self.collection.insert({'name': item['name']})
+            return item
 
-class activestate_spiderPipeline(object):
-     def __init__(self):
+# class activestate_spiderPipeline(object):
+#     def __init__(self):
         # settings for mysql, we will use mongodb instead
         # self.conn = MySQLdb.connect(host=settings.db_host, user=settings.db_user, passwd=settings.
         # db_password, db=settings.db_name, charset='utf8', use_unicode=True)
         # self.cursor = self.conn.cursor()
-        self.connection = pymongo.Connection()
-        db = self.connection[settings.ACTIVE_DB]
-        self.collection = db[settings.ACTIVE_COLLECTION]
+#        self.connection = pymongo.Connection()
+#        db = self.connection[settings.ACTIVE_DB]
+#        self.collection = db[settings.ACTIVE_COLLECTION]
 
-     def process_item(self, item, spider):
-         insert_recipe = self.collection.insert({'recipe_name': item['name'], 'download_link': item['download_link'],
-                                                  'score': item['score'], 'views': item['views'], 'author': item['author'],
-                                                  'code': item['code'], 'tags': item['tags']})
+#     def process_item(self, item, spider):
+#        if spider == 'active_spider':
+#            insert_recipe = self.collection.insert({'recipe_name': item['name'], 'download_link': item['download_link'], 'score': item['score'], 'views': item['views'],
+#            'author': item['author'], 'code': item['code'], 'tags': item['tags']})
+#            return item
 
