@@ -8,6 +8,7 @@ from scrapers.items import RecipeItem, LanguageItem
 import re
 import pymongo
 
+header_vals = {'User-Agent': ['Mozilla/5.0']}
 
 class activestate_spider(CrawlSpider):
     name = 'active_spider'
@@ -29,7 +30,7 @@ class activestate_spider(CrawlSpider):
                 url = "https://code.activestate.com/recipes/langs/" + language.lower() + "/"
                 recipe_links.append(url)
         for recipe_link in recipe_links:
-            yield Request(recipe_link, callback=self.recipeDetails)
+            yield Request(recipe_link, callback=self.recipeDetails, headers=header_vals)
 
     def recipeDetails(self, response):
         hxs = HtmlXPathSelector(response)
@@ -53,7 +54,7 @@ class activestate_spider(CrawlSpider):
                     address = response.url + "?page=" + str(i)
                     links.append(address)
             for link in links:
-                yield Request(link, callback=self.moreRecipeDetails)
+                yield Request(link, callback=self.moreRecipeDetails, headers=header_vals)
         except IndexError:
             pass
         recipes = hxs.select('/html/body/div/div[2]/div/div/div[2]/ul/li/div/span/a/@href').extract()
@@ -66,7 +67,7 @@ class activestate_spider(CrawlSpider):
             item['name'] = " ".join(j for j in title)
             item['language'] = language
             url = "http://code.activestate.com" + recipe
-            yield Request(url, callback=self.getDetails, meta={'item': item})
+            yield Request(url, callback=self.getDetails, meta={'item': item}, headers=header_vals)
 
     def moreRecipeDetails(self, response):
         hxs = HtmlXPathSelector(response)
@@ -81,7 +82,7 @@ class activestate_spider(CrawlSpider):
             item['name'] = " ".join(j for j in title)
             item['language'] = language
             url = "http://code.activestate.com" + recipe
-            yield Request(url, callback=self.getDetails, meta={'item': item})
+            yield Request(url, callback=self.getDetails, meta={'item': item}, headers=header_vals)
 
     def getDetails(self, response):
         item = response.meta['item']
