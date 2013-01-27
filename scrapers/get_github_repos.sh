@@ -1,1 +1,1 @@
-scrapy crawl active_spider
+cd scrapers && python github_api.py
