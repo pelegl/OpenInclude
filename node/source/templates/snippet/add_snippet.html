@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+  {% block title %}OpenInclude|Add Snippet{% endblock title %}
+  {% block body %}
+    <h1>Add a snippet</h1>
+    <form action="." method="post" name="add snippet form">
+      {% csrf_token %}
+      {{ form.as_ul }}
+      <input type="submit" value="Add"/>
+    </form>
+  {% endblock %}

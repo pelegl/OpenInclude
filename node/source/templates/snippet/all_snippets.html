@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+  {% block title %}OpenInclude|All Snippets{% endblock title %}
+  {% block body %}
+    <h1>All snippets</h1>
+    {% if snippets %}
+	  <table>
+	    <th><tr>
+	      <td>No.</td>
+	      <td>Title</td>
+	      <td>Author</td>
+	      <td>Created At</td></tr>
+	    </th>
+	    {% for snippet in snippets %}
+	  	  <tr>
+	        <td>{{ forloop.counter }}</td>
+	        <td>
+	          <a href="{% url view_snippet snippet_id=snippet.id %}" title="View Snippet">{{ snippet.title }}</a>
+	        </td>
+	        <td>
+	          <a href="{{ snippet.profile_url }}" title="profile_url">{{ snippet.user }}</a>
+	        </td>
+	        <td>{{ snippet.created_at }}</td>
+	      </tr>  
+	    {% endfor %}
+	  </table>
+	{% else %}
+	  There is no Snippet.
+    {% endif %}  
+  {% endblock %}

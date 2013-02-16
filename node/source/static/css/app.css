@@ -1,0 +1,27 @@
+.ellipsis {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.border-box {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+.cuprum {
+  font-family: 'Cuprum', sans-serif, Helvetica, Arial;
+}
+.unselectable {
+  -moz-user-select: -moz-none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  /*
+     Introduced in IE 10.
+     See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+   */
+
+  -ms-user-select: none;
+  user-select: none;
+}
+.discover.contents .search {
+  margin-top: 35px;
+}

@@ -1,0 +1,23 @@
+{
+  "name": "OpenInclude",
+  "version": "0.0.0",
+  "private": true,
+  "description": "OpenInclude - opensource aggregation tool",
+  "main": "app.coffee",
+  "author": "Vitaly Aminev",
+  "dependencies": {
+    "express": "*",
+    "async": "*",
+    "connect": "*",
+    "connect-redis": "*",
+    "consolidate": "0.8.x",
+    "handlebars": "*",
+    "mongoose": "*",
+    "hiredis": "*",
+    "grunt": "0.4.x",
+    "grunt-contrib-handlebars": "*",
+    "grunt-contrib-less": "0.5.x",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-cssmin": "*"
+  }
+}

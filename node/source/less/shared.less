@@ -1,0 +1,121 @@
+@white: #ffffff;
+@black: #000000;
+@gray: #333333;
+@red: #ff0000;
+@translucent: fadeout(@black, 30%);
+@background: @white;    
+
+@root : ~"/static/img/";
+
+.imp(@img: ""){
+  background-image: url("@{root}@{img}") !important;
+}
+
+@wide : ~"(min-width: 1200px)";
+@desktop : ~"(min-width: 768px) and (max-width: 979px)";
+@tablet : ~"(max-width: 767px)";
+@mobile : ~"(max-width: 480px)";
+
+.img(@name : "", @repeat: no-repeat, @position: center center, @color: @background) {
+  background: @color url("@{root}@{name}") @repeat @position;
+}
+.bg-repeat(@name: "", @position: center center){
+  .img(@name, repeat, @position);
+}
+.bg-no-repeat(@name: "", @position: center center, @color: transparent){
+  .img(@name, no-repeat, @position, @color);
+}
+
+.ellipsis {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.border-box {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+
+.column(@columnCount: 3, @columnGap: 1.5em, @columnBorder: 0px solid #000000 ) {  
+  -moz-column-count: @columnCount;
+  -moz-column-gap: @columnGap;
+  -moz-column-rule: @columnBorder;
+  -webkit-column-count: @columnCount;
+  -webkit-column-gap: @columnGap;
+  -webkit-column-rule: @columnBorder;
+}
+
+.cuprum {
+ font-family: 'Cuprum', sans-serif, Helvetica, Arial; 
+}
+
+.box-shadow(@style, @c) when (iscolor(@c)) {
+  box-shadow:         @style @c;
+  -webkit-box-shadow: @style @c;
+  -moz-box-shadow:    @style @c;
+}
+.box-shadow(@style, @alpha: 50%) when (isnumber(@alpha)) {
+  .box-shadow(@style, rgba(0, 0, 0, @alpha));
+}
+
+.text-shadow(@style, @c) when (iscolor(@c)) {
+  text-shadow: @style @c;
+}
+
+.text-shadow(@style, @alpha: 50%) when (isnumber(@alpha)) {
+  .text-shadow(@style, rgba(0,0,0, @alpha));
+}
+
+.border-radius(@radius: 5px) {
+  border-radius: @radius;
+  -moz-border-radius: @radius;
+  -webkit-border-radius: @radius;
+}
+
+.unselectable {
+   -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+   /*
+     Introduced in IE 10.
+     See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
+   */
+   -ms-user-select: none;
+   user-select: none;
+}
+
+.transition-properties (...) {
+    @props: ~`"@{arguments}".replace(/[\[\]]/g, '')`;
+    transition-property: @props;
+    -webkit-transition-property: @props;
+    -moz-transition-property: @props;
+    -o-transition-property: @props;
+    -ms-transition-property: @props;    
+}
+
+.transition (...) {    
+    transition: @arguments;
+    -webkit-transition: @arguments;
+    -moz-transition: @arguments;
+    -o-transition: @arguments;
+    -ms-transition: @arguments;
+    
+}
+
+.transform (...){
+    transform: @arguments;
+    -webkit-transform: @arguments;
+    -moz-transform: @arguments;
+    -o-transform: @arguments;
+    -ms-transform: @arguments;
+}
+
+.gradient (@origin: top, @start: #ffffff, @stop: #000000) {
+    background-color: @start;
+    background-image: -webkit-linear-gradient(@origin, @start, @stop);
+    background-image: -moz-linear-gradient(@origin, @start, @stop);
+    background-image: -o-linear-gradient(@origin, @start, @stop);
+    background-image: -ms-linear-gradient(@origin, @start, @stop);
+    background-image: linear-gradient(@origin, @start, @stop);
+}
