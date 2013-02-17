@@ -1,1 +1,154 @@
-chart
+<div class='row-fluid searchChart' data-chart='{{searchData}}' data-maxScore='{{maxScore}}'>
+	<div class='span12' id='searchChart'></div>
+</div>
+
+{{! Inline code for the javascript chart, TODO: migrate to backbone for event management}}
+
+
+<script type='text/javascript'>
+$(function(){
+	var chartClass = (function(){
+		function chartClass(data, maxScore, container){
+			this.scope 		= $(container);
+			this.data  		= data;
+			this.maxScore 	= parseFloat(maxScore);			
+			this.maxRadius  = 25;
+			this.init();
+		}
+		
+		chartClass.prototype.oneDay = 1000*60*60*24;
+		
+		chartClass.prototype.x = function(d){
+			var d = d._source,
+				lastCommit = new Date(d.pushed_at).getTime(),
+				currentDate = new Date().getTime();						
+			var difference_ms = currentDate - lastCommit;
+			/* dates difference*/ 
+			var dD = Math.round(difference_ms/this.one_day);   			
+			/*	0 - super active - up to 7 days
+			 *  1 - up to 31 days
+			 *  2 - up to 365 days
+			 *  3 - more than 365
+			 */			
+			var x = dD > 365 ? 3 : (dD < 8 ? 0 : (dD < 32 ? 1 : 2));	
+			return x;
+		}
+		
+		chartClass.prototype.y = function(d){
+			//max value is 1 === 100%					
+			return d._score/this.maxScore;
+		}
+		
+		chartClass.prototype.radius = function(d){
+			//watchers gives us the star rating
+			var d = d._source,
+				watchers = d.watchers;	
+			//random for now		
+			return Math.ceil(Math.random()*500);
+		}
+		
+		chartClass.prototype.color = function(d){
+			return d._source.language;
+		}
+		
+		chartClass.prototype.key = function(d){
+			return d._source._id;
+		}
+		
+		chartClass.prototype.init = function(){
+			var self = this;
+			var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5};		    	
+		    	
+		    this.width  = this.scope.width() - margin.right;
+		   	this.height = this.width*9/16;		    
+		    this.xScale = d3.scale.linear().domain([0, 3]).range([0, this.width]);
+		    this.yScale = d3.scale.linear().domain([0, 1]).range([this.height, 0]);
+		    this.radiusScale = d3.scale.sqrt().domain([0, 500]).range([0,this.maxRadius]);
+		    this.colorScale = d3.scale.category10();
+		    
+		    this.xAxis = d3.svg.axis().orient("bottom").scale(this.xScale).ticks(4, d3.format(",d"));
+    		this.yAxis = d3.svg.axis().scale(this.yScale).orient("left");
+    		
+    		this.svg = d3.select(this.scope[0]).append("svg")
+		    			.attr("width", this.width + margin.left + margin.right)
+						.attr("height", this.height + margin.top + margin.bottom)
+						.append("g")
+						.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+						
+			// Add the x-axis.
+			this.svg.append("g")
+			    .attr("class", "x axis")
+			    .attr("transform", "translate(0," + this.height + ")")
+			    .call(this.xAxis);
+			
+			// Add the y-axis.
+			this.svg.append("g")
+			    .attr("class", "y axis")
+			    .call(this.yAxis);
+			
+			// Add an x-axis label.
+			this.svg.append("text")
+			    .attr("class", "x label")
+			    .attr("text-anchor", "end")
+			    .attr("x", this.width)
+			    .attr("y", this.height - 6)
+			    .text("income per capita, inflation-adjusted (dollars)");
+			
+			// Add a y-axis label.
+			this.svg.append("text")
+			    .attr("class", "y label")
+			    .attr("text-anchor", "end")
+			    .attr("y", 6)
+			    .attr("dy", ".75em")
+			    .attr("transform", "rotate(-90)")
+			    .text("life expectancy (years)");
+			
+			// Add the year label; the value is set on transition.
+			this.label = this.svg.append("text")
+			    .attr("class", "year label")
+			    .attr("text-anchor", "end")
+			    .attr("y", this.height - 24)
+			    .attr("x", this.width)
+			    .text(1800);
+			
+			var dot = this.svg.append("g")
+		      	.attr("class", "dots")
+		    	.selectAll(".dot")
+		      		.data(this.data)
+		    	.enter().append("circle")
+		      		.attr("class", "dot")
+		      		.style("fill", function(d) { return self.colorScale(self.color(d)); })
+		      		.call(position)
+		      		.sort(order);
+			
+			dot.append("title")
+			      .text(function(d) { return d._source.module_name; });
+			      
+			
+			function position(dot) {
+		    	 dot
+		    		.attr("cx", function(d) { return self.xScale(self.x(d)); })
+		        	.attr("cy", function(d) { return self.yScale(self.y(d)); })
+		        	.attr("r", function(d) { return self.radiusScale(self.radius(d)); });
+		  	}
+		  	
+		  	function order(a, b) {
+			  return self.radius(b) - self.radius(a);
+			}
+
+
+
+
+		}
+
+		
+		
+		return chartClass;
+	})();
+	
+	var data = $("[data-chart]").data("chart"),
+		maxScore = $("[data-maxscore]").data("maxscore");
+	var chart = new chartClass(data, maxScore, "#searchChart");
+	
+});
+</script>

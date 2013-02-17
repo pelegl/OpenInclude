@@ -60,8 +60,10 @@ startApp = ->
   async.auto {
     views: (cb)=>
       conf.registerPartials "#{root}/views/partials", cb
+    controllers: conf.setControllers
     router: ['views',(cb, results)=>
       app.Views = results.views
+      app.Controllers = results.controllers
       require('./router').set app
       cb null      
     ]

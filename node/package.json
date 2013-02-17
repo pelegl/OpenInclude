@@ -18,6 +18,8 @@
     "grunt-contrib-handlebars": "*",
     "grunt-contrib-less": "0.5.x",
     "grunt-contrib-concat": "*",
-    "grunt-contrib-cssmin": "*"
+    "grunt-contrib-cssmin": "*",
+    "elasticsearchclient" : "*",
+    "underscore"		  : "*"
   }
 }
