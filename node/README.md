@@ -4,16 +4,18 @@
 ###ElasticSearch installation for Ubuntu 12.04
  https://gist.github.com/wingdspur/2026107
  
- After installing edit the config /usr/local/share/elasticsearch/bin/service/elasticsearch.conf
- 
- set.default.ES_HOME=/usr/local/share/elasticsearch
- set.default.ES_HEAP_SIZE=512
+ After installing edit the config
+ 	/usr/local/share/elasticsearch/bin/service/elasticsearch.conf 
+	 	
+	 	set.default.ES_HOME=/usr/local/share/elasticsearch
+ 		set.default.ES_HEAP_SIZE=512
 
  Mongo should be configured for using a replica set
 
  MongoDB plugin installation:
-  %ES_HOME%/bin/plugin -install elasticsearch/elasticsearch-mapper-attachments/1.6.0
-  %ES_HOME%/bin/plugin.bat -url https://github.com/downloads/richardwilly98/elasticsearch-river-mongodb/elasticsearch-river-mongodb-1.6.1.zip -install river-mongodb
+ 	
+ 	%ES_HOME%/bin/plugin -install elasticsearch/elasticsearch-mapper-attachments/1.6.0
+  	%ES_HOME%/bin/plugin.bat -url https://github.com/downloads/richardwilly98/elasticsearch-river-mongodb/elasticsearch-river-mongodb-1.6.1.zip -install river-mongodb
 
 
  Start indexation by running the following command
