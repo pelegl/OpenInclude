@@ -1,7 +1,41 @@
-.discover {
+.discover { 
+  #searchChart {
+    position: relative;
+  }  
   &.contents {
     .search {
       margin-top: 35px;
     } 
   }  
+  .dot {
+    opacity: 0.7;    
+    cursor: pointer;
+    &:hover {
+      opacity: 1;
+      stroke: @black;
+      stroke-width: 2px;
+    }
+    position: relative;
+  }
+  .axis {
+    path, line {
+      fill: none;
+      shape-rendering: crispedges;
+      stroke: #666666;
+    }    
+  }
+  .x, .y {
+    &.label {
+      font-size: 20px;  
+    }    
+  }
+  
+  .popover {
+    background: @white;
+    .box-shadow(0 2px 4px, 30%);
+    border: 1px solid #BBB;
+    padding: 10px;
+    width: 200px;
+    position: absolute;    
+  }
 }

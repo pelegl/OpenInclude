@@ -7,31 +7,41 @@
 
 <script type='text/javascript'>
 $(function(){
+	var oneDay = 1000*60*60*24;
 	var chartClass = (function(){
 		function chartClass(data, maxScore, container){
 			this.scope 		= $(container);
 			this.data  		= data;
 			this.maxScore 	= parseFloat(maxScore);			
-			this.maxRadius  = 25;
+			this.maxRadius  = 50;
 			this.init();
 		}
-		
-		chartClass.prototype.oneDay = 1000*60*60*24;
 		
 		chartClass.prototype.x = function(d){
 			var d = d._source,
 				lastCommit = new Date(d.pushed_at).getTime(),
 				currentDate = new Date().getTime();						
 			var difference_ms = currentDate - lastCommit;
-			/* dates difference*/ 
-			var dD = Math.round(difference_ms/this.one_day);   			
+			/* dates difference*/ 			
+			var dD = Math.round(difference_ms/oneDay);   			
 			/*	0 - super active - up to 7 days
-			 *  1 - up to 31 days
-			 *  2 - up to 365 days
-			 *  3 - more than 365
+			 *  1 - up to 30 days
+			 *  2 - up to 180 days
+			 *  3 - more than 180
 			 */			
-			var x = dD > 365 ? 3 : (dD < 8 ? 0 : (dD < 32 ? 1 : 2));	
-			return x;
+			function lastCommitBucket(d){
+				if ( d > 180 ){
+					return 3.5;
+				} else if ( d <= 7 ){
+					return 0.5;
+				} else if ( d <= 30){
+					return 1.5;
+				} else {
+					return 2.5;
+				}
+			}		
+				
+			return lastCommitBucket(dD);
 		}
 		
 		chartClass.prototype.y = function(d){
@@ -44,7 +54,7 @@ $(function(){
 			var d = d._source,
 				watchers = d.watchers;	
 			//random for now		
-			return Math.ceil(Math.random()*500);
+			return 10+watchers*5;
 		}
 		
 		chartClass.prototype.color = function(d){
@@ -57,17 +67,46 @@ $(function(){
 		
 		chartClass.prototype.init = function(){
 			var self = this;
-			var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5};		    	
+			var margin = {top: 19.5, right: 19.5, bottom: 60, left: 50};		    	
+		    var padding = 30;
 		    	
-		    this.width  = this.scope.width() - margin.right;
+		    function xFormatter(d,i){
+		    	if ( d === 0.5 ){
+		    		return "< 1 week ago";
+		    	} else if ( d === 1.5 ){
+		    		return "< 1 month ago";
+		    	} else if ( d === 2.5 ){
+		    		return "< 6 months ago";
+		    	} else if ( d === 3.5 ){
+		    		return "> 6 months ago";
+		    	} else {
+		    		return "";
+		    	}
+		    }
+		    	
+		    this.width  = this.scope.width() - margin.right - margin.left;
 		   	this.height = this.width*9/16;		    
-		    this.xScale = d3.scale.linear().domain([0, 3]).range([0, this.width]);
-		    this.yScale = d3.scale.linear().domain([0, 1]).range([this.height, 0]);
-		    this.radiusScale = d3.scale.sqrt().domain([0, 500]).range([0,this.maxRadius]);
-		    this.colorScale = d3.scale.category10();
+		    this.xScale = d3.scale.linear().domain([0, 4]).range([0, this.width]);
+		    this.yScale = d3.scale.linear().domain([0, 1.1]).range([this.height, 0]);
+		    		    		    
+		    this.radiusScale = d3.scale.sqrt()
+		    						.domain([10, d3.max(this.data, function(d){ return self.radius(d); })   ])
+		    						.range([5,this.maxRadius]);		    
 		    
-		    this.xAxis = d3.svg.axis().orient("bottom").scale(this.xScale).ticks(4, d3.format(",d"));
-    		this.yAxis = d3.svg.axis().scale(this.yScale).orient("left");
+		    this.colorScale = d3.scale.category20c();
+		    
+		    this.xAxis = d3.svg.axis()
+		    						 .orient("bottom")
+		    						 .scale(this.xScale)
+		    						 .tickValues([0.5,1.5,2.5,3.5])
+		    						 .tickFormat(xFormatter);
+    		this.yAxis = d3.svg.axis()
+    								 .scale(this.yScale)
+    								 .orient("left")
+    								 .tickValues([1])
+    								 .tickFormat(function(d,i){
+    								 	return d === 1 ? "100%" : "";
+    								 });
     		
     		this.svg = d3.select(this.scope[0]).append("svg")
 		    			.attr("width", this.width + margin.left + margin.right)
@@ -89,28 +128,22 @@ $(function(){
 			// Add an x-axis label.
 			this.svg.append("text")
 			    .attr("class", "x label")
-			    .attr("text-anchor", "end")
-			    .attr("x", this.width)
-			    .attr("y", this.height - 6)
-			    .text("income per capita, inflation-adjusted (dollars)");
+			    .attr("text-anchor", "middle")
+			    .attr("x", this.width/2)
+			    .attr("y", this.height + margin.bottom - 10)
+			    .text("Last commit");
 			
 			// Add a y-axis label.
 			this.svg.append("text")
 			    .attr("class", "y label")
-			    .attr("text-anchor", "end")
+			    .attr("text-anchor", "middle")
 			    .attr("y", 6)
-			    .attr("dy", ".75em")
+			    .attr("x", -this.height/2)
+			    .attr("dy", "-1em")
 			    .attr("transform", "rotate(-90)")
-			    .text("life expectancy (years)");
+			    .text("Relevance");
 			
-			// Add the year label; the value is set on transition.
-			this.label = this.svg.append("text")
-			    .attr("class", "year label")
-			    .attr("text-anchor", "end")
-			    .attr("y", this.height - 24)
-			    .attr("x", this.width)
-			    .text(1800);
-			
+			// Add the year label; the value is set on transition.						
 			var dot = this.svg.append("g")
 		      	.attr("class", "dots")
 		    	.selectAll(".dot")
@@ -119,7 +152,9 @@ $(function(){
 		      		.attr("class", "dot")
 		      		.style("fill", function(d) { return self.colorScale(self.color(d)); })
 		      		.call(position)
-		      		.sort(order);
+		      		.sort(order)
+		      		.on("mouseover", this.popup('show', this.scope))
+		      		.on("mouseout", this.popup('hide'));
 			
 			dot.append("title")
 			      .text(function(d) { return d._source.module_name; });
@@ -136,9 +171,38 @@ $(function(){
 			  return self.radius(b) - self.radius(a);
 			}
 
-
-
-
+		}
+		
+		var popup = $("<div />").addClass("popover").hide().appendTo("#searchChart")
+								.append("<h5 class='moduleName' />")
+								.append("<h6 class='moduleLanguage' />")
+								.append("<p class='moduleDescription' />")
+								.append("<div class='moduleStars' />");
+		
+		chartClass.prototype.popup = function(action, scope){
+			return function(d,i){
+				if ( action === 'hide' ){
+					popup.hide();
+				} else {
+					var $this = $(this),
+						width = height = parseInt($this.attr("r"))*2,
+						x = parseInt($this.attr("cx")),
+						y = parseInt($this.attr("cy"));
+					
+					var data = d._source;
+					$(".moduleName", popup).text(data.module_name);
+					$(".moduleLanguage", popup).text(data.language);
+					$(".moduleDescription", popup).text(data.description);
+					$(".moduleStars", popup).text(data.watchers);
+																
+					popup.css({
+						bottom: (scope.outerHeight()-y)+'px',
+						left: (x-popup.outerWidth()/2+50)+'px'
+					});
+					
+					popup.show();
+				}
+			}
 		}
 
 		

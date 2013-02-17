@@ -5,10 +5,10 @@
  https://gist.github.com/wingdspur/2026107
  
  After installing edit the config
- 	/usr/local/share/elasticsearch/bin/service/elasticsearch.conf 
-	 	
-	 	set.default.ES_HOME=/usr/local/share/elasticsearch
- 		set.default.ES_HEAP_SIZE=512
+ 	
+ 	/usr/local/share/elasticsearch/bin/service/elasticsearch.conf 	 	
+	set.default.ES_HOME=/usr/local/share/elasticsearch
+ 	set.default.ES_HEAP_SIZE=512
 
  Mongo should be configured for using a replica set
 
