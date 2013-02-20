@@ -3,6 +3,9 @@ async       = require 'async'
 fs          = require 'fs'
 esc         = require 'elasticsearchclient'
 
+passport = require 'passport'
+GithubStrategy = require 'passport-github'.Strategy
+
 
 ###
   Elastic search module
@@ -19,6 +22,7 @@ exports.esClient = esClient = new esc serverOptions
 ###
   Some static helpers
 ###
+exports.SERVER_URL = "http://ec2-50-19-3-2.compute-1.amazonaws.com"
 exports.STATIC_URL = "/static/"
 
 
@@ -73,3 +77,23 @@ exports.registerPartials = registerPartials = (dir, callback, dirViews)->
     else
       callback err
       
+GITHUB_CLIENT_ID = '2361006ea086ad268742'
+GITHUB_CLIENT_SECRET = '8983c759727c4195ae2b34916d9ed313eeafa332'
+
+exports.passport_session = () ->
+  passport.session()
+
+exports.passport_initialize = () ->
+  passport.initialize()
+
+exports.passport_init = () ->
+  passport.use new GithubStrategy(
+    clientID: GITHUB_CLIENT_ID,
+    clientSecret: GITHUB_CLIENT_SECRET,
+    callbackURL: "#{STATIC_URL}/auth/github/callback"
+  , (access_token, refresh_token, profile, done) ->
+    done(null, profile)
+  )
+
+exports.github_auth = (options) ->
+  passport.auth 'github', options

@@ -22,6 +22,8 @@
     "elasticsearchclient" : "*",
     "underscore"		  : "*",
     "humanize"			  : "*",
-    "grunt-contrib-coffee": "*"
+    "grunt-contrib-coffee": "*",
+    "passport": "0.x",
+    "passport-github": "0.x"
   }
 }
