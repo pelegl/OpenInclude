@@ -112,7 +112,7 @@ function program11(depth0,data) {
 function program13(depth0,data) {
   
   
-  return "\n    <div class=\"search\">\n      <form  class=\"search-form\" action=\"{% url project-search '' %}\" method=\"GET\">\n        <input type=\"text\" name=\"query\" placeholder=\"discover an open source project\">\n        <button type=\"submit\">search</button>\n      </form>\n      <a href=\"#\" class=\"advanced\">advanced search</a>\n    </div>\n\n    <div class=\"search-terms\">\n      <h3>sample search terms:</h3>\n      <ul>\n        <li><a href=\"#\">neural net python</a></li>\n        <li><a href=\"#\">prime number generator java</a></li>\n        <li><a href=\"#\">scraping toolkit</a></li>\n        <li><a href=\"#\">sleek web design</a></li>\n      </ul>\n    </div>\n";
+  return "\n    <div class=\"search\">\n      <form  class=\"search-form\" action=\"{% url project-search '' %}\" method=\"GET\">\n        <input type=\"text\" name=\"query\" placeholder=\"discover an open source project\">\n        <button type=\"submit\">search</button>\n      </form>\n      <a href=\"#\" class=\"advanced\">advanced search</a>\n    </div>\n\n    <div class=\"search-terms\">\n      <h3>sample search terms:</h3>\n      <ul class='unstyled'>\n        <li><a href=\"#\">neural net python</a></li>\n        <li><a href=\"#\">prime number generator java</a></li>\n        <li><a href=\"#\">scraping toolkit</a></li>\n        <li><a href=\"#\">sleek web design</a></li>\n      </ul>\n    </div>\n";
   }
 
   buffer += "<div class=\"wrapper\" ";
@@ -175,7 +175,7 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   if (stack1 = helpers.maxScore) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.maxScore; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "'>\n	<div class='span12' id='searchChart'></div>\n</div>\n";
+    + "'>\n	<div class='span12' id='searchChart'>\n				\n	</div>\n</div>\n\n\n";
   return buffer;
   }));
 

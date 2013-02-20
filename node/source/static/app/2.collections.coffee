@@ -11,15 +11,11 @@
     url: "/discovery/search"    
     
     find: ->
-      [query, a..., next] = Array::slice.apply arguments
+      [query, opts...] = Array::slice.apply arguments
       query = query ? ""
-      next = next ? (->)      
-      instance = new @
-      $.getJSON "#{instance.url}?q=#{query}" , (r)->
-        console.error r.error if r.error?
-        for i in r.response ? []
-          instance.add i
-        next r.error, instance
-      instance
+            
+      collection = this
+      $.getJSON "#{instance.url}?q=#{query}" , (r)->        
+        collection.add r
 
 ).call(this, (if typeof exports is "undefined" then this["collections"] = {} else exports), (typeof exports isnt "undefined"))

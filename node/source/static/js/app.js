@@ -160,24 +160,13 @@
       model: models.Discovery,
       url: "/discovery/search",
       find: function() {
-        var a, instance, next, query, _i, _ref;
-        _ref = Array.prototype.slice.apply(arguments), query = _ref[0], a = 3 <= _ref.length ? __slice.call(_ref, 1, _i = _ref.length - 1) : (_i = 1, []), next = _ref[_i++];
+        var collection, opts, query, _ref;
+        _ref = Array.prototype.slice.apply(arguments), query = _ref[0], opts = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
         query = query != null ? query : "";
-        next = next != null ? next : (function() {});
-        instance = new this;
-        $.getJSON("" + instance.url + "?q=" + query, function(r) {
-          var i, _j, _len, _ref1, _ref2;
-          if (r.error != null) {
-            console.error(r.error);
-          }
-          _ref2 = (_ref1 = r.response) != null ? _ref1 : [];
-          for (_j = 0, _len = _ref2.length; _j < _len; _j++) {
-            i = _ref2[_j];
-            instance.add(i);
-          }
-          return next(r.error, instance);
+        collection = this;
+        return $.getJSON("" + instance.url + "?q=" + query, function(r) {
+          return collection.add(r);
         });
-        return instance;
       }
     });
   }).call(this, (typeof exports === "undefined" ? this["collections"] = {} : exports), typeof exports !== "undefined");
@@ -213,7 +202,9 @@
 
       __extends(View, _super);
 
-      View.prototype.el = '<section class="contents">';
+      View.prototype.tagName = 'section';
+
+      View.prototype.className = 'contents';
 
       View.prototype.viewsPlaceholder = '#view-wrapper';
 
@@ -221,8 +212,13 @@
         if (opts == null) {
           opts = {};
         }
-        if (opts.prevView == null) {
-          opts.el = $('.contents').eq(0);
+        if (opts.el == null) {
+          opts.el = $("<section class='contents' />");
+          if (app.meta.$('.contents').length > 0) {
+            app.meta.$('.contents').replaceWith(opts.el);
+          } else {
+            views.MetaView.$el.append(opts.el);
+          }
         } else {
           $(window).scrollTop(0);
         }
@@ -247,15 +243,7 @@
           STATIC_URL: app.conf.STATIC_URL,
           in_stealth_mode: false
         };
-        if (this.options.prevView != null) {
-          try {
-            this.options.prevView.remove();
-            this.options.prevView = null;
-          } catch (_error) {}
-          return $(this.viewsPlaceholder).html(this.render().el);
-        } else {
-          return this.render();
-        }
+        return this.render();
       };
 
       Index.prototype.render = function() {
@@ -277,6 +265,10 @@
         return DiscoverChart.__super__.constructor.apply(this, arguments);
       }
 
+      DiscoverChart.prototype.initialize = function() {};
+
+      DiscoverChart.prototype.render = function() {};
+
       return DiscoverChart;
 
     })(View);
@@ -296,6 +288,7 @@
         var qs;
         console.log('[__discoverView__] Init');
         _.bindAll(this, "fetchSearchData", "render", "renderChart");
+        this.chartData = new root.collections.Discovery;
         this.context = {
           discover_search_action: "/discover",
           STATIC_URL: app.conf.STATIC_URL
@@ -304,18 +297,15 @@
         if (qs.q != null) {
           this.context.discover_search_query = qs.q;
         }
-        if (this.options.prevView != null) {
-          try {
-            this.options.prevView.remove();
-            this.options.prevView = null;
-          } catch (_error) {}
-          return $(this.viewsPlaceholder).html(this.render().el);
-        } else {
-          return this.render();
+        if (qs) {
+          this.fetchSearchData(qs);
         }
+        return this.render();
       };
 
-      Discover.prototype.fetchSearchData = function() {};
+      Discover.prototype.fetchSearchData = function(query) {
+        return false;
+      };
 
       Discover.prototype.renderChart = function() {};
 
