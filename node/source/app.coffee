@@ -51,7 +51,7 @@ startApp = ->
       res.send "Error", 500
   
   app.configure "dev", ->
-    app.set 'port', 8900
+    app.set 'port', 8700
     app.set 'host', '0.0.0.0'
     app.use express.errorHandler
       dumpExceptions: true
