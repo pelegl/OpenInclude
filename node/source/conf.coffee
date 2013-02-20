@@ -88,14 +88,17 @@ exports.passport_initialize = () ->
   passport.initialize()
 
 passport_init = exports.passport_init = () ->
+  console.log('ser')
   passport.serializeUser((user, done) ->
     done(null, user)
   )
 
+  console.log('deser')
   passport.deserializeUser((obj, done) ->
     done(null, obj)
   )
 
+  console.log('git use')
   passport.use new GithubStrategy(
     clientID: GITHUB_CLIENT_ID,
     clientSecret: GITHUB_CLIENT_SECRET,
@@ -105,4 +108,5 @@ passport_init = exports.passport_init = () ->
   )
 
 exports.github_auth = (options) ->
+  console.log('git auth')
   passport.authenticate 'github', options
