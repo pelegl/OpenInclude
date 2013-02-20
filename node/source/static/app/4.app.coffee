@@ -6,8 +6,8 @@
     routes:
       "":"index"
       "!/":"index"
-      "discover*":"discover"
-      "!/discover*":"discover"
+      "discover":"discover"
+      "!/discover":"discover"
 
     init: -> 
       if !Backbone.history._hasPushState        
@@ -17,7 +17,7 @@
 
     reRoute:->
       if !Backbone.history._hasPushState and Backbone.history.getFragment().slice(0,2) isnt '!/'
-        @navigate('!/'+Backbone.history.getFragment(), {trigger:true})
+        @navigate '!/'+Backbone.history.getFragment(), {trigger:true}
         document.location.reload()
 
     go: (fr, opts={trigger:true})->
@@ -32,6 +32,10 @@
     index: ->
       @reRoute()
       @view = new views.Index prevView:@view
+
+    discover: ->
+      @reRoute()
+      @view = new views.Discover prevView:@view
 
   $(document).ready ->
     console.log '[__app__] init done!'

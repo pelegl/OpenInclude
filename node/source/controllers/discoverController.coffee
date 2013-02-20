@@ -7,7 +7,6 @@ class DiscoverController extends require('./basicController')
     super
   
   index: ->
-    console.log @context
     @context.body = @_view 'discover/index', @context    
     @res.render 'base', @context
 
