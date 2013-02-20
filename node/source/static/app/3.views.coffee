@@ -1,33 +1,42 @@
 ((exports) ->  
   root = @
+  views = @hbt
 
   class exports.MetaView extends @Backbone.View
-    events:      
+    events: {}
     
     initialize: ->
       console.log '[__metaView__] Init'      
 
   class View extends @Backbone.View
-    el:'<span class="view-wrapper">'
-    viewsPlaceholder: '#view-placeholder'
+    el:'<section class="contents">'
+    viewsPlaceholder: '#view-wrapper'
     
     constructor:(opts={})->
       unless opts.prevView?
-        opts.el = $('.view-wrapper').eq(0)
+        opts.el = $('.contents').eq(0)
       else
         $(window).scrollTop 0      
       super opts
   
   
   class exports.Index extends View
-
-    initialize:->      
+    initialize:->
+      console.log '[__indexView__] Init'
+      @context = 
+        title: "Home Page"
+        STATIC_URL : app.conf.STATIC_URL
+        in_stealth_mode: true
+      
       if @options.prevView?
         try @options.prevView.remove(); @options.prevView = null                  
         $(@viewsPlaceholder).html @render().el
+      else
+        @render()
 
-    render:->      
-      @$el.html "test"
+    render:->  
+      html = views['index'](@context)
+      @$el.html html
       @$el.attr('view-id', 'index')
       @
 

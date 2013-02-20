@@ -1,7 +1,6 @@
-this["app"] = this["app"] || {};
-this["app"]["tpl"] = this["app"]["tpl"] || {};
+this["hbt"] = this["hbt"] || {};
 
-this["app"]["tpl"]["css.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+this["hbt"]["css"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
@@ -15,7 +14,7 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   return buffer;
   });
 
-this["app"]["tpl"]["footer.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+this["hbt"]["footer"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
   var buffer = "";
@@ -26,7 +25,7 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   return buffer;
   });
 
-this["app"]["tpl"]["header.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+this["hbt"]["header"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
   var buffer = "", stack1, self=this;
@@ -59,7 +58,7 @@ function program4(depth0,data) {
   return buffer;
   });
 
-this["app"]["tpl"]["index.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+this["hbt"]["index"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
@@ -116,7 +115,7 @@ function program13(depth0,data) {
   return "\n    <div class=\"search\">\n      <form  class=\"search-form\" action=\"{% url project-search '' %}\" method=\"GET\">\n        <input type=\"text\" name=\"query\" placeholder=\"discover an open source project\">\n        <button type=\"submit\">search</button>\n      </form>\n      <a href=\"#\" class=\"advanced\">advanced search</a>\n    </div>\n\n    <div class=\"search-terms\">\n      <h3>sample search terms:</h3>\n      <ul>\n        <li><a href=\"#\">neural net python</a></li>\n        <li><a href=\"#\">prime number generator java</a></li>\n        <li><a href=\"#\">scraping toolkit</a></li>\n        <li><a href=\"#\">sleek web design</a></li>\n      </ul>\n    </div>\n";
   }
 
-  buffer += "<section class=\"contents\">\n  <div class=\"wrapper\" ";
+  buffer += "<div class=\"wrapper\" ";
   stack1 = helpers['if'].call(depth0, depth0.in_stealth_mode, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n    <div class=\"features\">\n      <ul>\n        <li> <a href=\"";
@@ -149,20 +148,20 @@ function program13(depth0,data) {
   buffer += "\n\n";
   stack1 = helpers.unless.call(depth0, depth0.in_stealth_mode, {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n  </div>\n</section>\n";
+  buffer += "\n</div>";
   return buffer;
   });
 
-this["app"]["tpl"]["scripts.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+this["hbt"]["scripts"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
   
 
 
-  return "<script type=\"text/javascript\" src=\"/static/js/jquery-1.9.1.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/bootstrap.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/d3.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/humanize.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/app.js\"></script>";
+  return "<script type=\"text/javascript\" src=\"/static/js/jquery-1.9.1.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/bootstrap.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/d3.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/humanize.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/underscore.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/handlebars.runtime.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/templates.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/app.js\"></script>";
   });
 
-this["app"]["tpl"]["discover/chart.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+this["hbt"]["discover/chart"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
@@ -181,7 +180,7 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   return buffer;
   });
 
-this["app"]["tpl"]["discover/compare.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+this["hbt"]["discover/compare"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
   
@@ -190,7 +189,7 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   return "compare";
   });
 
-this["app"]["tpl"]["discover/filter.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+this["hbt"]["discover/filter"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
@@ -226,7 +225,7 @@ function program2(depth0,data) {
   return buffer;
   });
 
-this["app"]["tpl"]["discover/index.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+this["hbt"]["discover/index"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials; data = data || {};
   var buffer = "", stack1, self=this;
@@ -248,7 +247,7 @@ helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.parti
   return buffer;
   });
 
-this["app"]["tpl"]["discover/search.hbs"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+this["hbt"]["discover/search"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;

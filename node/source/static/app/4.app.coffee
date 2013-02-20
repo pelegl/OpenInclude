@@ -1,5 +1,8 @@
-((exports)->
-  class App extends Backbone.Router      
+((exports)->  
+  class App extends Backbone.Router
+    conf:
+      STATIC_URL : "/static/"
+          
     routes:
       "":"index"
       "!/":"index"
@@ -7,8 +10,7 @@
       "!/discover*":"discover"
 
     init: -> 
-      if !Backbone.history._hasPushState
-        console.log 'try to navigate'
+      if !Backbone.history._hasPushState        
         hash = Backbone.history.getHash()
         @navigate('', {trigger:false})
         @navigate(hash, {trigger:true})
@@ -29,7 +31,7 @@
 
     index: ->
       @reRoute()
-      #@view = new views.Index prevView:@view
+      @view = new views.Index prevView:@view
 
   $(document).ready ->
     console.log '[__app__] init done!'
@@ -39,6 +41,7 @@
     
     Backbone.history.start {pushState: true}
     app.init()
+    
     $(document).delegate "a", "click", (e)->
       if e.currentTarget.getAttribute('href')[0] is '/'
         uri = if Backbone.history._hasPushState then \

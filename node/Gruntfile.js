@@ -30,7 +30,7 @@ module.exports = function(grunt) {
 	  }
 	},
 	coffee : {
-		compile: {
+		compile: {			
 			files : {
 				'source/static/js/app.js': ["source/static/app/*.coffee"]	
 			}			
@@ -38,11 +38,11 @@ module.exports = function(grunt) {
 	},
 	handlebars: {
 		options: {
-	      	namespace: "app.tpl",
+	      	namespace: "hbt",
 	      	wrapped: true,
 	      	processName: function(filename){
 	      		var base = "source/views/partials/";
-	      		return filename.replace(base, "");
+	      		return filename.replace(base, "").replace(/\.hbs$/, "");
 	      	}
 	    },
 	    compile: {
