@@ -22,7 +22,7 @@ exports.esClient = esClient = new esc serverOptions
 ###
   Some static helpers
 ###
-exports.SERVER_URL = "http://ec2-50-19-3-2.compute-1.amazonaws.com"
+SERVER_URL = exports.SERVER_URL = "http://ec2-50-19-3-2.compute-1.amazonaws.com"
 STATIC_URL = exports.STATIC_URL = "/static/"
 
 
