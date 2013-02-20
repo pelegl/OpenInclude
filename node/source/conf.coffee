@@ -88,6 +88,14 @@ exports.passport_initialize = () ->
   passport.initialize()
 
 passport_init = exports.passport_init = () ->
+  passport.serializeUser((user, done) ->
+    done(null, user)
+  )
+
+  passport.deserializeUser((obj, done) ->
+    done(null, obj)
+  )
+
   passport.use new GithubStrategy(
     clientID: GITHUB_CLIENT_ID,
     clientSecret: GITHUB_CLIENT_SECRET,
