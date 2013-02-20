@@ -91,7 +91,7 @@ passport_init = exports.passport_init = () ->
   passport.use new GithubStrategy(
     clientID: GITHUB_CLIENT_ID,
     clientSecret: GITHUB_CLIENT_SECRET,
-    callbackURL: "#{STATIC_URL}/auth/github/callback"
+    callbackURL: "#{SERVER_URL}/auth/github/callback"
   , (access_token, refresh_token, profile, done) ->
     done(null, profile)
   )
