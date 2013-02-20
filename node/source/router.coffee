@@ -1,4 +1,4 @@
-{STATIC_URL, passport_auth} = require './conf'
+{STATIC_URL, github_auth} = require './conf'
 hb = require 'handlebars'
 
 exports.set = (app)->

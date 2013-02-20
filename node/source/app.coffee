@@ -62,7 +62,6 @@ startApp = ->
     views: (cb)=>
       conf.registerPartials "#{root}/views/partials", cb
     controllers: conf.setControllers
-    passport: conf.passport_init()
     router: ['views',(cb, results)=>
       app.Views = results.views
       app.Controllers = results.controllers

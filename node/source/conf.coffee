@@ -4,7 +4,7 @@ fs          = require 'fs'
 esc         = require 'elasticsearchclient'
 
 passport = require 'passport'
-GithubStrategy = require 'passport-github'.Strategy
+GithubStrategy = require('passport-github').Strategy
 
 
 ###
@@ -23,7 +23,7 @@ exports.esClient = esClient = new esc serverOptions
   Some static helpers
 ###
 exports.SERVER_URL = "http://ec2-50-19-3-2.compute-1.amazonaws.com"
-exports.STATIC_URL = "/static/"
+STATIC_URL = exports.STATIC_URL = "/static/"
 
 
 ###
@@ -84,9 +84,10 @@ exports.passport_session = () ->
   passport.session()
 
 exports.passport_initialize = () ->
+  passport_init()
   passport.initialize()
 
-exports.passport_init = () ->
+passport_init = exports.passport_init = () ->
   passport.use new GithubStrategy(
     clientID: GITHUB_CLIENT_ID,
     clientSecret: GITHUB_CLIENT_SECRET,
@@ -96,4 +97,4 @@ exports.passport_init = () ->
   )
 
 exports.github_auth = (options) ->
-  passport.auth 'github', options
+  passport.authenticate 'github', options
