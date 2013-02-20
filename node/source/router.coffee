@@ -5,7 +5,7 @@ exports.set = (app)->
   app.get '/discover',   app.Controllers.discover    
   app.get '/discover/*', app.Controllers.discover
   
-  app.get '/auth/github', github_auth
+  app.get '/auth/github', github_auth()
   app.get '/auth/github/callback', github_auth failureRedirect: '/#failure',
     (request, response) -> response.redirect('/#success')
 
