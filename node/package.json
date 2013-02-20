@@ -15,12 +15,13 @@
     "mongoose": "*",
     "hiredis": "*",
     "grunt": "0.4.x",
-    "grunt-contrib-handlebars": "*",
+    "grunt-contrib-handlebars": "0.5.x",
     "grunt-contrib-less": "0.5.x",
     "grunt-contrib-concat": "*",
     "grunt-contrib-cssmin": "*",
     "elasticsearchclient" : "*",
     "underscore"		  : "*",
-    "humanize"			  : "*"
+    "humanize"			  : "*",
+    "grunt-contrib-coffee": "*"
   }
 }
