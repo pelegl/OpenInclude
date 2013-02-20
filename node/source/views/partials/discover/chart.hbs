@@ -154,7 +154,8 @@ $(function(){
 		      		.call(position)
 		      		.sort(order)
 		      		.on("mouseover", this.popup('show', this.scope))
-		      		.on("mouseout", this.popup('hide'));
+		      		.on("mouseout", this.popup('hide'))
+		      		.on("click", this.addToComparison);
 			
 			dot.append("title")
 			      .text(function(d) { return d._source.module_name; });
@@ -174,33 +175,47 @@ $(function(){
 		}
 		
 		var popup = $("<div />").addClass("popover").hide().appendTo("#searchChart")
-								.append("<h5 class='moduleName' />")
-								.append("<h6 class='moduleLanguage' />")
+								.append("<h4 class='moduleName' />")
+								.append("<h5 class='moduleLanguage' ><span class='color'></span><span class='name'></span></h5>")
 								.append("<p class='moduleDescription' />")
-								.append("<div class='moduleStars' />");
+								.append("<div class='moduleStars' ></div>");
+		
+		chartClass.prototype.addToComparison  = function(d,i){
+			//TODO: add module comparison
+		}
 		
 		chartClass.prototype.popup = function(action, scope){
 			return function(d,i){
 				if ( action === 'hide' ){
 					popup.hide();
 				} else {
-					var $this = $(this),
+					var marginLeft = 50,
+						$this = $(this),
 						width = height = parseInt($this.attr("r"))*2,
 						x = parseInt($this.attr("cx")),
-						y = parseInt($this.attr("cy"));
+						y = parseInt($this.attr("cy")),
+						color = $this.css("fill");
+						
 					
-					var data = d._source;
+					var data = d._source,
+						stars = data.watchers,						
+						lastContribution = humanize.relativeTime(new Date(data.pushed_at).getTime()/1000);
+					
+					var activity = $("<p class='activity' />").html("<i class='icon-star'></i>Last checking <strong>"+lastContribution+"</strong>"),
+						activityStars = $("<p class='stars' />").html("<i class='icon-star'></i><strong>"+stars+" stars</strong> on GitHub");	
+											
 					$(".moduleName", popup).text(data.module_name);
-					$(".moduleLanguage", popup).text(data.language);
-					$(".moduleDescription", popup).text(data.description);
-					$(".moduleStars", popup).text(data.watchers);
+					$(".moduleLanguage", popup)
+						.find(".name").text(data.language).end()
+						.find(".color").css({background: color});
+					$(".moduleDescription", popup).text(data.description);										
+					$(".moduleStars", popup).html("").append(activity, activityStars);
 																
-					popup.css({
-						bottom: (scope.outerHeight()-y)+'px',
-						left: (x-popup.outerWidth()/2+50)+'px'
-					});
-					
-					popup.show();
+					popup.show()
+						 .css({
+							bottom: (scope.outerHeight()-y-(popup.outerHeight()/2)-15)+'px',
+							left: x+marginLeft+(width/2)+15+'px'
+						 });
 				}
 			}
 		}

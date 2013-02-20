@@ -1,17 +1,30 @@
 .discover { 
+  form {
+    margin:0;
+  }
+  
   #searchChart {
     position: relative;
-  }  
+  }
+  
+  .searchChart {
+    margin-top: 30px;
+    .border-radius(15px);
+    background: @white;
+    padding: 10px;
+    .border-box;
+  }
+    
   &.contents {
     .search {
       margin-top: 35px;
     } 
   }  
   .dot {
-    opacity: 0.7;    
+    opacity: 0.5;    
     cursor: pointer;
     &:hover {
-      opacity: 1;
+      opacity: 0.75;
       stroke: @black;
       stroke-width: 2px;
     }
@@ -35,7 +48,47 @@
     .box-shadow(0 2px 4px, 30%);
     border: 1px solid #BBB;
     padding: 10px;
-    width: 200px;
-    position: absolute;    
+    max-width: 350px;
+    min-width: 250px;
+    position: absolute;
+    
+    .moduleName {
+      margin: 0 0 5px;
+    }
+    
+    .moduleLanguage {
+      margin: 0 0 5px;
+      .name, .color {
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .color {
+        height: 14px;
+        width: 14px;
+      }
+      .name{
+        padding-left: 5px;
+      }
+    }
+    
+    .moduleDescription {
+      color: #666;
+      margin-bottom: 0;
+    }
+    
+    .moduleStars {
+      .activity, .stars {
+        margin: 0;
+        padding-bottom: 5px;
+        white-space: nowrap;
+        i {
+          margin-right: 5px;
+        }
+      }
+    }
+           
   }
+  
+  
+  
 }

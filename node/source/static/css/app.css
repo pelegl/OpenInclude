@@ -22,19 +22,32 @@
   -ms-user-select: none;
   user-select: none;
 }
+.discover form {
+  margin: 0;
+}
 .discover #searchChart {
   position: relative;
+}
+.discover .searchChart {
+  margin-top: 30px;
+  border-radius: 15px;
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  background: #ffffff;
+  padding: 10px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
 }
 .discover.contents .search {
   margin-top: 35px;
 }
 .discover .dot {
-  opacity: 0.7;
+  opacity: 0.5;
   cursor: pointer;
   position: relative;
 }
 .discover .dot:hover {
-  opacity: 1;
+  opacity: 0.75;
   stroke: #000000;
   stroke-width: 2px;
 }
@@ -55,6 +68,39 @@
   -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   border: 1px solid #BBB;
   padding: 10px;
-  width: 200px;
+  max-width: 350px;
+  min-width: 250px;
   position: absolute;
+}
+.discover .popover .moduleName {
+  margin: 0 0 5px;
+}
+.discover .popover .moduleLanguage {
+  margin: 0 0 5px;
+}
+.discover .popover .moduleLanguage .name,
+.discover .popover .moduleLanguage .color {
+  display: inline-block;
+  vertical-align: middle;
+}
+.discover .popover .moduleLanguage .color {
+  height: 14px;
+  width: 14px;
+}
+.discover .popover .moduleLanguage .name {
+  padding-left: 5px;
+}
+.discover .popover .moduleDescription {
+  color: #666;
+  margin-bottom: 0;
+}
+.discover .popover .moduleStars .activity,
+.discover .popover .moduleStars .stars {
+  margin: 0;
+  padding-bottom: 5px;
+  white-space: nowrap;
+}
+.discover .popover .moduleStars .activity i,
+.discover .popover .moduleStars .stars i {
+  margin-right: 5px;
 }

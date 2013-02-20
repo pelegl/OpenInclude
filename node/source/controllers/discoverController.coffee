@@ -3,10 +3,11 @@
 class DiscoverController extends require('./basicController') 
   constructor: ->
     @context =
-      discover_search_acton : "/discover/search"
+      discover_search_action : "/discover/search"
     super
   
   index: ->
+    console.log @context
     @context.body = @_view 'discover/index', @context    
     @res.render 'base', @context
 
