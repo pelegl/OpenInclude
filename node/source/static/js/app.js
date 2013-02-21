@@ -331,6 +331,7 @@
       };
 
       DiscoverChartPopup.prototype.render = function() {
+        this.$el.appendTo(this.options.scope);
         this.$el.hide().append(this.moduleName, this.moduleLanguage, this.moduleDescription, this.moduleStars);
         return this;
       };
@@ -345,7 +346,29 @@
         return this;
       };
 
-      DiscoverChartPopup.prototype.setData = function() {};
+      DiscoverChartPopup.prototype.setData = function(datum, $this, scope) {
+        var activity, activityStars, color, data, height, lastContribution, stars, width, x, y;
+        width = height = parseInt($this.attr("r")) * 2;
+        x = parseInt($this.attr("cx"));
+        y = parseInt($this.attr("cy"));
+        color = $this.css("fill");
+        data = datum.get("_source");
+        stars = data.watchers;
+        lastContribution = humanize.relativeTime(new Date(data.pushed_at).getTime() / 1000);
+        activity = $("<p class='activity' />").html("<i class='icon-star'></i>Last checking <strong>" + lastContribution + "</strong>");
+        activityStars = $("<p class='stars' />").html("<i class='icon-star'></i><strong>" + stars + " stars</strong> on GitHub");
+        this.moduleName.text(data.module_name);
+        this.moduleLanguage.find(".name").text(data.language).end().find(".color").css({
+          background: color
+        });
+        this.moduleDescription.text(data.description);
+        this.moduleStars.html("").append(activity, activityStars);
+        this.show();
+        return this.$el.css({
+          bottom: (this.options.scope.outerHeight() - y - (this.$el.outerHeight() / 2) - 15) + 'px',
+          left: x + this.options.margin.left + (width / 2) + 15 + 'px'
+        });
+      };
 
       return DiscoverChartPopup;
 
@@ -374,8 +397,10 @@
         this.yScale = d3.scale.linear().domain([0, 1.1]).range([this.height, 0]);
         this.colorScale = d3.scale.category20c();
         _.bindAll(this, "renderChart", "position", "order");
-        this.popupView = new exports.DiscoverChartPopup;
-        this.popupView.$el.appendTo(this.$el);
+        this.popupView = new exports.DiscoverChartPopup({
+          margin: this.margin,
+          scope: this.$el
+        });
         return this.render();
       };
 
@@ -412,13 +437,14 @@
       };
 
       DiscoverChart.prototype.popup = function(action, scope) {
-        var _this = this;
+        var self;
+        self = this;
         return function(d, i) {
           switch (action) {
             case 'hide':
-              return _this.popupView.hide();
+              return self.popupView.hide();
             case 'show':
-              return _this.popupView.setData(d, scope);
+              return self.popupView.setData(d, $(this), scope);
           }
         };
       };
@@ -427,7 +453,6 @@
 
       DiscoverChart.prototype.renderChart = function() {
         var _this = this;
-        console.log(this);
         this.setRadiusScale();
         this.dot = this.dots.selectAll(".dot").data(this.collection.models);
         this.dot.enter().append("circle").attr("class", "dot").on("mouseover", this.popup('show', this.$el)).on("mouseout", this.popup('hide')).on("click", this.addToComparison);
@@ -503,9 +528,13 @@
       };
 
       Discover.prototype.searchSubmit = function(e) {
-        var q;
+        var pathname, q;
         e.preventDefault();
         q = this.$("[name=q]").val();
+        pathname = window.location.pathname;
+        app.navigate("" + pathname + "?q=" + q, {
+          trigger: false
+        });
         return this.fetchSearchData(q);
       };
 
@@ -621,8 +650,9 @@
       });
       app.init();
       return $(document).delegate("a", "click", function(e) {
-        var uri;
-        if (e.currentTarget.getAttribute('href')[0] === '/') {
+        var href, uri;
+        href = e.currentTarget.getAttribute('href');
+        if (href[0] === '/' && !/^\/auth\/.*/i.test(href)) {
           uri = Backbone.history._hasPushState ? e.currentTarget.getAttribute('href').slice(1) : "!/" + e.currentTarget.getAttribute('href').slice(1);
           app.navigate(uri, {
             trigger: true

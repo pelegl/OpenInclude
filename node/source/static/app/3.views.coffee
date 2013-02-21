@@ -105,6 +105,7 @@
       @render()
           
     render: ->
+      @$el.appendTo @options.scope
       @$el.hide().append @moduleName, @moduleLanguage, @moduleDescription, @moduleStars      
       @
       
@@ -116,8 +117,31 @@
       @$el.hide()
       @
       
-    setData: ->
+    setData: (datum, $this, scope) ->            
+      width = height = parseInt($this.attr("r"))*2
+      x = parseInt $this.attr "cx"
+      y = parseInt $this.attr "cy"
+      color = $this.css "fill"
+      data = datum.get("_source")      
+      stars = data.watchers            
+      lastContribution = humanize.relativeTime new Date(data.pushed_at).getTime()/1000
+      
+      activity = $("<p class='activity' />").html("<i class='icon-star'></i>Last checking <strong>#{lastContribution}</strong>")
+      activityStars = $("<p class='stars' />").html("<i class='icon-star'></i><strong>#{stars} stars</strong> on GitHub")
+      
+      @moduleName.text data.module_name          
+      @moduleLanguage
+                     .find(".name").text(data.language).end()
+                     .find(".color").css({background: color})    
+      @moduleDescription.text data.description
+      @moduleStars.html("").append activity, activityStars      
+                              
       @show()
+      @$el.css
+        bottom: (@options.scope.outerHeight()-y-(@$el.outerHeight()/2)-15)+'px'
+        left: x+@options.margin.left+(width/2)+15+'px'
+      
+      
 
   class exports.DiscoverChart extends View
     initialize: ->
@@ -140,8 +164,7 @@
       
       _.bindAll this, "renderChart", "position", "order"
       
-      @popupView = new exports.DiscoverChartPopup
-      @popupView.$el.appendTo @$el
+      @popupView = new exports.DiscoverChartPopup { margin: @margin, scope: @$el }      
             
       @render()
             
@@ -165,16 +188,15 @@
       return b.radius() - a.radius()
     
     popup: (action, scope)->
-      return (d,i)=>
+      self = @
+      return (d,i)-> # return this - reference to current target
         switch action
-          when 'hide' then @popupView.hide()
-          when 'show' then @popupView.setData d, scope
+          when 'hide' then self.popupView.hide()
+          when 'show' then self.popupView.setData d, $(this), scope
     
     addToComparison: (document, index)->    
       
-    renderChart: ->
-      console.log @
-      
+    renderChart: ->      
       @setRadiusScale()
       
       @dot = @dots.selectAll(".dot")
@@ -276,6 +298,8 @@
     searchSubmit: (e)->
       e.preventDefault()
       q = @$("[name=q]").val()
+      {pathname} = window.location
+      app.navigate "#{pathname}?q=#{q}", {trigger: false}
       @fetchSearchData q            
     
     fetchSearchData: (query) ->
