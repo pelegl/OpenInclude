@@ -1,21 +1,15 @@
-{% extends "base.html" %}
-
-{% block title %}Open Include|Login{% endblock %}
-
-{% block content %}
 <div>
   
-  {% if form.errors %}
+  {{#if error}}
 	  <div class="message error">
 	    <h2>Please try again</h2>
 	    <p>The username or password you entered is incorrect.</p>
 	  </div>
-	{% endif %}
+  {{/if}}
   
-  <h1>Login to your account</h1>
-  <form name="signin" method="post" action="{% url auth_login %}">
-    <input type="hidden" name="next" value="{{ request.REQUEST.next }}" />  
-    {% csrf_token %}
+  <h2>Login to your account</h2>
+  <form name="signin" method="post" action="">
+    <input type="hidden" name="next" value="" />  
     <div class="form-row">
       <label for="email">Username</label>
       <input type="text" name="username" value=""/>
@@ -29,6 +23,6 @@
         <input type="submit" name="submit" value="Login"/>
     </div>
     
+    <a href="/auth/github" class="github-auth">Github Auth</a>
   </form>
 </div>
-{% endblock content %}
