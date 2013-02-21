@@ -6,8 +6,8 @@
     routes:
       "":"index"
       "!/":"index"
-      "discover*":"discover"
-      "!/discover*":"discover"
+      "discover":"discover"
+      "!/discover":"discover"
 
     init: -> 
       if !Backbone.history._hasPushState        
@@ -17,7 +17,7 @@
 
     reRoute:->
       if !Backbone.history._hasPushState and Backbone.history.getFragment().slice(0,2) isnt '!/'
-        @navigate('!/'+Backbone.history.getFragment(), {trigger:true})
+        @navigate '!/'+Backbone.history.getFragment(), {trigger:true}
         document.location.reload()
 
     go: (fr, opts={trigger:true})->
@@ -33,6 +33,10 @@
       @reRoute()
       @view = new views.Index prevView:@view
 
+    discover: ->
+      @reRoute()
+      @view = new views.Discover prevView:@view
+
   $(document).ready ->
     console.log '[__app__] init done!'
     exports.app = app = new App()
@@ -43,7 +47,8 @@
     app.init()
     
     $(document).delegate "a", "click", (e)->
-      if e.currentTarget.getAttribute('href')[0] is '/'
+      href = e.currentTarget.getAttribute('href')
+      if href[0] is '/' and ! /^\/auth\/.*/i.test href
         uri = if Backbone.history._hasPushState then \
           e.currentTarget.getAttribute('href').slice(1) else \
           "!/"+e.currentTarget.getAttribute('href').slice(1)

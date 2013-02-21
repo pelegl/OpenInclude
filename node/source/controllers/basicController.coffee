@@ -6,6 +6,9 @@ hb           = require 'handlebars'
 class BasicController
   constructor: (@req,@res)->    
     path = @req.path
+    
+    console.log path
+    
     segments = _.without path.split("/"), ""
     
     @controllerName = segments[0]

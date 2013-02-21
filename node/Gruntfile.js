@@ -39,11 +39,12 @@ module.exports = function(grunt) {
 	handlebars: {
 		options: {
 	      	namespace: "hbt",
-	      	wrapped: true,
-	      	processName: function(filename){
+	      	wrapped: true,	      	
+	      	processPartialName: function(filename){
 	      		var base = "source/views/partials/";
 	      		return filename.replace(base, "").replace(/\.hbs$/, "");
-	      	}
+	      	},
+	      	partialRegex: /.*/
 	    },
 	    compile: {
 	    	files: {	      	
