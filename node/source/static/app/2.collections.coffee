@@ -8,14 +8,19 @@
       r.response ? []
     
     model: models.Discovery
-    url: "/discovery/search"    
+    url: "/discover/search"    
+ 
+    maxRadius: ->
+      return d3.max @models, (data)=>
+        return data.radius()                
     
-    find: ->
+    fetch: ->
       [query, opts...] = Array::slice.apply arguments
       query = query ? ""
             
       collection = this
-      $.getJSON "#{instance.url}?q=#{query}" , (r)->        
-        collection.add r
+      $.getJSON "#{collection.url}?q=#{query}" , (r)->
+        collection.maxScore = r.maxScore        
+        collection.reset r.searchData
 
 ).call(this, (if typeof exports is "undefined" then this["collections"] = {} else exports), (typeof exports isnt "undefined"))

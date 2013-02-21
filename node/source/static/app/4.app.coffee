@@ -47,7 +47,8 @@
     app.init()
     
     $(document).delegate "a", "click", (e)->
-      if e.currentTarget.getAttribute('href')[0] is '/'
+      href = e.currentTarget.getAttribute('href')
+      if href[0] is '/' and ! /^\/auth\/.*/i.test href
         uri = if Backbone.history._hasPushState then \
           e.currentTarget.getAttribute('href').slice(1) else \
           "!/"+e.currentTarget.getAttribute('href').slice(1)

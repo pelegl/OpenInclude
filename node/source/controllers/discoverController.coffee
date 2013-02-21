@@ -1,9 +1,14 @@
 {esClient} = require '../conf'
 
 class DiscoverController extends require('./basicController') 
-  constructor: ->
+  constructor: (@req, @res)->
+    
     @context =
-      discover_search_action : "/discover/search"
+      discover_search_action : "/discover"
+      
+    {q} = @req.query
+    if q then @context.discover_search_query = q
+    
     super
   
   index: ->
@@ -11,13 +16,10 @@ class DiscoverController extends require('./basicController')
     @res.render 'base', @context
 
   search: ->
-    {q} = @req.query
-    @context.discover_search_query = q
-            
     query =       
       query:
         multi_match:
-          query: q
+          query: @context.discover_search_query || ""
           use_dis_max: true
           fields: ["description", "module_name^2", "language^1.5"]
     

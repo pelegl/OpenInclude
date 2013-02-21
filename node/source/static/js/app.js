@@ -87,11 +87,11 @@
       x: function() {
         var currentDate, datesDifference, difference_ms, lastCommit, lastCommitBucket, self,
           _this = this;
-        self = this._source;
+        self = this.get('_source');
         lastCommit = new Date(self.pushed_at).getTime();
         currentDate = new Date().getTime();
         difference_ms = currentDate - lastCommit;
-        datesDifference = Math.round(difference_ms / oneDay);
+        datesDifference = Math.round(difference_ms / helpers.oneDay);
         lastCommitBucket = function(difference) {
           if (difference > 180) {
             return 3.5;
@@ -111,7 +111,7 @@
 
       y: function(maxScore) {
         var score;
-        score = this._score;
+        score = this.get('_score');
         return score / maxScore;
       },
       /*
@@ -120,7 +120,7 @@
 
       radius: function() {
         var watchers;
-        watchers = this._source.watchers;
+        watchers = this.get('_source').watchers;
         return 10 + watchers * 5;
       },
       /*
@@ -129,7 +129,7 @@
       */
 
       color: function() {
-        return this._source.language;
+        return this.get('_source').language;
       },
       /*
               Key
@@ -158,14 +158,21 @@
         return (_ref = r.response) != null ? _ref : [];
       },
       model: models.Discovery,
-      url: "/discovery/search",
-      find: function() {
+      url: "/discover/search",
+      maxRadius: function() {
+        var _this = this;
+        return d3.max(this.models, function(data) {
+          return data.radius();
+        });
+      },
+      fetch: function() {
         var collection, opts, query, _ref;
         _ref = Array.prototype.slice.apply(arguments), query = _ref[0], opts = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
         query = query != null ? query : "";
         collection = this;
-        return $.getJSON("" + instance.url + "?q=" + query, function(r) {
-          return collection.add(r);
+        return $.getJSON("" + collection.url + "?q=" + query, function(r) {
+          collection.maxScore = r.maxScore;
+          return collection.reset(r.searchData);
         });
       }
     });
@@ -217,7 +224,7 @@
           if (app.meta.$('.contents').length > 0) {
             app.meta.$('.contents').replaceWith(opts.el);
           } else {
-            views.MetaView.$el.append(opts.el);
+            app.meta.$el.append(opts.el);
           }
         } else {
           $(window).scrollTop(0);
@@ -257,6 +264,92 @@
       return Index;
 
     })(View);
+    /*
+      chartClass.prototype.popup = function(action, scope){
+          return function(d,i){
+            if ( action === 'hide' ){
+              popup.hide();
+            } else {
+              var marginLeft = 50,
+                $this = $(this),
+                width = height = parseInt($this.attr("r"))*2,
+                x = parseInt($this.attr("cx")),
+                y = parseInt($this.attr("cy")),
+                color = $this.css("fill");
+                
+              
+              var data = d._source,
+                stars = data.watchers,            
+                lastContribution = humanize.relativeTime(new Date(data.pushed_at).getTime()/1000);
+              
+              var activity = $("<p class='activity' />").html("<i class='icon-star'></i>Last checking <strong>"+lastContribution+"</strong>"),
+                activityStars = $("<p class='stars' />").html("<i class='icon-star'></i><strong>"+stars+" stars</strong> on GitHub"); 
+                          
+              $(".moduleName", popup).text(data.module_name);
+              $(".moduleLanguage", popup)
+                .find(".name").text(data.language).end()
+                .find(".color").css({background: color});
+              $(".moduleDescription", popup).text(data.description);                    
+              $(".moduleStars", popup).html("").append(activity, activityStars);
+                                    
+              popup.show()
+                 .css({
+                  bottom: (scope.outerHeight()-y-(popup.outerHeight()/2)-15)+'px',
+                  left: x+marginLeft+(width/2)+15+'px'
+                 });
+            }
+          }
+        }
+    */
+
+    /*
+      var popup = $("<div />").addClass("popover").hide().appendTo("#searchChart")
+                    .append("<h4 class='moduleName' />")
+                    .append("<h5 class='moduleLanguage' ><span class='color'></span><span class='name'></span></h5>")
+                    .append("<p class='moduleDescription' />")
+                    .append("<div class='moduleStars' ></div>");
+    */
+
+    exports.DiscoverChartPopup = (function(_super) {
+
+      __extends(DiscoverChartPopup, _super);
+
+      function DiscoverChartPopup() {
+        return DiscoverChartPopup.__super__.constructor.apply(this, arguments);
+      }
+
+      DiscoverChartPopup.prototype.tagName = "div";
+
+      DiscoverChartPopup.prototype.className = "popover";
+
+      DiscoverChartPopup.prototype.initialize = function() {
+        this.moduleName = $("<h4 />").addClass("moduleName");
+        this.moduleLanguage = $("<h5 />").addClass("moduleLanguage").append("<span class='color' />").append("<span class='name' />");
+        this.moduleDescription = $("<p />").addClass("moduleDescription");
+        this.moduleStars = $("<div />").addClass("moduleStars");
+        return this.render();
+      };
+
+      DiscoverChartPopup.prototype.render = function() {
+        this.$el.hide().append(this.moduleName, this.moduleLanguage, this.moduleDescription, this.moduleStars);
+        return this;
+      };
+
+      DiscoverChartPopup.prototype.show = function() {
+        this.$el.show();
+        return this;
+      };
+
+      DiscoverChartPopup.prototype.hide = function() {
+        this.$el.hide();
+        return this;
+      };
+
+      DiscoverChartPopup.prototype.setData = function() {};
+
+      return DiscoverChartPopup;
+
+    })(this.Backbone.View);
     exports.DiscoverChart = (function(_super) {
 
       __extends(DiscoverChart, _super);
@@ -265,9 +358,108 @@
         return DiscoverChart.__super__.constructor.apply(this, arguments);
       }
 
-      DiscoverChart.prototype.initialize = function() {};
+      DiscoverChart.prototype.initialize = function() {
+        this.listenTo(this.collection, "reset", this.renderChart);
+        this.margin = {
+          top: 19.5,
+          right: 19.5,
+          bottom: 60,
+          left: 50
+        };
+        this.padding = 30;
+        this.maxRadius = 50;
+        this.width = this.$el.width() - this.margin.right - this.margin.left;
+        this.height = this.width * 9 / 16;
+        this.xScale = d3.scale.linear().domain([0, 4]).range([0, this.width]);
+        this.yScale = d3.scale.linear().domain([0, 1.1]).range([this.height, 0]);
+        this.colorScale = d3.scale.category20c();
+        _.bindAll(this, "renderChart", "position", "order");
+        this.popupView = new exports.DiscoverChartPopup;
+        this.popupView.$el.appendTo(this.$el);
+        return this.render();
+      };
 
-      DiscoverChart.prototype.render = function() {};
+      DiscoverChart.prototype.setRadiusScale = function() {
+        return this.radiusScale = d3.scale.sqrt().domain([10, this.collection.maxRadius()]).range([5, this.maxRadius]);
+      };
+
+      DiscoverChart.prototype.formatterX = function(d, i) {
+        switch (d) {
+          case 0.5:
+            return "<1 week ago";
+          case 1.5:
+            return "< 1 month ago";
+          case 2.5:
+            return "< 6 months ago";
+          case 3.5:
+            return "> 6 months ago";
+        }
+      };
+
+      DiscoverChart.prototype.position = function(dot) {
+        var _this = this;
+        return dot.attr("cx", function(d) {
+          return _this.xScale(d.x());
+        }).attr("cy", function(d) {
+          return _this.yScale(d.y(_this.collection.maxScore));
+        }).attr("r", function(d) {
+          return _this.radiusScale(d.radius());
+        });
+      };
+
+      DiscoverChart.prototype.order = function(a, b) {
+        return b.radius() - a.radius();
+      };
+
+      DiscoverChart.prototype.popup = function(action, scope) {
+        var _this = this;
+        return function(d, i) {
+          switch (action) {
+            case 'hide':
+              return _this.popupView.hide();
+            case 'show':
+              return _this.popupView.setData(d, scope);
+          }
+        };
+      };
+
+      DiscoverChart.prototype.addToComparison = function(document, index) {};
+
+      DiscoverChart.prototype.renderChart = function() {
+        var _this = this;
+        console.log(this);
+        this.setRadiusScale();
+        this.dot = this.dots.selectAll(".dot").data(this.collection.models);
+        this.dot.enter().append("circle").attr("class", "dot").on("mouseover", this.popup('show', this.$el)).on("mouseout", this.popup('hide')).on("click", this.addToComparison);
+        this.dot.transition().style("fill", function(moduleModel) {
+          return _this.colorScale(moduleModel.color());
+        }).call(this.position);
+        this.dot.exit().transition().attr("r", 0).remove();
+        this.dot.append("title").text(function(d) {
+          return d.get("_source").module_name;
+        });
+        this.dot.sort(this.order);
+        return this;
+      };
+
+      DiscoverChart.prototype.render = function() {
+        var _this = this;
+        this.xAxis = d3.svg.axis().orient("bottom").scale(this.xScale).tickValues([0.5, 1.5, 2.5, 3.5]).tickFormat(this.formatterX);
+        this.yAxis = d3.svg.axis().scale(this.yScale).orient("left").tickValues([1]).tickFormat(function(d, i) {
+          if (d === 1) {
+            return "100%";
+          } else {
+            return "";
+          }
+        });
+        this.svg = d3.select(this.$el[0]).append("svg").attr("width", this.width + this.margin.left + this.margin.right).attr("height", this.height + this.margin.top + this.margin.bottom).append("g").attr("transform", "translate( " + this.margin.left + " , " + this.margin.top + " )");
+        this.svg.append("g").attr("class", "x axis").attr("transform", "translate(0, " + this.height + " )").call(this.xAxis);
+        this.svg.append("g").attr("class", "y axis").call(this.yAxis);
+        this.svg.append("text").attr("class", "x label").attr("text-anchor", "middle").attr("x", this.width / 2).attr("y", this.height + this.margin.bottom - 10).text("Last commit");
+        this.svg.append("text").attr("class", "y label").attr("text-anchor", "middle").attr("y", 6).attr("x", -this.height / 2).attr("dy", "-1em").attr("transform", "rotate(-90)").text("Relevance");
+        this.dots = this.svg.append("g").attr("class", "dots");
+        return this;
+      };
 
       return DiscoverChart;
 
@@ -281,14 +473,13 @@
       }
 
       Discover.prototype.events = {
-        '.search-form submit': 'fetchSearchData'
+        'submit .search-form': 'searchSubmit'
       };
 
       Discover.prototype.initialize = function() {
         var qs;
         console.log('[__discoverView__] Init');
-        _.bindAll(this, "fetchSearchData", "render", "renderChart");
-        this.chartData = new root.collections.Discovery;
+        _.bindAll(this, "fetchSearchData", "render", "searchSubmit");
         this.context = {
           discover_search_action: "/discover",
           STATIC_URL: app.conf.STATIC_URL
@@ -297,17 +488,30 @@
         if (qs.q != null) {
           this.context.discover_search_query = qs.q;
         }
-        if (qs) {
-          this.fetchSearchData(qs);
+        this.render();
+        /*
+                initializing chart
+        */
+
+        this.chart = new exports.DiscoverChart({
+          el: this.$("#searchChart"),
+          collection: new root.collections.Discovery
+        });
+        if (qs.q != null) {
+          return this.fetchSearchData(qs.q);
         }
-        return this.render();
+      };
+
+      Discover.prototype.searchSubmit = function(e) {
+        var q;
+        e.preventDefault();
+        q = this.$("[name=q]").val();
+        return this.fetchSearchData(q);
       };
 
       Discover.prototype.fetchSearchData = function(query) {
-        return false;
+        return this.chart.collection.fetch(query);
       };
-
-      Discover.prototype.renderChart = function() {};
 
       Discover.prototype.render = function() {
         var html;

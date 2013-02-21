@@ -16,11 +16,11 @@
       
       x : -> # sets X coordinate on our graph
         # Getting initial values
-        self = @_source
+        self = @get('_source')
         lastCommit = new Date(self.pushed_at).getTime()
         currentDate = new Date().getTime()
         difference_ms = currentDate - lastCommit # dates difference  
-        datesDifference = Math.round(difference_ms/oneDay)
+        datesDifference = Math.round(difference_ms/helpers.oneDay)
         
         lastCommitBucket = (difference)=>
           if difference > 180
@@ -38,14 +38,14 @@
         Sets y based on relevance, min: 0, max: 1
       ###
       y: (maxScore) ->
-        score = @_score
+        score = @get('_score')
         return score/maxScore
       
       ###
         Sets radius of the circles
       ###
-      radius: ->
-        {watchers} = @_source
+      radius: ->        
+        {watchers} = @get('_source')
         return 10+watchers*5
       
       ###
@@ -53,7 +53,7 @@
         TODO: make color persist in different searches
       ###
       color: ->
-        return @_source.language
+        return @get('_source').language
         
       ###
         Key
