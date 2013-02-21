@@ -104,3 +104,18 @@
 .discover .popover .moduleStars .stars i {
   margin-right: 5px;
 }
+.discover .moduleComparison {
+  margin-top: 30px;
+  background: #ffffff;
+  border-radius: 15px;
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  padding: 10px;
+}
+.discover .moduleComparison .table {
+  margin: 0;
+}
+.discover .moduleComparison .table tfoot h3 {
+  text-align: center;
+  color: #666;
+}

@@ -185,7 +185,7 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   
 
 
-  return "compare";
+  return "<div class='span12 moduleComparison'>\n	<table class='table table-striped table-hover'>\n		<thead>\n			<tr>\n				<th>Project Name</th><th>Languages</th><th>Active Contributors</th><th>Last Commit</th><th>Start on GitHub</th><th>Questions on Stack Overflow</th><th>Percentage</th>\n			</tr>\n		</thead>\n		<tbody></tbody>\n		<tfoot>\n			<tr>\n				<td colspan=7><h3>Click on the project to add it to the comparison list</h3></td>\n			</tr>\n		</tfoot>\n	</table>\n</div>";
   }));
 
 Handlebars.registerPartial("discover/filter", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {

@@ -141,7 +141,18 @@
         bottom: (@options.scope.outerHeight()-y-(@$el.outerHeight()/2)-15)+'px'
         left: x+@options.margin.left+(width/2)+15+'px'
       
+  
+  class exports.DiscoverComparison extends @Backbone.View
+    initialize: ->
+      @context = {}
       
+    render: ->
+      html = views['discover/compare'](@context)      
+      @$el.html html
+      @$el.attr 'view-id', 'discoverComparison'
+      @
+      
+             
 
   class exports.DiscoverChart extends View
     initialize: ->
@@ -285,14 +296,17 @@
         STATIC_URL : app.conf.STATIC_URL
       
       qs = root.help.qs.parse(location.search)
-      @context.discover_search_query = qs.q if qs.q?
+      @context.discover_search_query = decodeURI(qs.q) if qs.q?
             
       @render()
       
       ###
         initializing chart
       ###
-      @chart     = new exports.DiscoverChart { el: @$("#searchChart"), collection: new root.collections.Discovery }      
+      @chartData = new root.collections.Discovery
+      @comparisonData = new root.collections.DiscoveryComparison
+      @chart      = new exports.DiscoverChart { el: @$("#searchChart"), collection: @chartData }
+      @comparison = new exorts.DiscoverComparison { el: @$(".moduleComparison"), collection: @comparisonData }      
       if qs.q? then @fetchSearchData qs.q        
     
     searchSubmit: (e)->

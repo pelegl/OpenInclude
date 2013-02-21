@@ -511,7 +511,7 @@
         };
         qs = root.help.qs.parse(location.search);
         if (qs.q != null) {
-          this.context.discover_search_query = qs.q;
+          this.context.discover_search_query = decodeURI(qs.q);
         }
         this.render();
         /*
