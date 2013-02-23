@@ -182,10 +182,37 @@ helpers = helpers || Handlebars.helpers; data = data || {};
 Handlebars.registerPartial("discover/compare", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, self=this;
+
+function program1(depth0,data) {
   
+  var buffer = "", stack1;
+  buffer += "\n				";
+  stack1 = helpers['with'].call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  
+  return "\n				\n				\n				\n				";
+  }
 
+function program4(depth0,data) {
+  
+  
+  return "\n		<tfoot>\n			<tr>\n				<td colspan=7><h3>Click on the project to add it to the comparison list</h3></td>\n			</tr>\n		</tfoot>\n		";
+  }
 
-  return "<div class='span12 moduleComparison'>\n	<table class='table table-striped table-hover'>\n		<thead>\n			<tr>\n				<th>Project Name</th><th>Languages</th><th>Active Contributors</th><th>Last Commit</th><th>Start on GitHub</th><th>Questions on Stack Overflow</th><th>Percentage</th>\n			</tr>\n		</thead>\n		<tbody></tbody>\n		<tfoot>\n			<tr>\n				<td colspan=7><h3>Click on the project to add it to the comparison list</h3></td>\n			</tr>\n		</tfoot>\n	</table>\n</div>";
+  buffer += "<div class='span12'>\n	<table class='table table-striped table-hover table-bordered'>\n		<thead>\n			<tr>\n				<th>Project Name</th><th>Languages</th><th>Active Contributors</th><th>Last Commit</th><th>Start on GitHub</th><th>Questions on Stack Overflow</th><th>Percentage</th>\n			</tr>\n		</thead>\n		<tbody>\n			";
+  stack1 = helpers.each.call(depth0, depth0.projects, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</tbody>\n		";
+  stack1 = helpers.unless.call(depth0, depth0.project, {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n	</table>\n</div>";
+  return buffer;
   }));
 
 Handlebars.registerPartial("discover/filter", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -239,7 +266,7 @@ helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.parti
   buffer += "\n		</div>\n		<div class='span4'>\n			";
   stack1 = self.invokePartial(partials['discover/filter'], 'discover/filter', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</div>\n	</div>\n	<div class='row'>\n		";
+  buffer += "\n		</div>\n	</div>\n	<div class='row moduleComparison'>\n		";
   stack1 = self.invokePartial(partials['discover/compare'], 'discover/compare', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	</div>\n</div>";
@@ -261,5 +288,43 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   else { stack1 = depth0.discover_search_query; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "\">\n    <button type=\"submit\">search</button>\n  </form>  \n</div>";
+  return buffer;
+  }));
+
+Handlebars.registerPartial("member/profile", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<h1>";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h1>\n\n<div>\n<h2>User Data Gotten from Github</h2>\n<ul>\n    <li><img src=\""
+    + escapeExpression(((stack1 = ((stack1 = depth0.member),stack1 == null || stack1 === false ? stack1 : stack1.avatar)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></img></li>\n    <li>"
+    + escapeExpression(((stack1 = ((stack1 = depth0.member),stack1 == null || stack1 === false ? stack1 : stack1.github_username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</li>\n    <li>"
+    + escapeExpression(((stack1 = ((stack1 = depth0.member),stack1 == null || stack1 === false ? stack1 : stack1.github_profile)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</li>\n</ul>\n\n</div>\n";
+  return buffer;
+  }));
+
+Handlebars.registerPartial("registration/login", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, self=this;
+
+function program1(depth0,data) {
+  
+  
+  return "\n	  <div class=\"message error\">\n	    <h2>Please try again</h2>\n	    <p>The username or password you entered is incorrect.</p>\n	  </div>\n  ";
+  }
+
+  buffer += "<div>\n  \n  ";
+  stack1 = helpers['if'].call(depth0, depth0.error, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n  \n  <h2>Login to your account</h2>\n  <form name=\"signin\" method=\"post\" action=\"\">\n    <input type=\"hidden\" name=\"next\" value=\"\" />  \n    <div class=\"form-row\">\n      <label for=\"email\">Username</label>\n      <input type=\"text\" name=\"username\" value=\"\"/>\n    </div>\n    <div class=\"form-row\">\n      <label for=\"password\">Password</label>\n      <input type=\"password\" name=\"password\" value=\"\"/>\n    </div>\n    \n    <div class=\"form-row clearfix\">\n        <input type=\"submit\" name=\"submit\" value=\"Login\"/>\n    </div>\n    \n    <a href=\"/auth/github\" class=\"github-auth\">Github Auth</a>\n  </form>\n</div>\n";
   return buffer;
   }));

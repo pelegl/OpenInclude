@@ -2,9 +2,14 @@ Handlebars  = require 'handlebars'
 async       = require 'async'
 fs          = require 'fs'
 esc         = require 'elasticsearchclient'
+mongoose    = require 'mongoose'
 
 passport = require 'passport'
 GithubStrategy = require('passport-github').Strategy
+
+exports.db = db = mongoose.createConnection 'localhost', 'openInclude'
+exports.git_lang_db = git_lang_db = mongoose.createConnection 'localhost', 'github_languages'
+exports.git_modules_db = git_modules_db = mongoose.createConnection 'localhost', 'github_modules'
 
 
 ###
@@ -88,24 +93,74 @@ exports.passport_initialize = () ->
   passport.initialize()
 
 passport_init = exports.passport_init = () ->
+  [User] = load(['User'])
+
   passport.serializeUser((user, done) ->
-    done(null, user)
+    console.log('ser', user.github_id)
+    done(null, user.github_id)
   )
 
-  passport.deserializeUser((obj, done) ->
-    done(null, obj)
+  passport.deserializeUser((id, done) ->
+    console.log('deser', id)
+    User.findOne({github_id: id}, (error, user) ->
+      if error then return done(error)
+
+      done(null, user)
+    )
   )
 
-  # console.log('git use')
   passport.use new GithubStrategy(
     clientID: GITHUB_CLIENT_ID,
     clientSecret: GITHUB_CLIENT_SECRET,
     callbackURL: "#{SERVER_URL}/auth/github/callback"
   , (access_token, refresh_token, profile, done) ->
-    console.log(access_token, refresh_token, profile)
-    done(null, profile)
+    # console.log(access_token, refresh_token, profile)
+    console.log('verify', profile)
+    User.findOne({github_id: profile.id}, (error, user) ->
+      if error then return done(error)
+      if user then return done(null, user)
+
+      user = new User(
+        github_id: profile.id
+        github_display_name: profile.displayName
+        github_username: profile.username
+        github_avatar_url: profile._json.avatar_url
+      )
+      user.save((error, user) ->
+        if error then return done(error)
+        if user then return done(null, user)
+      )
+    )
   )
 
 exports.github_auth = (options) ->
-  console.log('git-auth', options)
   passport.authenticate 'github', options
+
+
+exports.is_authenticated = (request, response, next) ->
+  unless request.isAuthenticated()
+    return response.redirect('/login')
+  next()
+
+#### Models
+loaded_models = {}
+
+load = (required) ->
+  models = []
+
+  required.forEach((name) ->
+    unless loaded_models[name]
+      module = require './models/' + name
+      if module.schema
+        module.collection = mongoose.Schema module.schema
+        module.model = db.model name, module.collection
+
+        models.push(module.model)
+      loaded_models[name] = module
+    else
+      models.push(loaded_models[name].model)
+  )
+
+  models
+
+module.exports.get_models = load
