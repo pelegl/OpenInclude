@@ -201,13 +201,80 @@ helpers = helpers || Handlebars.helpers; data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
+  buffer += "\n					";
+  stack1 = helpers['with'].call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n				";
-  stack1 = helpers['with'].call(depth0, depth0._source, {hash:{},inverse:self.noop,fn:self.programWithDepth(program2, data, depth0),data:data});
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n						";
+  stack1 = helpers.unless.call(depth0, depth0.key, {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n					";
+  return buffer;
+  }
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n						<th>";
+  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</th>\n						";
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n						<th><a href='#' data-sort='";
+  if (stack1 = helpers.key) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.key; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' ";
+  stack1 = helpers['if'].call(depth0, depth0.active, {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += ">";
+  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\n							";
+  stack1 = helpers['if'].call(depth0, depth0.directionBottom, {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n						</a></th>\n						";
+  return buffer;
+  }
+function program6(depth0,data) {
+  
+  
+  return "class='active'";
+  }
+
+function program8(depth0,data) {
+  
+  
+  return " \n							<i class='icon-chevron-down'></i>\n							";
+  }
+
+function program10(depth0,data) {
+  
+  
+  return "\n							<i class='icon-chevron-up'></i>\n							";
+  }
+
+function program12(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n				";
+  stack1 = helpers['with'].call(depth0, depth0._source, {hash:{},inverse:self.noop,fn:self.programWithDepth(program13, data, depth0),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n			";
   return buffer;
   }
-function program2(depth0,data,depth1) {
+function program13(depth0,data,depth1) {
   
   var buffer = "", stack1, stack2;
   buffer += "\n					<tr>\n						<td>";
@@ -228,17 +295,20 @@ function program2(depth0,data,depth1) {
   return buffer;
   }
 
-function program4(depth0,data) {
+function program15(depth0,data) {
   
   
   return "\n		<tfoot>\n			<tr>\n				<td colspan=7><h3>click on the project's bubble to add it to the comparison list</h3></td>\n			</tr>\n		</tfoot>\n		";
   }
 
-  buffer += "<div class='span12 moduleComparison'>\n	<table class='table table-striped table-hover table-bordered'>\n		<thead>\n			<tr>\n				<th>Project Name</th><th>Language</th><th>Active Contributors</th><th>Last Commit</th><th>Stars on GitHub</th><th>Questions on Stack Overflow</th><th>Percentage answered</th>\n			</tr>\n		</thead>\n		<tbody>\n			";
-  stack1 = helpers.each.call(depth0, depth0.projects, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  buffer += "<div class='span12 moduleComparison'>\n	<table class='table table-striped table-hover'>\n		<thead>\n			<tr>\n				";
+  stack1 = helpers.each.call(depth0, depth0.headers, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			</tr>\n		</thead>\n		<tbody>\n			";
+  stack1 = helpers.each.call(depth0, depth0.projects, {hash:{},inverse:self.noop,fn:self.program(12, program12, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n		</tbody>\n		";
-  stack1 = helpers.unless.call(depth0, depth0.projects, {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  stack1 = helpers.unless.call(depth0, depth0.projects, {hash:{},inverse:self.noop,fn:self.program(15, program15, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	</table>\n</div>";
   return buffer;
@@ -252,31 +322,45 @@ helpers = helpers || Handlebars.helpers; data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n			";
+  buffer += "\n	";
   stack1 = helpers['with'].call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		";
+  buffer += "\n";
   return buffer;
   }
 function program2(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n			<li>\n				<label class='checkbox'>\n					<input type='checkbox' name='languageFilter' value=\"";
+  buffer += "	\n	<div class='filterBox'>\n		<h4>";
   if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\" /> ";
-  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+    + " <a href='#' class='pull-right' data-reset='";
+  if (stack1 = helpers.key) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.key; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + " 				\n				</label>\n			</li>\n			";
+    + "'>reset filter</a></h4>\n		<ul class='unstyled'>			\n			";
+  stack1 = helpers.each.call(depth0, depth0.languages, {hash:{},inverse:self.noop,fn:self.programWithDepth(program3, data, depth0),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</ul>\n	</div>\n	";
+  return buffer;
+  }
+function program3(depth0,data,depth1) {
+  
+  var buffer = "", stack1;
+  buffer += "\n				<li>\n					<label class='checkbox'>\n						<input type='checkbox' name='"
+    + escapeExpression(((stack1 = depth1.key),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "' value=\""
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + "\" /> "
+    + escapeExpression((typeof depth0 === functionType ? depth0.apply(depth0) : depth0))
+    + " 				\n					</label>\n				</li>\n			";
   return buffer;
   }
 
-  buffer += "<div class='filter'>\n	<h3>Filter</h3>\n	<h4>Languages</h4>\n	<ul class='unstyled'>\n		";
-  stack1 = helpers.each.call(depth0, depth0.languages, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  buffer += "<h3>Filter</h3>\n";
+  stack1 = helpers.each.call(depth0, depth0.filters, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n	</ul>\n</div>\n";
   return buffer;
   }));
 
@@ -292,10 +376,10 @@ helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.parti
   buffer += "\n		    ";
   stack1 = self.invokePartial(partials['discover/chart'], 'discover/chart', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</div>\n		<div class='span4'>\n			";
+  buffer += "\n		</div>\n		<div class='span4'>\n			<div class='filter'>\n			";
   stack1 = self.invokePartial(partials['discover/filter'], 'discover/filter', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</div>\n	</div>\n	<div class='row' id='moduleComparison'>\n		";
+  buffer += "\n			</div>\n		</div>\n	</div>\n	<div class='row' id='moduleComparison'>\n		";
   stack1 = self.invokePartial(partials['discover/compare'], 'discover/compare', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	</div>\n</div>";
@@ -326,19 +410,19 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<h2>";
+  buffer += "<div class='container profile'>\n	<div class='row'>\n		<div class='span12'>\n			<h2>";
   if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</h2>\n\n<div>\n<h3>User Data Gotten from Github</h3>\n<ul>\n    <li><img src=\""
+    + "</h2>\n			<h3>GitHub profile data</h3>\n			<ul class='unstyled'>\n			    <li><img src=\""
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_avatar_url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></img></li>\n    <li>"
+    + "\"></img></li>\n			    <li>"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_display_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</li>\n    <li>"
+    + "</li>\n			    <li>"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</li>\n    <li>"
+    + "</li>\n			    <li>"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</li>\n</ul>\n\n</div>\n";
+    + "</li>\n			</ul>\n		</div>\n	</div>\n</div>\n";
   return buffer;
   }));
 

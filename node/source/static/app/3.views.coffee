@@ -15,6 +15,10 @@
     viewsPlaceholder: '#view-wrapper'
     
     constructor:(opts={})->
+      @context =
+        STATIC_URL : app.conf.STATIC_URL
+        in_stealth_mode: false
+      
       unless opts.el?
         opts.el = $("<section class='contents' />")
         if app.meta.$('.contents').length > 0
@@ -25,16 +29,38 @@
         $(window).scrollTop 0      
       super opts
       
+  class exports.SignIn extends View
+    initialize: ->
+      console.log '[_signInView__] Init'
+      @context.title = "Authentication"
+      @context.github_auth_url = "/auth/github"
+      @render()
+    
+    render: ->
+      html = views['registration/login'](@context)
+      @$el.html html
+      @$el.attr 'view-id', 'registration'
+      @
   
+  class exports.Profile extends View
+    initialize: ->
+      console.log '[__profileView__] Init'
+      @context.title = "Personal Profile"
+      @listenTo @model, "all", @render
+      @model.fetch()                 
+      @render()
+    
+    render: ->
+      @context.user = @model.toJSON()
+      html = views['member/profile'](@context)
+      @$el.html html
+      @$el.attr 'view-id', 'profile'
+      @
   
   class exports.Index extends View
     initialize:->
       console.log '[__indexView__] Init'
-      @context = 
-        title: "Home Page"
-        STATIC_URL : app.conf.STATIC_URL
-        in_stealth_mode: false
-            
+      @context.title = "Home Page" 
       @render()
 
     render:->  
@@ -95,15 +121,97 @@
         bottom: (@options.scope.outerHeight()-y-(@$el.outerHeight()/2)-15)+'px'
         left: x+@options.margin.left+(width/2)+15+'px'
       
-  
+  class exports.DiscoverFilter extends @Backbone.View
+    events:
+      "change input[type=checkbox]" : "filterResults"
+      "click [data-reset]" : "resetFilter"
+    
+    initialize: ->
+      _.bindAll this, "render"
+      
+      @context =
+        filters: [
+          {name: "Language", key: "languageFilters"}
+        ]
+      
+      @listenTo @collection, "reset", @render
+      @render()
+    
+    resetFilter: (e)->
+      $this = $(e.currentTarget)
+      $this.closest(".filterBox").find("input[type=checkbox]").prop("checked", false)
+      @collection.filters = []
+      @collection.trigger "filter"
+      return false
+    
+    filterResults: (e)->
+      $this = $(e.currentTarget)
+      languageName = $this.val()
+      
+      if $this.is(":checked")
+        @collection.filters[languageName] = true
+      else
+        delete @collection.filters[languageName]
+        
+      @collection.trigger "filter"
+          
+    render: ->      
+      @context.filters[0].languages = @collection.languageList()
+      html = views['discover/filter'](@context)      
+      @$el.html html
+      @$el.attr 'view-id', 'discoverFilter'
+      @
+        
+    
   class exports.DiscoverComparison extends @Backbone.View
+    events: 
+      "click [data-sort]" : "sortComparison"
+    
+    sortComparison: (e)->
+      $this = $(e.currentTarget)      
+      ###
+        sort key
+      ###
+      key = $this.data("sort")
+      
+      ###
+        set active on the element in the context, remove active from the previous element
+      ###
+      index = $this.closest("th").index()
+      ###
+        get sort direction      
+      ###      
+      direction = if @context.headers[index].directionBottom is true then "ASC" else "DESC"      
+
+      _.each @context.headers, (v,k)=>
+        v.active = false
+        v.directionBottom = true      
+      
+      @context.headers[index].active = true
+      @context.headers[index].directionBottom = if direction is "DESC" then true else false
+        
+      
+      @collection.sortBy key, direction
+      false      
+      
     initialize: ->
       _.bindAll this, "render"
       @listenTo @collection, "all", @render
       
-    render: ->
       @context = 
-        projects: @collection.toJSON()
+        headers : [
+          {name: "Project Name", key: "_source.module_name"}
+          {name: "Language", key: "_source.language"}
+          {name: "Active Contributors"}
+          {name: "Last Commit", key: "_source.pushed_at"}
+          {name: "Stars on GitHub", key: "_source.watchers"}
+          {name: "Questions on StackOverflow"}
+          {name: "Percentage answered"}
+        ]
+      @render()  
+            
+    render: ->
+      @context.projects = @collection.toJSON()
         
       html = views['discover/compare'](@context)      
       @$el.html html
@@ -112,7 +220,8 @@
 
   class exports.DiscoverChart extends View
     initialize: ->
-      @listenTo @collection, "reset", @renderChart
+      @listenTo @collection, "reset" , @renderChart
+      @listenTo @collection, "filter", @renderChart
       
       @margin =
         top:        19.5
@@ -167,8 +276,15 @@
     renderChart: ->      
       @setRadiusScale()
       
+      languages = _.keys @collection.filters
+      if languages.length > 0
+        data = @collection.filter (module)=>          
+          return $.inArray(module.get("_source").language, languages) isnt -1
+      else
+        data = @collection.models
+      
       @dot = @dots.selectAll(".dot")
-                    .data(@collection.models)                  
+                    .data(data)                  
                   
       @dot.enter().append("circle")
                       .attr("class", "dot")                                           
@@ -248,22 +364,23 @@
       
       _.bindAll this, "fetchSearchData", "render", "searchSubmit"    
       
-      @context = 
-        discover_search_action : "/discover"
-        STATIC_URL : app.conf.STATIC_URL
-      
+              
       qs = root.help.qs.parse(location.search)
-      @context.discover_search_query = decodeURI(qs.q) if qs.q?
-            
+      @context.discover_search_query = decodeURI(qs.q) if qs.q?      
+      @context.discover_search_action = "/discover"
+      
       @render()
       
       ###
         initializing chart
       ###
-      @chartData = new root.collections.Discovery
+      @chartData      = new root.collections.Discovery
       @comparisonData = new root.collections.DiscoveryComparison
-      @chart      = new exports.DiscoverChart { el: @$("#searchChart"), collection: @chartData }
-      @comparison = new exports.DiscoverComparison { el: @$("#moduleComparison"), collection: @comparisonData }      
+      @filter         = new exports.DiscoverFilter { el: @$(".filter"), collection: @chartData }
+      @chart          = new exports.DiscoverChart { el: @$("#searchChart"), collection: @chartData }
+      @comparison     = new exports.DiscoverComparison { el: @$("#moduleComparison"), collection: @comparisonData }
+      
+            
       if qs.q? then @fetchSearchData qs.q        
     
     searchSubmit: (e)->

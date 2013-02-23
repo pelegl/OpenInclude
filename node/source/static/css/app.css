@@ -119,6 +119,19 @@
   text-align: center;
   color: #666;
 }
+.discover .filter {
+  margin-top: 70px;
+  border-radius: 15px;
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  background: #ffffff;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  padding: 20px;
+}
+.discover .filter h3 {
+  margin-top: 0;
+}
 .sign-in {
   margin-right: 20px;
 }

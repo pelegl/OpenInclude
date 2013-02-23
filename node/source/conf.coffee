@@ -98,7 +98,7 @@ exports.passport_initialize = () ->
   passport.initialize()
 
 passport_init = exports.passport_init = () ->
-  [User] = load(['User'])
+  [User] = load ['User']
 
   passport.serializeUser((user, done) ->
     console.log('ser', user.github_id)
@@ -161,8 +161,12 @@ load = (required) ->
       module = require './models/' + name
       if module.schema
         module.collection = mongoose.Schema module.schema
+        
         if module.methods
-          _.extend module.collection.statics, module.methods                    
+          _.extend module.collection.methods, module.methods
+        if module.statics  
+          _.extend module.collection.statics, module.statics
+                                      
         module.model = db.model name, module.collection
 
         models.push(module.model)

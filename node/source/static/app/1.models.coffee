@@ -5,6 +5,11 @@
    helpers = 
     oneDay: 1000*60*60*24
    
+   exports.Session = @Backbone.Model.extend
+     idAttribute: "_id"
+     url: "/session"
+      
+   
    exports.Discovery = @Backbone.Model.extend
       ###        
           0.5 - super active - up to 7 days

@@ -1,12 +1,14 @@
-<h2>{{ title }}</h2>
-
-<div>
-<h3>User Data Gotten from Github</h3>
-<ul>
-    <li><img src="{{ user.github_avatar_url }}"></img></li>
-    <li>{{ user.github_display_name }}</li>
-    <li>{{ user.github_username }}</li>
-    <li>{{ user.github_id }}</li>
-</ul>
-
+<div class='container profile'>
+	<div class='row'>
+		<div class='span12'>
+			<h2>{{ title }}</h2>
+			<h3>GitHub profile data</h3>
+			<ul class='unstyled'>
+			    <li><img src="{{ user.github_avatar_url }}"></img></li>
+			    <li>{{ user.github_display_name }}</li>
+			    <li>{{ user.github_username }}</li>
+			    <li>{{ user.github_id }}</li>
+			</ul>
+		</div>
+	</div>
 </div>

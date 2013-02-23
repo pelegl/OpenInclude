@@ -7,6 +7,7 @@ exports.set = (app)->
 
 
   app.get '/profile', is_authenticated, app.Controllers.profile
+  app.get '/session*', app.Controllers.session
 
   app.get "/auth/logout", logout
   app.get "#{github_auth_url}", github_auth()  

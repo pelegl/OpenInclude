@@ -8,6 +8,10 @@
       "!/":"index"
       "discover":"discover"
       "!/discover":"discover"
+      "login": "login"
+      "!/login" : "login"
+      "profile" : "profile"
+      "!/profile" : "profile"
 
     init: -> 
       if !Backbone.history._hasPushState        
@@ -33,6 +37,17 @@
       @reRoute()
       @view = new views.Index prevView:@view
 
+    profile: ->
+      @reRoute()
+      if app.session.is_authenticated is true 
+        @view = new views.Profile { prevView: @view, model: app.session }
+      else
+        app.navigate '/login', {trigger: true}
+    
+    login: ->
+      @reRoute()
+      @view = new views.SignIn prevView:@view
+    
     discover: ->
       @reRoute()
       @view = new views.Discover prevView:@view
@@ -42,6 +57,8 @@
     exports.app = app = new App()
     
     app.meta = new views.MetaView el:$('body')
+    app.session = new models.Session()
+    app.session.fetch()
     
     Backbone.history.start {pushState: true}
     app.init()

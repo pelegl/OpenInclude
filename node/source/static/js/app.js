@@ -75,6 +75,10 @@
     helpers = {
       oneDay: 1000 * 60 * 60 * 24
     };
+    exports.Session = this.Backbone.Model.extend({
+      idAttribute: "_id",
+      url: "/session"
+    });
     return exports.Discovery = this.Backbone.Model.extend({
       /*        
           0.5 - super active - up to 7 days
@@ -182,19 +186,48 @@
           return data.radius();
         });
       },
+      languageList: function() {
+        if (this.groupedModules) {
+          return _.keys(this.groupedModules);
+        } else {
+          return [];
+        }
+      },
+      filters: {},
       fetch: function() {
         var collection, opts, query, _ref;
         _ref = Array.prototype.slice.apply(arguments), query = _ref[0], opts = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
         query = query != null ? query : "";
         collection = this;
         return $.getJSON("" + collection.url + "?q=" + query, function(r) {
+          var _this = this;
           collection.maxScore = r.maxScore;
+          collection.groupedModules = _.groupBy(r.searchData, function(module) {
+            return module._source.language;
+          });
           return collection.reset(r.searchData);
         });
       }
     });
     return exports.DiscoveryComparison = this.Backbone.Collection.extend({
-      model: models.Discovery
+      model: models.Discovery,
+      sortBy: function(key, direction) {
+        var _this = this;
+        key = key != null ? key.split(".") : "_id";
+        this.models = _.sortBy(this.models, function(module) {
+          var value;
+          value = $.isArray(key) ? module.get(key[0])[key[1]] : module.get(key);
+          if (key[1] === 'pushed_at') {
+            return new Date(value);
+          } else {
+            return value;
+          }
+        });
+        if (direction === "DESC") {
+          this.models.reverse();
+        }
+        return this.trigger("sort");
+      }
     });
   }).call(this, (typeof exports === "undefined" ? this["collections"] = {} : exports), typeof exports !== "undefined");
 
@@ -239,6 +272,10 @@
         if (opts == null) {
           opts = {};
         }
+        this.context = {
+          STATIC_URL: app.conf.STATIC_URL,
+          in_stealth_mode: false
+        };
         if (opts.el == null) {
           opts.el = $("<section class='contents' />");
           if (app.meta.$('.contents').length > 0) {
@@ -255,6 +292,60 @@
       return View;
 
     })(this.Backbone.View);
+    exports.SignIn = (function(_super) {
+
+      __extends(SignIn, _super);
+
+      function SignIn() {
+        return SignIn.__super__.constructor.apply(this, arguments);
+      }
+
+      SignIn.prototype.initialize = function() {
+        console.log('[_signInView__] Init');
+        this.context.title = "Authentication";
+        this.context.github_auth_url = "/auth/github";
+        return this.render();
+      };
+
+      SignIn.prototype.render = function() {
+        var html;
+        html = views['registration/login'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'registration');
+        return this;
+      };
+
+      return SignIn;
+
+    })(View);
+    exports.Profile = (function(_super) {
+
+      __extends(Profile, _super);
+
+      function Profile() {
+        return Profile.__super__.constructor.apply(this, arguments);
+      }
+
+      Profile.prototype.initialize = function() {
+        console.log('[__profileView__] Init');
+        this.context.title = "Personal Profile";
+        this.listenTo(this.model, "all", this.render);
+        this.model.fetch();
+        return this.render();
+      };
+
+      Profile.prototype.render = function() {
+        var html;
+        this.context.user = this.model.toJSON();
+        html = views['member/profile'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'profile');
+        return this;
+      };
+
+      return Profile;
+
+    })(View);
     exports.Index = (function(_super) {
 
       __extends(Index, _super);
@@ -265,11 +356,7 @@
 
       Index.prototype.initialize = function() {
         console.log('[__indexView__] Init');
-        this.context = {
-          title: "Home Page",
-          STATIC_URL: app.conf.STATIC_URL,
-          in_stealth_mode: false
-        };
+        this.context.title = "Home Page";
         return this.render();
       };
 
@@ -347,6 +434,66 @@
       return DiscoverChartPopup;
 
     })(this.Backbone.View);
+    exports.DiscoverFilter = (function(_super) {
+
+      __extends(DiscoverFilter, _super);
+
+      function DiscoverFilter() {
+        return DiscoverFilter.__super__.constructor.apply(this, arguments);
+      }
+
+      DiscoverFilter.prototype.events = {
+        "change input[type=checkbox]": "filterResults",
+        "click [data-reset]": "resetFilter"
+      };
+
+      DiscoverFilter.prototype.initialize = function() {
+        _.bindAll(this, "render");
+        this.context = {
+          filters: [
+            {
+              name: "Language",
+              key: "languageFilters"
+            }
+          ]
+        };
+        this.listenTo(this.collection, "reset", this.render);
+        return this.render();
+      };
+
+      DiscoverFilter.prototype.resetFilter = function(e) {
+        var $this;
+        $this = $(e.currentTarget);
+        $this.closest(".filterBox").find("input[type=checkbox]").prop("checked", false);
+        this.collection.filters = [];
+        this.collection.trigger("filter");
+        return false;
+      };
+
+      DiscoverFilter.prototype.filterResults = function(e) {
+        var $this, languageName;
+        $this = $(e.currentTarget);
+        languageName = $this.val();
+        if ($this.is(":checked")) {
+          this.collection.filters[languageName] = true;
+        } else {
+          delete this.collection.filters[languageName];
+        }
+        return this.collection.trigger("filter");
+      };
+
+      DiscoverFilter.prototype.render = function() {
+        var html;
+        this.context.filters[0].languages = this.collection.languageList();
+        html = views['discover/filter'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'discoverFilter');
+        return this;
+      };
+
+      return DiscoverFilter;
+
+    })(this.Backbone.View);
     exports.DiscoverComparison = (function(_super) {
 
       __extends(DiscoverComparison, _super);
@@ -355,16 +502,71 @@
         return DiscoverComparison.__super__.constructor.apply(this, arguments);
       }
 
+      DiscoverComparison.prototype.events = {
+        "click [data-sort]": "sortComparison"
+      };
+
+      DiscoverComparison.prototype.sortComparison = function(e) {
+        var $this, direction, index, key,
+          _this = this;
+        $this = $(e.currentTarget);
+        /*
+                sort key
+        */
+
+        key = $this.data("sort");
+        /*
+                set active on the element in the context, remove active from the previous element
+        */
+
+        index = $this.closest("th").index();
+        /*
+                get sort direction
+        */
+
+        direction = this.context.headers[index].directionBottom === true ? "ASC" : "DESC";
+        _.each(this.context.headers, function(v, k) {
+          v.active = false;
+          return v.directionBottom = true;
+        });
+        this.context.headers[index].active = true;
+        this.context.headers[index].directionBottom = direction === "DESC" ? true : false;
+        this.collection.sortBy(key, direction);
+        return false;
+      };
+
       DiscoverComparison.prototype.initialize = function() {
         _.bindAll(this, "render");
-        return this.listenTo(this.collection, "all", this.render);
+        this.listenTo(this.collection, "all", this.render);
+        this.context = {
+          headers: [
+            {
+              name: "Project Name",
+              key: "_source.module_name"
+            }, {
+              name: "Language",
+              key: "_source.language"
+            }, {
+              name: "Active Contributors"
+            }, {
+              name: "Last Commit",
+              key: "_source.pushed_at"
+            }, {
+              name: "Stars on GitHub",
+              key: "_source.watchers"
+            }, {
+              name: "Questions on StackOverflow"
+            }, {
+              name: "Percentage answered"
+            }
+          ]
+        };
+        return this.render();
       };
 
       DiscoverComparison.prototype.render = function() {
         var html;
-        this.context = {
-          projects: this.collection.toJSON()
-        };
+        this.context.projects = this.collection.toJSON();
         html = views['discover/compare'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'discoverComparison');
@@ -384,6 +586,7 @@
 
       DiscoverChart.prototype.initialize = function() {
         this.listenTo(this.collection, "reset", this.renderChart);
+        this.listenTo(this.collection, "filter", this.renderChart);
         this.margin = {
           top: 19.5,
           right: 19.5,
@@ -455,9 +658,18 @@
       };
 
       DiscoverChart.prototype.renderChart = function() {
-        var _this = this;
+        var data, languages,
+          _this = this;
         this.setRadiusScale();
-        this.dot = this.dots.selectAll(".dot").data(this.collection.models);
+        languages = _.keys(this.collection.filters);
+        if (languages.length > 0) {
+          data = this.collection.filter(function(module) {
+            return $.inArray(module.get("_source").language, languages) !== -1;
+          });
+        } else {
+          data = this.collection.models;
+        }
+        this.dot = this.dots.selectAll(".dot").data(data);
         this.dot.enter().append("circle").attr("class", "dot").on("mouseover", this.popup('show', this.$el)).on("mouseout", this.popup('hide')).on("click", this.addToComparison);
         this.dot.transition().style("fill", function(moduleModel) {
           return _this.colorScale(moduleModel.color());
@@ -508,14 +720,11 @@
         var qs;
         console.log('[__discoverView__] Init');
         _.bindAll(this, "fetchSearchData", "render", "searchSubmit");
-        this.context = {
-          discover_search_action: "/discover",
-          STATIC_URL: app.conf.STATIC_URL
-        };
         qs = root.help.qs.parse(location.search);
         if (qs.q != null) {
           this.context.discover_search_query = decodeURI(qs.q);
         }
+        this.context.discover_search_action = "/discover";
         this.render();
         /*
                 initializing chart
@@ -523,6 +732,10 @@
 
         this.chartData = new root.collections.Discovery;
         this.comparisonData = new root.collections.DiscoveryComparison;
+        this.filter = new exports.DiscoverFilter({
+          el: this.$(".filter"),
+          collection: this.chartData
+        });
         this.chart = new exports.DiscoverChart({
           el: this.$("#searchChart"),
           collection: this.chartData
@@ -588,7 +801,11 @@
         "": "index",
         "!/": "index",
         "discover": "discover",
-        "!/discover": "discover"
+        "!/discover": "discover",
+        "login": "login",
+        "!/login": "login",
+        "profile": "profile",
+        "!/profile": "profile"
       };
 
       App.prototype.init = function() {
@@ -637,6 +854,27 @@
         });
       };
 
+      App.prototype.profile = function() {
+        this.reRoute();
+        if (app.session.is_authenticated === true) {
+          return this.view = new views.Profile({
+            prevView: this.view,
+            model: app.session
+          });
+        } else {
+          return app.navigate('/login', {
+            trigger: true
+          });
+        }
+      };
+
+      App.prototype.login = function() {
+        this.reRoute();
+        return this.view = new views.SignIn({
+          prevView: this.view
+        });
+      };
+
       App.prototype.discover = function() {
         this.reRoute();
         return this.view = new views.Discover({
@@ -654,6 +892,8 @@
       app.meta = new views.MetaView({
         el: $('body')
       });
+      app.session = new models.Session();
+      app.session.fetch();
       Backbone.history.start({
         pushState: true
       });
