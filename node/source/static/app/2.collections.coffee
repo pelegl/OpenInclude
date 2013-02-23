@@ -24,6 +24,8 @@
         collection.reset r.searchData
   
   exports.DiscoveryComparison = @Backbone.Collection.extend
-    model: models.Discovery
+    model: models.Discovery      
+      
+      
 
 ).call(this, (if typeof exports is "undefined" then this["collections"] = {} else exports), (typeof exports isnt "undefined"))

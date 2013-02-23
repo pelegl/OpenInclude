@@ -175,17 +175,59 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   if (stack1 = helpers.maxScore) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.maxScore; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "'>\n	<div class='span12' id='searchChart'>\n				\n	</div>\n</div>\n\n\n";
+    + "'>\n	<div class='span12' id='searchChart'></div>\n</div>";
   return buffer;
   }));
 
 Handlebars.registerPartial("discover/compare", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
   
+  var buffer = "", stack1;
+  buffer += "\n				";
+  stack1 = helpers['with'].call(depth0, depth0._source, {hash:{},inverse:self.noop,fn:self.programWithDepth(program2, data, depth0),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n			";
+  return buffer;
+  }
+function program2(depth0,data,depth1) {
+  
+  var buffer = "", stack1, stack2;
+  buffer += "\n					<tr>\n						<td>";
+  if (stack1 = helpers.module_name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.module_name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</td><td>";
+  if (stack1 = helpers.language) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.language; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</td><td>#</td><td>"
+    + escapeExpression(((stack1 = depth1.lastCommitHuman),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</td><td>";
+  if (stack2 = helpers.watchers) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.watchers; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  buffer += escapeExpression(stack2)
+    + "</td><td>#</td><td>#</td>						\n					</tr>\n				";
+  return buffer;
+  }
 
+function program4(depth0,data) {
+  
+  
+  return "\n		<tfoot>\n			<tr>\n				<td colspan=7><h3>click on the project's bubble to add it to the comparison list</h3></td>\n			</tr>\n		</tfoot>\n		";
+  }
 
-  return "<div class='span12 moduleComparison'>\n	<table class='table table-striped table-hover'>\n		<thead>\n			<tr>\n				<th>Project Name</th><th>Languages</th><th>Active Contributors</th><th>Last Commit</th><th>Start on GitHub</th><th>Questions on Stack Overflow</th><th>Percentage</th>\n			</tr>\n		</thead>\n		<tbody></tbody>\n		<tfoot>\n			<tr>\n				<td colspan=7><h3>Click on the project to add it to the comparison list</h3></td>\n			</tr>\n		</tfoot>\n	</table>\n</div>";
+  buffer += "<div class='span12 moduleComparison'>\n	<table class='table table-striped table-hover table-bordered'>\n		<thead>\n			<tr>\n				<th>Project Name</th><th>Language</th><th>Active Contributors</th><th>Last Commit</th><th>Stars on GitHub</th><th>Questions on Stack Overflow</th><th>Percentage answered</th>\n			</tr>\n		</thead>\n		<tbody>\n			";
+  stack1 = helpers.each.call(depth0, depth0.projects, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n		</tbody>\n		";
+  stack1 = helpers.unless.call(depth0, depth0.projects, {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n	</table>\n</div>";
+  return buffer;
   }));
 
 Handlebars.registerPartial("discover/filter", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -239,7 +281,7 @@ helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.parti
   buffer += "\n		</div>\n		<div class='span4'>\n			";
   stack1 = self.invokePartial(partials['discover/filter'], 'discover/filter', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n		</div>\n	</div>\n	<div class='row'>\n		";
+  buffer += "\n		</div>\n	</div>\n	<div class='row' id='moduleComparison'>\n		";
   stack1 = self.invokePartial(partials['discover/compare'], 'discover/compare', depth0, helpers, partials, data);
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n	</div>\n</div>";

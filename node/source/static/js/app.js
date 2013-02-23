@@ -137,6 +137,23 @@
 
       key: function() {
         return this.id;
+      },
+      /*
+              last commit - human
+      */
+
+      lastCommitHuman: function() {
+        return humanize.relativeTime(new Date(this.get('_source').pushed_at).getTime() / 1000);
+      },
+      /*
+              overwrite toJSON, so we can add attributes from functions for hbs
+      */
+
+      toJSON: function(options) {
+        var attr;
+        attr = _.clone(this.attributes);
+        attr.lastCommitHuman = this.lastCommitHuman();
+        return attr;
       }
     });
   }).call(this, (typeof exports === "undefined" ? this["models"] = {} : exports), typeof exports !== "undefined");
@@ -152,7 +169,7 @@
     if (isServer) {
       this.Backbone = require('backbone');
     }
-    return exports.Discovery = this.Backbone.Collection.extend({
+    exports.Discovery = this.Backbone.Collection.extend({
       parse: function(r) {
         var _ref;
         return (_ref = r.response) != null ? _ref : [];
@@ -175,6 +192,9 @@
           return collection.reset(r.searchData);
         });
       }
+    });
+    return exports.DiscoveryComparison = this.Backbone.Collection.extend({
+      model: models.Discovery
     });
   }).call(this, (typeof exports === "undefined" ? this["collections"] = {} : exports), typeof exports !== "undefined");
 
@@ -264,52 +284,6 @@
       return Index;
 
     })(View);
-    /*
-      chartClass.prototype.popup = function(action, scope){
-          return function(d,i){
-            if ( action === 'hide' ){
-              popup.hide();
-            } else {
-              var marginLeft = 50,
-                $this = $(this),
-                width = height = parseInt($this.attr("r"))*2,
-                x = parseInt($this.attr("cx")),
-                y = parseInt($this.attr("cy")),
-                color = $this.css("fill");
-                
-              
-              var data = d._source,
-                stars = data.watchers,            
-                lastContribution = humanize.relativeTime(new Date(data.pushed_at).getTime()/1000);
-              
-              var activity = $("<p class='activity' />").html("<i class='icon-star'></i>Last checking <strong>"+lastContribution+"</strong>"),
-                activityStars = $("<p class='stars' />").html("<i class='icon-star'></i><strong>"+stars+" stars</strong> on GitHub"); 
-                          
-              $(".moduleName", popup).text(data.module_name);
-              $(".moduleLanguage", popup)
-                .find(".name").text(data.language).end()
-                .find(".color").css({background: color});
-              $(".moduleDescription", popup).text(data.description);                    
-              $(".moduleStars", popup).html("").append(activity, activityStars);
-                                    
-              popup.show()
-                 .css({
-                  bottom: (scope.outerHeight()-y-(popup.outerHeight()/2)-15)+'px',
-                  left: x+marginLeft+(width/2)+15+'px'
-                 });
-            }
-          }
-        }
-    */
-
-    /*
-      var popup = $("<div />").addClass("popover").hide().appendTo("#searchChart")
-                    .append("<h4 class='moduleName' />")
-                    .append("<h5 class='moduleLanguage' ><span class='color'></span><span class='name'></span></h5>")
-                    .append("<p class='moduleDescription' />")
-                    .append("<div class='moduleStars' ></div>");
-    */
-
     exports.DiscoverChartPopup = (function(_super) {
 
       __extends(DiscoverChartPopup, _super);
@@ -371,6 +345,34 @@
       };
 
       return DiscoverChartPopup;
+
+    })(this.Backbone.View);
+    exports.DiscoverComparison = (function(_super) {
+
+      __extends(DiscoverComparison, _super);
+
+      function DiscoverComparison() {
+        return DiscoverComparison.__super__.constructor.apply(this, arguments);
+      }
+
+      DiscoverComparison.prototype.initialize = function() {
+        _.bindAll(this, "render");
+        return this.listenTo(this.collection, "all", this.render);
+      };
+
+      DiscoverComparison.prototype.render = function() {
+        var html;
+        console.log(this.collection.toJSON());
+        this.context = {
+          projects: this.collection.toJSON()
+        };
+        html = views['discover/compare'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'discoverComparison');
+        return this;
+      };
+
+      return DiscoverComparison;
 
     })(this.Backbone.View);
     exports.DiscoverChart = (function(_super) {
@@ -449,7 +451,10 @@
         };
       };
 
-      DiscoverChart.prototype.addToComparison = function(document, index) {};
+      DiscoverChart.prototype.addToComparison = function(document, index) {
+        console.log(document);
+        return app.view.comparisonData.add(document);
+      };
 
       DiscoverChart.prototype.renderChart = function() {
         var _this = this;
@@ -518,9 +523,15 @@
                 initializing chart
         */
 
+        this.chartData = new root.collections.Discovery;
+        this.comparisonData = new root.collections.DiscoveryComparison;
         this.chart = new exports.DiscoverChart({
           el: this.$("#searchChart"),
-          collection: new root.collections.Discovery
+          collection: this.chartData
+        });
+        this.comparison = new exports.DiscoverComparison({
+          el: this.$("#moduleComparison"),
+          collection: this.comparisonData
         });
         if (qs.q != null) {
           return this.fetchSearchData(qs.q);

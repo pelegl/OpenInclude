@@ -43,53 +43,7 @@
       @$el.attr 'view-id', 'index'
       @
   
-  ###
-  chartClass.prototype.popup = function(action, scope){
-      return function(d,i){
-        if ( action === 'hide' ){
-          popup.hide();
-        } else {
-          var marginLeft = 50,
-            $this = $(this),
-            width = height = parseInt($this.attr("r"))*2,
-            x = parseInt($this.attr("cx")),
-            y = parseInt($this.attr("cy")),
-            color = $this.css("fill");
-            
-          
-          var data = d._source,
-            stars = data.watchers,            
-            lastContribution = humanize.relativeTime(new Date(data.pushed_at).getTime()/1000);
-          
-          var activity = $("<p class='activity' />").html("<i class='icon-star'></i>Last checking <strong>"+lastContribution+"</strong>"),
-            activityStars = $("<p class='stars' />").html("<i class='icon-star'></i><strong>"+stars+" stars</strong> on GitHub"); 
-                      
-          $(".moduleName", popup).text(data.module_name);
-          $(".moduleLanguage", popup)
-            .find(".name").text(data.language).end()
-            .find(".color").css({background: color});
-          $(".moduleDescription", popup).text(data.description);                    
-          $(".moduleStars", popup).html("").append(activity, activityStars);
-                                
-          popup.show()
-             .css({
-              bottom: (scope.outerHeight()-y-(popup.outerHeight()/2)-15)+'px',
-              left: x+marginLeft+(width/2)+15+'px'
-             });
-        }
-      }
-    }
-  ###
-  
-  
-  ###
-  var popup = $("<div />").addClass("popover").hide().appendTo("#searchChart")
-                .append("<h4 class='moduleName' />")
-                .append("<h5 class='moduleLanguage' ><span class='color'></span><span class='name'></span></h5>")
-                .append("<p class='moduleDescription' />")
-                .append("<div class='moduleStars' ></div>");
-  ###
-  
+    
   class exports.DiscoverChartPopup extends @Backbone.View   
     tagName: "div"
     className: "popover"
@@ -144,15 +98,17 @@
   
   class exports.DiscoverComparison extends @Backbone.View
     initialize: ->
-      @context = {}
+      _.bindAll this, "render"
+      @listenTo @collection, "all", @render
       
     render: ->
+      @context = 
+        projects: @collection.toJSON()
+        
       html = views['discover/compare'](@context)      
       @$el.html html
       @$el.attr 'view-id', 'discoverComparison'
       @
-      
-             
 
   class exports.DiscoverChart extends View
     initialize: ->
@@ -205,7 +161,8 @@
           when 'hide' then self.popupView.hide()
           when 'show' then self.popupView.setData d, $(this), scope
     
-    addToComparison: (document, index)->    
+    addToComparison: (document, index)->
+      app.view.comparisonData.add document
       
     renderChart: ->      
       @setRadiusScale()
@@ -306,7 +263,7 @@
       @chartData = new root.collections.Discovery
       @comparisonData = new root.collections.DiscoveryComparison
       @chart      = new exports.DiscoverChart { el: @$("#searchChart"), collection: @chartData }
-      @comparison = new exorts.DiscoverComparison { el: @$(".moduleComparison"), collection: @comparisonData }      
+      @comparison = new exports.DiscoverComparison { el: @$("#moduleComparison"), collection: @comparisonData }      
       if qs.q? then @fetchSearchData qs.q        
     
     searchSubmit: (e)->

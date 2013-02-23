@@ -60,7 +60,20 @@
       ###
       key: ->
         return @id 
-       
+        
+      ###
+        last commit - human
+      ###
+      lastCommitHuman: ->
+        return humanize.relativeTime(new Date(@get('_source').pushed_at).getTime()/1000)
+      
+      ###
+        overwrite toJSON, so we can add attributes from functions for hbs
+      ###
+      toJSON: (options) ->
+        attr = _.clone this.attributes
+        attr.lastCommitHuman = @lastCommitHuman()
+        attr 
     
 
 ).call(this, (if typeof exports is "undefined" then this["models"] = {} else exports), (typeof exports isnt "undefined"))

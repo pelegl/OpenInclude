@@ -1,23 +1,23 @@
-<div class='span12'>
+<div class='span12 moduleComparison'>
 	<table class='table table-striped table-hover table-bordered'>
 		<thead>
 			<tr>
-				<th>Project Name</th><th>Languages</th><th>Active Contributors</th><th>Last Commit</th><th>Start on GitHub</th><th>Questions on Stack Overflow</th><th>Percentage</th>
+				<th>Project Name</th><th>Language</th><th>Active Contributors</th><th>Last Commit</th><th>Stars on GitHub</th><th>Questions on Stack Overflow</th><th>Percentage answered</th>
 			</tr>
 		</thead>
 		<tbody>
 			{{#each projects}}
-				{{#with this}}
-				
-				
-				
+				{{#with this._source}}
+					<tr>
+						<td>{{module_name}}</td><td>{{language}}</td><td>#</td><td>{{../this.lastCommitHuman}}</td><td>{{watchers}}</td><td>#</td><td>#</td>						
+					</tr>
 				{{/with}}
 			{{/each}}
 		</tbody>
-		{{#unless project}}
+		{{#unless projects}}
 		<tfoot>
 			<tr>
-				<td colspan=7><h3>Click on the project to add it to the comparison list</h3></td>
+				<td colspan=7><h3>click on the project's bubble to add it to the comparison list</h3></td>
 			</tr>
 		</tfoot>
 		{{/unless}}
