@@ -119,3 +119,17 @@
   text-align: center;
   color: #666;
 }
+.sign-in {
+  margin-right: 20px;
+}
+.container.login {
+  padding: 180px 0 120px;
+}
+.container.login .github-auth {
+  padding: 5px 5px 5px 135px;
+  background: url(/static/images/github_128.png) no-repeat 5px 50%;
+  height: 128px;
+  line-height: 128px;
+  display: inline-block;
+  font-size: 48px;
+}

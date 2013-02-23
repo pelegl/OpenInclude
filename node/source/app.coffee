@@ -16,7 +16,6 @@ conf          = require './conf'
 async         = require 'async'
 
 
-
 ###
 Configuration of the variables
 ###
@@ -35,7 +34,9 @@ startApp = ->
       next()
     app.use express.cookieParser secret
     app.use express.session {store, key: 'openinclude.sess'}
-    app.use express.bodyParser {uploadDir: "#{root}/tmp"}    
+    app.use conf.passport_initialize()
+    app.use conf.passport_session()
+    app.use express.bodyParser {uploadDir: "#{root}/tmp"}
     app.use express.methodOverride()
     app.use app.router
     
@@ -50,7 +51,7 @@ startApp = ->
       res.send "Error", 500
   
   app.configure "dev", ->
-    app.set 'port', process.env.PORT || 8000
+    app.set 'port', process.env.PORT || 8900
     app.set 'host', '0.0.0.0'
     app.use express.errorHandler
       dumpExceptions: true

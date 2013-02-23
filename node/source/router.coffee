@@ -1,13 +1,16 @@
-{STATIC_URL} = require './conf'
+{STATIC_URL, github_auth, get_models, is_authenticated, github_auth_url, logout} = require './conf'
 hb = require 'handlebars'
 
 exports.set = (app)->
   app.get '/discover',   app.Controllers.discover    
   app.get '/discover/*', app.Controllers.discover
+
+
+  app.get '/profile', is_authenticated, app.Controllers.profile
+
+  app.get "/auth/logout", logout
+  app.get "#{github_auth_url}", github_auth()  
+  app.get "#{github_auth_url}/callback", github_auth(scope: 'user', failureRedirect: '/login'),
+    (request, response) -> response.redirect('/profile')
   
-  app.get '/*', (req,res)=>
-    context      = {title: "Home Page", STATIC_URL, in_stealth_mode: true}
-    context.body = hb.compile(app.Views.index)(context)    
-    res.render 'base', context
-  
-    
+  app.get '/*', app.Controllers.index    

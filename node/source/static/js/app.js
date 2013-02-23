@@ -362,7 +362,6 @@
 
       DiscoverComparison.prototype.render = function() {
         var html;
-        console.log(this.collection.toJSON());
         this.context = {
           projects: this.collection.toJSON()
         };
@@ -452,7 +451,6 @@
       };
 
       DiscoverChart.prototype.addToComparison = function(document, index) {
-        console.log(document);
         return app.view.comparisonData.add(document);
       };
 

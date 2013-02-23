@@ -28,30 +28,44 @@ helpers = helpers || Handlebars.helpers; data = data || {};
 Handlebars.registerPartial("header", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
-  var buffer = "", stack1, self=this;
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
 
 function program1(depth0,data) {
   
-  var buffer = "", stack1, stack2;
+  var buffer = "", stack1;
   buffer += "\n      ";
-  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.is_authenticated), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
-  if(stack2 || stack2 === 0) { buffer += stack2; }
+  stack1 = helpers['if'].call(depth0, depth0.user, {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n    ";
   return buffer;
   }
 function program2(depth0,data) {
   
-  
-  return "      \n      <div class=\"sign-in\"><a href=\"{% url member-logout %}\" class=\"button\">sign out</a></div>\n      <div class=\"sign-in\" style=\"padding-right:20px\"><a href=\"{% url member-profile %}\" class=\"button\">Profile</a></div>\n      ";
+  var buffer = "", stack1;
+  buffer += "      \n      <div class=\"sign-in\"><a href=\"";
+  if (stack1 = helpers.logout_url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.logout_url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" class=\"button\">sign out</a></div>\n      <div class=\"sign-in\"><a href=\"";
+  if (stack1 = helpers.profile_url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.profile_url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" class=\"button\">profile</a></div>\n      ";
+  return buffer;
   }
 
 function program4(depth0,data) {
   
-  
-  return "\n      <div class=\"sign-in\"><a href=\"{% url member-signin %}\" class=\"button\">sign in</a></div>\n      ";
+  var buffer = "", stack1;
+  buffer += "\n      <div class=\"sign-in\"><a href=\"";
+  if (stack1 = helpers.signin_url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.signin_url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" class=\"button\">sign in</a></div>\n      ";
+  return buffer;
   }
 
-  buffer += "<header>\n  <div class=\"wrapper\">\n    <h1><a href=\"/\" title=\"Open Include\">Open Include</a></h1>\n    ";
+  buffer += "<header>\n  <div class=\"wrapper\">\n    <h1><a href=\"/\" title=\"Open Include\">Open Include</a></h1>\n    \n    ";
   stack1 = helpers.unless.call(depth0, depth0.in_stealth_mode, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += "\n\n  </div>\n</header>";
@@ -303,5 +317,41 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   else { stack1 = depth0.discover_search_query; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
     + "\">\n    <button type=\"submit\">search</button>\n  </form>  \n</div>";
+  return buffer;
+  }));
+
+Handlebars.registerPartial("member/profile", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<h2>";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h2>\n\n<div>\n<h3>User Data Gotten from Github</h3>\n<ul>\n    <li><img src=\""
+    + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_avatar_url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\"></img></li>\n    <li>"
+    + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_display_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</li>\n    <li>"
+    + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</li>\n    <li>"
+    + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</li>\n</ul>\n\n</div>\n";
+  return buffer;
+  }));
+
+Handlebars.registerPartial("registration/login", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class='container login'>  \n  <div class='row'>\n  	  <div class='offset2 span8 text-center''>		  \n		  <form name=\"signin\" method=\"post\" action=\"\">              \n		    <a href=\"";
+  if (stack1 = helpers.github_auth_url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.github_auth_url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" class=\"github-auth\">Authenticate with GitHub</a>\n		  </form>  	\n	  </div>\n  </div>\n</div>\n";
   return buffer;
   }));

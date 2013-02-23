@@ -1,12 +1,13 @@
 <header>
   <div class="wrapper">
     <h1><a href="/" title="Open Include">Open Include</a></h1>
-    {{# unless in_stealth_mode }}
-      {{#if user.is_authenticated}}      
-      <div class="sign-in"><a href="{% url member-logout %}" class="button">sign out</a></div>
-      <div class="sign-in" style="padding-right:20px"><a href="{% url member-profile %}" class="button">Profile</a></div>
+    
+    {{#unless in_stealth_mode }}
+      {{#if user}}      
+      <div class="sign-in"><a href="{{logout_url}}" class="button">sign out</a></div>
+      <div class="sign-in"><a href="{{profile_url}}" class="button">profile</a></div>
       {{else}}
-      <div class="sign-in"><a href="{% url member-signin %}" class="button">sign in</a></div>
+      <div class="sign-in"><a href="{{signin_url}}" class="button">sign in</a></div>
       {{/if}}
     {{/unless}}
 
