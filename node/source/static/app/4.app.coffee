@@ -38,15 +38,19 @@
       @view = new views.Index prevView:@view
 
     profile: ->
-      @reRoute()
-      if app.session.is_authenticated is true 
+      @reRoute()      
+      if app.session.get("is_authenticated") is true 
         @view = new views.Profile { prevView: @view, model: app.session }
       else
         app.navigate '/login', {trigger: true}
     
     login: ->
       @reRoute()
-      @view = new views.SignIn prevView:@view
+      if app.session.get("is_authenticated") is true
+        app.navigate '/profile', {trigger: true}        
+      else
+        @view = new views.SignIn prevView:@view
+      
     
     discover: ->
       @reRoute()

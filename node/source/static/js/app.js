@@ -856,7 +856,8 @@
 
       App.prototype.profile = function() {
         this.reRoute();
-        if (app.session.is_authenticated === true) {
+        console.log(app.session.get("is_authenticated"));
+        if (app.session.get("is_authenticated") === true) {
           return this.view = new views.Profile({
             prevView: this.view,
             model: app.session
@@ -870,9 +871,15 @@
 
       App.prototype.login = function() {
         this.reRoute();
-        return this.view = new views.SignIn({
-          prevView: this.view
-        });
+        if (app.session.get("is_authenticated") === true) {
+          return app.navigate('/profile', {
+            trigger: true
+          });
+        } else {
+          return this.view = new views.SignIn({
+            prevView: this.view
+          });
+        }
       };
 
       App.prototype.discover = function() {
