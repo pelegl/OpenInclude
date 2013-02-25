@@ -6,6 +6,7 @@ import simplejson
 import pymongo
 import time
 from retry import retry_on_exceptions
+from random import randint
 
 # user agent to aoid blacklisting
 USER_AGENT = 'Mozilla/5.0'
@@ -15,12 +16,12 @@ AUTH_TOKEN = 'token f6eaceff9c2767553646f24b85306b7a2e136492'
 
 # database with language list
 connection = pymongo.Connection()
-db = connection['github_languages']
+db = connection['openInclude']
 collection = db['language_names']
 
 # database to save module details
 data_connection = pymongo.Connection()
-database = data_connection['github_modules']
+database = data_connection['openInclude']
 modules_collection = database['modules']
 
 # fetching the language list
@@ -30,6 +31,14 @@ language_list = []
 for lang in lang_list:
     lang_name = lang['name']
     language_list.append(lang_name)
+
+colors = []
+for i in range(30):
+    colors.append('%06X' % randint(0, 0xFFFFFF))
+
+for (cIndex,lang) in lang_list:
+	insert_module_details = collection.update({'name': lang['name']},{'name': lang['name'],'color': colors[cIndex]})
+
 
 print language_list
 
