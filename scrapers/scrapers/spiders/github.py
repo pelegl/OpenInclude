@@ -8,6 +8,7 @@ from scrapy.http import Request
 from scrapers.items import LanguageItem
 from django.utils.encoding import smart_str
 from scrapers.items import RecipeItem, LanguageItem
+from random import randint
 import re
 
 class github_spider(CrawlSpider):
@@ -105,18 +106,25 @@ class language_spider(BaseSpider):
     allowed_domains = ['github.com']
     # languages page
     start_urls = ['https://github.com/languages/', ]
-
+        
     def parse(self, response):
         urls = []
         hxs = HtmlXPathSelector(response)
         languages = hxs.select('//*[@id="languages"]/div/div[1]/div/ul/li//text()').extract()
         del languages[0]
+        colorCode = []
+        for ci in range(100):
+			code = '%06X' % randint(0, 0xFFFFFF)
+			if code in colorsCode:	#if the color code is already in the list then generate the new color code
+				code = '%06X' % randint(0, 0xFFFFFF)
+			colorsCode.append(code)
         items = []
-        for language in languages:
+        for (cIndex,language) in languages:
             # create a new item object at every loop to avoid looping
             # of the first round only
             item = LanguageItem()
             item['name'] = language
+            item['color'] = colorsCode[cIndex]
             items.append(item)
         return items
 
