@@ -10,6 +10,7 @@ from django.utils.encoding import smart_str
 from scrapers.items import RecipeItem, LanguageItem
 from random import randint
 import re
+import sys
 
 class github_spider(CrawlSpider):
     name = 'github_spider'
@@ -105,7 +106,8 @@ class language_spider(BaseSpider):
     name = 'language_spider'
     allowed_domains = ['github.com']
     # languages page
-    start_urls = ['https://github.com/languages/', ]
+    start_urls = ['https://github.com/languages/']
+    #https://github.com/languages/
         
     def parse(self, response):
         urls = []
