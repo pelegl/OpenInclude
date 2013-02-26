@@ -128,7 +128,6 @@ class language_spider(BaseSpider):
             item['color'] = colorCode[cIndex]
             items.append(item)
             cIndex += 1
-        print(items)
         return items
 
 
