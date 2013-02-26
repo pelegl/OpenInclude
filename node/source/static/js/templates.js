@@ -36,7 +36,15 @@ function program1(depth0,data) {
   buffer += "\n      ";
   stack1 = helpers['if'].call(depth0, depth0.user, {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n    ";
+  buffer += "\n      <div class=\"sign-in\"><a href=\"";
+  if (stack1 = helpers.discover_url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.discover_url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" class=\"button\">discover</a></div>\n      <div class=\"sign-in\"><a href=\"";
+  if (stack1 = helpers.how_to_url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.how_to_url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" class=\"button\">how to</a></div>\n    ";
   return buffer;
   }
 function program2(depth0,data) {
@@ -68,7 +76,7 @@ function program4(depth0,data) {
   buffer += "<header>\n  <div class=\"wrapper\">\n    <h1><a href=\"/\" title=\"Open Include\">Open Include</a></h1>\n    \n    ";
   stack1 = helpers.unless.call(depth0, depth0.in_stealth_mode, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n\n  </div>\n</header>";
+  buffer += "\n\n  </div>\n</header>\n";
   return buffer;
   }));
 
@@ -129,7 +137,7 @@ function program13(depth0,data) {
   return "\n    <div class=\"search\">\n      <form  class=\"search-form\" action=\"{% url project-search '' %}\" method=\"GET\">\n        <input type=\"text\" name=\"query\" placeholder=\"discover an open source project\">\n        <button type=\"submit\">search</button>\n      </form>\n      <a href=\"#\" class=\"advanced\">advanced search</a>\n    </div>\n\n    <div class=\"search-terms\">\n      <h3>sample search terms:</h3>\n      <ul class='unstyled'>\n        <li><a href=\"#\">neural net python</a></li>\n        <li><a href=\"#\">prime number generator java</a></li>\n        <li><a href=\"#\">scraping toolkit</a></li>\n        <li><a href=\"#\">sleek web design</a></li>\n      </ul>\n    </div>\n";
   }
 
-  buffer += "<div class=\"wrapper\" ";
+  buffer += "<!-- <div class=\"share-ideas\">Share your ideas</div> -->\n<a href=\"#myModal\" role=\"button\" class=\"share-ideas\" data-toggle=\"modal\">Share your ideas</a>\n<!-- Modal -->\n<div id=\"myModal\" class=\"modal hide fade\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">\n  <div class=\"modal-header\">\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">&times;</button>\n    <h3 id=\"myModalLabel\">Share your ideas</h3>\n  </div>\n  <form action=\"/share-idea\" method=\"POST\">\n  <div class=\"modal-body\">\n      <p> <label>Email<input type=\"text\" name=\"email\" /></label> </p>\n      <p> <label>Ideas<textarea name=\"ideas\" rows=\"10\" cols=\"30\"></textarea></label> </p>\n  </div>\n  <div class=\"modal-footer\">\n    <button type=\"submit\" class=\"btn btn-primary\">Submit</button>\n  </div>\n  </form>\n</div>\n\n<div class=\"wrapper\" ";
   stack1 = helpers['if'].call(depth0, depth0.in_stealth_mode, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n    <div class=\"features\">\n      <ul>\n        <li> <a href=\"";
@@ -162,7 +170,7 @@ function program13(depth0,data) {
   buffer += "\n\n";
   stack1 = helpers.unless.call(depth0, depth0.in_stealth_mode, {hash:{},inverse:self.noop,fn:self.program(13, program13, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\n</div>";
+  buffer += "\n</div>\n";
   return buffer;
   }));
 

@@ -856,7 +856,6 @@
 
       App.prototype.profile = function() {
         this.reRoute();
-        console.log(app.session.get("is_authenticated"));
         if (app.session.get("is_authenticated") === true) {
           return this.view = new views.Profile({
             prevView: this.view,
