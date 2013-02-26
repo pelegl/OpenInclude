@@ -6,7 +6,7 @@ import simplejson
 import pymongo
 import time
 from retry import retry_on_exceptions
-from random import randint
+
 
 # user agent to aoid blacklisting
 USER_AGENT = 'Mozilla/5.0'
@@ -71,11 +71,9 @@ for language in language_list:
                     pass
                 elif module['name'] in mod_list:
                     pass
-                else:
-                    insert_module_details = modules_collection.insert({'module_name': module['name'], 'owner': module['owner'],
-                                                                   'description': module['description'], 'language': language, 'watchers': module['watchers'],
-                                                                   'pushed_at': module['pushed_at'], 'forks': module['forks'], 'created': module['created'],
-                                                                   'pushed': module['pushed'], 'created': module['created'], 'is_a_fork': module['fork'],
-                                                                   'followers': module['followers'], 'username':module['username']})
+                elif module['watchers'] >= 100:
+					insert_module_details = modules_collection.insert({'module_name': module['name'], 'owner': module['owner'],
+																   'description': module['description'], 'language': language, 'watchers': module['watchers'], 'pushed_at': module['pushed_at'], 'created': module['created'],
+																   'pushed': module['pushed'], 'created': module['created'], 'is_a_fork': module['fork'], 'followers': module['followers'], 'username':module['username']})
         count += 1
 
