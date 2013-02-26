@@ -32,14 +32,6 @@ for lang in lang_list:
     lang_name = lang['name']
     language_list.append(lang_name)
 
-colors = []
-for i in range(30):
-    colors.append('%06X' % randint(0, 0xFFFFFF))
-
-for (cIndex,lang) in lang_list:
-	insert_module_details = collection.update({'name': lang['name']},{'name': lang['name'],'color': colors[cIndex]})
-
-
 print language_list
 
 # headers for the request
