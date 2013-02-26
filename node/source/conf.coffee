@@ -35,6 +35,8 @@ exports.logout_url = "/auth/logout"
 exports.signin_url = "/login"
 exports.profile_url = "/profile"
 exports.github_auth_url = "/auth/github"
+exports.discover_url = "/discover"
+exports.how_to_url = "/how-to"
 
 ###
   Export controllers to the app
