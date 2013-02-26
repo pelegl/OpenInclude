@@ -109,8 +109,8 @@ class language_spider(BaseSpider):
         
     def parse(self, response):
         urls = []
+        print(response)
         hxs = HtmlXPathSelector(response)
-        print(hxs)
         raise Exception('end')
         languages = hxs.select('//*[@id="languages"]/div/div[1]/div/ul/li//text()').extract()
         del languages[0]
