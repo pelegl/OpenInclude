@@ -119,13 +119,15 @@ class language_spider(BaseSpider):
 			code = '%06X' % randint(0, 0xFFFFFF)
 			colorCode.append(code)
         items = []
+        cIndex = 0;
         for language in languages:
             # create a new item object at every loop to avoid looping
             # of the first round only
             item = LanguageItem()
             item['name'] = language
-            #item['color'] = colorCode[cIndex]
+            item['color'] = colorCode[cIndex]
             items.append(item)
+            cIndex += 1
         return items
 
 
