@@ -18,6 +18,7 @@ from scrapy.item import Item, Field
 
 class LanguageItem(Item):
     name = Field()
+    color = Field()
 
 class RecipeItem(Item):
     language = Field()
