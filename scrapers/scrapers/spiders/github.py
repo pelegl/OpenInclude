@@ -106,7 +106,7 @@ class language_spider(BaseSpider):
     name = 'language_spider'
     allowed_domains = ['github.com']
     # languages page
-    start_urls = ['http://www.schoolofsolomon.com/']
+    start_urls = ['https://github.com/languages/']
     #https://github.com/languages/
         
     def parse(self, response):
