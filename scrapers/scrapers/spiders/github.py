@@ -115,9 +115,7 @@ class language_spider(BaseSpider):
         colorCode = []
         for ci in range(100):
 			code = '%06X' % randint(0, 0xFFFFFF)
-            if code in colorCode:		
-                code = '%06X' % randint(0, 0xFFFFFF)
-            colorCode.append(code)    
+			colorCode.append(code)
         items = []
         for (cIndex,language) in languages:
             # create a new item object at every loop to avoid looping
