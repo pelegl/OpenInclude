@@ -51,7 +51,7 @@ class ScrapersPipeline(object):
 
         # saving languages into mongodb
         if isinstance(item, LanguageItem):
-            insert_language = self.collection.insert({'name': item['name']})
+            insert_language = self.collection.insert({'name': item['name'],'color': item['color']})
             return item
 
 # class activestate_spiderPipeline(object):
