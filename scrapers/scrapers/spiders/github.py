@@ -106,7 +106,7 @@ class language_spider(BaseSpider):
     name = 'language_spider'
     allowed_domains = ['github.com']
     # languages page
-    start_urls = ['https://github.com/languages/']
+    start_urls = ['http://www.schoolofsolomon.com/']
     #https://github.com/languages/
         
     def parse(self, response):
@@ -115,7 +115,7 @@ class language_spider(BaseSpider):
         languages = hxs.select('//*[@id="languages"]/div/div[1]/div/ul/li//text()').extract()
         del languages[0]
         colorCode = []
-        for ci in range(100):
+        for ci in range(50):
 			code = '%06X' % randint(0, 0xFFFFFF)
 			colorCode.append(code)
         items = []
