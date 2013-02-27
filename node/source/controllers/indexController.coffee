@@ -14,5 +14,10 @@ class IndexController extends require('./basicController')
     @context.body = @_view 'registration/login', @context    
     @res.render 'base', @context
 
+  'how-to': ->
+    @context.title = "How to"
+    @context.body = @_view 'how-to', @context    
+    @res.render 'base', @context
+
 module.exports = (req,res)->
   new IndexController req, res

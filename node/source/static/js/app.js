@@ -704,7 +704,7 @@
       return DiscoverChart;
 
     })(View);
-    return exports.Discover = (function(_super) {
+    exports.Discover = (function(_super) {
 
       __extends(Discover, _super);
 
@@ -775,6 +775,30 @@
       return Discover;
 
     })(View);
+    return exports.HowTo = (function(_super) {
+
+      __extends(HowTo, _super);
+
+      function HowTo() {
+        return HowTo.__super__.constructor.apply(this, arguments);
+      }
+
+      HowTo.prototype.initialize = function() {
+        console.log('[__HowToView__] Init');
+        return this.render();
+      };
+
+      HowTo.prototype.render = function() {
+        var html;
+        html = views['how-to'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'how-to');
+        return this;
+      };
+
+      return HowTo;
+
+    })(View);
   }).call(this, (window.views = {}));
 
 }).call(this);
@@ -805,7 +829,9 @@
         "login": "login",
         "!/login": "login",
         "profile": "profile",
-        "!/profile": "profile"
+        "!/profile": "profile",
+        "how-to": "how-to",
+        "!/how-to": "how-to"
       };
 
       App.prototype.init = function() {
@@ -866,6 +892,13 @@
             trigger: true
           });
         }
+      };
+
+      App.prototype['how-to'] = function() {
+        this.reRoute();
+        return this.view = new views.HowTo({
+          prevView: this.view
+        });
       };
 
       App.prototype.login = function() {

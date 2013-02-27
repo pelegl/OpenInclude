@@ -12,6 +12,8 @@
       "!/login" : "login"
       "profile" : "profile"
       "!/profile" : "profile"
+      "how-to" : "how-to"
+      "!/how-to" : "how-to"
 
     init: -> 
       if !Backbone.history._hasPushState        
@@ -43,6 +45,10 @@
         @view = new views.Profile { prevView: @view, model: app.session }
       else
         app.navigate '/login', {trigger: true}
+    
+    'how-to': ->
+      @reRoute()      
+      @view = new views.HowTo prevView:@view
     
     login: ->
       @reRoute()

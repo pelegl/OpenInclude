@@ -80,6 +80,20 @@ function program4(depth0,data) {
   return buffer;
   }));
 
+Handlebars.registerPartial("how-to", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div class='container profile'>\n	<div class='row'>\n		<div class='span12'>\n			<h2>";
+  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</h2>\n			<h3>Features</h3>\n			<ul class='unstyled'>\n        <li>Discover</li>\n        <li>Demo</li>\n        <li>Integrate</li>\n        <li>Contribute</li>\n			</ul>\n			<h3>Upcoming Features</h3>\n			<ul class='unstyled'>\n        <li>Cool feature #1</li>\n        <li>Cool feature #2</li>\n        <li>Cool feature #3</li>\n			</ul>\n		</div>\n	</div>\n</div>\n\n";
+  return buffer;
+  }));
+
 Handlebars.registerPartial("index", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
