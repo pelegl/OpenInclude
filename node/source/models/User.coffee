@@ -1,8 +1,11 @@
-schema =
+ObjectId = require('mongoose').Schema.Types.ObjectId
+
+definition =
   github_id: Number
   github_display_name: String
   github_username: String
   github_avatar_url: String
+  status: { type: ObjectId, ref: 'Module' }
 
 methods =
   public_info: ->
@@ -11,5 +14,5 @@ methods =
   hello: () ->
     return "Hello, #{@github_username}!"
 
-exports.schema = schema
+exports.definition = definition
 exports.methods = methods

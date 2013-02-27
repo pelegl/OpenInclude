@@ -161,17 +161,18 @@ load = (required) ->
   required.forEach((name) ->
     unless loaded_models[name]
       module = require './models/' + name
-      if module.schema
-        module.collection = mongoose.Schema module.schema
-        
+      if module.definition
+        module.schema = mongoose.Schema module.definition
+        module.model = db.model name, module.schema
+
         if module.methods
-          _.extend module.collection.methods, module.methods
-        if module.statics  
-          _.extend module.collection.statics, module.statics
-                                      
-        module.model = db.model name, module.collection
+          module.schema.methods = module.methods
+
+        if module.statics
+          module.schema.statics = module.statics
 
         models.push(module.model)
+
       loaded_models[name] = module
     else
       models.push(loaded_models[name].model)
