@@ -149,12 +149,29 @@
 .share-ideas {
   position: fixed;
   height: 30px;
-  width: 120px;
-  background: white;
-  right: -45px;
+  width: 180px;
+  background: #C2CE14;
+  top: 250px;
+  left: -85px;
   transform: rotate(270deg);
   -webkit-transform: rotate(270deg);
   -moz-transform: rotate(270deg);
   -o-transform: rotate(270deg);
   -ms-transform: rotate(270deg);
+  border-radius: 0px 0px 5px 5px;
+  -moz-border-radius: 0px 0px 5px 5px;
+  -webkit-border-radius: 0px 0px 5px 5px;
+  line-height: 25px;
+  padding: 0 10px;
+  color: white;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+}
+.share-ideas:hover,
+.share-ideas:active,
+.share-ideas:focus {
+  color: #333;
+  text-decoration: none;
 }
