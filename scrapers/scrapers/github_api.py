@@ -71,9 +71,9 @@ for language in language_list:
                     pass
                 elif module['name'] in mod_list:
                     pass
-                elif module['watchers'] >= 100:
+                elif module['watchers'] >= 100: #checking if watcher count is greater than equals to 100 then insert the data
 					moduleDuplicasy = modules_collection.find( { 'module_name': module['name'] } );
-					if moduleDuplicasy:
+					if moduleDuplicasy: #If module name is not exist in the collection then save the data
 						insert_module_details = modules_collection.insert({'module_name': module['name'], 'owner': module['owner'],
 																	   'description': module['description'], 'language': language, 'watchers': module['watchers'], 'pushed_at': module['pushed_at'], 'created': module['created'],
 																	   'pushed': module['pushed'], 'created': module['created'], 'is_a_fork': module['fork'], 'followers': module['followers'], 'username':module['username']})
