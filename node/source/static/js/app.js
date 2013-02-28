@@ -110,7 +110,7 @@
         return lastCommitBucket(datesDifference);
       },
       /*
-              Sets y based on relevance, min: 0, max: 1
+        Sets y based on relevance, min: 0, max: 1
       */
 
       y: function(maxScore) {
@@ -119,7 +119,7 @@
         return score / maxScore;
       },
       /*
-              Sets radius of the circles
+        Sets radius of the circles
       */
 
       radius: function() {
@@ -128,29 +128,29 @@
         return 10 + watchers * 5;
       },
       /*
-              Color of the bubble
-              TODO: make color persist in different searches
+        Color of the bubble
+        TODO: make color persist in different searches
       */
 
       color: function() {
         return this.get('_source').language;
       },
       /*
-              Key
+        Key
       */
 
       key: function() {
         return this.id;
       },
       /*
-              last commit - human
+        last commit - human
       */
 
       lastCommitHuman: function() {
         return humanize.relativeTime(new Date(this.get('_source').pushed_at).getTime() / 1000);
       },
       /*
-              overwrite toJSON, so we can add attributes from functions for hbs
+        overwrite toJSON, so we can add attributes from functions for hbs
       */
 
       toJSON: function(options) {
@@ -246,7 +246,7 @@
       __extends(MetaView, _super);
 
       function MetaView() {
-        return MetaView.__super__.constructor.apply(this, arguments);
+        MetaView.__super__.constructor.apply(this, arguments);
       }
 
       MetaView.prototype.events = {};
@@ -297,7 +297,7 @@
       __extends(Index, _super);
 
       function Index() {
-        return Index.__super__.constructor.apply(this, arguments);
+        Index.__super__.constructor.apply(this, arguments);
       }
 
       Index.prototype.initialize = function() {
@@ -334,7 +334,7 @@
       __extends(SignIn, _super);
 
       function SignIn() {
-        return SignIn.__super__.constructor.apply(this, arguments);
+        SignIn.__super__.constructor.apply(this, arguments);
       }
 
       SignIn.prototype.initialize = function() {
@@ -360,7 +360,7 @@
       __extends(Profile, _super);
 
       function Profile() {
-        return Profile.__super__.constructor.apply(this, arguments);
+        Profile.__super__.constructor.apply(this, arguments);
       }
 
       Profile.prototype.initialize = function() {
@@ -400,7 +400,7 @@
       __extends(DiscoverChartPopup, _super);
 
       function DiscoverChartPopup() {
-        return DiscoverChartPopup.__super__.constructor.apply(this, arguments);
+        DiscoverChartPopup.__super__.constructor.apply(this, arguments);
       }
 
       DiscoverChartPopup.prototype.tagName = "div";
@@ -463,7 +463,7 @@
       __extends(DiscoverFilter, _super);
 
       function DiscoverFilter() {
-        return DiscoverFilter.__super__.constructor.apply(this, arguments);
+        DiscoverFilter.__super__.constructor.apply(this, arguments);
       }
 
       DiscoverFilter.prototype.events = {
@@ -523,7 +523,7 @@
       __extends(DiscoverComparison, _super);
 
       function DiscoverComparison() {
-        return DiscoverComparison.__super__.constructor.apply(this, arguments);
+        DiscoverComparison.__super__.constructor.apply(this, arguments);
       }
 
       DiscoverComparison.prototype.events = {
@@ -535,17 +535,17 @@
           _this = this;
         $this = $(e.currentTarget);
         /*
-                sort key
+          sort key
         */
 
         key = $this.data("sort");
         /*
-                set active on the element in the context, remove active from the previous element
+          set active on the element in the context, remove active from the previous element
         */
 
         index = $this.closest("th").index();
         /*
-                get sort direction
+          get sort direction
         */
 
         direction = this.context.headers[index].directionBottom === true ? "ASC" : "DESC";
@@ -605,7 +605,7 @@
       __extends(DiscoverChart, _super);
 
       function DiscoverChart() {
-        return DiscoverChart.__super__.constructor.apply(this, arguments);
+        DiscoverChart.__super__.constructor.apply(this, arguments);
       }
 
       DiscoverChart.prototype.initialize = function() {
@@ -733,7 +733,7 @@
       __extends(Discover, _super);
 
       function Discover() {
-        return Discover.__super__.constructor.apply(this, arguments);
+        Discover.__super__.constructor.apply(this, arguments);
       }
 
       Discover.prototype.events = {
@@ -751,7 +751,7 @@
         this.context.discover_search_action = "/discover";
         this.render();
         /*
-                initializing chart
+          initializing chart
         */
 
         this.chartData = new root.collections.Discovery;
@@ -816,7 +816,7 @@
       __extends(HowTo, _super);
 
       function HowTo() {
-        return HowTo.__super__.constructor.apply(this, arguments);
+        HowTo.__super__.constructor.apply(this, arguments);
       }
 
       HowTo.prototype.initialize = function() {
@@ -850,7 +850,7 @@
       __extends(App, _super);
 
       function App() {
-        return App.__super__.constructor.apply(this, arguments);
+        App.__super__.constructor.apply(this, arguments);
       }
 
       App.prototype.conf = {

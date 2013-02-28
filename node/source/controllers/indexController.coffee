@@ -2,7 +2,7 @@
 
 class IndexController extends require('./basicController') 
   constructor: (@req, @res)->    
-    @offset = 1    
+    @offset = 1
     super
   
   index: ->    
