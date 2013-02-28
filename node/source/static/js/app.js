@@ -292,6 +292,43 @@
       return View;
 
     })(this.Backbone.View);
+    return exports.Index = (function(_super) {
+
+      __extends(Index, _super);
+
+      function Index() {
+        return Index.__super__.constructor.apply(this, arguments);
+      }
+
+      Index.prototype.initialize = function() {
+        console.log('[__indexView__] Init');
+        this.context.title = "Home Page";
+        return this.render();
+      };
+
+      Index.prototype.render = function() {
+        var html;
+        html = views['index'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'index');
+        return this;
+      };
+
+      return Index;
+
+    })(View);
+  }).call(this, (window.views = {}));
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  (function(exports) {
+    var root, views;
+    root = this;
+    views = this.hbt = Handlebars.partials;
     exports.SignIn = (function(_super) {
 
       __extends(SignIn, _super);
@@ -318,7 +355,7 @@
       return SignIn;
 
     })(View);
-    exports.Profile = (function(_super) {
+    return exports.Profile = (function(_super) {
 
       __extends(Profile, _super);
 
@@ -346,31 +383,18 @@
       return Profile;
 
     })(View);
-    exports.Index = (function(_super) {
+  }).call(this, (window.views = {}));
 
-      __extends(Index, _super);
+}).call(this);
 
-      function Index() {
-        return Index.__super__.constructor.apply(this, arguments);
-      }
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-      Index.prototype.initialize = function() {
-        console.log('[__indexView__] Init');
-        this.context.title = "Home Page";
-        return this.render();
-      };
-
-      Index.prototype.render = function() {
-        var html;
-        html = views['index'](this.context);
-        this.$el.html(html);
-        this.$el.attr('view-id', 'index');
-        return this;
-      };
-
-      return Index;
-
-    })(View);
+  (function(exports) {
+    var root, views;
+    root = this;
+    views = this.hbt = Handlebars.partials;
     exports.DiscoverChartPopup = (function(_super) {
 
       __extends(DiscoverChartPopup, _super);
@@ -704,7 +728,7 @@
       return DiscoverChart;
 
     })(View);
-    exports.Discover = (function(_super) {
+    return exports.Discover = (function(_super) {
 
       __extends(Discover, _super);
 
@@ -775,6 +799,18 @@
       return Discover;
 
     })(View);
+  }).call(this, (window.views = {}));
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  (function(exports) {
+    var root, views;
+    root = this;
+    views = this.hbt = Handlebars.partials;
     return exports.HowTo = (function(_super) {
 
       __extends(HowTo, _super);
@@ -936,7 +972,6 @@
       app.session = new models.Session();
       app.session.fetch();
       return app.session.once("change", function() {
-        console.log("session fetched", app.session);
         Backbone.history.start({
           pushState: true
         });

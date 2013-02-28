@@ -32,7 +32,7 @@ module.exports = function(grunt) {
 	coffee : {
 		compile: {			
 			files : {
-				'source/static/js/app.js': ["source/static/app/*.coffee"]	
+				'source/static/js/app.js': ["source/client/helpers/*.coffee", "source/client/models/*.coffee", "source/client/collections/*.coffee", "source/client/views/*.coffee", "source/client/app.coffee"]	
 			}			
 		}
 	},
