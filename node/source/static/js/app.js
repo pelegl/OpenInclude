@@ -826,8 +826,8 @@
         "!/": "index",
         "discover": "discover",
         "!/discover": "discover",
-        "login": "login",
-        "!/login": "login",
+        "profile/login": "login",
+        "!/profile/login": "login",
         "profile": "profile",
         "!/profile": "profile",
         "how-to": "how-to",
@@ -888,7 +888,7 @@
             model: app.session
           });
         } else {
-          return app.navigate('/login', {
+          return app.navigate('/profile/login', {
             trigger: true
           });
         }
@@ -903,6 +903,7 @@
 
       App.prototype.login = function() {
         this.reRoute();
+        console.log("login", app.session.get("is_authenticated") === true);
         if (app.session.get("is_authenticated") === true) {
           return app.navigate('/profile', {
             trigger: true
@@ -925,7 +926,8 @@
 
     })(Backbone.Router);
     return $(document).ready(function() {
-      var app;
+      var app,
+        _this = this;
       console.log('[__app__] init done!');
       exports.app = app = new App();
       app.meta = new views.MetaView({
@@ -933,20 +935,23 @@
       });
       app.session = new models.Session();
       app.session.fetch();
-      Backbone.history.start({
-        pushState: true
-      });
-      app.init();
-      return $(document).delegate("a", "click", function(e) {
-        var href, uri;
-        href = e.currentTarget.getAttribute('href');
-        if (href[0] === '/' && !/^\/auth\/.*/i.test(href)) {
-          uri = Backbone.history._hasPushState ? e.currentTarget.getAttribute('href').slice(1) : "!/" + e.currentTarget.getAttribute('href').slice(1);
-          app.navigate(uri, {
-            trigger: true
-          });
-          return false;
-        }
+      return app.session.once("change", function() {
+        console.log("session fetched", app.session);
+        Backbone.history.start({
+          pushState: true
+        });
+        app.init();
+        return $(document).delegate("a", "click", function(e) {
+          var href, uri;
+          href = e.currentTarget.getAttribute('href');
+          if (href[0] === '/' && !/^\/auth\/.*/i.test(href)) {
+            uri = Backbone.history._hasPushState ? e.currentTarget.getAttribute('href').slice(1) : "!/" + e.currentTarget.getAttribute('href').slice(1);
+            app.navigate(uri, {
+              trigger: true
+            });
+            return false;
+          }
+        });
       });
     });
   })(window);

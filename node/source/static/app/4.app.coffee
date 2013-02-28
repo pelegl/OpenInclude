@@ -8,8 +8,8 @@
       "!/":"index"
       "discover":"discover"
       "!/discover":"discover"
-      "login": "login"
-      "!/login" : "login"
+      "profile/login": "login"
+      "!/profile/login" : "login"
       "profile" : "profile"
       "!/profile" : "profile"
       "how-to" : "how-to"
@@ -44,7 +44,7 @@
       if app.session.get("is_authenticated") is true 
         @view = new views.Profile { prevView: @view, model: app.session }
       else
-        app.navigate '/login', {trigger: true}
+        app.navigate '/profile/login', {trigger: true}
     
     'how-to': ->
       @reRoute()      
@@ -52,12 +52,12 @@
     
     login: ->
       @reRoute()
+      console.log "login", app.session.get("is_authenticated") is true
       if app.session.get("is_authenticated") is true
-        app.navigate '/profile', {trigger: true}        
+        app.navigate '/profile', {trigger: true}    
       else
         @view = new views.SignIn prevView:@view
-      
-    
+          
     discover: ->
       @reRoute()
       @view = new views.Discover prevView:@view
@@ -70,18 +70,20 @@
     app.session = new models.Session()
     app.session.fetch()
     
-    Backbone.history.start {pushState: true}
-    app.init()
-    
-    $(document).delegate "a", "click", (e)->
-      href = e.currentTarget.getAttribute('href')
-      if href[0] is '/' and ! /^\/auth\/.*/i.test href
-        uri = if Backbone.history._hasPushState then \
-          e.currentTarget.getAttribute('href').slice(1) else \
-          "!/"+e.currentTarget.getAttribute('href').slice(1)
-        
-        app.navigate uri, {trigger:true}
-        # e.preventDefault()
-        false
+    app.session.once "change", =>
+
+      Backbone.history.start {pushState: true}        
+      app.init()
+      
+      $(document).delegate "a", "click", (e)->
+        href = e.currentTarget.getAttribute('href')
+        if href[0] is '/' and ! /^\/auth\/.*/i.test href
+          uri = if Backbone.history._hasPushState then \
+            e.currentTarget.getAttribute('href').slice(1) else \
+            "!/"+e.currentTarget.getAttribute('href').slice(1)
+          
+          app.navigate uri, {trigger:true}
+          # e.preventDefault()
+          false
         
 )(window)
