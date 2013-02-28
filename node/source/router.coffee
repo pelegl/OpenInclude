@@ -1,5 +1,4 @@
-{STATIC_URL, github_auth, get_models, is_authenticated, github_auth_url, logout, signin_url, is_not_authenticated} = require './conf'
-
+{STATIC_URL, modules_url, github_auth, get_models, is_authenticated, github_auth_url, logout, signin_url, is_not_authenticated} = require './conf'
 
 exports.set = (app)->
   ###
@@ -11,8 +10,8 @@ exports.set = (app)->
   ###
   Module controller
   ###
-  app.get '/module',    app.Controllers.module
-  app.get '/module/*',  app.Controllers.module
+  app.get modules_url,         app.Controllers.module
+  app.get '#{modules_url}/*',  app.Controllers.module
 
   ###
   Share idea

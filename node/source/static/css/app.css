@@ -22,9 +22,6 @@
   -ms-user-select: none;
   user-select: none;
 }
-.discover form {
-  margin: 0;
-}
 .discover #searchChart {
   position: relative;
 }
@@ -38,8 +35,15 @@
   box-sizing: border-box;
   -moz-box-sizing: border-box;
 }
-.discover.contents .search {
+.discover.container .search {
   margin-top: 35px;
+}
+.discover.container .search .search-form {
+  margin: 0;
+  width: auto;
+}
+.discover.container .search .search-form [type=submit] {
+  margin-top: 1px;
 }
 .discover .dot {
   opacity: 0.5;
@@ -120,7 +124,7 @@
   color: #666;
 }
 .discover .filter {
-  margin-top: 70px;
+  margin-top: 35px;
   border-radius: 15px;
   -moz-border-radius: 15px;
   -webkit-border-radius: 15px;

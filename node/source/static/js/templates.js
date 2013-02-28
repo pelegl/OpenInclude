@@ -44,7 +44,11 @@ function program1(depth0,data) {
   if (stack1 = helpers.how_to_url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.how_to_url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\" class=\"button\">how to</a></div>\n    ";
+    + "\" class=\"button\">how to</a></div>\n      <div class=\"sign-in\"><a href=\"";
+  if (stack1 = helpers.modules_url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.modules_url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" class=\"button\">modules</a></div>\n    ";
   return buffer;
   }
 function program2(depth0,data) {

@@ -9,8 +9,8 @@ passport = require 'passport'
 GithubStrategy = require('passport-github').Strategy
 
 exports.db = db = mongoose.createConnection 'localhost', 'openInclude'
-exports.git_lang_db = git_lang_db = mongoose.createConnection 'localhost', 'github_languages'
-exports.git_modules_db = git_modules_db = mongoose.createConnection 'localhost', 'github_modules'
+#exports.git_lang_db = git_lang_db = mongoose.createConnection 'localhost', 'github_languages'
+#exports.git_modules_db = git_modules_db = mongoose.createConnection 'localhost', 'github_modules'
 
 
 ###
@@ -37,6 +37,7 @@ exports.signin_url      = signin_url      = "#{profile_url}/login"
 exports.github_auth_url = github_auth_url = "/auth/github"
 exports.discover_url    = discover_url    = "/discover"
 exports.how_to_url      = how_to_url      = "/how-to"
+exports.modules_url     = modules_url     = '/modules'
 
 ###
   Export controllers to the app

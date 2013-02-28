@@ -1,8 +1,4 @@
-.discover { 
-  form {
-    margin:0;
-  }
-  
+.discover {  
   #searchChart {
     position: relative;
   }
@@ -15,9 +11,16 @@
     .border-box;
   }
     
-  &.contents {
+  &.container {
     .search {
       margin-top: 35px;
+      .search-form {
+        margin:0;
+        width: auto;
+        [type=submit] {
+          margin-top: 1px;
+        }
+      }
     } 
   }  
   .dot {
@@ -104,7 +107,7 @@
   }
   
   .filter {
-    margin-top: 70px;
+    margin-top: 35px;
     .border-radius(15px);
     background: @white;
     .border-box;

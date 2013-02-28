@@ -15,11 +15,11 @@
       "how-to" : "how-to"
       "!/how-to" : "how-to"
       "!/module" : "module"
-      "module" : "language_list"
-      "module/:language"   : "repo_list"
-      "!/module/:language" : "repo_list"
-      "module/:language/:repo" : "repo"
-      "!/module/:language/:repo" : "repo"
+      "modules" : "language_list"
+      "modules/:language"   : "repo_list"
+      "!/modules/:language" : "repo_list"
+      "modules/:language/:repo" : "repo"
+      "!/modules/:language/:repo" : "repo"
 
     init: -> 
       if !Backbone.history._hasPushState        
