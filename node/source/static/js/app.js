@@ -258,7 +258,7 @@
       return MetaView;
 
     })(this.Backbone.View);
-    View = (function(_super) {
+    root.View = View = (function(_super) {
 
       __extends(View, _super);
 
@@ -317,7 +317,7 @@
       return Index;
 
     })(View);
-  }).call(this, (window.views = {}));
+  }).call(this, window.views = {});
 
 }).call(this);
 
@@ -383,7 +383,7 @@
       return Profile;
 
     })(View);
-  }).call(this, (window.views = {}));
+  }).call(this, window.views);
 
 }).call(this);
 
@@ -799,7 +799,7 @@
       return Discover;
 
     })(View);
-  }).call(this, (window.views = {}));
+  }).call(this, window.views);
 
 }).call(this);
 
@@ -835,7 +835,43 @@
       return HowTo;
 
     })(View);
-  }).call(this, (window.views = {}));
+  }).call(this, window.views);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  (function(exports) {
+    var root, views;
+    root = this;
+    views = this.hbt = Handlebars.partials;
+    return exports.Module = (function(_super) {
+
+      __extends(Module, _super);
+
+      function Module() {
+        return Module.__super__.constructor.apply(this, arguments);
+      }
+
+      Module.prototype.initialize = function() {
+        console.log('[__ModuleViewInit__] Init');
+        return this.render();
+      };
+
+      Module.prototype.render = function() {
+        var html;
+        html = views['module/index'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'module');
+        return this;
+      };
+
+      return Module;
+
+    })(View);
+  }).call(this, window.views);
 
 }).call(this);
 
@@ -867,7 +903,13 @@
         "profile": "profile",
         "!/profile": "profile",
         "how-to": "how-to",
-        "!/how-to": "how-to"
+        "!/how-to": "how-to",
+        "!/module": "module",
+        "module": "language_list",
+        "module/:language": "repo_list",
+        "!/module/:language": "repo_list",
+        "module/:language/:repo": "repo",
+        "!/module/:language/:repo": "repo"
       };
 
       App.prototype.init = function() {
@@ -956,6 +998,21 @@
         return this.view = new views.Discover({
           prevView: this.view
         });
+      };
+
+      App.prototype.language_list = function() {
+        this.reRoute();
+        return this.view = new views.Module({
+          prevView: this.view
+        });
+      };
+
+      App.prototype.repo_list = function() {
+        return console.log(arguments);
+      };
+
+      App.prototype.repo = function() {
+        return console.log(arguments);
       };
 
       return App;

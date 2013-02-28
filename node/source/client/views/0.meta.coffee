@@ -10,7 +10,7 @@
       console.log '[__metaView__] Init'      
 
 
-  class View extends @Backbone.View
+  root.View = class View extends @Backbone.View
     tagName:'section'
     className: 'contents'
     viewsPlaceholder: '#view-wrapper'
@@ -43,4 +43,4 @@
       @
 
 #-----------------------------------------------------------------------------------------------------------------------#
-).call(this, (window.views = {}))
+).call(this, window.views = {})

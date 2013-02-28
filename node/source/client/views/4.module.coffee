@@ -1,18 +1,18 @@
 ((exports) ->  
-  root = @  
-  views = @hbt = Handlebars.partials
-  
-  class exports.HowTo extends View
+  root = @
+  views = @hbt = Handlebars.partials  
+
+  class exports.Module extends View
 
     initialize:->
-      console.log '[__HowToView__] Init'      
+      console.log '[__ModuleViewInit__] Init'      
       @render()
       
     render:->  
-      html = views['how-to'](@context)      
+      html = views['module/index'](@context)      
       @$el.html html
-      @$el.attr 'view-id', 'how-to'
-      @
+      @$el.attr 'view-id', 'module'
+      @  
 
 #-----------------------------------------------------------------------------------------------------------------------#
 ).call(this, window.views)

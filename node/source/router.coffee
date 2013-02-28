@@ -9,6 +9,12 @@ exports.set = (app)->
   app.get '/discover/*', app.Controllers.discover
 
   ###
+  Module controller
+  ###
+  app.get '/module',    app.Controllers.module
+  app.get '/module/*',  app.Controllers.module
+
+  ###
   Share idea
   ###
   app.post '/share-idea', app.Controllers.idea

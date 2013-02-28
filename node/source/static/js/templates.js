@@ -448,6 +448,15 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   return buffer;
   }));
 
+Handlebars.registerPartial("module/index", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  
+
+
+  return "<div class='container module'>\n  <div class='row'>\n    Language list\n  </div>  \n</div>";
+  }));
+
 Handlebars.registerPartial("registration/login", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
