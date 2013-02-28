@@ -14,6 +14,12 @@
       "!/profile" : "profile"
       "how-to" : "how-to"
       "!/how-to" : "how-to"
+      "!/module" : "module"
+      "module" : "language_list"
+      "module/:language"   : "repo_list"
+      "!/module/:language" : "repo_list"
+      "module/:language/:repo" : "repo"
+      "!/module/:language/:repo" : "repo"
 
     init: -> 
       if !Backbone.history._hasPushState        
@@ -61,6 +67,17 @@
     discover: ->
       @reRoute()
       @view = new views.Discover prevView:@view
+    
+    language_list: ->
+      @reRoute()
+      @view = new views.Module prevView:@view
+    
+    repo_list: ->
+      console.log arguments
+      
+    repo: ->
+      console.log arguments
+    
 
   $(document).ready ->
     console.log '[__app__] init done!'

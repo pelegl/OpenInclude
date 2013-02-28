@@ -258,7 +258,7 @@
       return MetaView;
 
     })(this.Backbone.View);
-    View = (function(_super) {
+    root.View = View = (function(_super) {
 
       __extends(View, _super);
 
@@ -292,6 +292,43 @@
       return View;
 
     })(this.Backbone.View);
+    return exports.Index = (function(_super) {
+
+      __extends(Index, _super);
+
+      function Index() {
+        return Index.__super__.constructor.apply(this, arguments);
+      }
+
+      Index.prototype.initialize = function() {
+        console.log('[__indexView__] Init');
+        this.context.title = "Home Page";
+        return this.render();
+      };
+
+      Index.prototype.render = function() {
+        var html;
+        html = views['index'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'index');
+        return this;
+      };
+
+      return Index;
+
+    })(View);
+  }).call(this, window.views = {});
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  (function(exports) {
+    var root, views;
+    root = this;
+    views = this.hbt = Handlebars.partials;
     exports.SignIn = (function(_super) {
 
       __extends(SignIn, _super);
@@ -318,7 +355,7 @@
       return SignIn;
 
     })(View);
-    exports.Profile = (function(_super) {
+    return exports.Profile = (function(_super) {
 
       __extends(Profile, _super);
 
@@ -346,31 +383,18 @@
       return Profile;
 
     })(View);
-    exports.Index = (function(_super) {
+  }).call(this, window.views);
 
-      __extends(Index, _super);
+}).call(this);
 
-      function Index() {
-        return Index.__super__.constructor.apply(this, arguments);
-      }
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-      Index.prototype.initialize = function() {
-        console.log('[__indexView__] Init');
-        this.context.title = "Home Page";
-        return this.render();
-      };
-
-      Index.prototype.render = function() {
-        var html;
-        html = views['index'](this.context);
-        this.$el.html(html);
-        this.$el.attr('view-id', 'index');
-        return this;
-      };
-
-      return Index;
-
-    })(View);
+  (function(exports) {
+    var root, views;
+    root = this;
+    views = this.hbt = Handlebars.partials;
     exports.DiscoverChartPopup = (function(_super) {
 
       __extends(DiscoverChartPopup, _super);
@@ -704,7 +728,7 @@
       return DiscoverChart;
 
     })(View);
-    exports.Discover = (function(_super) {
+    return exports.Discover = (function(_super) {
 
       __extends(Discover, _super);
 
@@ -775,6 +799,18 @@
       return Discover;
 
     })(View);
+  }).call(this, window.views);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  (function(exports) {
+    var root, views;
+    root = this;
+    views = this.hbt = Handlebars.partials;
     return exports.HowTo = (function(_super) {
 
       __extends(HowTo, _super);
@@ -799,7 +835,43 @@
       return HowTo;
 
     })(View);
-  }).call(this, (window.views = {}));
+  }).call(this, window.views);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  (function(exports) {
+    var root, views;
+    root = this;
+    views = this.hbt = Handlebars.partials;
+    return exports.Module = (function(_super) {
+
+      __extends(Module, _super);
+
+      function Module() {
+        return Module.__super__.constructor.apply(this, arguments);
+      }
+
+      Module.prototype.initialize = function() {
+        console.log('[__ModuleViewInit__] Init');
+        return this.render();
+      };
+
+      Module.prototype.render = function() {
+        var html;
+        html = views['module/index'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'module');
+        return this;
+      };
+
+      return Module;
+
+    })(View);
+  }).call(this, window.views);
 
 }).call(this);
 
@@ -826,12 +898,18 @@
         "!/": "index",
         "discover": "discover",
         "!/discover": "discover",
-        "login": "login",
-        "!/login": "login",
+        "profile/login": "login",
+        "!/profile/login": "login",
         "profile": "profile",
         "!/profile": "profile",
         "how-to": "how-to",
-        "!/how-to": "how-to"
+        "!/how-to": "how-to",
+        "!/module": "module",
+        "module": "language_list",
+        "module/:language": "repo_list",
+        "!/module/:language": "repo_list",
+        "module/:language/:repo": "repo",
+        "!/module/:language/:repo": "repo"
       };
 
       App.prototype.init = function() {
@@ -888,7 +966,7 @@
             model: app.session
           });
         } else {
-          return app.navigate('/login', {
+          return app.navigate('/profile/login', {
             trigger: true
           });
         }
@@ -903,6 +981,7 @@
 
       App.prototype.login = function() {
         this.reRoute();
+        console.log("login", app.session.get("is_authenticated") === true);
         if (app.session.get("is_authenticated") === true) {
           return app.navigate('/profile', {
             trigger: true
@@ -921,11 +1000,27 @@
         });
       };
 
+      App.prototype.language_list = function() {
+        this.reRoute();
+        return this.view = new views.Module({
+          prevView: this.view
+        });
+      };
+
+      App.prototype.repo_list = function() {
+        return console.log(arguments);
+      };
+
+      App.prototype.repo = function() {
+        return console.log(arguments);
+      };
+
       return App;
 
     })(Backbone.Router);
     return $(document).ready(function() {
-      var app;
+      var app,
+        _this = this;
       console.log('[__app__] init done!');
       exports.app = app = new App();
       app.meta = new views.MetaView({
@@ -933,20 +1028,22 @@
       });
       app.session = new models.Session();
       app.session.fetch();
-      Backbone.history.start({
-        pushState: true
-      });
-      app.init();
-      return $(document).delegate("a", "click", function(e) {
-        var href, uri;
-        href = e.currentTarget.getAttribute('href');
-        if (href[0] === '/' && !/^\/auth\/.*/i.test(href)) {
-          uri = Backbone.history._hasPushState ? e.currentTarget.getAttribute('href').slice(1) : "!/" + e.currentTarget.getAttribute('href').slice(1);
-          app.navigate(uri, {
-            trigger: true
-          });
-          return false;
-        }
+      return app.session.once("change", function() {
+        Backbone.history.start({
+          pushState: true
+        });
+        app.init();
+        return $(document).delegate("a", "click", function(e) {
+          var href, uri;
+          href = e.currentTarget.getAttribute('href');
+          if (href[0] === '/' && !/^\/auth\/.*/i.test(href)) {
+            uri = Backbone.history._hasPushState ? e.currentTarget.getAttribute('href').slice(1) : "!/" + e.currentTarget.getAttribute('href').slice(1);
+            app.navigate(uri, {
+              trigger: true
+            });
+            return false;
+          }
+        });
       });
     });
   })(window);

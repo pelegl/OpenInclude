@@ -148,14 +148,10 @@ function program11(depth0,data) {
 function program13(depth0,data) {
   
   
-  return "\n    <div class=\"search\">\n      <form  class=\"search-form\" action=\"{% url project-search '' %}\" method=\"GET\">\n        <input type=\"text\" name=\"query\" placeholder=\"discover an open source project\">\n        <button type=\"submit\">search</button>\n      </form>\n      <a href=\"#\" class=\"advanced\">advanced search</a>\n    </div>\n\n    <div class=\"search-terms\">\n      <h3>sample search terms:</h3>\n      <ul class='unstyled'>\n        <li><a href=\"#\">neural net python</a></li>\n        <li><a href=\"#\">prime number generator java</a></li>\n        <li><a href=\"#\">scraping toolkit</a></li>\n        <li><a href=\"#\">sleek web design</a></li>\n      </ul>\n    </div>\n";
+  return "\n    <div class=\"search\">\n      <form  class=\"search-form\" action=\"/discover\" method=\"GET\">\n        <input type=\"text\" name=\"query\" placeholder=\"discover an open source project\">\n        <button type=\"submit\">search</button>\n      </form>\n      <a href=\"#\" class=\"advanced\">advanced search</a>\n    </div>\n\n    <div class=\"search-terms\">\n      <h3>sample search terms:</h3>\n      <ul class='unstyled'>\n        <li><a href=\"#\">neural net python</a></li>\n        <li><a href=\"#\">prime number generator java</a></li>\n        <li><a href=\"#\">scraping toolkit</a></li>\n        <li><a href=\"#\">sleek web design</a></li>\n      </ul>\n    </div>\n";
   }
 
-  buffer += "<!-- <div class=\"share-ideas\">Share your ideas</div> -->\n<a href=\"#myModal\" role=\"button\" class=\"share-ideas\" data-toggle=\"modal\">Share your ideas</a>\n<!-- Modal -->\n<div id=\"myModal\" class=\"modal hide fade\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">\n  <div class=\"modal-header\">\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">&times;</button>\n    <h3 id=\"myModalLabel\">Share your ideas</h3>\n  </div>\n  <div class=\"modal-body\">\n    <form class=\"\" method=\"POST\">\n      <div class=\"control-group\">\n      	<label for=\"email\" class=\"control-label\">Email</label>\n        <div class=\"controls\">\n          <input class=\"\" type=\"email\" id=\"email\" />\n        </div>\n      </div>\n      <div class=\"control-group\">\n      	<label for=\"ideas\" class=\"control-label\">* Ideas</label>\n        <div class=\"controls\">\n          <textarea class=\"\" id=\"ideas\" rows=\"10\" cols=\"30\" required=\"required\"></textarea>\n        </div>\n      </div>\n    </form>\n  </div>\n  <div class=\"modal-footer\">\n    <button class=\"submit btn btn-primary\">Submit</button>\n  </div>\n</div>\n<script type=\"text/javascript\">\n  $('.submit').click(function() {\n    $email = $('#email');\n    $ideas = $('#ideas');\n    $this = $(this);\n\n    $this.addClass('disabled');\n    $this.html('<img src=\"";
-  if (stack1 = helpers.STATIC_URL) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.STATIC_URL; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "images/loader.gif\" alt=\"Loading...\" class=\"loader\" />');\n\n    $.post('/share-idea',\n        {email: $email.val(), ideas: $ideas.val()},\n        function(data) {\n          if (data.status == 'success') {\n            $this.html('Success');\n          } else {\n            $this.html('Error occured');\n          }\n          setTimeout(function() {\n            $('#myModal').modal('hide');\n            setTimeout(function() {\n              $this.removeClass('disabled').html('Submit');\n              $email.val('');\n              $ideas.val('');\n            }, 500);\n          }, 1000);\n        }\n    );\n  });\n</script>\n\n<div class=\"wrapper\" ";
+  buffer += "<div class=\"wrapper\" ";
   stack1 = helpers['if'].call(depth0, depth0.in_stealth_mode, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
   buffer += ">\n    <div class=\"features\">\n      <ul>\n        <li> <a href=\"";
@@ -450,6 +446,15 @@ helpers = helpers || Handlebars.helpers; data = data || {};
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</li>\n			</ul>\n		</div>\n	</div>\n</div>\n";
   return buffer;
+  }));
+
+Handlebars.registerPartial("module/index", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  
+
+
+  return "<div class='container module'>\n  <div class='row'>\n    Language list\n  </div>  \n</div>";
   }));
 
 Handlebars.registerPartial("registration/login", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {

@@ -28,15 +28,15 @@ exports.esClient = esClient = new esc serverOptions
 ###
   Some static helpers
 ###
-SERVER_URL = exports.SERVER_URL = "http://ec2-50-19-3-2.compute-1.amazonaws.com:#{process.env.PORT || 8900}"
+SERVER_URL = exports.SERVER_URL = "http://ec2-107-20-8-160.compute-1.amazonaws.com:#{process.env.PORT || 8900}"
 STATIC_URL = exports.STATIC_URL = "/static/"
 
-exports.logout_url = "/auth/logout"
-exports.signin_url = "/login"
-exports.profile_url = "/profile"
-exports.github_auth_url = "/auth/github"
-exports.discover_url = "/discover"
-exports.how_to_url = "/how-to"
+exports.logout_url      = logout_url      =  "/auth/logout"
+exports.profile_url     = profile_url     = "/profile"
+exports.signin_url      = signin_url      = "#{profile_url}/login"
+exports.github_auth_url = github_auth_url = "/auth/github"
+exports.discover_url    = discover_url    = "/discover"
+exports.how_to_url      = how_to_url      = "/how-to"
 
 ###
   Export controllers to the app
@@ -149,8 +149,14 @@ exports.logout = (req, res) ->
 
 exports.is_authenticated = (request, response, next) ->
   unless request.isAuthenticated()
-    return response.redirect('/login')
+    return response.redirect signin_url
   next()
+
+exports.is_not_authenticated = (request, response, next) ->
+  if request.isAuthenticated()
+    return response.redirect profile_url
+  next()
+
 
 #### Models
 loaded_models = {}
@@ -163,14 +169,14 @@ load = (required) ->
       module = require './models/' + name
       if module.definition
         module.schema = mongoose.Schema module.definition
-        module.model = db.model name, module.schema
-
+        
         if module.methods
           module.schema.methods = module.methods
 
         if module.statics
           module.schema.statics = module.statics
 
+        module.model = db.model name, module.schema
         models.push(module.model)
 
       loaded_models[name] = module
