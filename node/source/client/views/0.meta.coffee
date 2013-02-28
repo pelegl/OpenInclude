@@ -42,5 +42,40 @@
       @$el.attr 'view-id', 'index'
       @
 
+  class exports.ShareIdeas extends @Backbone.View
+    events: 
+      'click .submit': 'submit'
+    
+    initialize: ->
+      console.log '[__ShareIdeasView__] Init'      
+
+    submit: ->
+      $email = @$ '#email'
+      $ideas = @$ '#ideas'
+      $self = @$ @
+
+      $self.addClass 'disabled'
+      $self.html "<img src=\"#{app.conf.STATIC_URL}images/loader.gif\" alt=\"Loading...\" class=\"loader\" />"
+
+      $.post('/share-idea',
+          {email: $email.val(), ideas: $ideas.val()},
+          (data) ->
+            if (data.status == 'success') 
+              $self.html('Success')
+            else
+              $self.html('Error occured')
+
+            setTimeout(() ->
+              $('#shareYourThoughts').modal('hide')
+              setTimeout(() ->
+                $self.removeClass('disabled').html('Submit')
+                $email.val('')
+                $ideas.val('')
+              , 500)
+            , 1000)
+
+      )
+
+
 #-----------------------------------------------------------------------------------------------------------------------#
 ).call(this, window.views = {})
