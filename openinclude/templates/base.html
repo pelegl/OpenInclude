@@ -15,12 +15,16 @@
         <header>
           <div class="wrapper">
             <h1><a href="/" title="Open Include">Open Include</a></h1>
-            {% if user.is_authenticated %}
-            <div class="sign-in"><a href="{% url member-logout %}" class="button">sign out</a></div>
-            <div class="sign-in" style="padding-right:20px"><a href="{% url member-profile %}" class="button">Profile</a></div>
-            {% else %}
-            <div class="sign-in"><a href="{% url member-signin %}" class="button">sign in</a></div>
+
+            {% if not in_stealth_mode %}
+              {% if user.is_authenticated %}
+              <div class="sign-in"><a href="{% url member-logout %}" class="button">sign out</a></div>
+              <div class="sign-in" style="padding-right:20px"><a href="{% url member-profile %}" class="button">Profile</a></div>
+              {% else %}
+              <div class="sign-in"><a href="{% url member-signin %}" class="button">sign in</a></div>
+              {% endif %}
             {% endif %}
+
           </div>
         </header>
     {% endblock %}
@@ -36,10 +40,25 @@
     {% block footer %}
         <footer>
           <div class="wrapper">
-            <p>&copy; 2012 Open Include. All rights reserved.</p>
+            <p>2013 Open Include.</p>
           </div>
         </footer>
     {% endblock %}
     <!-- footer end -->
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-23203675-4']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+    
 </body>
 </html>

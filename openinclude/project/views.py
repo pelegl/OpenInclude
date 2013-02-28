@@ -6,12 +6,16 @@ from django.template import RequestContext
 from project.models import Project
 
 # import our local imports here
+from common.utils import in_stealth_mode
+
+@in_stealth_mode
 def index(request, template="project/index.html"):
     data = {
         "title" : "Project",
     }
     return render_to_response(template, data, context_instance=RequestContext(request))
 
+@in_stealth_mode
 def search(request, query, template="project/search.html"):
     data = {
         "title" : "Project Search",
@@ -27,6 +31,7 @@ def search(request, query, template="project/search.html"):
             
     return render_to_response(template, context, context_instance=RequestContext(request)) 
 
+@in_stealth_mode
 def view_project(request, project_id):
     template_name = 'project/view_project.html'
     project = get_object_or_404(Project, id=project_id)
