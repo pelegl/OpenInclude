@@ -292,7 +292,7 @@
       return View;
 
     })(this.Backbone.View);
-    return exports.Index = (function(_super) {
+    exports.Index = (function(_super) {
 
       __extends(Index, _super);
 
@@ -317,6 +317,52 @@
       return Index;
 
     })(View);
+    return exports.ShareIdeas = (function(_super) {
+
+      __extends(ShareIdeas, _super);
+
+      function ShareIdeas() {
+        return ShareIdeas.__super__.constructor.apply(this, arguments);
+      }
+
+      ShareIdeas.prototype.events = {
+        'click .submit': 'submit'
+      };
+
+      ShareIdeas.prototype.initialize = function() {
+        return console.log('[__ShareIdeasView__] Init');
+      };
+
+      ShareIdeas.prototype.submit = function() {
+        var $email, $ideas, $self;
+        $email = this.$('#email');
+        $ideas = this.$('#ideas');
+        $self = this.$(this);
+        $self.addClass('disabled');
+        $self.html("<img src=\"" + app.conf.STATIC_URL + "images/loader.gif\" alt=\"Loading...\" class=\"loader\" />");
+        return $.post('/share-idea', {
+          email: $email.val(),
+          ideas: $ideas.val()
+        }, function(data) {
+          if (data.status === 'success') {
+            $self.html('Success');
+          } else {
+            $self.html('Error occured');
+          }
+          return setTimeout(function() {
+            $('#shareYourThoughts').modal('hide');
+            return setTimeout(function() {
+              $self.removeClass('disabled').html('Submit');
+              $email.val('');
+              return $ideas.val('');
+            }, 500);
+          }, 1000);
+        });
+      };
+
+      return ShareIdeas;
+
+    })(this.Backbone.View);
   }).call(this, window.views = {});
 
 }).call(this);
@@ -1026,6 +1072,7 @@
       app.meta = new views.MetaView({
         el: $('body')
       });
+      app.shareIdeas = new views.ShareIdeas;
       app.session = new models.Session();
       app.session.fetch();
       return app.session.once("change", function() {

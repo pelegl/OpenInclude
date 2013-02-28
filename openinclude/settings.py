@@ -9,6 +9,7 @@ sys.path.append(path.join(PROJECT_ROOT, "libs")) # add libs to the path
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+STEALTH_MODE = True
 
 ADMINS = (
     ('Karthik', 'developer4python@gmail.com'),
@@ -158,6 +159,7 @@ INSTALLED_APPS = (
     'project',
     'payment',
     'tag',
+    'prelaunch',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )

@@ -15,7 +15,7 @@ class IdeaController extends require('./basicController')
 
     transport.sendMail(mailOptions)
 
-    @res.redirect('/')
+    @res.send status: 'success'
  
 module.exports = (req,res)->
   new IdeaController req, res

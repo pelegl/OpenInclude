@@ -84,6 +84,7 @@
     exports.app = app = new App()
     
     app.meta = new views.MetaView el:$('body')
+    app.shareIdeas = new views.ShareIdeas
     app.session = new models.Session()
     app.session.fetch()
     
