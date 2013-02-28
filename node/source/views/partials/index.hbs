@@ -6,16 +6,55 @@
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
     <h3 id="myModalLabel">Share your ideas</h3>
   </div>
-  <form action="/share-idea" method="POST">
   <div class="modal-body">
-      <p> <label>Email<input type="text" name="email" /></label> </p>
-      <p> <label>Ideas<textarea name="ideas" rows="10" cols="30"></textarea></label> </p>
+    <form class="" method="POST">
+      <div class="control-group">
+      	<label for="email" class="control-label">Email</label>
+        <div class="controls">
+          <input class="" type="email" id="email" />
+        </div>
+      </div>
+      <div class="control-group">
+      	<label for="ideas" class="control-label">* Ideas</label>
+        <div class="controls">
+          <textarea class="" id="ideas" rows="10" cols="30" required="required"></textarea>
+        </div>
+      </div>
+    </form>
   </div>
   <div class="modal-footer">
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button class="submit btn btn-primary">Submit</button>
   </div>
-  </form>
 </div>
+<script type="text/javascript">
+  $('.submit').click(function() {
+    $email = $('#email');
+    $ideas = $('#ideas');
+    $this = $(this);
+
+    $this.addClass('disabled');
+    $this.html('<img src="{{STATIC_URL}}images/loader.gif" alt="Loading..." class="loader" />');
+
+    $.post('/share-idea',
+        {email: $email.val(), ideas: $ideas.val()},
+        function(data) {
+          if (data.status == 'success') {
+            $this.html('Success');
+          } else {
+            $this.html('Error occured');
+          }
+          setTimeout(function() {
+            $('#myModal').modal('hide');
+            setTimeout(function() {
+              $this.removeClass('disabled').html('Submit');
+              $email.val('');
+              $ideas.val('');
+            }, 500);
+          }, 1000);
+        }
+    );
+  });
+</script>
 
 <div class="wrapper" {{#if in_stealth_mode}}style="width:740px"{{/if}}>
     <div class="features">
