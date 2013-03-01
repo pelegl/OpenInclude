@@ -2,17 +2,40 @@
   api = "/api/v.1"
   if isServer
     @Backbone = require 'backbone'
+  
+  exports.Language = Backbone.Paginator.requestPager.extend
+    model: models.Language
+    url: "/modules"
+    paginator_core:      
+      type: 'GET'      
+      dataType: 'json'      
+      url: '/modules?'
+    paginator_ui:      
+      firstPage: 0
+      currentPage: 0
+      perPage: 30
+    server_api:
+      'page': ->
+        return @currentPage
+      'limit': ->
+        return @perPage
+      
+    parse: (response)->
+      languages = response.languages
+      @totalRecords = response.total_count
+      languages
+    
     
   exports.Discovery = @Backbone.Collection.extend  
     parse:(r)->
       r.response ? []
     
     model: models.Discovery
-    url: "/discover/search"    
+    url: "/discover/search"
  
     maxRadius: ->
       return d3.max @models, (data)=>
-        return data.radius()                
+        return data.radius()
     
     languageList: ->
       return if @groupedModules then _.keys @groupedModules else [] 

@@ -79,6 +79,10 @@
       idAttribute: "_id",
       url: "/session"
     });
+    exports.Language = this.Backbone.Model.extend({
+      idAttribute: "name",
+      urlRoot: "/modules"
+    });
     return exports.Discovery = this.Backbone.Model.extend({
       /*        
           0.5 - super active - up to 7 days
@@ -173,6 +177,34 @@
     if (isServer) {
       this.Backbone = require('backbone');
     }
+    exports.Language = Backbone.Paginator.requestPager.extend({
+      model: models.Language,
+      url: "/modules",
+      paginator_core: {
+        type: 'GET',
+        dataType: 'json',
+        url: '/modules?'
+      },
+      paginator_ui: {
+        firstPage: 0,
+        currentPage: 0,
+        perPage: 30
+      },
+      server_api: {
+        'page': function() {
+          return this.currentPage;
+        },
+        'limit': function() {
+          return this.perPage;
+        }
+      },
+      parse: function(response) {
+        var languages;
+        languages = response.languages;
+        this.totalRecords = response.total_count;
+        return languages;
+      }
+    });
     exports.Discovery = this.Backbone.Collection.extend({
       parse: function(r) {
         var _ref;
@@ -238,9 +270,10 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var View, root, views;
+    var View, col, root, views;
     root = this;
     views = this.hbt = Handlebars.partials;
+    col = root.collections;
     exports.MetaView = (function(_super) {
 
       __extends(MetaView, _super);
@@ -252,10 +285,28 @@
       MetaView.prototype.events = {};
 
       MetaView.prototype.initialize = function() {
+        this.Languages = new col.Language;
         return console.log('[__metaView__] Init');
       };
 
       return MetaView;
+
+    })(this.Backbone.View);
+    exports.Loader = (function(_super) {
+
+      __extends(Loader, _super);
+
+      function Loader() {
+        return Loader.__super__.constructor.apply(this, arguments);
+      }
+
+      Loader.prototype.tagName = 'img';
+
+      Loader.prototype.attributes = {
+        src: "/static/images/loader.gif"
+      };
+
+      return Loader;
 
     })(this.Backbone.View);
     root.View = View = (function(_super) {
@@ -890,9 +941,10 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var root, views;
+    var qs, root, views;
     root = this;
     views = this.hbt = Handlebars.partials;
+    qs = root.help.qs;
     return exports.Module = (function(_super) {
 
       __extends(Module, _super);
@@ -902,12 +954,35 @@
       }
 
       Module.prototype.initialize = function() {
+        var data, limit, page, preloadedData, _ref;
         console.log('[__ModuleViewInit__] Init');
-        return this.render();
+        _ref = qs.parse(window.location.search), page = _ref.page, limit = _ref.limit;
+        page = page ? parseInt(page) : 0;
+        limit = limit ? parseInt(limit) : 30;
+        this.collection = app.meta.Languages;
+        this.listenTo(app.meta.Languages, "reset", this.render);
+        this.listenTo(app.meta.Languages, "change", this.render);
+        preloadedData = this.$("[data-languages]");
+        if (preloadedData.length > 0) {
+          data = preloadedData.data("languages");
+          this.collection.reset(data.languages, {
+            silent: true
+          });
+          this.collection.bootstrap({
+            totalRecords: parseInt(data.total_count),
+            perPage: limit,
+            currentPage: page
+          });
+          return this.render();
+        } else {
+          this.$el.append(new exports.Loader);
+          return this.collection.pager();
+        }
       };
 
       Module.prototype.render = function() {
         var html;
+        this.context.languages = this.collection.toJSON();
         html = views['module/index'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'module');
@@ -1049,6 +1124,7 @@
       App.prototype.language_list = function() {
         this.reRoute();
         return this.view = new views.Module({
+          el: $('.contents'),
           prevView: this.view
         });
       };

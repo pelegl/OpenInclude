@@ -15,5 +15,5 @@ definition =
   openinclude_followers: [{type: ObjectId, ref: 'User'}]
 
 exports.definition = definition
-exports.methods = methods
+#exports.methods = methods
 

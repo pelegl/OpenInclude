@@ -169,16 +169,14 @@ load = (required) ->
     unless loaded_models[name]
       module = require './models/' + name
       if module.definition
-        module.schema = mongoose.Schema module.definition
+        module.schema = mongoose.Schema module.definition        
+        module.schema.methods = module.methods if module.methods
+        module.schema.statics = module.statics if module.statics
+                        
+        name = module.modelName if module.modelName
         
-        if module.methods
-          module.schema.methods = module.methods
-
-        if module.statics
-          module.schema.statics = module.statics
-
         module.model = db.model name, module.schema
-        models.push(module.model)
+        models.push module.model
 
       loaded_models[name] = module
     else

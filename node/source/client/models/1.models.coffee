@@ -10,6 +10,10 @@
      url: "/session"
       
    
+   exports.Language = @Backbone.Model.extend
+     idAttribute: "name"
+     urlRoot: "/modules"
+   
    exports.Discovery = @Backbone.Model.extend
       ###        
           0.5 - super active - up to 7 days

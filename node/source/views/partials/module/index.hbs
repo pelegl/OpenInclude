@@ -1,5 +1,23 @@
 <div class='container module'>
   <div class='row'>
-    Language list
+    <div class='span12'>
+      <h2>Language list</h2>
+      <ul class='unstyled' data-languages='{{prepopulation}}'>
+        {{#each languages}}
+          {{#with this}}
+          <li><a href='{{../../modules_url}}/{{name}}'>{{name}}</a></li>
+          {{/with}}
+        {{/each}}
+      </ul>
+      <div class="pagination">
+        <ul>
+          <li><a href="#">Prev</a></li>
+          {{#each page}}
+          <li><a href="{{../modules_url}}?page={{this}}">{{this}}</a></li>
+          {{/each}}
+          <li><a href="#">Next</a></li>
+        </ul>
+      </div>
+    </div>
   </div>  
 </div>

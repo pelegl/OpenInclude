@@ -70,7 +70,9 @@
     
     language_list: ->
       @reRoute()
-      @view = new views.Module prevView:@view
+      @view = new views.Module
+        el: $('.contents')
+        prevView:@view
     
     repo_list: ->
       console.log arguments

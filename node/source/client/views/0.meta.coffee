@@ -1,14 +1,20 @@
 ((exports) ->  
   root = @  
   views = @hbt = Handlebars.partials
-  
+  col = root.collections
 
   class exports.MetaView extends @Backbone.View
     events: {}
     
     initialize: ->
+      @Languages = new col.Language
+      
       console.log '[__metaView__] Init'      
 
+  class exports.Loader extends @Backbone.View
+    tagName: 'img'
+    attributes:
+      src: "/static/images/loader.gif"
 
   root.View = class View extends @Backbone.View
     tagName:'section'

@@ -1,7 +1,13 @@
-ObjectId = require('mongoose').Schema.Types.ObjectId
+###
+  Config
+###
+ObjectId  = require('mongoose').Schema.Types.ObjectId
+async     = require 'async'
 
+###
+  Models
+###
 {get_models} = require '../conf'
-
 [Repositories] = get_models ["Module"]
 
 definition =
@@ -16,7 +22,13 @@ statics =
   get_page: (opts..., callback)->
     page_number = parseInt(opts[0]) || 0
     limit       = parseInt(opts[1]) || 30
-    @find().skip(page_number*limit).limit(limit).sort({name: 1}).exec callback
+    
+    async.parallel {
+      languages: (async_callback)=>
+        @find().skip(page_number*limit).limit(limit).sort({name: 1}).exec async_callback
+      total_count: (async_callback)=>
+        @count async_callback         
+    }, callback        
       
   get_siblings: (language, opts..., callback)->
     page_number = parseInt(opts[0]) || 0
@@ -27,5 +39,6 @@ statics =
     
     Repositories.find({language}).limit(limit).skip(page_number*limit).sort(sort).exec callback
 
-exports.definition = definition
-#exports.methods = methods
+exports.modelName   = "language_name" 
+exports.definition  = definition
+exports.statics     = statics

@@ -198,7 +198,7 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   
 
 
-  return "<script type=\"text/javascript\" src=\"/static/js/jquery-1.9.1.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/bootstrap.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/d3.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/humanize.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/underscore.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/handlebars.runtime.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/templates.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/app.js\"></script>";
+  return "<script type=\"text/javascript\" src=\"/static/js/jquery-1.9.1.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/bootstrap.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/d3.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/humanize.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/underscore.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.paginator.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/handlebars.runtime.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/templates.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/app.js\"></script>";
   }));
 
 Handlebars.registerPartial("discover/chart", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -455,10 +455,43 @@ helpers = helpers || Handlebars.helpers; data = data || {};
 Handlebars.registerPartial("module/index", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data,depth1) {
   
+  var buffer = "", stack1;
+  buffer += "\n          ";
+  stack1 = helpers['with'].call(depth0, depth0, {hash:{},inverse:self.noop,fn:self.programWithDepth(program2, data, depth1),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n        ";
+  return buffer;
+  }
+function program2(depth0,data,depth2) {
+  
+  var buffer = "", stack1, stack2;
+  buffer += "\n          <li href='"
+    + escapeExpression(((stack1 = depth2.modules_url),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "/";
+  if (stack2 = helpers.name) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.name; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  buffer += escapeExpression(stack2)
+    + "'>";
+  if (stack2 = helpers.name) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.name; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  buffer += escapeExpression(stack2)
+    + "</li>\n          ";
+  return buffer;
+  }
 
-
-  return "<div class='container module'>\n  <div class='row'>\n    Language list\n  </div>  \n</div>";
+  buffer += "<div class='container module'>\n  <div class='row'>\n    <div class='span12'>\n      <h2>Language list</h2>\n      <ul class='unstyled' data-languages='";
+  if (stack1 = helpers.prepopulation) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.prepopulation; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "'>\n        ";
+  stack1 = helpers.each.call(depth0, depth0.languages, {hash:{},inverse:self.noop,fn:self.programWithDepth(program1, data, depth0),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n      </ul>\n    </div>\n  </div>  \n</div>";
+  return buffer;
   }));
 
 Handlebars.registerPartial("registration/login", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
