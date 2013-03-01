@@ -326,6 +326,8 @@
       }
 
       ShareIdeas.prototype.events = {
+        'click .share-ideas': 'toggleShow',
+        'click .close': 'toggleShow',
         'click .submit': 'submit'
       };
 
@@ -333,11 +335,15 @@
         return console.log('[__ShareIdeasView__] Init');
       };
 
+      ShareIdeas.prototype.toggleShow = function() {
+        return $('.share-common').toggleClass('show');
+      };
+
       ShareIdeas.prototype.submit = function() {
         var $email, $ideas, $self;
-        $email = this.$('#email');
-        $ideas = this.$('#ideas');
-        $self = this.$(this);
+        $email = $('#email');
+        $ideas = $('#ideas');
+        $self = $('.submit');
         $self.addClass('disabled');
         $self.html("<img src=\"" + app.conf.STATIC_URL + "images/loader.gif\" alt=\"Loading...\" class=\"loader\" />");
         return $.post('/share-idea', {
@@ -350,7 +356,7 @@
             $self.html('Error occured');
           }
           return setTimeout(function() {
-            $('#shareYourThoughts').modal('hide');
+            $('.share-common').toggleClass('show');
             return setTimeout(function() {
               $self.removeClass('disabled').html('Submit');
               $email.val('');
@@ -1072,7 +1078,9 @@
       app.meta = new views.MetaView({
         el: $('body')
       });
-      app.shareIdeas = new views.ShareIdeas;
+      app.shareIdeas = new views.ShareIdeas({
+        el: $('.share-common')
+      });
       app.session = new models.Session();
       app.session.fetch();
       return app.session.once("change", function() {
