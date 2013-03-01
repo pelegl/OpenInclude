@@ -16,8 +16,8 @@ exports.set = (app)->
   ###
   Payment
   ###
-  app.get '/payment', app.Controllers.payment
-
+#  app.get '/payment', app.Controllers.payment
+  app.get '/payment/*', app.Controllers.payment
   ###
   Profile interaction
   ###
