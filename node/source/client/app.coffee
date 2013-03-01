@@ -75,13 +75,18 @@
         prevView:@view
     
     repo_list: (language) ->
+      console.log arguments
       @reRoute()
-      @view = new views.Modules
+      @view = new views.ModuleList
         prevView: @view
         language: language
       
-    repo: ->
-      console.log arguments
+    repo: (language, repo)->
+      @reRoute()
+      @view = new views.Repo
+        prevView: @view
+        language: language
+        repo: repo
     
 
   $(document).ready ->

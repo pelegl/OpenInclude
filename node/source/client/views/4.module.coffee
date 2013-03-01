@@ -3,6 +3,10 @@
   views = @hbt = Handlebars.partials  
   {qs} = root.help
   
+  class exports.Repo extends View
+  
+  class exports.ModuleList extends View
+  
   class exports.Languages extends View
     events:
       'click .pagination a' : "changePage"

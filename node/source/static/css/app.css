@@ -155,7 +155,7 @@
   height: 30px;
   width: 180px;
   background: #C2CE14;
-  top: 250px;
+  top: 45%;
   left: -85px;
   transform: rotate(270deg);
   -webkit-transform: rotate(270deg);
@@ -172,12 +172,33 @@
   font-size: 16px;
   font-weight: bold;
   text-decoration: none;
+  -webkit-transition: left 0.3s ease-out;
+  -moz-transition: left 0.3s ease-out;
+  -o-transition: left 0.3s ease-out;
+  transition: left 0.3s ease-out;
 }
 .share-ideas:hover,
 .share-ideas:active,
 .share-ideas:focus {
   color: #333;
   text-decoration: none;
+}
+#shareYourThoughts {
+  background: white;
+  position: fixed;
+  z-index: 1000;
+  top: 25%;
+  left: -560px;
+  -webkit-transition: opacity 0.3s linear, left 0.3s ease-out;
+  -moz-transition: opacity 0.3s linear, left 0.3s ease-out;
+  -o-transition: opacity 0.3s linear, left 0.3s ease-out;
+  transition: opacity 0.3s linear, left 0.3s ease-out;
+}
+.show #shareYourThoughts {
+  left: 0;
+}
+.show .share-ideas {
+  left: 475px;
 }
 #ideas,
 #email {

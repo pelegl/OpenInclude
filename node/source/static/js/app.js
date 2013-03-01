@@ -400,6 +400,8 @@
       }
 
       ShareIdeas.prototype.events = {
+        'click .share-ideas': 'toggleShow',
+        'click .close': 'toggleShow',
         'click .submit': 'submit'
       };
 
@@ -407,11 +409,15 @@
         return console.log('[__ShareIdeasView__] Init');
       };
 
+      ShareIdeas.prototype.toggleShow = function() {
+        return $('.share-common').toggleClass('show');
+      };
+
       ShareIdeas.prototype.submit = function() {
         var $email, $ideas, $self;
-        $email = this.$('#email');
-        $ideas = this.$('#ideas');
-        $self = this.$(this);
+        $email = $('#email');
+        $ideas = $('#ideas');
+        $self = $('.submit');
         $self.addClass('disabled');
         $self.html("<img src=\"" + app.conf.STATIC_URL + "images/loader.gif\" alt=\"Loading...\" class=\"loader\" />");
         return $.post('/share-idea', {
@@ -424,7 +430,7 @@
             $self.html('Error occured');
           }
           return setTimeout(function() {
-            $('#shareYourThoughts').modal('hide');
+            $('.share-common').toggleClass('show');
             return setTimeout(function() {
               $self.removeClass('disabled').html('Submit');
               $email.val('');
@@ -968,6 +974,28 @@
     root = this;
     views = this.hbt = Handlebars.partials;
     qs = root.help.qs;
+    exports.Repo = (function(_super) {
+
+      __extends(Repo, _super);
+
+      function Repo() {
+        return Repo.__super__.constructor.apply(this, arguments);
+      }
+
+      return Repo;
+
+    })(View);
+    exports.ModuleList = (function(_super) {
+
+      __extends(ModuleList, _super);
+
+      function ModuleList() {
+        return ModuleList.__super__.constructor.apply(this, arguments);
+      }
+
+      return ModuleList;
+
+    })(View);
     return exports.Languages = (function(_super) {
 
       __extends(Languages, _super);
@@ -1192,15 +1220,21 @@
       };
 
       App.prototype.repo_list = function(language) {
+        console.log(arguments);
         this.reRoute();
-        return this.view = new views.Modules({
+        return this.view = new views.ModuleList({
           prevView: this.view,
           language: language
         });
       };
 
-      App.prototype.repo = function() {
-        return console.log(arguments);
+      App.prototype.repo = function(language, repo) {
+        this.reRoute();
+        return this.view = new views.Repo({
+          prevView: this.view,
+          language: language,
+          repo: repo
+        });
       };
 
       return App;
