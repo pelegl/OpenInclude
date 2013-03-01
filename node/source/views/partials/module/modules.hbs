@@ -1,11 +1,11 @@
 <div class='container module'>
   <div class='row'>
     <div class='span12'>
-      <h2>Language list</h2>
-      <ul class='unstyled' data-languages='{{prepopulation}}'>
-        {{#each languages}}
+      <h2>{{language}}: Module list</h2>
+      <ul class='unstyled' data-modules='{{prepopulation}}'>
+        {{#each modules}}
           {{#with this}}
-          <li><a href='{{../../modules_url}}/{{name}}'>{{name}}</a></li>
+          <li><a href='{{../../modules_url}}/{{../../language}}/{{module_name}}'>{{module_name}}</a></li>
           {{/with}}
         {{/each}}
       </ul>

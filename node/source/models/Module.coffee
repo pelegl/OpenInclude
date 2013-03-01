@@ -14,6 +14,11 @@ definition =
   module_name: String
   openinclude_followers: [{type: ObjectId, ref: 'User'}]
 
+statics =
+  get_module: (name, callback)->
+    @findOne {module_name: name}, callback 
+
+
 exports.definition = definition
-#exports.methods = methods
+exports.statics = statics
 

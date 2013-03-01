@@ -11,7 +11,7 @@ exports.set = (app)->
   Module controller
   ###
   app.get modules_url,         app.Controllers.module
-  app.get '#{modules_url}/*',  app.Controllers.module
+  app.get "#{modules_url}/*",  app.Controllers.module
 
   ###
   Share idea

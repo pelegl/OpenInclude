@@ -37,7 +37,13 @@ statics =
       when 'name'  then sort = {module_name: 1}        
       else sort = {stars: -1}
     
-    Repositories.find({language}).limit(limit).skip(page_number*limit).sort(sort).exec callback
+    async.parallel {
+      modules: (async_callback)=>
+        Repositories.find({language}).limit(limit).skip(page_number*limit).sort(sort).exec async_callback
+      total_count: (async_callback)=>
+        Repositories.count {language}, async_callback
+    }, callback    
+    
 
 exports.modelName   = "language_name" 
 exports.definition  = definition

@@ -4,6 +4,13 @@
     @Backbone = require 'backbone'
   
   exports.Language = Backbone.Paginator.requestPager.extend
+    toJSON: (options)->
+      return @cache[@currentPage] || []            
+    
+    comparator: (language)->
+      return language.get("name")
+    
+    cache: {}
     model: models.Language
     url: "/modules"
     paginator_core:      
@@ -21,10 +28,23 @@
         return @perPage
       
     parse: (response)->
-      languages = response.languages
+      @cache[@currentPage] = languages = response.languages      
       @totalRecords = response.total_count
       languages
     
+    goTo: (page, options) ->
+      if page isnt undefined
+        @currentPage = parseInt page, 10
+        if @cache[@currentPage]?
+          @info()
+          @trigger "sync"
+          return
+        else
+          return @pager options
+      else
+        response = new $.Deferred()
+        response.reject()
+        return response.promise()
     
   exports.Discovery = @Backbone.Collection.extend  
     parse:(r)->

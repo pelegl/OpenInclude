@@ -9,9 +9,12 @@ passport = require 'passport'
 GithubStrategy = require('passport-github').Strategy
 
 exports.db = db = mongoose.createConnection 'localhost', 'openInclude'
-#exports.git_lang_db = git_lang_db = mongoose.createConnection 'localhost', 'github_languages'
-#exports.git_modules_db = git_modules_db = mongoose.createConnection 'localhost', 'github_modules'
 
+###
+  String capitalize
+###
+String.prototype.capitalize = ->
+  return @charAt(0).toUpperCase() + @slice(1)
 
 ###
   Elastic search module

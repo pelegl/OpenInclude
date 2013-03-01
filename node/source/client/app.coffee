@@ -70,12 +70,15 @@
     
     language_list: ->
       @reRoute()
-      @view = new views.Module
+      @view = new views.Languages
         el: $('.contents')
         prevView:@view
     
-    repo_list: ->
-      console.log arguments
+    repo_list: (language) ->
+      @reRoute()
+      @view = new views.Modules
+        prevView: @view
+        language: language
       
     repo: ->
       console.log arguments
@@ -97,13 +100,20 @@
       
       $(document).delegate "a", "click", (e)->
         href = e.currentTarget.getAttribute('href')
-        if href[0] is '/' and ! /^\/auth\/.*/i.test href
+        return true unless href
+                          
+        if href[0] is '/' and ! /^\/auth\/.*/i.test(href)
           uri = if Backbone.history._hasPushState then \
             e.currentTarget.getAttribute('href').slice(1) else \
             "!/"+e.currentTarget.getAttribute('href').slice(1)
           
           app.navigate uri, {trigger:true}
           # e.preventDefault()
-          false
+          return false
+        else if href[0] is '?'
+          path = window.location.pathname
+          search = href
+          app.navigate "#{path}#{search}", {trigger: false}
+          return false
         
 )(window)

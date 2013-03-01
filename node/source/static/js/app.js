@@ -178,6 +178,13 @@
       this.Backbone = require('backbone');
     }
     exports.Language = Backbone.Paginator.requestPager.extend({
+      toJSON: function(options) {
+        return this.cache[this.currentPage] || [];
+      },
+      comparator: function(language) {
+        return language.get("name");
+      },
+      cache: {},
       model: models.Language,
       url: "/modules",
       paginator_core: {
@@ -200,9 +207,25 @@
       },
       parse: function(response) {
         var languages;
-        languages = response.languages;
+        this.cache[this.currentPage] = languages = response.languages;
         this.totalRecords = response.total_count;
         return languages;
+      },
+      goTo: function(page, options) {
+        var response;
+        if (page !== void 0) {
+          this.currentPage = parseInt(page, 10);
+          if (this.cache[this.currentPage] != null) {
+            this.info();
+            this.trigger("sync");
+          } else {
+            return this.pager(options);
+          }
+        } else {
+          response = new $.Deferred();
+          response.reject();
+          return response.promise();
+        }
       }
     });
     exports.Discovery = this.Backbone.Collection.extend({
@@ -945,26 +968,31 @@
     root = this;
     views = this.hbt = Handlebars.partials;
     qs = root.help.qs;
-    return exports.Module = (function(_super) {
+    return exports.Languages = (function(_super) {
 
-      __extends(Module, _super);
+      __extends(Languages, _super);
 
-      function Module() {
-        return Module.__super__.constructor.apply(this, arguments);
+      function Languages() {
+        return Languages.__super__.constructor.apply(this, arguments);
       }
 
-      Module.prototype.initialize = function() {
+      Languages.prototype.events = {
+        'click .pagination a': "changePage"
+      };
+
+      Languages.prototype.initialize = function() {
         var data, limit, page, preloadedData, _ref;
         console.log('[__ModuleViewInit__] Init');
+        this.context.modules_url = "/modules";
         _ref = qs.parse(window.location.search), page = _ref.page, limit = _ref.limit;
         page = page ? parseInt(page) : 0;
         limit = limit ? parseInt(limit) : 30;
         this.collection = app.meta.Languages;
-        this.listenTo(app.meta.Languages, "reset", this.render);
-        this.listenTo(app.meta.Languages, "change", this.render);
+        this.listenTo(app.meta.Languages, "sync", this.render);
         preloadedData = this.$("[data-languages]");
         if (preloadedData.length > 0) {
           data = preloadedData.data("languages");
+          this.collection.cache[page] = data.languages;
           this.collection.reset(data.languages, {
             silent: true
           });
@@ -980,16 +1008,50 @@
         }
       };
 
-      Module.prototype.render = function() {
-        var html;
+      Languages.prototype.changePage = function(e) {
+        var href, loader, page, view;
+        href = $(e.currentTarget).attr("href");
+        if (href) {
+          page = href.replace(/.*page=([0-9]+).*/, "$1");
+          page = page ? parseInt(page) : 0;
+          delete this.context.prev;
+          delete this.context.next;
+          view = this.$("ul[data-languages]");
+          view.height(view.height());
+          loader = new exports.Loader().$el;
+          view.html("").append($("<li />").append(loader));
+          return this.collection.goTo(page, {
+            update: true,
+            remove: false
+          });
+        }
+      };
+
+      Languages.prototype.render = function() {
+        var currentPage, html, i, totalPages, _i, _ref;
         this.context.languages = this.collection.toJSON();
+        _ref = this.collection.info(), totalPages = _ref.totalPages, currentPage = _ref.currentPage;
+        this.context.pages = [];
+        for (i = _i = 1; 1 <= totalPages ? _i <= totalPages : _i >= totalPages; i = 1 <= totalPages ? ++_i : --_i) {
+          this.context.pages.push({
+            text: i,
+            link: i - 1,
+            isActive: currentPage + 1 === i
+          });
+        }
+        if (currentPage > 0) {
+          this.context.prev = (currentPage - 1).toString();
+        }
+        if (totalPages - 1 > currentPage) {
+          this.context.next = currentPage + 1;
+        }
         html = views['module/index'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'module');
         return this;
       };
 
-      return Module;
+      return Languages;
 
     })(View);
   }).call(this, window.views);
@@ -1123,14 +1185,18 @@
 
       App.prototype.language_list = function() {
         this.reRoute();
-        return this.view = new views.Module({
+        return this.view = new views.Languages({
           el: $('.contents'),
           prevView: this.view
         });
       };
 
-      App.prototype.repo_list = function() {
-        return console.log(arguments);
+      App.prototype.repo_list = function(language) {
+        this.reRoute();
+        return this.view = new views.Modules({
+          prevView: this.view,
+          language: language
+        });
       };
 
       App.prototype.repo = function() {
@@ -1157,12 +1223,22 @@
         });
         app.init();
         return $(document).delegate("a", "click", function(e) {
-          var href, uri;
+          var href, path, search, uri;
           href = e.currentTarget.getAttribute('href');
+          if (!href) {
+            return true;
+          }
           if (href[0] === '/' && !/^\/auth\/.*/i.test(href)) {
             uri = Backbone.history._hasPushState ? e.currentTarget.getAttribute('href').slice(1) : "!/" + e.currentTarget.getAttribute('href').slice(1);
             app.navigate(uri, {
               trigger: true
+            });
+            return false;
+          } else if (href[0] === '?') {
+            path = window.location.pathname;
+            search = href;
+            app.navigate("" + path + search, {
+              trigger: false
             });
             return false;
           }
