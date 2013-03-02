@@ -722,7 +722,7 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   buffer += escapeExpression(stack1)
     + "'>\n      <h2>"
     + escapeExpression(((stack1 = ((stack1 = depth0.module),stack1 == null || stack1 === false ? stack1 : stack1.module_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h2>\n      <!-- actual module data -->\n    </div>\n  </div>  \n</div>";
+    + "</h2>\n      <div class='readme'>\n        readme placeholder\n      </div>\n      <div class='row'>\n        <div class='span6'>\n          stars over time placeholder\n        </div>\n        <div class='span6'>\n          questions/answers over time\n        </div>\n      </div>\n      <div>\n        commits over time\n      </div>\n    </div>\n  </div>  \n</div>";
   return buffer;
   }));
 
