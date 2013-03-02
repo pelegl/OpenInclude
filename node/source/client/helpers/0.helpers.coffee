@@ -2,7 +2,9 @@
   if isServer
     @Backbone = require 'backbone'        
   root = @
-
+  
+  String.prototype.capitalize = ->
+    return @charAt(0).toUpperCase() + @slice(1)
 
   exports.qs = 
     stringify:(obj)->

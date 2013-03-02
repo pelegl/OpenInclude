@@ -6,6 +6,9 @@
       this.Backbone = require('backbone');
     }
     root = this;
+    String.prototype.capitalize = function() {
+      return this.charAt(0).toUpperCase() + this.slice(1);
+    };
     return exports.qs = {
       stringify: function(obj) {
         var key, string, v, value, _i, _len;
@@ -82,6 +85,13 @@
     exports.Language = this.Backbone.Model.extend({
       idAttribute: "name",
       urlRoot: "/modules"
+    });
+    exports.Repo = this.Backbone.Model.extend({
+      idAttribute: "_id",
+      urlRoot: "/modules",
+      url: function() {
+        return "" + this.urlRoot + "/" + (this.get('language')) + "/" + (this.get('module_name'));
+      }
     });
     return exports.Discovery = this.Backbone.Model.extend({
       /*        
@@ -169,49 +179,29 @@
 }).call(this);
 
 (function() {
-  var __slice = [].slice;
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __slice = [].slice;
 
   (function(exports, isServer) {
-    var api;
+    var api, requestPager;
     api = "/api/v.1";
     if (isServer) {
       this.Backbone = require('backbone');
     }
-    exports.Language = Backbone.Paginator.requestPager.extend({
-      toJSON: function(options) {
+    requestPager = (function(_super) {
+
+      __extends(requestPager, _super);
+
+      function requestPager() {
+        return requestPager.__super__.constructor.apply(this, arguments);
+      }
+
+      requestPager.prototype.toJSON = function(options) {
         return this.cache[this.currentPage] || [];
-      },
-      comparator: function(language) {
-        return language.get("name");
-      },
-      cache: {},
-      model: models.Language,
-      url: "/modules",
-      paginator_core: {
-        type: 'GET',
-        dataType: 'json',
-        url: '/modules?'
-      },
-      paginator_ui: {
-        firstPage: 0,
-        currentPage: 0,
-        perPage: 30
-      },
-      server_api: {
-        'page': function() {
-          return this.currentPage;
-        },
-        'limit': function() {
-          return this.perPage;
-        }
-      },
-      parse: function(response) {
-        var languages;
-        this.cache[this.currentPage] = languages = response.languages;
-        this.totalRecords = response.total_count;
-        return languages;
-      },
-      goTo: function(page, options) {
+      };
+
+      requestPager.prototype.goTo = function(page, options) {
         var response;
         if (page !== void 0) {
           this.currentPage = parseInt(page, 10);
@@ -226,6 +216,80 @@
           response.reject();
           return response.promise();
         }
+      };
+
+      requestPager.prototype.cache = {};
+
+      requestPager.prototype.paginator_core = {
+        type: 'GET',
+        dataType: 'json',
+        url: function() {
+          if (typeof this.url !== 'function') {
+            return "" + this.url + "?";
+          }
+          return "" + (this.url()) + "?";
+        }
+      };
+
+      requestPager.prototype.paginator_ui = {
+        firstPage: 0,
+        currentPage: 0,
+        perPage: 30
+      };
+
+      requestPager.prototype.server_api = {
+        'page': function() {
+          return this.currentPage;
+        },
+        'limit': function() {
+          return this.perPage;
+        }
+      };
+
+      requestPager.prototype.preload_data = function(page, limit, data, total_count) {
+        this.cache[page] = data;
+        this.reset(data, {
+          silent: true
+        });
+        return this.bootstrap({
+          totalRecords: parseInt(total_count),
+          perPage: limit,
+          currentPage: page
+        });
+      };
+
+      return requestPager;
+
+    })(this.Backbone.Paginator.requestPager);
+    exports.Language = requestPager.extend({
+      comparator: function(language) {
+        return language.get("name");
+      },
+      model: models.Language,
+      url: "/modules",
+      parse: function(response) {
+        var languages;
+        this.cache[this.currentPage] = languages = response.languages;
+        this.totalRecords = response.total_count;
+        return languages;
+      }
+    });
+    exports.Modules = requestPager.extend({
+      initialize: function(models, options) {
+        return this.language = options.language || "";
+      },
+      comparator: function(module) {
+        return module.get("watchers");
+      },
+      model: models.Repo,
+      url: function() {
+        return "/modules/" + this.language;
+      },
+      parse: function(response) {
+        var modules;
+        this.cache[this.currentPage] = modules = response.modules;
+        this.totalRecords = response.total_count;
+        return modules;
       }
     });
     exports.Discovery = this.Backbone.Collection.extend({
@@ -970,10 +1034,11 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var qs, root, views;
+    var modules_url, qs, root, views;
     root = this;
     views = this.hbt = Handlebars.partials;
     qs = root.help.qs;
+    modules_url = "/modules";
     exports.Repo = (function(_super) {
 
       __extends(Repo, _super);
@@ -981,6 +1046,39 @@
       function Repo() {
         return Repo.__super__.constructor.apply(this, arguments);
       }
+
+      Repo.prototype.events = {};
+
+      Repo.prototype.initialize = function(opts) {
+        var preloadedData;
+        this.language = opts.language, this.repo = opts.repo;
+        this.model = new models.Repo({
+          language: this.language,
+          module_name: this.repo
+        });
+        this.context = {
+          modules_url: modules_url
+        };
+        this.listenTo(this.model, "sync", this.render);
+        preloadedData = this.$("[data-repo]");
+        if (preloadedData.length > 0) {
+          this.model.set(preloadedData.data("repo"), {
+            silent: true
+          });
+          return this.render();
+        } else {
+          return this.model.fetch();
+        }
+      };
+
+      Repo.prototype.render = function() {
+        var html;
+        this.context.module = this.model.toJSON();
+        html = views['module/view'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'module-list');
+        return this;
+      };
 
       return Repo;
 
@@ -992,6 +1090,87 @@
       function ModuleList() {
         return ModuleList.__super__.constructor.apply(this, arguments);
       }
+
+      ModuleList.prototype.events = {
+        'click .pagination a': "changePage"
+      };
+
+      ModuleList.prototype.initialize = function(opts) {
+        var data, limit, page, preloadedData, _ref;
+        console.log('[__ModuleListView__] Init');
+        this.language = opts.language;
+        this.context = {
+          modules_url: modules_url,
+          language: this.language.capitalize()
+        };
+        _ref = qs.parse(window.location.search), page = _ref.page, limit = _ref.limit;
+        page = page ? parseInt(page) : 0;
+        limit = limit ? parseInt(limit) : 30;
+        /*
+                Init collection
+        */
+
+        this.collection = new collections.Modules(null, {
+          language: this.language
+        });
+        this.listenTo(this.collection, "sync", this.render);
+        preloadedData = this.$("[data-modules]");
+        if (preloadedData.length > 0) {
+          data = preloadedData.data("modules");
+          this.collection.preload_data(page, limit, data.modules, data.total_count);
+          return this.render();
+        } else {
+          this.$el.append(new exports.Loader);
+          return this.collection.pager();
+        }
+      };
+
+      ModuleList.prototype.changePage = function(e) {
+        var href, loader, page, view;
+        href = $(e.currentTarget).attr("href");
+        if (href) {
+          page = href.replace(/.*page=([0-9]+).*/, "$1");
+          page = page ? parseInt(page) : 0;
+          delete this.context.prev;
+          delete this.context.next;
+          view = this.$("ul[data-modules]");
+          view.height(view.height());
+          loader = new exports.Loader().$el;
+          view.html("").append($("<li />").append(loader));
+          return this.collection.goTo(page, {
+            update: true,
+            remove: false
+          });
+        }
+      };
+
+      ModuleList.prototype.render = function() {
+        var currentPage, html, i, totalPages, _i, _ref;
+        this.context.modules = this.collection.toJSON();
+        _ref = this.collection.info(), totalPages = _ref.totalPages, currentPage = _ref.currentPage;
+        if (totalPages > 0) {
+          this.context.pages = [];
+          for (i = _i = 1; 1 <= totalPages ? _i <= totalPages : _i >= totalPages; i = 1 <= totalPages ? ++_i : --_i) {
+            this.context.pages.push({
+              text: i,
+              link: i - 1,
+              isActive: currentPage + 1 === i
+            });
+          }
+          if (currentPage > 0) {
+            this.context.prev = (currentPage - 1).toString();
+          }
+          if (totalPages - 1 > currentPage) {
+            this.context.next = currentPage + 1;
+          }
+        } else {
+          delete this.context.pages;
+        }
+        html = views['module/modules'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'module-list');
+        return this;
+      };
 
       return ModuleList;
 
@@ -1011,24 +1190,28 @@
       Languages.prototype.initialize = function() {
         var data, limit, page, preloadedData, _ref;
         console.log('[__ModuleViewInit__] Init');
-        this.context.modules_url = "/modules";
+        /*
+                Context
+        */
+
+        this.context.modules_url = modules_url;
+        /*
+                QS limits
+        */
+
         _ref = qs.parse(window.location.search), page = _ref.page, limit = _ref.limit;
         page = page ? parseInt(page) : 0;
         limit = limit ? parseInt(limit) : 30;
         this.collection = app.meta.Languages;
-        this.listenTo(app.meta.Languages, "sync", this.render);
+        this.listenTo(this.collection, "sync", this.render);
+        /*
+                Pager setup
+        */
+
         preloadedData = this.$("[data-languages]");
         if (preloadedData.length > 0) {
           data = preloadedData.data("languages");
-          this.collection.cache[page] = data.languages;
-          this.collection.reset(data.languages, {
-            silent: true
-          });
-          this.collection.bootstrap({
-            totalRecords: parseInt(data.total_count),
-            perPage: limit,
-            currentPage: page
-          });
+          this.collection.preload_data(page, limit, data.languages, data.total_count);
           return this.render();
         } else {
           this.$el.append(new exports.Loader);
@@ -1059,23 +1242,27 @@
         var currentPage, html, i, totalPages, _i, _ref;
         this.context.languages = this.collection.toJSON();
         _ref = this.collection.info(), totalPages = _ref.totalPages, currentPage = _ref.currentPage;
-        this.context.pages = [];
-        for (i = _i = 1; 1 <= totalPages ? _i <= totalPages : _i >= totalPages; i = 1 <= totalPages ? ++_i : --_i) {
-          this.context.pages.push({
-            text: i,
-            link: i - 1,
-            isActive: currentPage + 1 === i
-          });
-        }
-        if (currentPage > 0) {
-          this.context.prev = (currentPage - 1).toString();
-        }
-        if (totalPages - 1 > currentPage) {
-          this.context.next = currentPage + 1;
+        if (totalPages > 0) {
+          this.context.pages = [];
+          for (i = _i = 1; 1 <= totalPages ? _i <= totalPages : _i >= totalPages; i = 1 <= totalPages ? ++_i : --_i) {
+            this.context.pages.push({
+              text: i,
+              link: i - 1,
+              isActive: currentPage + 1 === i
+            });
+          }
+          if (currentPage > 0) {
+            this.context.prev = (currentPage - 1).toString();
+          }
+          if (totalPages - 1 > currentPage) {
+            this.context.next = currentPage + 1;
+          }
+        } else {
+          delete this.context.pages;
         }
         html = views['module/index'](this.context);
         this.$el.html(html);
-        this.$el.attr('view-id', 'module');
+        this.$el.attr('view-id', 'language-list');
         return this;
       };
 
@@ -1223,6 +1410,7 @@
         console.log(arguments);
         this.reRoute();
         return this.view = new views.ModuleList({
+          el: $('.contents'),
           prevView: this.view,
           language: language
         });
@@ -1231,6 +1419,7 @@
       App.prototype.repo = function(language, repo) {
         this.reRoute();
         return this.view = new views.Repo({
+          el: $('.contents'),
           prevView: this.view,
           language: language,
           repo: repo
@@ -1248,7 +1437,9 @@
       app.meta = new views.MetaView({
         el: $('body')
       });
-      app.shareIdeas = new views.ShareIdeas;
+      app.shareIdeas = new views.ShareIdeas({
+        el: $('.share-common')
+      });
       app.session = new models.Session();
       app.session.fetch();
       return app.session.once("change", function() {

@@ -18,7 +18,7 @@ class ModuleController extends require('./basicController')
     
     
     @language       = segments[1] if segments[1]? 
-    @moduleName         = segments[2] if segments[2]?
+    @moduleName     = segments[2] if segments[2]?
     @get            = segments[3..] if segments.length > 3
         
     @app = @req.app
@@ -61,13 +61,14 @@ class ModuleController extends require('./basicController')
         if @req.xhr
           @res.json output
         else
-          totalPages = Math.ceil(output.total_count/limit)
-          @context.pages = []
-          for i in [1..totalPages]
-            @context.pages.push {text: i, isActive: pageNumber-1 is i}
+          totalPages = Math.ceil(output.total_count/limit)          
+          if totalPages > 0
+            @context.pages = []
+            for i in [1..totalPages]
+              @context.pages.push {text: i, isActive: pageNumber-1 is i}
           
-          @context.prev = (pageNumber - 1).toString() if pageNumber > 0             
-          @context.next = pageNumber + 1 if totalPages-1 > pageNumber
+            @context.prev = (pageNumber - 1).toString() if pageNumber > 0             
+            @context.next = pageNumber + 1 if totalPages-1 > pageNumber
            
           @context.prepopulation  = JSON.stringify output
           @context.languages      = output.languages
@@ -89,11 +90,12 @@ class ModuleController extends require('./basicController')
           @res.json output
         else        
           totalPages = Math.ceil(output.total_count/limit)
-          @context.pages = []
-          for i in [1..totalPages]
-            @context.pages.push {text:i, isActive: pageNumber-1 is 1}
-          @context.prev = (pageNumber - 1).toString() if pageNumber > 0
-          @context.next = pageNUmber + 1 if totalPages-1 > pageNumber
+          if totalPages > 0
+            @context.pages = []
+            for i in [1..totalPages]
+              @context.pages.push {text:i, isActive: pageNumber-1 is 1}
+            @context.prev = (pageNumber - 1).toString() if pageNumber > 0
+            @context.next = pageNUmber + 1 if totalPages-1 > pageNumber
           
           @context.prepopulation  = JSON.stringify output
           @context.modules        = output.modules
@@ -110,11 +112,12 @@ class ModuleController extends require('./basicController')
         if @req.xhr
           @res.json module
         else
+          @context.prepopulate = JSON.stringify module
           @context.module = module
           @context.body   = @_view 'module/view', @context
           @res.render 'base', @context
       else
-        res.send "Not found", 404
+        @res.send "Not found", 404
 
 module.exports = (req,res)->
   new ModuleController req, res

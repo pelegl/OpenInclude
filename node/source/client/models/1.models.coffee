@@ -13,6 +13,12 @@
    exports.Language = @Backbone.Model.extend
      idAttribute: "name"
      urlRoot: "/modules"
+     
+   exports.Repo     = @Backbone.Model.extend
+     idAttribute: "_id"
+     urlRoot: "/modules"
+     url: ->
+       return "#{@urlRoot}/#{@get('language')}/#{@get('module_name')}"
    
    exports.Discovery = @Backbone.Model.extend
       ###        

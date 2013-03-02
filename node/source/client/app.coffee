@@ -24,8 +24,8 @@
     init: -> 
       if !Backbone.history._hasPushState        
         hash = Backbone.history.getHash()
-        @navigate('', {trigger:false})
-        @navigate(hash, {trigger:true})
+        @navigate '',   {trigger:false}
+        @navigate hash, {trigger:true}
 
     reRoute:->
       if !Backbone.history._hasPushState and Backbone.history.getFragment().slice(0,2) isnt '!/'
@@ -78,12 +78,14 @@
       console.log arguments
       @reRoute()
       @view = new views.ModuleList
+        el: $('.contents')
         prevView: @view
         language: language
       
     repo: (language, repo)->
       @reRoute()
       @view = new views.Repo
+        el: $('.contents')
         prevView: @view
         language: language
         repo: repo
@@ -93,9 +95,9 @@
     console.log '[__app__] init done!'
     exports.app = app = new App()
     
-    app.meta = new views.MetaView el:$('body')
-    app.shareIdeas = new views.ShareIdeas
-    app.session = new models.Session()
+    app.meta        = new views.MetaView el:$('body')
+    app.shareIdeas  = new views.ShareIdeas el:$('.share-common')
+    app.session     = new models.Session()
     app.session.fetch()
     
     app.session.once "change", =>

@@ -9,30 +9,32 @@
           {{/with}}
         {{/each}}
       </ul>
-      <div class="pagination pagination-centered">
-        <ul>
-          {{#if prev}}
-          <li><a href="?page={{prev}}">Prev</a></li>
-          {{else}}
-          <li class='disabled'><a>Prev</a></li>
-          {{/if}}
-          
-          {{#each pages}}
-            {{#with this}}
-            <li {{#if isActive}}class='active'{{/if}}>
-              <a href="?page={{link}}">{{text}}</a>
-            </li>
-            {{/with}}
-          {{/each}}
-          
-          {{#if next}}
-          <li><a href="?page={{next}}">Next</a></li>
-          {{else}}
-          <li class='disabled'><a>Next</a></li>
-          {{/if}}      
-              
-        </ul>
-      </div>
+      {{#if pages}}
+        <div class="pagination pagination-centered">
+          <ul>
+            {{#if prev}}
+            <li><a href="?page={{prev}}">Prev</a></li>
+            {{else}}
+            <li class='disabled'><a>Prev</a></li>
+            {{/if}}
+            
+            {{#each pages}}
+              {{#with this}}
+              <li {{#if isActive}}class='active'{{/if}}>
+                <a href="?page={{link}}">{{text}}</a>
+              </li>
+              {{/with}}
+            {{/each}}
+            
+            {{#if next}}
+            <li><a href="?page={{next}}">Next</a></li>
+            {{else}}
+            <li class='disabled'><a>Next</a></li>
+            {{/if}}      
+                
+          </ul>
+        </div>
+      {{/if}}
     </div>
   </div>  
 </div>

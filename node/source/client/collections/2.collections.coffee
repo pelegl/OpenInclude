@@ -3,34 +3,9 @@
   if isServer
     @Backbone = require 'backbone'
   
-  exports.Language = Backbone.Paginator.requestPager.extend
+  class requestPager extends @Backbone.Paginator.requestPager 
     toJSON: (options)->
-      return @cache[@currentPage] || []            
-    
-    comparator: (language)->
-      return language.get("name")
-    
-    cache: {}
-    model: models.Language
-    url: "/modules"
-    paginator_core:      
-      type: 'GET'      
-      dataType: 'json'      
-      url: '/modules?'
-    paginator_ui:      
-      firstPage: 0
-      currentPage: 0
-      perPage: 30
-    server_api:
-      'page': ->
-        return @currentPage
-      'limit': ->
-        return @perPage
-      
-    parse: (response)->
-      @cache[@currentPage] = languages = response.languages      
-      @totalRecords = response.total_count
-      languages
+      return @cache[@currentPage] || []
     
     goTo: (page, options) ->
       if page isnt undefined
@@ -45,6 +20,67 @@
         response = new $.Deferred()
         response.reject()
         return response.promise()
+        
+    cache: {}
+    
+    paginator_core:      
+      type: 'GET'      
+      dataType: 'json'      
+      url: ->
+        return "#{@url}?" if typeof @url isnt 'function'
+        return "#{@url()}?"
+        
+    
+    paginator_ui:      
+      firstPage: 0
+      currentPage: 0
+      perPage: 30  
+    
+    server_api:
+      'page': ->
+        return @currentPage
+      'limit': ->
+        return @perPage
+  
+    preload_data: (page, limit, data, total_count)-> 
+      @cache[page] = data
+      @reset data, {silent: true}
+      @bootstrap
+        totalRecords: parseInt(total_count)
+        perPage: limit
+        currentPage: page
+  
+  exports.Language = requestPager.extend
+    
+    comparator: (language)->
+      return language.get("name")
+    
+    model: models.Language
+    
+    url: "/modules"
+    
+    parse: (response)->
+      @cache[@currentPage] = languages = response.languages      
+      @totalRecords = response.total_count
+      languages    
+  
+  exports.Modules = requestPager.extend
+    initialize: (models, options)->
+      @language = options.language || ""
+    
+    comparator: (module)->
+      return module.get("watchers")
+    
+    model: models.Repo
+    
+    url: ->
+      return "/modules/#{@language}"
+      
+    parse: (response)->
+      @cache[@currentPage] = modules = response.modules
+      @totalRecords = response.total_count
+      modules
+    
     
   exports.Discovery = @Backbone.Collection.extend  
     parse:(r)->
