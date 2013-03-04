@@ -95,7 +95,7 @@ class ModuleController extends require('./basicController')
             for i in [1..totalPages]
               @context.pages.push {text:i, isActive: pageNumber-1 is 1}
             @context.prev = (pageNumber - 1).toString() if pageNumber > 0
-            @context.next = pageNUmber + 1 if totalPages-1 > pageNumber
+            @context.next = pageNumber + 1 if totalPages-1 > pageNumber
           
           @context.prepopulation  = JSON.stringify output
           @context.modules        = output.modules

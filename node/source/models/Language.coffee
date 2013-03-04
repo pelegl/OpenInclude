@@ -32,7 +32,7 @@ statics =
       
   get_siblings: (language, opts..., callback)->
     page_number = parseInt(opts[0]) || 0
-    limit       = parseInt(opts[0]) || 30
+    limit       = parseInt(opts[1]) || 30
     switch opts[3]        
       when 'name'  then sort = {module_name: 1}        
       else sort = {stars: -1}

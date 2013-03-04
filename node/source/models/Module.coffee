@@ -7,6 +7,7 @@ definition =
   owner: String
   is_a_fork: Boolean
   watchers: Number
+  stars: Number
   language: String
   created: Date
   pushed_at: Date
