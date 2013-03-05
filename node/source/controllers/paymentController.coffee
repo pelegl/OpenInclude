@@ -19,30 +19,25 @@ class PaymentController extends require('./basicController')
     		@res.send err
     		@res.statusCode = 500
 		
+billCustomer: ->
+  stripeModel.methods.billCustomer "customerId", "500", (err, charge) ->
+    if not err
+      stripeObj =
+        chargeid: charge.id
+        date: charge.created
 
-  billCustomer:->
-  	stripeModel.methods.billCustomer "customerId","500",(err,charge)=>
-    	if not err 
-    		stripeObj =
-    			chargeid : charge.id
-    			date: charge.created 
-#				rate: Number
-#				fee:  Number
-#				hours: Number
-#				client: ObjectId
-#				receivepayment: Number
-#				chargeid:String    			
-    		billed = new stripeModel stripeObj
-    		billed.save (error,stripe)=>
-    			if not error
-    				@res.send charge
-    				@res.statusCode = 201
-    			else
-					@res.send error
-					@res.statusCode = 500
-		else
-			@res.send err
-			@res.statusCode = 500
+      billed = new stripeModel(stripeObj)
+      billed.save (error, stripe) =>
+        unless error
+          @res.send charge
+          @res.statusCode = 201
+        else
+          @res.send error
+          @res.statusCode = 500
+
+    else
+      @res.send err
+      @res.statusCode = 500
 		
 module.exports = (req,res)->
   new PaymentController req, res
