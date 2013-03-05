@@ -23,7 +23,7 @@ methods =
 		  	exp_year:expyear
 		  	cvc:cvc
 		  , (err,customer) ->
-		  	return callback(err,charge)
+		  	return callback(err,customer)
   # Method to bill a customer from Stripe  
 	billCustomer:(customerId,amount,callback) ->
 		console.log "Charging the client" 
