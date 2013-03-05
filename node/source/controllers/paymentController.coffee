@@ -41,7 +41,7 @@ class PaymentController extends require('./basicController')
 					@res.send error
 					@res.statusCode = 500
 		else
-			@res.send error
+			@res.send err
 			@res.statusCode = 500
 		
 module.exports = (req,res)->
