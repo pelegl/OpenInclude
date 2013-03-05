@@ -1,7 +1,8 @@
 ObjectId = require('mongoose').Schema.Types.ObjectId
+
 api_key = 'sk_test_nKT89JJk0amZjpRcjIrCr1kX'
 stripe = require("stripe")(api_key)
-schema =
+definition =
   	date: Date #date of payment
 	rate: Number #payment rate
 	fee:  Number #fee to our system
@@ -9,9 +10,8 @@ schema =
 	client: ObjectId #client that paid
 	receivepayment: Number #developer or project manager that receives the payment
 	chargeid:String
-#Schema.plugin require("./plugins/stripe")
 
-methods = 
+statics = 
 #Method to add a customer to Stripe
 	addCustomer: (desc, cardnum, expmonth, expyear,cvc,callback) ->
 		console.log "Customer creation action"
@@ -34,5 +34,5 @@ methods =
 		  , (err,charge) ->
 		  	return callback(err,charge)
 		  			  	
-exports.schema = schema
-exports.methods = methods
+exports.definition = definition
+exports.statics = statics
