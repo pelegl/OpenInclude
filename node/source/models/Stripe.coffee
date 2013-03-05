@@ -13,7 +13,7 @@ schema =
 
 methods = 
 #Method to add a customer to Stripe
-	addCustomer: (desc, cardnum, expmonth, expyear,cvc) ->
+	addCustomer: (desc, cardnum, expmonth, expyear,cvc,callback) ->
 		console.log "Customer creation action"
 		stripe.customers.create
 		  description: desc
