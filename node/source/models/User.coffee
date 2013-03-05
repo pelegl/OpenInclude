@@ -6,7 +6,7 @@ definition =
   github_username: String
   github_avatar_url: String
   status: { type: ObjectId, ref: 'Module' }
-
+  group_id: {type:String, enum:["admin","developer","project manager","client"]}
 methods =
   public_info: ->
     return {@github_id, @github_display_name, @github_username, @github_avatar_url, is_authenticated: true}
