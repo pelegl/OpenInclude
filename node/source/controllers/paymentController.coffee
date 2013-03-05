@@ -20,7 +20,7 @@ class PaymentController extends require('./basicController')
     		@res.statusCode = 500
 		
 billCustomer: ->
-  stripeModel.methods.billCustomer "customerId", "500", (err, charge) ->
+  stripeModel.methods.billCustomer "customerId", "500", (err, charge) =>
     if not err
       stripeObj =
         chargeid: charge.id
