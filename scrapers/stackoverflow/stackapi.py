@@ -1,98 +1,57 @@
 __author__ = 'Alexey'
 
-# from stackpy import Site
-#
-# site = Site('stackoverflow')
-# question = site.questions(1732348).filter('withbody')[0]
-#
-# print '--- %s ---' % question.title
-# print question.body
-
 import stackexchange
-import codecs
 import pymongo
 
 MONGODB_IP = 'ec2-107-20-8-160.compute-1.amazonaws.com'
-
-
-def get_all_question(file):
-    i = 0
-    for q in so.recent_questions():#unanswered():
-        i += 1
-        file.write(u'%d. %s\n\tTAGS: ' % (i, q.title))
-        for tag in q.tags:
-            file.write(tag + u', ')
-        file.write(u'\n')
-        print i, q.title
-        if i >= 1000:
-            break
-
-
-so = stackexchange.Site(stackexchange.StackOverflow)
+DB_NAME = 'openIncludeCopy'
 
 #mongoConn = pymongo.MongoClient(MONGODB_IP, 27017)
 mongoConn = pymongo.MongoClient()
 
-db = mongoConn['openIncludeCopy']
-modules = db['modules']
-# db.drop_collection('module_so')
+db = mongoConn[DB_NAME]
 module_so = db['module_so']
 
-# without body
-def insert_q_to_db(q, module_id):
-    qd = dict()
-    if module_id != None:
-        qd['module_id'] = module_id
+so = stackexchange.Site(stackexchange.StackOverflow)
+# so.impose_throttling = True
+# so.throttle_stop = False
+
+last_page = 0
+last_question = None
+def add_question(q, collection, additional_fields = dict()):
+    qd = dict(additional_fields)
     for f in q.json_ob.__dict__:
         if f[-3:] != u'url' and f != u'_params_':
             qd[f] = getattr(q.json_ob, f)
+    collection.insert(qd)
+    global last_question
+    last_question = q
 
-    # myq = so.question(q.id, body=True, answes=True, comments=True)
-    #
-    # # q.answers.fetch()
-    # if len(myq.answers) > 0:
-    #     print len(q.answers)
-
-    module_so.insert(qd)
-
-# so.impose_throttling = True
-so.throttle_stop = False
-
-# file = codecs.open('questions_2.txt', "w", "utf-8")
-# file = open('questions.txt', 'w')
 i = 0
-for q in so.questions(page=800):
-    i += 1
-    insert_q_to_db(q, None)
-    print '.',
-    if i % 100 == 0:
-        print '\n', i,
-exit()
-for module in modules.find().sort('watchers', pymongo.DESCENDING).skip(100).limit(100):
-    name = str(module['module_name']).lower()
-    # for name in ['nokogiri', 'derby', 'cubism']:
-    print name,
-    i = 0
-    # tag_search_res = so.search(tagged=name, body=True, answes=True, comments=True)
-    # for q in tag_search_res:
-    #     i+=1
-    #     # if i>= 10:
-    #     #     break
-    # print i
-    # if len(tag_search_res) == 0:
-    #     i = 0
-    for q in so.search(intitle=name):#, body=True, answes=True, comments=True):
+
+def get_question(page = 0):
+    global i
+    for q in so.questions(page=page):
         i += 1
-        insert_q_to_db(q, module['_id'])
-        if i >= 1000:
-            break
+        add_question(q, module_so)
         print '.',
-    print '\n', i
+        if i % 100 == 0:
+            print '\n', i,
 
+params = db['module_so_params']
+last_res = params.find().sort('date', pymongo.DESCENDING).limit(1)
 
-# file.close()
-# my_favourite_guy = so.user(41981)
-# print my_favourite_guy.reputation.format()
-# print len(my_favourite_guy.answers), 'answers'
-
-print so.requests_used, so.requests_left
+if last_res.count() > 0:
+    res = last_res[0]
+    last_page = res['start_page'] + ( res['add_count'] / 30 )
+else:
+    last_page = 3150
+import urllib2
+from datetime import datetime
+try:
+    print last_page
+    get_question(last_page)
+except urllib2.HTTPError as e:
+    all_q_count = module_so.find().count()
+    add_question(last_question, params, {'count': all_q_count, 'add_count': i, 'start_page': last_page, 'date': datetime.now(), 'exeption': str(e)})
+    print all_q_count, i
