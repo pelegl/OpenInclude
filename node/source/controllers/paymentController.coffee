@@ -1,6 +1,6 @@
 {get_models,esClient} = require '../conf'
 
-[Stripe] = get_models ["Stripe"]
+[Stripe,User] = get_models ["Stripe","User"]
 
 class PaymentController extends require('./basicController')
   constructor: (@req, @res)->
@@ -11,19 +11,27 @@ class PaymentController extends require('./basicController')
   index: ->  	
     @context.body = @_view 'payment/index', @context    
     @res.render 'base', @context
-    
+  
+  test: ->
+    User.get_user '261220',(err,user) =>
+    	@res.send user
+    	
     #adds a customer
-  addCustomer:->  	
-    Stripe.addCustomer "John Brittas","371449635398431","4","2014","222",(err,customer)=>
-    	if not err
-    		@res.send customer
-    		@res.statusCode = 201
-    	else
-    		@res.send err
-    		@res.statusCode = 500
+  addCustomer:->
+#  	if req.user
+#  		user = 
+	    Stripe.addCustomer '261220',"Tom Hanks","371449635398431","4","2014","222",(err,customer)=>
+	    	if not err
+	    		console.log customer
+	    		@res.send customer
+	    		@res.statusCode = 201
+	    	else
+	    		console.log err
+	    		@res.send err
+	    		@res.statusCode = 500
 	#Bills a customer	
   billCustomer: ->
-    Stripe.billCustomer "cus_1P5NK9r3oTMsvZ", "500", (err, charge) =>
+    Stripe.billCustomer "261220", "500", (err, charge) =>
       if not err
         stripeObj =
           chargeid: charge.id
