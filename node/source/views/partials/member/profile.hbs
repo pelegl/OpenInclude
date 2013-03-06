@@ -1,14 +1,48 @@
 <div class='container profile'>
 	<div class='row'>
-		<div class='span12'>
-			<h2>{{ title }}</h2>
-			<h3>GitHub profile data</h3>
-			<ul class='unstyled'>
-			    <li><img src="{{ user.github_avatar_url }}"></img></li>
-			    <li>{{ user.github_display_name }}</li>
-			    <li>{{ user.github_username }}</li>
-			    <li>{{ user.github_id }}</li>
-			</ul>
+		<div class='span12'>					
+			<div class='row'>
+			  <div class='span4'>
+			    <div class='personalInformation'>
+			      <img src="http://www.gravatar.com/avatar/{{ user.github_avatar_url }}?s=210" class='avatar'  />
+            <h3>{{ user.github_display_name }}</h3>
+            <h4><a href='https://github.com/{{ user.github_username }}' target="_blank" class='muted'>{{ user.github_username }}</a></h4>
+            <hr />
+            <h4>Account type</h4>
+            <div class='accountType'>
+              <div class='type'>
+                <p>Merchant
+                <span class='status'>
+                {{#if user.merchant}}
+                <i class='icon-ok'></i>
+                {{else}}
+                <a href='{{merchant_agreement}}' class='btn btn-success btn-mini'>Sign Up</a>
+                {{/if}}
+                </span>
+                </p>                
+              </div>
+              <div class='type'>
+                <p>Developer
+                <span class='status'>
+                {{#if user.developer}}
+                  <i class='icon-ok'></i>
+                {{else}}
+                  <a href='{{developer_agreement}}' class='btn btn-success btn-mini'>Sign Up</a>
+                {{/if}}
+                </span>
+                </p>
+              </div>
+            </div>
+            <hr />
+            <div class='contactData'>
+              <div class='contact'>
+                <i class='icon-envelope'></i> <a class='muted' href="mailto:{{ user.github_email }}">{{ user.github_email }}</a>
+              </div>
+            </div>
+			    </div>			             
+			  </div>
+			  <div class='span8 informationBox'>{{{informationBox}}}</div>
+			</div>
 		</div>
 	</div>
 </div>

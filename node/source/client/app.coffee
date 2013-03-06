@@ -1,27 +1,21 @@
-((exports)->  
+((exports)->
+  conf = 
+    STATIC_URL          : "/static/"
+    in_stealth_mode     : false
+    logout_url          : "/auth/logout"
+    profile_url         : "profile"
+    signin_url          : "profile/login"
+    github_auth_url     : "/auth/github"
+    discover_url        : "discover"
+    how_to_url          : "how-to"
+    modules_url         : 'modules'
+    merchant_agreement  : '/profile/merchant_agreement'
+    developer_agreement : '/profile/developer_agreement'
+    
   class App extends Backbone.Router
-    conf:
-      STATIC_URL : "/static/"
-          
-    routes:
-      "":"index"
-      "!/":"index"
-      "discover":"discover"
-      "!/discover":"discover"
-      "profile/login": "login"
-      "!/profile/login" : "login"
-      "profile" : "profile"
-      "!/profile" : "profile"
-      "how-to" : "how-to"
-      "!/how-to" : "how-to"
-      "!/module" : "module"
-      "modules" : "language_list"
-      "modules/:language"   : "repo_list"
-      "!/modules/:language" : "repo_list"
-      "modules/:language/:repo" : "repo"
-      "!/modules/:language/:repo" : "repo"
+    conf: conf
 
-    init: -> 
+    init: ->
       if !Backbone.history._hasPushState        
         hash = Backbone.history.getHash()
         @navigate '',   {trigger:false}
@@ -45,12 +39,12 @@
       @reRoute()
       @view = new views.Index prevView:@view
 
-    profile: ->
-      @reRoute()      
+    profile: (action) ->
+      @reRoute() 
       if app.session.get("is_authenticated") is true 
-        @view = new views.Profile { prevView: @view, model: app.session }
+        @view = new views.Profile { prevView: @view, model: app.session, action: "/#{action}" }
       else
-        app.navigate '/profile/login', {trigger: true}
+        app.navigate '/profile/login', {trigger: true}       
     
     'how-to': ->
       @reRoute()      
@@ -92,6 +86,61 @@
     
 
   $(document).ready ->
+    route_keys = [
+      ""
+      "!/"
+      # Discover URL
+      conf.discover_url
+      "!/#{conf.discover_url}"
+      
+      # Sign In
+      conf.signin_url
+      "!/#{conf.signin_url}"
+      
+      # Profile URL
+      conf.profile_url
+      "!/#{conf.profile_url}"
+      
+      "#{conf.profile_url}/:action"
+      "!/#{conf.profile_url}/:action"
+            
+      # How-to
+      conf.how_to_url  
+      "!/#{conf.how_to_url}" 
+      
+      # Modules      
+      conf.modules_url
+      "!/#{conf.modules_url}"     
+      "#{conf.modules_url}/:language"
+      "!/#{conf.modules_url}/:language"
+      "#{conf.modules_url}/:language/:repo"
+      "!/#{conf.modules_url}/:language/:repo"
+    ]
+    
+    route_paths = [
+      "index"
+      "index"
+      "discover"
+      "discover"
+      "login"
+      "login"
+      "profile"
+      "profile"
+      "profile"
+      "profile"
+      "how-to"
+      "how-to"
+      "language_list"
+      "language_list"
+      "repo_list"
+      "repo_list"
+      "repo"
+      "repo"
+    ]
+          
+    App.prototype.routes = _.object route_keys, route_paths
+    
+    
     console.log '[__app__] init done!'
     exports.app = app = new App()
     

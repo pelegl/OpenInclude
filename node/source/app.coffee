@@ -29,15 +29,16 @@ startApp = ->
     app.set 'view engine' , 'hbs'
     app.set 'views'       , "#{root}/views/layouts"
     app.use '/static'     , express.static "#{root}/static"
+        
     app.use (req,res,next)->
       req.app = app
-      next()
+      next()    
+    app.use express.bodyParser {uploadDir: "#{root}/tmp"}
     app.use express.cookieParser secret
     app.use express.session {store, key: 'openinclude.sess'}
     app.use conf.passport_initialize()
-    app.use conf.passport_session()
-    app.use express.bodyParser {uploadDir: "#{root}/tmp"}
-    app.use express.methodOverride()
+    app.use conf.passport_session()        
+    app.use express.methodOverride()    
     app.use app.router
     
   
@@ -70,8 +71,10 @@ startApp = ->
     ]
   }, (err, results)=>
     unless err
-      app.listen app.get('port'), app.get('host'), ->              
-        console.log "[__app__] Listening"
+      port = app.get('port')
+      host = app.get('host')
+      app.listen port, host, ->              
+        console.log "[__app__] Listening #{host}:#{port}"
     else
       console.log err
 

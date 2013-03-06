@@ -42,6 +42,9 @@ exports.discover_url    = discover_url    = "/discover"
 exports.how_to_url      = how_to_url      = "/how-to"
 exports.modules_url     = modules_url     = '/modules'
 
+exports.merchant_agreement  = merchant_agreement   = "#{profile_url}/merchant_agreement"
+exports.developer_agreement = developer_agreement = "#{profile_url}/developer_agreement"
+
 ###
   Export controllers to the app
 ###
@@ -106,19 +109,13 @@ exports.passport_initialize = () ->
 passport_init = exports.passport_init = () ->
   [User] = load ['User']
 
-  passport.serializeUser((user, done) ->
-    console.log('ser', user.github_id)
-    done(null, user.github_id)
-  )
+  passport.serializeUser (user, done) ->    
+    done null, user.github_id
 
-  passport.deserializeUser((id, done) ->
-    console.log('deser', id)
-    User.findOne({github_id: id}, (error, user) ->
-      if error then return done(error)
-
-      done(null, user)
-    )
-  )
+  passport.deserializeUser (id, done) ->    
+    User.findOne {github_id: id}, (error, user)=>
+      return done(error) if error 
+      done null, user
 
   passport.use new GithubStrategy(
     clientID: GITHUB_CLIENT_ID,
@@ -135,7 +132,9 @@ passport_init = exports.passport_init = () ->
         github_id: profile.id
         github_display_name: profile.displayName
         github_username: profile.username
-        github_avatar_url: profile._json.avatar_url
+        github_avatar_url: profile._json.gravatar_id
+        github_email: profile._json.email
+        github_json : profile._json # might be used later, so we store it
       )
       user.save((error, user) ->
         if error then return done(error)

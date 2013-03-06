@@ -198,7 +198,7 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   
 
 
-  return "<script type=\"text/javascript\" src=\"/static/js/jquery-1.9.1.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/bootstrap.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/d3.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/humanize.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/underscore.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.paginator.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/handlebars.runtime.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/templates.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/app.js\"></script>";
+  return "<script type=\"text/javascript\" src=\"/static/js/jquery-1.9.1.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/jquery.nicescroll.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/bootstrap.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/d3.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/humanize.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/underscore.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.paginator.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/handlebars.runtime.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/templates.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/app.js\"></script>";
   }));
 
 Handlebars.registerPartial("discover/chart", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -430,25 +430,86 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   return buffer;
   }));
 
-Handlebars.registerPartial("member/profile", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+Handlebars.registerPartial("member/agreement", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div class='container profile'>\n	<div class='row'>\n		<div class='span12'>\n			<h2>";
-  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.title; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += "<div class='row-fluid agreementContainer'>\n  <div class='span12'>\n    <form class='agreement' method='post' action='";
+  if (stack1 = helpers.agreement_signup_action) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.agreement_signup_action; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "</h2>\n			<h3>GitHub profile data</h3>\n			<ul class='unstyled'>\n			    <li><img src=\""
+    + "' >\n      <legend>Terms of Service</legend>\n      <div class='agreementWrapper'>\n        <div class='agreementText'>";
+  if (stack1 = helpers.agreement_text) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.agreement_text; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</div>  \n      </div>            \n      <button type='submit' class='btn btn-success pull-left'>Upgrade Account</button>\n      <label class='checkbox'>\n        <input type='checkbox' name='signed' value='signed' /> I agree with the TOA\n        <!-- change the wording later -->\n      </label>      \n    </form>    \n  </div>\n</div>\n";
+  return buffer;
+  }));
+
+Handlebars.registerPartial("member/profile", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, stack2, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  
+  return "\n                <i class='icon-ok'></i>\n                ";
+  }
+
+function program3(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                <a href='";
+  if (stack1 = helpers.merchant_agreement) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.merchant_agreement; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' class='btn btn-success btn-mini'>Sign Up</a>\n                ";
+  return buffer;
+  }
+
+function program5(depth0,data) {
+  
+  
+  return "\n                  <i class='icon-ok'></i>\n                ";
+  }
+
+function program7(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n                  <a href='";
+  if (stack1 = helpers.developer_agreement) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.developer_agreement; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' class='btn btn-success btn-mini'>Sign Up</a>\n                ";
+  return buffer;
+  }
+
+  buffer += "<div class='container profile'>\n	<div class='row'>\n		<div class='span12'>					\n			<div class='row'>\n			  <div class='span4'>\n			    <div class='personalInformation'>\n			      <img src=\"http://www.gravatar.com/avatar/"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_avatar_url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "\"></img></li>\n			    <li>"
+    + "?s=210\" class='avatar'  />\n            <h3>"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_display_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</li>\n			    <li>"
+    + "</h3>\n            <h4><a href='https://github.com/"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</li>\n			    <li>"
-    + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_id)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</li>\n			</ul>\n		</div>\n	</div>\n</div>\n";
+    + "' target=\"_blank\" class='muted'>"
+    + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a></h4>\n            <hr />\n            <h4>Account type</h4>\n            <div class='accountType'>\n              <div class='type'>\n                <p>Merchant\n                <span class='status'>\n                ";
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.merchant), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n                </span>\n                </p>                \n              </div>\n              <div class='type'>\n                <p>Developer\n                <span class='status'>\n                ";
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.developer), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n                </span>\n                </p>\n              </div>\n            </div>\n            <hr />\n            <div class='contactData'>\n              <div class='contact'>\n                <i class='icon-envelope'></i> <a class='muted' href=\"mailto:"
+    + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a>\n              </div>\n            </div>\n			    </div>			             \n			  </div>\n			  <div class='span8 informationBox'>";
+  if (stack2 = helpers.informationBox) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.informationBox; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "</div>\n			</div>\n		</div>\n	</div>\n</div>";
   return buffer;
   }));
 

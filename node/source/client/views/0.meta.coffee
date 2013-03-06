@@ -15,16 +15,59 @@
     tagName: 'img'
     attributes:
       src: "/static/images/loader.gif"
+  
+  class exports.Agreement extends @Backbone.View
+    tagName  : 'div'
+    className: 'row-fluid agreementContainer'
+    
+    events: 
+      'submit form' : 'processSubmit'
+    
+    processSubmit: (e) ->
+      console.log e
+      e.stopPropagation()
+      
+      false      
+    
+    initialize: ->
+      @$el = $(".agreementContainer") if $(".agreementContainer").length > 0
+      
+      {agreement, action} = @options      
+      @listenTo @, "init", @niceScroll
+      @render()
+      
+      @setData agreement, action
 
+    renderData: ->
+      output = views['member/agreement'](@context)
+      @$el.html $(output).unwrap().html()
+      @trigger "init"
+    
+    setData: (agreement, action)->
+      #TODO: too many renders - need to fix this
+      console.log arguments
+      @context = 
+        agreement_text: agreement
+        agreement_signup_action: action
+      @renderData()
+    
+    niceScroll: ->
+      if @$(".agreementText").is(":visible")
+        @$(".agreementText").niceScroll()
+      
+    render: ->
+      html = views['member/agreement'](@context || {})
+      @$el = $ html
+      @        
+      
+  
   root.View = class View extends @Backbone.View
     tagName:'section'
     className: 'contents'
     viewsPlaceholder: '#view-wrapper'
     
     constructor:(opts={})->
-      @context =
-        STATIC_URL : app.conf.STATIC_URL
-        in_stealth_mode: false
+      @context = _.extend {}, app.conf
       
       unless opts.el?
         opts.el = $("<section class='contents' />")

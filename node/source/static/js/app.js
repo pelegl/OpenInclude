@@ -396,6 +396,71 @@
       return Loader;
 
     })(this.Backbone.View);
+    exports.Agreement = (function(_super) {
+
+      __extends(Agreement, _super);
+
+      function Agreement() {
+        return Agreement.__super__.constructor.apply(this, arguments);
+      }
+
+      Agreement.prototype.tagName = 'div';
+
+      Agreement.prototype.className = 'row-fluid agreementContainer';
+
+      Agreement.prototype.events = {
+        'submit form': 'processSubmit'
+      };
+
+      Agreement.prototype.processSubmit = function(e) {
+        console.log(e);
+        e.stopPropagation();
+        return false;
+      };
+
+      Agreement.prototype.initialize = function() {
+        var action, agreement, _ref;
+        if ($(".agreementContainer").length > 0) {
+          this.$el = $(".agreementContainer");
+        }
+        _ref = this.options, agreement = _ref.agreement, action = _ref.action;
+        this.listenTo(this, "init", this.niceScroll);
+        this.render();
+        return this.setData(agreement, action);
+      };
+
+      Agreement.prototype.renderData = function() {
+        var output;
+        output = views['member/agreement'](this.context);
+        this.$el.html($(output).unwrap().html());
+        return this.trigger("init");
+      };
+
+      Agreement.prototype.setData = function(agreement, action) {
+        console.log(arguments);
+        this.context = {
+          agreement_text: agreement,
+          agreement_signup_action: action
+        };
+        return this.renderData();
+      };
+
+      Agreement.prototype.niceScroll = function() {
+        if (this.$(".agreementText").is(":visible")) {
+          return this.$(".agreementText").niceScroll();
+        }
+      };
+
+      Agreement.prototype.render = function() {
+        var html;
+        html = views['member/agreement'](this.context || {});
+        this.$el = $(html);
+        return this;
+      };
+
+      return Agreement;
+
+    })(this.Backbone.View);
     root.View = View = (function(_super) {
 
       __extends(View, _super);
@@ -410,10 +475,7 @@
         if (opts == null) {
           opts = {};
         }
-        this.context = {
-          STATIC_URL: app.conf.STATIC_URL,
-          in_stealth_mode: false
-        };
+        this.context = _.extend({}, app.conf);
         if (opts.el == null) {
           opts.el = $("<section class='contents' />");
           if (app.meta.$('.contents').length > 0) {
@@ -516,7 +578,8 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var root, views;
+    var agreement_text, root, views;
+    agreement_text = "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. ";
     root = this;
     views = this.hbt = Handlebars.partials;
     exports.SignIn = (function(_super) {
@@ -530,7 +593,6 @@
       SignIn.prototype.initialize = function() {
         console.log('[_signInView__] Init');
         this.context.title = "Authentication";
-        this.context.github_auth_url = "/auth/github";
         return this.render();
       };
 
@@ -553,9 +615,51 @@
         return Profile.__super__.constructor.apply(this, arguments);
       }
 
+      Profile.prototype.events = {
+        'click .accountType a': "accountUpgrade"
+      };
+
+      Profile.prototype.clearHref = function(href) {
+        return href.replace("/" + this.context.profile_url, "");
+      };
+
+      Profile.prototype.accountUpgrade = function(e) {
+        var $this, href;
+        $this = $(e.currentTarget);
+        href = $this.attr("href");
+        this.setAction(this.clearHref(href));
+        return false;
+      };
+
+      Profile.prototype.setAction = function(action) {
+        var dev, merc;
+        dev = this.clearHref(this.context.developer_agreement);
+        merc = this.clearHref(this.context.merchant_agreement);
+        switch (action) {
+          case dev:
+            this.agreement.$el.show();
+            this.agreement.setData(agreement_text, this.context.developer_agreement);
+            return app.navigate(this.context.developer_agreement, {
+              trigger: false
+            });
+          case merc:
+            this.agreement.$el.show();
+            this.agreement.setData(agreement_text, this.context.merchant_agreement);
+            return app.navigate(this.context.merchant_agreement, {
+              trigger: false
+            });
+          default:
+            this.agreement.$el.hide();
+            return app.navigate(this.context.profile_url, {
+              trigger: false
+            });
+        }
+      };
+
       Profile.prototype.initialize = function() {
         console.log('[__profileView__] Init');
         this.context.title = "Personal Profile";
+        this.agreement = new exports.Agreement;
         this.listenTo(this.model, "all", this.render);
         this.model.fetch();
         return this.render();
@@ -567,6 +671,8 @@
         html = views['member/profile'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'profile');
+        this.$(".informationBox").append(this.agreement.$el);
+        this.setAction(this.options.action);
         return this;
       };
 
@@ -1278,7 +1384,20 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var App;
+    var App, conf;
+    conf = {
+      STATIC_URL: "/static/",
+      in_stealth_mode: false,
+      logout_url: "/auth/logout",
+      profile_url: "profile",
+      signin_url: "profile/login",
+      github_auth_url: "/auth/github",
+      discover_url: "discover",
+      how_to_url: "how-to",
+      modules_url: 'modules',
+      merchant_agreement: '/profile/merchant_agreement',
+      developer_agreement: '/profile/developer_agreement'
+    };
     App = (function(_super) {
 
       __extends(App, _super);
@@ -1287,28 +1406,7 @@
         return App.__super__.constructor.apply(this, arguments);
       }
 
-      App.prototype.conf = {
-        STATIC_URL: "/static/"
-      };
-
-      App.prototype.routes = {
-        "": "index",
-        "!/": "index",
-        "discover": "discover",
-        "!/discover": "discover",
-        "profile/login": "login",
-        "!/profile/login": "login",
-        "profile": "profile",
-        "!/profile": "profile",
-        "how-to": "how-to",
-        "!/how-to": "how-to",
-        "!/module": "module",
-        "modules": "language_list",
-        "modules/:language": "repo_list",
-        "!/modules/:language": "repo_list",
-        "modules/:language/:repo": "repo",
-        "!/modules/:language/:repo": "repo"
-      };
+      App.prototype.conf = conf;
 
       App.prototype.init = function() {
         var hash;
@@ -1356,12 +1454,13 @@
         });
       };
 
-      App.prototype.profile = function() {
+      App.prototype.profile = function(action) {
         this.reRoute();
         if (app.session.get("is_authenticated") === true) {
           return this.view = new views.Profile({
             prevView: this.view,
-            model: app.session
+            model: app.session,
+            action: "/" + action
           });
         } else {
           return app.navigate('/profile/login', {
@@ -1430,8 +1529,11 @@
 
     })(Backbone.Router);
     return $(document).ready(function() {
-      var app,
+      var app, route_keys, route_paths,
         _this = this;
+      route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo"];
+      route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo"];
+      App.prototype.routes = _.object(route_keys, route_paths);
       console.log('[__app__] init done!');
       exports.app = app = new App();
       app.meta = new views.MetaView({
