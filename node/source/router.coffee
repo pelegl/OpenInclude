@@ -28,7 +28,7 @@ exports.set = (app)->
   ###
   app.get signin_url, is_not_authenticated, app.Controllers.profile
   
-  app.post '/profile/:action',  is_authenticated, app.Controllers.profile
+  app.all '/profile/:action',  is_authenticated, app.Controllers.profile
   app.get  '/profile*',         is_authenticated, app.Controllers.profile  
   
   ###

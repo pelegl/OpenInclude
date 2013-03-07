@@ -24,18 +24,32 @@
       'submit form' : 'processSubmit'
     
     processSubmit: (e) ->
-      console.log "submit", e
-      e.stopPropagation()
-      
-      false
+      e.preventDefault()
+      ###
+        Perform async form process
+      ###
+      isChecked = @$("[name=signed]").prop "checked"
+      if isChecked
+        @model.save { signed: "signed" }
+      else
+        ##TODO: handle error
+               
+      return false
+    
+    signed: ->
+      app.navigate app.conf.profile_url, {trigger: true}
     
     initialize: ->
-      @$el = $(".agreementContainer") if $(".agreementContainer").length > 0
+      @model = new models.Tos            
+      if $(".agreementContainer").length > 0
+        @$el = $(".agreementContainer") 
+      else
+        @render()
       
       {agreement, action} = @options      
       @listenTo @, "init", @niceScroll
-      @render()
-      
+      @listenTo @model, "sync", @signed
+                  
       @setData agreement, action
 
     renderData: ->
@@ -49,15 +63,18 @@
       @context = 
         agreement_text: agreement
         agreement_signup_action: action
+      @model.url = @context.agreement_signup_action
       @renderData()
     
     niceScroll: ->
       if @$(".agreementText").is(":visible")
         @$(".agreementText").niceScroll()
+      @delegateEvents()
       
     render: ->
       html = views['member/agreement'](@context || {})
       @$el = $ html
+      @delegateEvents()
       @        
       
   

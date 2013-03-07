@@ -14,7 +14,11 @@
                 <p>Merchant
                 <span class='status'>
                 {{#if user.merchant}}
-                <i class='icon-ok'></i>
+                  {{#if user.has_stripe}}
+                    <i class='icon-ok'></i>
+                  {{else}}
+                    <button class='btn btn-info btn-mini setupPayment'>setup payment method</button>
+                  {{/if}}
                 {{else}}
                 <a href='{{merchant_agreement}}' class='btn btn-success btn-mini'>Sign Up</a>
                 {{/if}}

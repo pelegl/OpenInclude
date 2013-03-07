@@ -1,0 +1,29 @@
+<div id="updateCreditCard" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3>Credit Card Information</h3>
+  </div>
+  <div class="modal-body">
+    <form method='post' action='{{update_credit_card}}'>
+      <label for='ccFullName'>Full Name (as it appears on the card)</label>
+      <input type='text' id='ccFullName' class='input-block-level' name='card[fullName]' required />
+      
+      <label for='ccNumber'>Card Number</label>
+      <input type='text' id='ccNumber' class='input-block-level' name='card[number]' required pattern="[0-9]{4}[ \-]?[0-9]{4}[ \-]?[0-9]{4}[ \-]?[0-9]{4}" />
+      
+      <label for='ccExpiration'>Expiration (MM/YYYY)</label>
+      <input type='text' id='ccExpiration' class='input-block-level' name='card[expiration]' required pattern="[0-9]{2}/[0-9]{4}" />
+      
+      <label for='ccCVV'>CVV</label>
+      <input type='text' id='ccCVV' class='input-block-level'  name='card[cvv]' required pattern="[0-9]{3}" />
+      
+      <span class="help-block muted">Please review the <a href='#'>terms of service</a>, and <a href='#'>privacy policy</a>. All sales are final — no refunds.</span>
+      
+      <div>
+        <a class="btn pull-left" data-dismiss="modal" aria-hidden="true">Close</a>
+        <button type='submit' class="btn btn-primary pull-left" style='margin-left: 20px'>Update credit card</button>
+      </div>
+            
+    </form>
+  </div>  
+</div>

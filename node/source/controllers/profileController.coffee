@@ -26,7 +26,7 @@ class ProfileController extends require('./basicController')
     {signed} = @req.body
     if signed is 'signed'
       switch accountType
-        when 'merchant'
+        when 'merchant'          
           @req.user.merchant = true
         when 'developer'
           @req.user.employee = true
@@ -44,15 +44,30 @@ class ProfileController extends require('./basicController')
   
   merchant_agreement: ->
     if @req.method is "GET"
-      @_generateAgreementField agreement_text, @context.merchant_agreement
+      unless @req.user.merchant is true
+        @_generateAgreementField agreement_text, @context.merchant_agreement
+      else
+        @res.redirect @context.profile_url
     else
       @_acceptToa "merchant"      
             
   developer_agreement: ->
     if @req.method is "GET"
-      @_generateAgreementField agreement_text, @context.developer_agreement
+      unless @req.user.employee is true
+        @_generateAgreementField agreement_text, @context.developer_agreement
+      else
+        @res.redirect @context.profile_url
     else
       @_acceptToa "developer"
+ 
+  update_credit_card: ->
+    if @req.method in ["POST", "GET"]
+      @res.json {
+        success: true
+        data: @req.body
+      }
+    else
+      @res.send "Not permitted", 401
  
 # Здесь отдаем функцию - каждый раз когда вызывается наш контроллер - создается новый экземпляр - это мы вставим в рутер
 module.exports = (req,res)->

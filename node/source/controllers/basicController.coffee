@@ -1,7 +1,7 @@
 _            = require 'underscore'
 hb           = require 'handlebars'
 
-{STATIC_URL, logout_url, signin_url, profile_url, github_auth_url, discover_url, how_to_url, modules_url, merchant_agreement, developer_agreement} = require '../conf'
+{STATIC_URL, logout_url, update_credit_card, signin_url, profile_url, github_auth_url, discover_url, how_to_url, modules_url, merchant_agreement, developer_agreement} = require '../conf'
 
 class BasicController
   constructor: (@req,@res)->    
@@ -28,7 +28,8 @@ class BasicController
         how_to_url,
         modules_url,
         merchant_agreement, 
-        developer_agreement
+        developer_agreement,
+        update_credit_card        
       } 
         
       if @context then _.extend @context, context else @context = context #extend our context - maybe we had already set it up in the child contstructor

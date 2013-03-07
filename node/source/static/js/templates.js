@@ -198,7 +198,7 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   
 
 
-  return "<script type=\"text/javascript\" src=\"/static/js/jquery-1.9.1.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/jquery.nicescroll.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/bootstrap.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/d3.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/humanize.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/underscore.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.paginator.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/handlebars.runtime.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/templates.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/app.js\"></script>";
+  return "<script type=\"text/javascript\" src=\"/static/js/jquery-1.9.1.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/jquery.nicescroll.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/bootstrap.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/d3.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/humanize.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/underscore.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.paginator.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.syphon.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/handlebars.runtime.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/templates.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/app.js\"></script>";
   }));
 
 Handlebars.registerPartial("discover/chart", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -448,18 +448,47 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   return buffer;
   }));
 
+Handlebars.registerPartial("member/credit_card", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div id=\"updateCreditCard\" class=\"modal hide fade\" tabindex=\"-1\" role=\"dialog\" aria-hidden=\"true\">\n  <div class=\"modal-header\">\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">×</button>\n    <h3>Credit Card Information</h3>\n  </div>\n  <div class=\"modal-body\">\n    <form method='post' action='";
+  if (stack1 = helpers.update_credit_card) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.update_credit_card; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "'>\n      <label for='ccFullName'>Full Name (as it appears on the card)</label>\n      <input type='text' id='ccFullName' class='input-block-level' name='card[fullName]' required />\n      \n      <label for='ccNumber'>Card Number</label>\n      <input type='text' id='ccNumber' class='input-block-level' name='card[number]' required pattern=\"[0-9]{4}[ \\-]?[0-9]{4}[ \\-]?[0-9]{4}[ \\-]?[0-9]{4}\" />\n      \n      <label for='ccExpiration'>Expiration (MM/YYYY)</label>\n      <input type='text' id='ccExpiration' class='input-block-level' name='card[expiration]' required pattern=\"[0-9]{2}/[0-9]{4}\" />\n      \n      <label for='ccCVV'>CVV</label>\n      <input type='text' id='ccCVV' class='input-block-level'  name='card[cvv]' required pattern=\"[0-9]{3}\" />\n      \n      <span class=\"help-block muted\">Please review the <a href='#'>terms of service</a>, and <a href='#'>privacy policy</a>. All sales are final — no refunds.</span>\n      \n      <div>\n        <a class=\"btn pull-left\" data-dismiss=\"modal\" aria-hidden=\"true\">Close</a>\n        <button type='submit' class=\"btn btn-primary pull-left\" style='margin-left: 20px'>Update credit card</button>\n      </div>\n            \n    </form>\n  </div>  \n</div>";
+  return buffer;
+  }));
+
 Handlebars.registerPartial("member/profile", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
-  var buffer = "", stack1, stack2, functionType="function", escapeExpression=this.escapeExpression, self=this;
+  var buffer = "", stack1, stack2, self=this, functionType="function", escapeExpression=this.escapeExpression;
 
 function program1(depth0,data) {
   
+  var buffer = "", stack1, stack2;
+  buffer += "\n                  ";
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.has_stripe), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n                ";
+  return buffer;
+  }
+function program2(depth0,data) {
   
-  return "\n                <i class='icon-ok'></i>\n                ";
+  
+  return "\n                    <i class='icon-ok'></i>\n                  ";
   }
 
-function program3(depth0,data) {
+function program4(depth0,data) {
+  
+  
+  return "\n                    <button class='btn btn-info btn-mini setupPayment'>setup payment method</button>\n                  ";
+  }
+
+function program6(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <a href='";
@@ -470,13 +499,13 @@ function program3(depth0,data) {
   return buffer;
   }
 
-function program5(depth0,data) {
+function program8(depth0,data) {
   
   
   return "\n                  <i class='icon-ok'></i>\n                ";
   }
 
-function program7(depth0,data) {
+function program10(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                  <a href='";
@@ -496,10 +525,10 @@ function program7(depth0,data) {
     + "' target=\"_blank\" class='muted'>"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "</a></h4>\n            <hr />\n            <h4>Account type</h4>\n            <div class='accountType'>\n              <div class='type'>\n                <p>Merchant\n                <span class='status'>\n                ";
-  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.merchant), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.merchant), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n                </span>\n                </p>                \n              </div>\n              <div class='type'>\n                <p>Developer\n                <span class='status'>\n                ";
-  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.employee), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.employee), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n                </span>\n                </p>\n              </div>\n            </div>\n            <hr />\n            <div class='contactData'>\n              <div class='contact'>\n                <i class='icon-envelope'></i> <a class='muted' href=\"mailto:"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))

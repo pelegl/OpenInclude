@@ -9,6 +9,9 @@
      idAttribute: "_id"
      url: "/session"
       
+   exports.Tos        = @Backbone.Model.extend {}
+   
+   exports.CreditCard = @Backbone.Model.extend {}   
    
    exports.Language = @Backbone.Model.extend
      idAttribute: "name"

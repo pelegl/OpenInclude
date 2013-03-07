@@ -42,9 +42,9 @@ exports.discover_url    = discover_url    = "/discover"
 exports.how_to_url      = how_to_url      = "/how-to"
 exports.modules_url     = modules_url     = '/modules'
 
-exports.merchant_agreement  = merchant_agreement   = "#{profile_url}/merchant_agreement"
-exports.developer_agreement = developer_agreement = "#{profile_url}/developer_agreement"
-
+exports.merchant_agreement        = merchant_agreement  = "#{profile_url}/merchant_agreement"
+exports.developer_agreement       = developer_agreement = "#{profile_url}/developer_agreement"
+exports.update_credit_card        = update_credit_card  = "#{profile_url}/update_credit_card"
 ###
   Export controllers to the app
 ###
@@ -171,9 +171,22 @@ load = (required) ->
     unless loaded_models[name]
       module = require './models/' + name
       if module.definition
-        module.schema = mongoose.Schema module.definition        
+        module.schema         = new mongoose.Schema module.definition        
         module.schema.methods = module.methods if module.methods
         module.schema.statics = module.statics if module.statics
+        
+        ###
+          Set virtuals
+        ###
+        if module.virtuals?
+          getters = Object.keys module.virtuals.get
+          setters = Object.keys module.virtuals.set
+          if getters.length > 0
+            getters.forEach (getterName)=>              
+              module.schema.virtual(getterName).get module.virtuals.get[getterName]            
+          if setters.length > 0
+            setters.forEach (setterName)=>
+              module.schema.virtual(setterName).set module.virtuals.set[setterName]
                         
         name = module.modelName if module.modelName
         

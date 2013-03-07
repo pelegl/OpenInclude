@@ -1,4 +1,12 @@
-ObjectId = require('mongoose').Schema.Types.ObjectId
+###
+  Config
+###
+ObjectId  = require('mongoose').Schema.Types.ObjectId
+async     = require 'async'
+_         = require 'underscore'
+###
+  Definition
+###
 
 PaymentMethod = 
   service: 
@@ -32,18 +40,38 @@ definition =
     enum: ["admin","developer","project manager","client"]
   
   # TODO: clarify how we use this string - we might have multiple hashes from stripe, so probably should do different setup
-  payment_methods: [PaymentMethod] 
-    
+  payment_methods: 
+    type: [PaymentMethod]
+    default: []  
+
 
 methods =
   public_info: ->
-    return {@github_id, @merchant, @employee, @github_display_name, @github_email, @github_username, @github_avatar_url, is_authenticated: true}
+    return {@github_id, @has_stripe, @payment_methods, @merchant, @employee, @github_display_name, @github_email, @github_username, @github_avatar_url, is_authenticated: true}
 
+  get_payment_method: (service, callback) ->
+    async.detect @payment_methods, (method, async_detect)=>
+      async_detect method.service is service
+    ,(method)=>
+      callback null, method      
+        
+  
 statics =
   get_user: (userId, callback)->
-    @findOne {github_id: userId}, callback 
+    @findOne {github_id: userId}, callback        
 
 
-exports.definition = definition
-exports.methods = methods
-exports.statics = statics
+virtuals = 
+  get : 
+    has_stripe: ->
+      method = _.find @payment_methods, (method)=>
+        return method.service is 'Stripe'
+      return if method? then true else false
+          
+  set: {}
+
+
+exports.virtuals    = virtuals
+exports.definition  = definition
+exports.methods     = methods
+exports.statics     = statics

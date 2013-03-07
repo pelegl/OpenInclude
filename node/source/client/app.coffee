@@ -11,6 +11,7 @@
     modules_url         : 'modules'
     merchant_agreement  : '/profile/merchant_agreement'
     developer_agreement : '/profile/developer_agreement'
+    update_credit_card  : '/profile/update_credit_card'    
     
   class App extends Backbone.Router
     conf: conf
