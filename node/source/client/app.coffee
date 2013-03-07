@@ -69,7 +69,6 @@
         prevView:@view
     
     repo_list: (language) ->
-      console.log arguments
       @reRoute()
       @view = new views.ModuleList
         el: $('.contents')

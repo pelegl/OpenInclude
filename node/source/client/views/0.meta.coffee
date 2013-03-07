@@ -24,10 +24,10 @@
       'submit form' : 'processSubmit'
     
     processSubmit: (e) ->
-      console.log e
+      console.log "submit", e
       e.stopPropagation()
       
-      false      
+      false
     
     initialize: ->
       @$el = $(".agreementContainer") if $(".agreementContainer").length > 0

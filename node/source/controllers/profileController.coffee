@@ -23,8 +23,6 @@ class ProfileController extends require('./basicController')
     @index()
   
   _acceptToa: (accountType) ->
-    console.log "accept toa"
-    
     {signed} = @req.body
     if signed is 'signed'
       switch accountType

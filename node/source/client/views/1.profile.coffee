@@ -34,18 +34,25 @@
       dev   = @clearHref @context.developer_agreement
       merc  = @clearHref @context.merchant_agreement
       
-      switch action
-        when dev
+      
+      if action is dev and app.session.get("employee") is false
+          ###
+            show developer license agreement
+          ###
+          app.navigate @context.developer_agreement, {trigger: false}          
           @agreement.$el.show()
-          @agreement.setData agreement_text, @context.developer_agreement
-          
-          app.navigate @context.developer_agreement, {trigger: false}
-        when merc 
+          @agreement.setData agreement_text, @context.developer_agreement                    
+      else if action is merc and app.session.get("merchant") is false
+          ###
+            show client license agreement
+          ### 
+          app.navigate @context.merchant_agreement, {trigger: false}          
           @agreement.$el.show()
           @agreement.setData agreement_text, @context.merchant_agreement          
-          
-          app.navigate @context.merchant_agreement, {trigger: false}
-        else
+      else
+          ###
+            hide agreement and navigate back to profile
+          ###
           @agreement.$el.hide()
           app.navigate @context.profile_url, {trigger: false}
              

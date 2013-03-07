@@ -499,7 +499,7 @@ function program7(depth0,data) {
   stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.merchant), {hash:{},inverse:self.program(3, program3, data),fn:self.program(1, program1, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n                </span>\n                </p>                \n              </div>\n              <div class='type'>\n                <p>Developer\n                <span class='status'>\n                ";
-  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.developer), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.employee), {hash:{},inverse:self.program(7, program7, data),fn:self.program(5, program5, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n                </span>\n                </p>\n              </div>\n            </div>\n            <hr />\n            <div class='contactData'>\n              <div class='contact'>\n                <i class='icon-envelope'></i> <a class='muted' href=\"mailto:"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))

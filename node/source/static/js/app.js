@@ -413,7 +413,7 @@
       };
 
       Agreement.prototype.processSubmit = function(e) {
-        console.log(e);
+        console.log("submit", e);
         e.stopPropagation();
         return false;
       };
@@ -635,24 +635,35 @@
         var dev, merc;
         dev = this.clearHref(this.context.developer_agreement);
         merc = this.clearHref(this.context.merchant_agreement);
-        switch (action) {
-          case dev:
-            this.agreement.$el.show();
-            this.agreement.setData(agreement_text, this.context.developer_agreement);
-            return app.navigate(this.context.developer_agreement, {
-              trigger: false
-            });
-          case merc:
-            this.agreement.$el.show();
-            this.agreement.setData(agreement_text, this.context.merchant_agreement);
-            return app.navigate(this.context.merchant_agreement, {
-              trigger: false
-            });
-          default:
-            this.agreement.$el.hide();
-            return app.navigate(this.context.profile_url, {
-              trigger: false
-            });
+        if (action === dev && app.session.get("employee") === false) {
+          /*
+                      show developer license agreement
+          */
+
+          app.navigate(this.context.developer_agreement, {
+            trigger: false
+          });
+          this.agreement.$el.show();
+          return this.agreement.setData(agreement_text, this.context.developer_agreement);
+        } else if (action === merc && app.session.get("merchant") === false) {
+          /*
+                      show client license agreement
+          */
+
+          app.navigate(this.context.merchant_agreement, {
+            trigger: false
+          });
+          this.agreement.$el.show();
+          return this.agreement.setData(agreement_text, this.context.merchant_agreement);
+        } else {
+          /*
+                      hide agreement and navigate back to profile
+          */
+
+          this.agreement.$el.hide();
+          return app.navigate(this.context.profile_url, {
+            trigger: false
+          });
         }
       };
 
@@ -1506,7 +1517,6 @@
       };
 
       App.prototype.repo_list = function(language) {
-        console.log(arguments);
         this.reRoute();
         return this.view = new views.ModuleList({
           el: $('.contents'),
