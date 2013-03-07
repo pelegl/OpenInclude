@@ -25,6 +25,7 @@
     "grunt-contrib-coffee": "*",
     "passport": "0.x",
     "passport-github": "0.x",
-    "nodemailer": "0.x"
+    "nodemailer": "0.x",
+    "stripe" : "*"
   }
 }

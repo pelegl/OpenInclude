@@ -17,7 +17,12 @@ exports.set = (app)->
   Share idea
   ###
   app.post '/share-idea', app.Controllers.idea
-
+  
+  ###
+  Payment
+  ###
+#  app.get '/payment', app.Controllers.payment
+  app.get '/payment/*', app.Controllers.payment
   ###
   Profile interaction
   ###

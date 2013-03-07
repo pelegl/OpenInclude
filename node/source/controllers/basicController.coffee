@@ -36,6 +36,7 @@ class BasicController
       @[@funcName]()
     else
       @res.send "Error 404", 404
+   #   console.log "404 error"
       
   _view : (name, context)=>
     return hb.compile(@app.Views[name])(context)
