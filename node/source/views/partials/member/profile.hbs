@@ -11,30 +11,35 @@
             <h4>Account type</h4>
             <div class='accountType'>
               <div class='type'>
-                <p>Merchant
-                <span class='status'>
-                {{#if user.merchant}}
-                  {{#if user.has_stripe}}
-                    <i class='icon-ok'></i>
+                <div>
+                  <div class='status'>
+                  {{#if user.merchant}}
+                    {{#if user.has_stripe}}
+                      <i class='icon-ok'></i>
+                    {{else}}
+                      <div class='dropup setupPayment'>
+                          <button class="btn btn-success btn-mini">Setup payment method</button>
+                          {{> member/credit_card}}
+                      </div>                    
+                    {{/if}}
                   {{else}}
-                    <button class='btn btn-info btn-mini setupPayment'>setup payment method</button>
+                  <a href='{{merchant_agreement}}' class='btn btn-success btn-mini'>Sign Up</a>
                   {{/if}}
-                {{else}}
-                <a href='{{merchant_agreement}}' class='btn btn-success btn-mini'>Sign Up</a>
-                {{/if}}
-                </span>
-                </p>                
+                  </div>
+                  <p>Client</p>
+                </div>                
               </div>
               <div class='type'>
-                <p>Developer
-                <span class='status'>
-                {{#if user.employee}}
-                  <i class='icon-ok'></i>
-                {{else}}
-                  <a href='{{developer_agreement}}' class='btn btn-success btn-mini'>Sign Up</a>
-                {{/if}}
-                </span>
-                </p>
+                <div>
+                  <div class='status'>
+                  {{#if user.employee}}
+                    <i class='icon-ok'></i>
+                  {{else}}
+                    <a href='{{developer_agreement}}' class='btn btn-success btn-mini'>Sign Up</a>
+                  {{/if}}
+                  </div>
+                  <p>Developer</p>
+                </div>
               </div>
             </div>
             <hr />

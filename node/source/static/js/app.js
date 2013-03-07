@@ -442,7 +442,7 @@
         var action, agreement, _ref;
         this.model = new models.Tos;
         if ($(".agreementContainer").length > 0) {
-          this.$el = $(".agreementContainer");
+          this.setElement($(".agreementContainer"));
         } else {
           this.render();
         }
@@ -641,18 +641,16 @@
         return CC.__super__.constructor.apply(this, arguments);
       }
 
-      CC.prototype.id = 'updateCreditCard';
-
-      CC.prototype.className = "modal hide fade";
-
-      CC.prototype.attributes = {
-        tabindex: "-1",
-        role: "dialog",
-        "aria-hidden": "true"
-      };
+      CC.prototype.className = "dropdown-menu";
 
       CC.prototype.events = {
+        'click  form': "stopPropagation",
         'submit form': "updateCardData"
+      };
+
+      CC.prototype.stopPropagation = function(e) {
+        console.log("prop");
+        return e.stopPropagation();
       };
 
       CC.prototype.updateCardData = function(e) {
@@ -660,6 +658,7 @@
         e.preventDefault();
         data = Backbone.Syphon.serialize(e.currentTarget);
         this.$("[type=submit]").addClass("disabled").text("Updating information...");
+        console.log(data);
         this.model.set(data);
         this.model.save(null, {
           success: this.processUpdate,
@@ -669,43 +668,33 @@
       };
 
       CC.prototype.processUpdate = function(model, response, options) {
-        var _this = this;
         if (response.success === true) {
-          app.session.set({
+          return app.session.set({
             has_stripe: true
-          }, {
-            silent: true
           });
-          this.$el.modal('hide');
-          return setTimeout(function() {
-            return app.session.trigger("change");
-          }, 300);
         } else {
 
         }
       };
 
       CC.prototype.initialize = function() {
+        var $el;
         this.model = new models.CreditCard;
         this.model.url = app.conf.update_credit_card;
         _.bindAll(this, "processUpdate");
         this.context = _.extend({}, app.conf);
-        return this.render();
-      };
-
-      CC.prototype.show = function() {
-        this.$("#ccFullName").val(app.session.get("github_display_name"));
-        this.$el.modal('show');
-        return this.delegateEvents();
+        $el = $(".setupPayment .dropdown-menu");
+        if ($el.length > 0) {
+          return this.setElement($el);
+        } else {
+          return this.render();
+        }
       };
 
       CC.prototype.render = function() {
         var html;
         html = views['member/credit_card'](this.context);
-        this.$el = $(html);
-        this.$el.modal({
-          show: false
-        });
+        this.$el.html($(html).html());
         return this;
       };
 
@@ -722,7 +711,12 @@
 
       Profile.prototype.events = {
         'click .accountType a': "accountUpgrade",
-        'click .setupPayment': "setupPayment"
+        'click .setupPayment > button': "update_cc_events"
+      };
+
+      Profile.prototype.update_cc_events = function(e) {
+        this.cc.delegateEvents();
+        return $(e.currentTarget).dropdown('toggle');
       };
 
       Profile.prototype.clearHref = function(href) {
@@ -735,11 +729,6 @@
         href = $this.attr("href");
         this.setAction(this.clearHref(href));
         return false;
-      };
-
-      Profile.prototype.setupPayment = function() {
-        this.stopListening(this.agreement.model);
-        return this.cc.show();
       };
 
       Profile.prototype.setAction = function(action) {
@@ -765,8 +754,7 @@
             trigger: false
           });
           this.agreement.$el.show();
-          this.agreement.setData(agreement_text, this.context.merchant_agreement);
-          return this.listenTo(this.agreement.model, "sync", this.setupPayment);
+          return this.agreement.setData(agreement_text, this.context.merchant_agreement);
         } else {
           /*
                       hide agreement and navigate back to profile
@@ -796,7 +784,8 @@
         this.$el.html(html);
         this.$el.attr('view-id', 'profile');
         this.$(".informationBox").append(this.agreement.$el);
-        this.$el.append(this.cc.$el);
+        this.cc.setElement(this.$(".setupPayment .dropdown-menu"));
+        this.cc.$el.prev().dropdown();
         this.setAction(this.options.action);
         return this;
       };

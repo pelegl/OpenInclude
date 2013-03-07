@@ -153,6 +153,14 @@
 .container.profile {
   margin-top: 30px;
 }
+.container.profile .setupPayment .dropdown-menu {
+  padding: 15px;
+  margin-bottom: 5px;
+  width: 300px;
+}
+.container.profile .setupPayment .dropdown-menu form {
+  margin: 0;
+}
 .container.profile .informationBox .agreement .agreementWrapper {
   padding: 20px;
   background: #ffffff;
