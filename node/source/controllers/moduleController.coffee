@@ -107,17 +107,43 @@ class ModuleController extends require('./basicController')
         res.send "Error", 500
     
   module: ->
-    Repo.get_module @moduleName, (err, module)=>
-      if !err and module
-        if @req.xhr
-          @res.json module
+    [requiredData, format] = @get if @get?
+    if requiredData is 'stackoverflow' and format is 'json'
+      #TODO: pull questions from SO database
+      response = []
+      process.nextTick =>
+        for answer in [250..1000] by Math.ceil(Math.random()*100)        
+          response.push {amount : answer, _id: answer, key: "total"}
+          response.push {amount : answer*0.4, _id: answer+"_answered", key: "answered"}
+        
+        dateLength = response.length 
+        stopDate  = new Date()
+        startDate = new Date stopDate.getFullYear()-1, stopDate.getMonth(), stopDate.getDate()
+         
+        stopTS = stopDate.getTime()
+        startTS = startDate.getTime()
+        
+        interval = ( stopTS - startTS ) / dateLength
+        
+        process.nextTick =>
+          for i in [0...dateLength]
+            deviation = if i > 4 and i < dateLength - 4 then Math.random()*interval else 0
+            response[i].timestamp = Math.ceil(startTS + Math.floor(i/2)*interval + deviation)
+          
+          @res.json response  
+      
+    else
+      Repo.get_module @moduleName, (err, module)=>
+        if !err and module
+          if @req.xhr
+            @res.json module
+          else
+            @context.prepopulate = JSON.stringify module
+            @context.module = module
+            @context.body   = @_view 'module/view', @context
+            @res.render 'base', @context
         else
-          @context.prepopulate = JSON.stringify module
-          @context.module = module
-          @context.body   = @_view 'module/view', @context
-          @res.render 'base', @context
-      else
-        @res.send "Not found", 404
+          @res.send "Not found", 404
 
 module.exports = (req,res)->
   new ModuleController req, res

@@ -95,6 +95,22 @@
         return "" + this.urlRoot + "/" + (this.get('language')) + "/" + (this.get('module_name'));
       }
     });
+    exports.StackOverflowQuestion = this.Backbone.Model.extend({
+      idAttribute: "_id",
+      urlRoot: "/modules",
+      url: function() {
+        return "" + this.urlRoot + "/all/all/stackoverflow/json/" + (this.get('_id'));
+      },
+      date: function() {
+        return new Date(this.get("timestamp"));
+      },
+      x: function() {
+        return this.get("timestamp");
+      },
+      y: function() {
+        return this.get("amount");
+      }
+    });
     return exports.Discovery = this.Backbone.Model.extend({
       /*        
           0.5 - super active - up to 7 days
@@ -330,7 +346,7 @@
         });
       }
     });
-    return exports.DiscoveryComparison = this.Backbone.Collection.extend({
+    exports.DiscoveryComparison = this.Backbone.Collection.extend({
       model: models.Discovery,
       sortBy: function(key, direction) {
         var _this = this;
@@ -348,6 +364,23 @@
           this.models.reverse();
         }
         return this.trigger("sort");
+      }
+    });
+    return exports.StackOverflowQuestions = this.Backbone.Collection.extend({
+      model: models.StackOverflowQuestion,
+      keys: function() {
+        return ["answered", "total"];
+      },
+      initialize: function(options) {
+        if (options == null) {
+          options = {};
+        }
+        this.language = options.language, this.repo = options.repo;
+        this.language || (this.language = "");
+        return this.repo || (this.repo = "");
+      },
+      url: function() {
+        return "/modules/" + this.language + "/" + this.repo + "/stackoverflow/json";
       }
     });
   }).call(this, (typeof exports === "undefined" ? this["collections"] = {} : exports), typeof exports !== "undefined");
@@ -1259,6 +1292,98 @@
     views = this.hbt = Handlebars.partials;
     qs = root.help.qs;
     modules_url = "/modules";
+    /*
+        @constructor
+        Multi series chart view
+    */
+
+    exports.MultiSeries = (function(_super) {
+
+      __extends(MultiSeries, _super);
+
+      function MultiSeries() {
+        return MultiSeries.__super__.constructor.apply(this, arguments);
+      }
+
+      MultiSeries.prototype.initialize = function(opts) {
+        var className,
+          _this = this;
+        if (opts == null) {
+          opts = {};
+        }
+        _.bindAll(this);
+        this.margin = {
+          top: 20,
+          right: 80,
+          bottom: 30,
+          left: 50
+        };
+        this.width = this.$el.width() - this.margin.right - this.margin.left;
+        this.height = 500 - this.margin.top - this.margin.bottom;
+        this.x = d3.time.scale().range([0, this.width]);
+        this.y = d3.scale.linear().range([this.height, 0]);
+        this.color = d3.scale.category10();
+        this.xAxis = d3.svg.axis().scale(this.x).orient("bottom");
+        this.yAxis = d3.svg.axis().scale(this.y).orient("left");
+        this.line = d3.svg.line().x(function(d) {
+          return _this.x(d.x());
+        }).y(function(d) {
+          return _this.y(d.y());
+        });
+        className = this.$el.attr("class");
+        return this.svg = d3.select("." + className).append("svg").attr("width", this.width + this.margin.left + this.margin.right).attr("height", this.height + this.margin.top + this.margin.bottom).append("g").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+      };
+
+      MultiSeries.prototype.render = function() {
+        var max, question, questions,
+          _this = this;
+        this.color.domain(this.collection.keys());
+        questions = this.color.domain().map(function(name) {
+          return {
+            name: name,
+            values: _this.collection.where({
+              key: name
+            })
+          };
+        });
+        this.x.domain(d3.extent(this.collection.models, function(d) {
+          return d.x();
+        }));
+        max = d3.max(questions, function(c) {
+          return d3.max(c.values, function(v) {
+            return v.y();
+          });
+        });
+        this.y.domain([0, max + 300]);
+        this.svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + this.height + ")").call(this.xAxis);
+        this.svg.append("g").attr("class", "y axis").call(this.yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style("text-anchor", "end").text("Questions");
+        question = this.svg.selectAll(".question").data(questions).enter().append("g").attr("class", "question");
+        question.append("path").attr("class", "line").attr("d", function(d) {
+          return _this.line(d.values);
+        }).style("stroke", function(d) {
+          return _this.color(d.name);
+        });
+        question.append("text").datum(function(d) {
+          return {
+            name: d.name,
+            value: d.values[d.values.length - 1]
+          };
+        }).attr("transform", function(d) {
+          return "translate(" + _this.x(d.value.x()) + "," + _this.y(d.value.y()) + ")";
+        }).attr("x", 3).attr("dy", ".35em").text(function(d) {
+          return d.name;
+        });
+        return this;
+      };
+
+      return MultiSeries;
+
+    })(this.Backbone.View);
+    /*
+        @constructor
+        Repository view
+    */
+
     exports.Repo = (function(_super) {
 
       __extends(Repo, _super);
@@ -1271,24 +1396,74 @@
 
       Repo.prototype.initialize = function(opts) {
         var preloadedData;
+        if (opts == null) {
+          opts = {};
+        }
         this.language = opts.language, this.repo = opts.repo;
         this.model = new models.Repo({
           language: this.language,
           module_name: this.repo
         });
+        /*
+                context
+        */
+
         this.context = {
           modules_url: modules_url
         };
+        /*
+                events
+        */
+
+        _.bindAll(this);
         this.listenTo(this.model, "sync", this.render);
+        this.listenTo(this.model, "sync", this.initCharts);
+        this.collections = {};
+        this.charts = {};
+        /*
+                setup render and load data
+        */
+
         preloadedData = this.$("[data-repo]");
         if (preloadedData.length > 0) {
           this.model.set(preloadedData.data("repo"), {
             silent: true
           });
-          return this.render();
+          this.render();
+          return this.initCharts();
         } else {
           return this.model.fetch();
         }
+      };
+
+      Repo.prototype.initCharts = function() {
+        /*
+                inits
+        */
+        this.initSO();
+        /*
+                Setup listeners
+        */
+
+        this.listenTo(this.collections.stackOverflow, "sync", this.charts.stackOverflow.render);
+        /*
+                Start fetching data
+        */
+
+        return this.collections.stackOverflow.fetch();
+      };
+
+      Repo.prototype.initSO = function() {
+        var options, so;
+        options = {
+          language: this.language,
+          repo: this.repo
+        };
+        this.collections.stackOverflow = so = new collections.StackOverflowQuestions(options);
+        return this.charts.stackOverflow = new exports.MultiSeries({
+          el: this.$(".stackQAHistory"),
+          collection: so
+        });
       };
 
       Repo.prototype.render = function() {

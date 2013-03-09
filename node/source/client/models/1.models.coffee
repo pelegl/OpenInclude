@@ -23,6 +23,22 @@
      url: ->
        return "#{@urlRoot}/#{@get('language')}/#{@get('module_name')}"
    
+   exports.StackOverflowQuestion = @Backbone.Model.extend
+     idAttribute: "_id"
+     urlRoot: "/modules"
+     url: ->
+       return "#{@urlRoot}/all/all/stackoverflow/json/#{@get('_id')}"
+      
+     date: ->
+       return new Date @get "timestamp"
+     
+     x: ->
+       return @get "timestamp"
+       
+     y: ->
+       return @get "amount"
+       
+    
    exports.Discovery = @Backbone.Model.extend
       ###        
           0.5 - super active - up to 7 days

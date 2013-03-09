@@ -64,6 +64,7 @@
       @totalRecords = response.total_count
       languages    
   
+  
   exports.Modules = requestPager.extend
     initialize: (models, options)->
       @language = options.language || ""
@@ -125,7 +126,23 @@
       @models.reverse() if direction is "DESC"
       @trigger "sort"
       
-      
+  exports.StackOverflowQuestions = @Backbone.Collection.extend
+    model: models.StackOverflowQuestion
+    
+    keys: ->
+      return ["answered", "total"]
+    
+    initialize: (options={})->
+      # init      
+      {@language, @repo} = options
+      # check
+      @language ||= ""
+      @repo     ||= ""
+    
+    
+    
+    url: ->
+      return "/modules/#{@language}/#{@repo}/stackoverflow/json"    
       
 
 ).call(this, (if typeof exports is "undefined" then this["collections"] = {} else exports), (typeof exports isnt "undefined"))
