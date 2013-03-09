@@ -4,7 +4,7 @@
 {get_models} = require '../conf'
 async        = require 'async'
 
-[User] = get_models ["User"]
+[User,Bill] = get_models ["User","Bill"]
 
 
 ###
@@ -85,19 +85,30 @@ statics =
     async.auto Tasks, (err) =>
       callback err, user
 
-
-#Billing a customer
-	billCustomer: (user, amount, callback) ->
-		user.get_payment_method 'Stripe', (err, method)=>
-		  if method
-		    stripe.charges.create
-		      amount: amount
-		      currency: 'usd'
-		      customer: method.id
-		    , callback
-		  else
-		    callback "No payment method set"
-
-				
+###
+ Billing a customer and Saving Bill
+###  
+billCustomer: (fromuser,user, amount, callback) ->
+  user.get_payment_method 'Stripe', (err, method)=>
+    if method
+      stripe.charges.create
+        amount: amount
+        currency: 'usd'
+        customer: method.id
+      , (error, charge)=>
+        unless error
+          bill = 
+          bill_id: charge.id
+          bill_amount: amount
+          billing_user: fromuser._id
+          billed_user:user._id
+          billObj = new Bill bill
+          billObj.save (err,succ) =>
+          return callback(err,succ)
+        else
+          callback(error,null)
+    else
+      callback "No payment method set"
+	
 exports.definition = definition
 exports.statics = statics

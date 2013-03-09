@@ -1,6 +1,6 @@
 {get_models,esClient} = require '../conf'
 
-[Stripe,User] = get_models ["Stripe","User"]
+[Stripe,User,Bill] = get_models ["Stripe","User","Bill"]
 
 class PaymentController extends require('./basicController')
   constructor: (@req, @res)->
@@ -12,9 +12,6 @@ class PaymentController extends require('./basicController')
     @context.body = @_view 'payment/index', @context    
     @res.render 'base', @context
   
-  test: ->
-    User.get_user '261220',(err,user) =>
-    	@res.send user
     	
     #adds a customer
   addCustomer:->

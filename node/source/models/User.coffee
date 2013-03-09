@@ -1,9 +1,11 @@
 ###
   Config
 ###
+{get_models} = require '../conf'
 ObjectId  = require('mongoose').Schema.Types.ObjectId
 async     = require 'async'
 _         = require 'underscore'
+[Bill] = get_models ["Bill"]
 ###
   Definition
 ###
@@ -54,12 +56,19 @@ methods =
       async_detect method.service is service
     ,(method)=>
       callback null, method      
-        
-  
+  	
 statics =
-  get_user: (userId, callback)->
-    @findOne {github_id: userId}, callback        
-
+	get_user: (userId, callback)->
+    	@findOne {github_id: userId}, callback
+###
+ Returns a list of people with a stripe payment method
+###    
+	get_clientswithpayment: (callback) ->
+	  @find group_id:'client', (error,users) =>
+	    async.filter users, (u, cb) =>
+	     cb u.has_stripe	     
+	    ,(results) ->
+	     callback(results)
 
 virtuals = 
   get : 
