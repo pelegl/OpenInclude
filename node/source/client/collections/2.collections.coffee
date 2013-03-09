@@ -129,17 +129,44 @@
   exports.StackOverflowQuestions = @Backbone.Collection.extend
     model: models.StackOverflowQuestion
     
+    chartMap: (name)->
+      return {
+        name: name,
+        values: @where {key: name}
+      }
+    
+    parse: (r)->
+      {@statistics, questions} = r    
+      
+      ###
+        Add normalization
+      ###
+      items = []
+      _.each @statistics.keys, (key)=>
+        list = _.where questions, {key}        
+        items.push _.last(list)  
+      
+      maxTS = _.max items, (item)=>
+        return item.timestamp
+      
+      _.each items, (item)=>
+        i = _.extend {}, item
+        i.timestamp = maxTS
+        questions.push i   
+      
+      questions
+    
     keys: ->
-      return ["answered", "total"]
+      @statistics.keys
     
     initialize: (options={})->
+      _.bindAll @, "chartMap"
+      
       # init      
       {@language, @repo} = options
       # check
       @language ||= ""
       @repo     ||= ""
-    
-    
     
     url: ->
       return "/modules/#{@language}/#{@repo}/stackoverflow/json"    

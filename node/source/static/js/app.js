@@ -102,10 +102,10 @@
         return "" + this.urlRoot + "/all/all/stackoverflow/json/" + (this.get('_id'));
       },
       date: function() {
-        return new Date(this.get("timestamp"));
+        return new Date(this.get("timestamp") * 1000);
       },
       x: function() {
-        return this.get("timestamp");
+        return this.get("timestamp") * 1000;
       },
       y: function() {
         return this.get("amount");
@@ -368,13 +368,49 @@
     });
     return exports.StackOverflowQuestions = this.Backbone.Collection.extend({
       model: models.StackOverflowQuestion,
+      chartMap: function(name) {
+        return {
+          name: name,
+          values: this.where({
+            key: name
+          })
+        };
+      },
+      parse: function(r) {
+        var items, maxTS, questions,
+          _this = this;
+        this.statistics = r.statistics, questions = r.questions;
+        /*
+                Add normalization
+        */
+
+        items = [];
+        _.each(this.statistics.keys, function(key) {
+          var list;
+          list = _.where(questions, {
+            key: key
+          });
+          return items.push(_.last(list));
+        });
+        maxTS = _.max(items, function(item) {
+          return item.timestamp;
+        });
+        _.each(items, function(item) {
+          var i;
+          i = _.extend({}, item);
+          i.timestamp = maxTS;
+          return questions.push(i);
+        });
+        return questions;
+      },
       keys: function() {
-        return ["answered", "total"];
+        return this.statistics.keys;
       },
       initialize: function(options) {
         if (options == null) {
           options = {};
         }
+        _.bindAll(this, "chartMap");
         this.language = options.language, this.repo = options.repo;
         this.language || (this.language = "");
         return this.repo || (this.repo = "");
@@ -1335,26 +1371,24 @@
       };
 
       MultiSeries.prototype.render = function() {
-        var max, question, questions,
+        var max, min, question, questions,
           _this = this;
         this.color.domain(this.collection.keys());
-        questions = this.color.domain().map(function(name) {
-          return {
-            name: name,
-            values: _this.collection.where({
-              key: name
-            })
-          };
-        });
+        questions = this.color.domain().map(this.collection.chartMap);
         this.x.domain(d3.extent(this.collection.models, function(d) {
           return d.x();
         }));
+        min = d3.min(questions, function(c) {
+          return d3.min(c.values, function(v) {
+            return v.y();
+          });
+        });
         max = d3.max(questions, function(c) {
           return d3.max(c.values, function(v) {
             return v.y();
           });
         });
-        this.y.domain([0, max + 300]);
+        this.y.domain([0.5 * min, 1.1 * max]);
         this.svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + this.height + ")").call(this.xAxis);
         this.svg.append("g").attr("class", "y axis").call(this.yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style("text-anchor", "end").text("Questions");
         question = this.svg.selectAll(".question").data(questions).enter().append("g").attr("class", "question");
@@ -1369,6 +1403,7 @@
             value: d.values[d.values.length - 1]
           };
         }).attr("transform", function(d) {
+          console.log(d);
           return "translate(" + _this.x(d.value.x()) + "," + _this.y(d.value.y()) + ")";
         }).attr("x", 3).attr("dy", ".35em").text(function(d) {
           return d.name;

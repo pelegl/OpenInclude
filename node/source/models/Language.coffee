@@ -45,6 +45,6 @@ statics =
     }, callback    
     
 
-exports.modelName   = "language_name" 
+exports.modelName   = "language_names" 
 exports.definition  = definition
 exports.statics     = statics

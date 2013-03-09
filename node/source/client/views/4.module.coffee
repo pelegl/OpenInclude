@@ -44,24 +44,21 @@
              .append("g")
                 .attr("transform", "translate(" + @margin.left + "," + @margin.top + ")")
       
+      
+      
     render: ->
             
-      @color.domain @collection.keys()      
-      
-      questions = @color.domain().map (name)=>
-        return {
-          name: name,
-          values: @collection.where {key: name}
-        }
-
+      @color.domain @collection.keys()            
+      questions = @color.domain().map @collection.chartMap
             
       @x.domain d3.extent @collection.models, (d)=> return d.x() 
       
-      #min = d3.min questions, (c)=> return d3.min c.values, (v)=> return v.y()
+      min = d3.min questions, (c)=> return d3.min c.values, (v)=> return v.y()
       max = d3.max questions, (c)=> return d3.max c.values, (v)=> return v.y()
       
-      @y.domain [0, max+300]
-
+      @y.domain [0.5*min, 1.1*max]
+      
+      
       @svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + @height + ")")
@@ -75,7 +72,7 @@
             .attr("y", 6)
             .attr("dy", ".71em")
             .style("text-anchor", "end")
-            .text("Questions");
+            .text("Questions")
       
       question = @svg.selectAll(".question")
                         .data(questions)
@@ -89,7 +86,7 @@
       
       question.append("text")
               .datum( (d) => return {name: d.name, value: d.values[d.values.length - 1]} )
-              .attr("transform", (d) => return "translate(" + @x(d.value.x()) + "," + @y(d.value.y()) + ")" )
+              .attr("transform", (d) => console.log(d); return "translate(" + @x(d.value.x()) + "," + @y(d.value.y()) + ")" )
               .attr("x", 3)
               .attr("dy", ".35em")
               .text( (d) => return d.name )

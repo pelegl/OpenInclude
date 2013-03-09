@@ -188,9 +188,12 @@ load = (required) ->
             setters.forEach (setterName)=>
               module.schema.virtual(setterName).set module.virtuals.set[setterName]
                         
-        name = module.modelName if module.modelName
         
-        module.model = db.model name, module.schema
+        unless module.modelName
+          module.model = db.model name, module.schema
+        else
+          module.model = db.model name, module.schema, module.modelName
+          
         models.push module.model
 
       loaded_models[name] = module
