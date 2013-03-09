@@ -6,10 +6,10 @@ import pymongo
 MONGODB_IP = 'ec2-107-20-8-160.compute-1.amazonaws.com'
 DB_NAME = 'openInclude'
 
-quest_max_count = 300
+quest_max_count = 3000000
 
-#mongoConn = pymongo.MongoClient(MONGODB_IP, 27017)
-mongoConn = pymongo.MongoClient()
+mongoConn = pymongo.MongoClient(MONGODB_IP, 27017)
+#mongoConn = pymongo.MongoClient()
 
 db = mongoConn[DB_NAME]
 module_so = db['module_so']
@@ -39,7 +39,7 @@ i = 0
 
 def get_question(page = 0):
     global i
-    for q in so.questions(page=page):
+    for q in so.questions(page=page, answers = True, body=True, comments = True):
         i += 1
         add_question(q, module_so)
         if i % 100 == 0:
