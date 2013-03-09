@@ -14,7 +14,7 @@ modules = db['modules']
 db.drop_collection('module_so2')
 module_so = db['module_so2']
 try:
-    for module in modules.find().sort('watchers', pymongo.DESCENDING).limit(100):
+    for module in modules.find().sort('watchers', pymongo.DESCENDING):
         name = str(module['module_name']).lower()
         print name,
         i = 0
@@ -28,5 +28,5 @@ try:
             # print '.',
         print i
 except stackpy.url.APIError as ex:
-    print ex.message
+    print ex._error_message
 
