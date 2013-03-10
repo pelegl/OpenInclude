@@ -62,7 +62,11 @@ function program2(depth0,data) {
   if (stack1 = helpers.profile_url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.profile_url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "\" class=\"button\">profile</a></div>\n      ";
+    + "\" class=\"button\">profile</a></div>\n      <div class=\"sign-in\"><a href=\"";
+  if (stack1 = helpers.dashboard_url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.dashboard_url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\" class=\"button\">dashboard</a></div>\n      ";
   return buffer;
   }
 
@@ -199,6 +203,60 @@ helpers = helpers || Handlebars.helpers; data = data || {};
 
 
   return "<script type=\"text/javascript\" src=\"/static/js/jquery-1.9.1.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/jquery.nicescroll.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/bootstrap.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/d3.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/humanize.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/underscore.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.min.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.paginator.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/backbone.syphon.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/handlebars.runtime.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/templates.js\"></script>\n<script type=\"text/javascript\" src=\"/static/js/app.js\"></script>";
+  }));
+
+Handlebars.registerPartial("dashboard/create_project", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+
+
+  buffer += "<div id=\"createProject\" class=\"modal hide fade\" tabindex=\"-1\" role=\"dialog\" aria-hidden=\"true\">\r\n  <div class=\"modal-header\">\r\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">×</button>\r\n    <h3>Project Information</h3>\r\n  </div>\r\n  <div class=\"modal-body\">\r\n    <form method='post' action='";
+  if (stack1 = helpers.update_credit_card) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.update_credit_card; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "'>\r\n      <label for='pName'>Project name</label>\r\n      <input type='text' id='pName' class='input-block-level' name='project[name]' required />\r\n      \r\n      <div>\r\n        <a class=\"btn pull-left\" data-dismiss=\"modal\" aria-hidden=\"true\">Close</a>\r\n        <button type='submit' class=\"btn btn-primary pull-left\" style='margin-left: 20px'>Confirm</button>\r\n      </div>\r\n            \r\n    </form>\r\n  </div>  \r\n</div>\r\n";
+  return buffer;
+  }));
+
+Handlebars.registerPartial("dashboard/dashboard", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+
+function program1(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n			          <li rel=\"";
+  if (stack1 = helpers._id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0._id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">";
+  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</li>\r\n			          ";
+  return buffer;
+  }
+
+  buffer += "<div class='container dashboard'>\r\n	<div class='row'>\r\n		<div class='span12'>					\r\n			<div class='row'>\r\n			  <div class='span3 dashboard-left'>\r\n			      <h3>Projects</h3>\r\n			      <ul class=\"project-list nav nav-tabs nav-stacked\">\r\n			          ";
+  stack1 = helpers.each.call(depth0, depth0.projects, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n                  </ul>\r\n                  <p><a href=\"";
+  if (stack1 = helpers.dashboard_url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.dashboard_url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "/project/create\" id=\"create-project-button\" class=\"btn btn-success btn-small\">Create</a></p>\r\n			  </div>\r\n			  <div class='span9 dashboard-right'>\r\n			      <h3>Tasks</h3>\r\n			      <ul id=\"task-list\" class=\"task-list\">\r\n			          <li>Task 1</li>\r\n			          <li>Task 2</li>\r\n			          <li>Task 3</li>\r\n			          <li>Task 4</li>\r\n			          <li>v 5</li>\r\n                  </ul>\r\n			  </div>\r\n			</div>\r\n		</div>\r\n	</div>\r\n</div>\r\n";
+  return buffer;
+  }));
+
+Handlebars.registerPartial("dashboard/tasks", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  
+
+
+  return "<li>1</li>\r\n";
   }));
 
 Handlebars.registerPartial("discover/chart", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -495,7 +553,7 @@ function program6(depth0,data) {
   if (stack1 = helpers.merchant_agreement) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.merchant_agreement; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "' class='btn btn-success btn-mini'>Sign Up</a>\n                ";
+    + "' class='btn btn-success btn-mini backbone'>Sign Up</a>\n                ";
   return buffer;
   }
 
@@ -512,7 +570,24 @@ function program10(depth0,data) {
   if (stack1 = helpers.developer_agreement) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.developer_agreement; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "' class='btn btn-success btn-mini'>Sign Up</a>\n                ";
+    + "' class='btn btn-success btn-mini backbone'>Sign Up</a>\n                ";
+  return buffer;
+  }
+
+function program12(depth0,data) {
+  
+  
+  return "\n              		<i class='icon-ok'></i>\n				";
+  }
+
+function program14(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\n					<a href='";
+  if (stack1 = helpers.trello_auth_url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.trello_auth_url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "' class='btn btn-success btn-mini'>Authorize</a>\n				";
   return buffer;
   }
 
@@ -530,7 +605,10 @@ function program10(depth0,data) {
   buffer += "\n                </span>\n                </p>                \n              </div>\n              <div class='type'>\n                <p>Developer\n                <span class='status'>\n                ";
   stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.employee), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
-  buffer += "\n                </span>\n                </p>\n              </div>\n            </div>\n            <hr />\n            <div class='contactData'>\n              <div class='contact'>\n                <i class='icon-envelope'></i> <a class='muted' href=\"mailto:"
+  buffer += "\n                </span>\n                </p>\n              </div>\n              <div class='type'>\n              	<p>Trello\n              	<span class='status'>\n              	";
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.trello_id), {hash:{},inverse:self.program(14, program14, data),fn:self.program(12, program12, data),data:data});
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n				</span>\n				</p>\n              </div>\n            </div>\n            <hr />\n            <div class='contactData'>\n              <div class='contact'>\n                <i class='icon-envelope'></i> <a class='muted' href=\"mailto:"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -837,4 +915,13 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   buffer += escapeExpression(stack1)
     + "\" class=\"github-auth\">Authenticate with GitHub</a>\n		  </form>  	\n	  </div>\n  </div>\n</div>\n";
   return buffer;
+  }));
+
+Handlebars.registerPartial("registration/trello", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  
+
+
+  return "<div class='container login'>  \r\n  <div class='row'>\r\n  	  <div class='offset2 span8 text-center''>		  \r\n		  <form name=\"signin\" method=\"post\" action=\"\">              \r\n		    <a href=\"{trello_auth_url}}\" class=\"trello-auth\">Authenticate Trello</a>\r\n		  </form>  	\r\n	  </div>\r\n  </div>\r\n</div>\r\n";
   }));

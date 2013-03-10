@@ -84,6 +84,10 @@
     });
     exports.Tos = this.Backbone.Model.extend({});
     exports.CreditCard = this.Backbone.Model.extend({});
+    exports.Project = this.Backbone.Model.extend({
+      idAttribute: "_id",
+      url: "/project"
+    });
     exports.Language = this.Backbone.Model.extend({
       idAttribute: "name",
       urlRoot: "/modules"
@@ -126,7 +130,7 @@
         return lastCommitBucket(datesDifference);
       },
       /*
-              Sets y based on relevance, min: 0, max: 1
+        Sets y based on relevance, min: 0, max: 1
       */
 
       y: function(maxScore) {
@@ -135,7 +139,7 @@
         return score / maxScore;
       },
       /*
-              Sets radius of the circles
+        Sets radius of the circles
       */
 
       radius: function() {
@@ -144,29 +148,29 @@
         return 10 + watchers * 5;
       },
       /*
-              Color of the bubble
-              TODO: make color persist in different searches
+        Color of the bubble
+        TODO: make color persist in different searches
       */
 
       color: function() {
         return this.get('_source').language;
       },
       /*
-              Key
+        Key
       */
 
       key: function() {
         return this.id;
       },
       /*
-              last commit - human
+        last commit - human
       */
 
       lastCommitHuman: function() {
         return humanize.relativeTime(new Date(this.get('_source').pushed_at).getTime() / 1000);
       },
       /*
-              overwrite toJSON, so we can add attributes from functions for hbs
+        overwrite toJSON, so we can add attributes from functions for hbs
       */
 
       toJSON: function(options) {
@@ -330,7 +334,7 @@
         });
       }
     });
-    return exports.DiscoveryComparison = this.Backbone.Collection.extend({
+    exports.DiscoveryComparison = this.Backbone.Collection.extend({
       model: models.Discovery,
       sortBy: function(key, direction) {
         var _this = this;
@@ -349,6 +353,10 @@
         }
         return this.trigger("sort");
       }
+    });
+    return exports.Projects = this.Backbone.Collection.extend({
+      model: models.Project,
+      url: "/project"
     });
   }).call(this, (typeof exports === "undefined" ? this["collections"] = {} : exports), typeof exports !== "undefined");
 
@@ -418,7 +426,7 @@
         var isChecked;
         e.preventDefault();
         /*
-                Perform async form process
+          Perform async form process
         */
 
         isChecked = this.$("[name=signed]").prop("checked");
@@ -721,7 +729,7 @@
       }
 
       Profile.prototype.events = {
-        'click .accountType a': "accountUpgrade",
+        'click .accountType a[class*=backbone]': "accountUpgrade",
         'click .setupPayment': "setupPayment"
       };
 
@@ -743,12 +751,13 @@
       };
 
       Profile.prototype.setAction = function(action) {
-        var dev, merc;
+        var dev, merc, trello;
         dev = this.clearHref(this.context.developer_agreement);
         merc = this.clearHref(this.context.merchant_agreement);
+        trello = this.clearHref(this.context.trello_auth_url);
         if (action === dev && app.session.get("employee") === false) {
           /*
-                      show developer license agreement
+            show developer license agreement
           */
 
           app.navigate(this.context.developer_agreement, {
@@ -758,7 +767,7 @@
           return this.agreement.setData(agreement_text, this.context.developer_agreement);
         } else if (action === merc && app.session.get("merchant") === false) {
           /*
-                      show client license agreement
+            show client license agreement
           */
 
           app.navigate(this.context.merchant_agreement, {
@@ -767,9 +776,17 @@
           this.agreement.$el.show();
           this.agreement.setData(agreement_text, this.context.merchant_agreement);
           return this.listenTo(this.agreement.model, "sync", this.setupPayment);
+        } else if (action === trello) {
+          /*
+                	  	navigate to Trell authorization
+          */
+
+          return app.navigate(this.context.trello_auth_url, {
+            trigger: true
+          });
         } else {
           /*
-                      hide agreement and navigate back to profile
+            hide agreement and navigate back to profile
           */
 
           this.agreement.$el.hide();
@@ -956,17 +973,17 @@
           _this = this;
         $this = $(e.currentTarget);
         /*
-                sort key
+          sort key
         */
 
         key = $this.data("sort");
         /*
-                set active on the element in the context, remove active from the previous element
+          set active on the element in the context, remove active from the previous element
         */
 
         index = $this.closest("th").index();
         /*
-                get sort direction
+          get sort direction
         */
 
         direction = this.context.headers[index].directionBottom === true ? "ASC" : "DESC";
@@ -1172,7 +1189,7 @@
         this.context.discover_search_action = "/discover";
         this.render();
         /*
-                initializing chart
+          initializing chart
         */
 
         this.chartData = new root.collections.Discovery;
@@ -1338,7 +1355,7 @@
         page = page ? parseInt(page) : 0;
         limit = limit ? parseInt(limit) : 30;
         /*
-                Init collection
+          Init collection
         */
 
         this.collection = new collections.Modules(null, {
@@ -1422,12 +1439,12 @@
         var data, limit, page, preloadedData, _ref;
         console.log('[__ModuleViewInit__] Init');
         /*
-                Context
+          Context
         */
 
         this.context.modules_url = modules_url;
         /*
-                QS limits
+          QS limits
         */
 
         _ref = qs.parse(window.location.search), page = _ref.page, limit = _ref.limit;
@@ -1436,7 +1453,7 @@
         this.collection = app.meta.Languages;
         this.listenTo(this.collection, "sync", this.render);
         /*
-                Pager setup
+          Pager setup
         */
 
         preloadedData = this.$("[data-languages]");
@@ -1509,6 +1526,152 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
+    var root, views;
+    root = this;
+    views = this.hbt = Handlebars.partials;
+    exports.CreateProject = (function(_super) {
+
+      __extends(CreateProject, _super);
+
+      function CreateProject() {
+        return CreateProject.__super__.constructor.apply(this, arguments);
+      }
+
+      CreateProject.prototype.id = 'createProject';
+
+      CreateProject.prototype.className = "modal hide fade";
+
+      CreateProject.prototype.attributes = {
+        tabindex: "-1",
+        role: "dialog",
+        "aria-hidden": "true"
+      };
+
+      CreateProject.prototype.events = {
+        'submit form': "createProject"
+      };
+
+      CreateProject.prototype.createProject = function(e) {
+        var data, jqxhr;
+        e.preventDefault();
+        data = Backbone.Syphon.serialize(e.currentTarget);
+        this.$("[type=submit]").addClass("disabled").text("Updating information...");
+        jqxhr = this.model.save(data, {
+          success: this.processUpdate,
+          error: this.processUpdate
+        });
+        return false;
+      };
+
+      CreateProject.prototype.processUpdate = function(model, response, options) {
+        var _this = this;
+        if (response.success === true) {
+          app.session.set({
+            has_stripe: true
+          }, {
+            silent: true
+          });
+          this.$el.modal('hide');
+          return setTimeout(function() {
+            return app.session.trigger("change");
+          }, 300);
+        } else {
+
+        }
+      };
+
+      CreateProject.prototype.initialize = function() {
+        this.model = new models.Project;
+        _.bindAll(this, "processUpdate");
+        this.context = _.extend({}, app.conf);
+        return this.render();
+      };
+
+      CreateProject.prototype.show = function() {
+        this.$el.modal('show');
+        return this.delegateEvents();
+      };
+
+      CreateProject.prototype.render = function() {
+        var html;
+        html = views['dashboard/create_project'](this.context);
+        this.$el = $(html);
+        this.$el.modal({
+          show: false
+        });
+        return this;
+      };
+
+      return CreateProject;
+
+    })(this.Backbone.View);
+    return exports.Dashboard = (function(_super) {
+
+      __extends(Dashboard, _super);
+
+      function Dashboard() {
+        return Dashboard.__super__.constructor.apply(this, arguments);
+      }
+
+      Dashboard.prototype.events = {
+        'click .project-list li': "switchProject",
+        'click #create-project-button': "showProjectForm"
+      };
+
+      Dashboard.prototype.clearHref = function(href) {
+        return href.replace("/" + this.context.dashboard_url, "");
+      };
+
+      Dashboard.prototype.showProjectForm = function(e) {
+        e.preventDefault();
+        return this.createProject.show();
+      };
+
+      Dashboard.prototype.switchProject = function(e) {
+        console.log(e);
+        return this.render();
+      };
+
+      Dashboard.prototype.initialize = function() {
+        var _this = this;
+        console.log('[__dashboardView__] Init');
+        this.context.title = "Dashboard";
+        this.createProject = new exports.CreateProject;
+        this.projects = new collections.Projects;
+        return this.projects.fetch({
+          success: function(collection, response, options) {
+            var projects;
+            projects = [];
+            collection.each(function(item) {
+              return projects.push(item.toJSON());
+            });
+            _this.context.projects = projects;
+            return _this.render();
+          }
+        });
+      };
+
+      Dashboard.prototype.render = function() {
+        var html;
+        html = views['dashboard/dashboard'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'dashboard');
+        this.$el.append(this.createProject.$el);
+        return this;
+      };
+
+      return Dashboard;
+
+    })(View);
+  }).call(this, window.views);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  (function(exports) {
     var App, conf;
     conf = {
       STATIC_URL: "/static/",
@@ -1517,12 +1680,15 @@
       profile_url: "profile",
       signin_url: "profile/login",
       github_auth_url: "/auth/github",
+      trello_auth_url: "/auth/trello",
       discover_url: "discover",
       how_to_url: "how-to",
       modules_url: 'modules',
       merchant_agreement: '/profile/merchant_agreement',
       developer_agreement: '/profile/developer_agreement',
-      update_credit_card: '/profile/update_credit_card'
+      update_credit_card: '/profile/update_credit_card',
+      dashboard_url: "dashboard",
+      create_project_url: "dashboard/project/create"
     };
     App = (function(_super) {
 
@@ -1650,14 +1816,21 @@
         });
       };
 
+      App.prototype.dashboard = function() {
+        this.reRoute();
+        return this.view = new views.Dashboard({
+          prevView: this.view
+        });
+      };
+
       return App;
 
     })(Backbone.Router);
     return $(document).ready(function() {
       var app, route_keys, route_paths,
         _this = this;
-      route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo"];
-      route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo"];
+      route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url];
+      route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo", "dashboard", "dashboard"];
       App.prototype.routes = _.object(route_keys, route_paths);
       console.log('[__app__] init done!');
       exports.app = app = new App();

@@ -6,12 +6,15 @@
     profile_url         : "profile"
     signin_url          : "profile/login"
     github_auth_url     : "/auth/github"
+    trello_auth_url     : "/auth/trello"
     discover_url        : "discover"
     how_to_url          : "how-to"
     modules_url         : 'modules'
     merchant_agreement  : '/profile/merchant_agreement'
     developer_agreement : '/profile/developer_agreement'
-    update_credit_card  : '/profile/update_credit_card'    
+    update_credit_card  : '/profile/update_credit_card'
+    dashboard_url       : "dashboard"
+    create_project_url  : "dashboard/project/create"    
     
   class App extends Backbone.Router
     conf: conf
@@ -83,6 +86,10 @@
         prevView: @view
         language: language
         repo: repo
+        
+    dashboard: ->
+      @reRoute()
+      @view = new views.Dashboard prevView:@view  
     
 
   $(document).ready ->
@@ -115,6 +122,9 @@
       "!/#{conf.modules_url}/:language"
       "#{conf.modules_url}/:language/:repo"
       "!/#{conf.modules_url}/:language/:repo"
+      
+      conf.dashboard_url
+      "!/#{conf.dashboard_url}"
     ]
     
     route_paths = [
@@ -136,6 +146,8 @@
       "repo_list"
       "repo"
       "repo"
+      "dashboard"
+      "dashboard"
     ]
           
     App.prototype.routes = _.object route_keys, route_paths

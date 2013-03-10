@@ -32,7 +32,8 @@ startApp = ->
         
     app.use (req,res,next)->
       req.app = app
-      next()    
+      next()
+    app.use express.methodOverride()
     app.use express.bodyParser {uploadDir: "#{root}/tmp"}
     app.use express.cookieParser secret
     app.use express.session {store, key: 'openinclude.sess'}

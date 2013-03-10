@@ -1,4 +1,4 @@
-{STATIC_URL, modules_url, github_auth, get_models, is_authenticated, github_auth_url, logout, signin_url, is_not_authenticated} = require './conf'
+{STATIC_URL, modules_url, github_auth, get_models, is_authenticated, github_auth_url, trello_auth_url, trello_auth, logout, signin_url, is_not_authenticated, dashboard_url} = require './conf'
 
 exports.set = (app)->
   ###
@@ -12,6 +12,12 @@ exports.set = (app)->
   ###
   app.get modules_url,         app.Controllers.module
   app.get "#{modules_url}/*",  app.Controllers.module
+  
+  ###
+  Dashboard
+  ###
+  app.get dashboard_url, app.Controllers.dashboard
+  app.get "#{dashboard_url}/*", app.Controllers.dashboard
 
   ###
   Share idea
@@ -35,6 +41,15 @@ exports.set = (app)->
   Session interaction
   ###
   app.get '/session*', app.Controllers.session
+  
+  
+  ###
+  Project
+  ###
+  app.get "/project", app.Controllers.project.list
+  app.post "/project", app.Controllers.project.create
+  app.put "/project/:id", app.Controllers.project.update
+  app.delete "/project/:id", app.Controllers.project.delete
 
   ###
   oAuth interaction
@@ -42,6 +57,10 @@ exports.set = (app)->
   app.get "/auth/logout", logout  
   app.get "#{github_auth_url}", github_auth()  
   app.get "#{github_auth_url}/callback", github_auth(scope: 'user', failureRedirect: '/profile/login'),
+    (request, response) -> response.redirect('/profile')
+    
+  app.get "#{trello_auth_url}", trello_auth()
+  app.get "#{trello_auth_url}/callback", trello_auth(failureRedirect: '/profile'),
     (request, response) -> response.redirect('/profile')
     
   ###

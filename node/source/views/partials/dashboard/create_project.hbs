@@ -1,0 +1,18 @@
+<div id="createProject" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3>Project Information</h3>
+  </div>
+  <div class="modal-body">
+    <form method='post' action='{{update_credit_card}}'>
+      <label for='pName'>Project name</label>
+      <input type='text' id='pName' class='input-block-level' name='project[name]' required />
+      
+      <div>
+        <a class="btn pull-left" data-dismiss="modal" aria-hidden="true">Close</a>
+        <button type='submit' class="btn btn-primary pull-left" style='margin-left: 20px'>Confirm</button>
+      </div>
+            
+    </form>
+  </div>  
+</div>

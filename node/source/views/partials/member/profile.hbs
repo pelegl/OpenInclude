@@ -20,7 +20,7 @@
                     <button class='btn btn-info btn-mini setupPayment'>setup payment method</button>
                   {{/if}}
                 {{else}}
-                <a href='{{merchant_agreement}}' class='btn btn-success btn-mini'>Sign Up</a>
+                <a href='{{merchant_agreement}}' class='btn btn-success btn-mini backbone'>Sign Up</a>
                 {{/if}}
                 </span>
                 </p>                
@@ -31,10 +31,21 @@
                 {{#if user.employee}}
                   <i class='icon-ok'></i>
                 {{else}}
-                  <a href='{{developer_agreement}}' class='btn btn-success btn-mini'>Sign Up</a>
+                  <a href='{{developer_agreement}}' class='btn btn-success btn-mini backbone'>Sign Up</a>
                 {{/if}}
                 </span>
                 </p>
+              </div>
+              <div class='type'>
+              	<p>Trello
+              	<span class='status'>
+              	{{#if user.trello_id}}
+              		<i class='icon-ok'></i>
+				{{else}}
+					<a href='{{trello_auth_url}}' class='btn btn-success btn-mini'>Authorize</a>
+				{{/if}}
+				</span>
+				</p>
               </div>
             </div>
             <hr />

@@ -1,0 +1,27 @@
+<div class='container dashboard'>
+	<div class='row'>
+		<div class='span12'>					
+			<div class='row'>
+			  <div class='span3 dashboard-left'>
+			      <h3>Projects</h3>
+			      <ul class="project-list nav nav-tabs nav-stacked">
+			          {{#each projects}}
+			          <li rel="{{_id}}">{{name}}</li>
+			          {{/each}}
+                  </ul>
+                  <p><a href="{{ dashboard_url }}/project/create" id="create-project-button" class="btn btn-success btn-small">Create</a></p>
+			  </div>
+			  <div class='span9 dashboard-right'>
+			      <h3>Tasks</h3>
+			      <ul id="task-list" class="task-list">
+			          <li>Task 1</li>
+			          <li>Task 2</li>
+			          <li>Task 3</li>
+			          <li>Task 4</li>
+			          <li>v 5</li>
+                  </ul>
+			  </div>
+			</div>
+		</div>
+	</div>
+</div>

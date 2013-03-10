@@ -7,6 +7,7 @@ _           = require 'underscore'
 
 passport = require 'passport'
 GithubStrategy = require('passport-github').Strategy
+TrelloStrategy = require('passport-trello').Strategy
 
 exports.db = db = mongoose.createConnection 'localhost', 'openInclude'
 
@@ -38,9 +39,11 @@ exports.logout_url      = logout_url      =  "/auth/logout"
 exports.profile_url     = profile_url     = "/profile"
 exports.signin_url      = signin_url      = "#{profile_url}/login"
 exports.github_auth_url = github_auth_url = "/auth/github"
+exports.trello_auth_url = trello_auth_url = "/auth/trello"
 exports.discover_url    = discover_url    = "/discover"
 exports.how_to_url      = how_to_url      = "/how-to"
-exports.modules_url     = modules_url     = '/modules'
+exports.modules_url     = modules_url     = "/modules"
+exports.dashboard_url   = dashboard_url   = "/dashboard"
 
 exports.merchant_agreement        = merchant_agreement  = "#{profile_url}/merchant_agreement"
 exports.developer_agreement       = developer_agreement = "#{profile_url}/developer_agreement"
@@ -99,6 +102,9 @@ exports.registerPartials = registerPartials = (dir, callback, dirViews)->
 GITHUB_CLIENT_ID = '2361006ea086ad268742'
 GITHUB_CLIENT_SECRET = '8983c759727c4195ae2b34916d9ed313eeafa332'
 
+TRELLO_ID = '48d2041e5c3684d893ef877b2ae2bad3'
+TRELLO_SECRET = '0c3da5c0d7afb77ac90b09dd34264d7521498c5b030774af2d853d8a6c00f939'
+
 exports.passport_session = () ->
   passport.session()
 
@@ -142,6 +148,33 @@ passport_init = exports.passport_init = () ->
       )
     )
   )
+  
+  passport.use 'trello', new TrelloStrategy(
+    consumerKey: TRELLO_ID
+    consumerSecret: TRELLO_SECRET
+    callbackURL: "#{trello_auth_url}/callback"
+    passReqToCallback: true
+    (req, token, tokenSecret, profile, done) ->
+        if not req.user
+            # user is not authenticated, log in via trello
+            # TODO
+        else
+            user = req.user
+            console.log(req.session)
+            
+            User.findById(req.user._id, (error, user) ->
+                if error then return done(error)
+                
+                user.trello_id = profile.id
+                user.trello_token = token
+                user.trello_token_secret = tokenSecret
+                
+                user.save((error, user) ->
+                    if error then return done(error)
+                    if user then return done(null, user)
+                )
+            )
+  )
 
 exports.github_auth = (options) ->
   passport.authenticate 'github', options
@@ -160,8 +193,11 @@ exports.is_not_authenticated = (request, response, next) ->
     return response.redirect profile_url
   next()
 
+# trello authorization
+exports.trello_auth = (options) ->
+	passport.authorize 'trello', options
 
-#### Models
+# Models
 loaded_models = {}
 
 load = (required) ->

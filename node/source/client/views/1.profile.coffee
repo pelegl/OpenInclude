@@ -75,7 +75,7 @@
   
   class exports.Profile extends View
     events:
-      'click .accountType a' : "accountUpgrade"
+      'click .accountType a[class*=backbone]' : "accountUpgrade"
       'click .setupPayment'  : "setupPayment"
     
     clearHref: (href)->
@@ -94,6 +94,7 @@
     setAction: (action)->
       dev           = @clearHref @context.developer_agreement
       merc          = @clearHref @context.merchant_agreement
+      trello		= @clearHref @context.trello_auth_url
       
       if action is dev and app.session.get("employee") is false
           ###
@@ -111,6 +112,11 @@
           @agreement.setData agreement_text, @context.merchant_agreement
           
           @listenTo @agreement.model, "sync", @setupPayment      
+      else if action is trello
+      	  ###
+      	  	navigate to Trell authorization
+		  ###
+      	  app.navigate @context.trello_auth_url, {trigger: true}
       else
           ###
             hide agreement and navigate back to profile
