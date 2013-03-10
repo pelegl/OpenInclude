@@ -37,7 +37,8 @@ Write_to_database = (repos)->
         repository = new Module repo
         repository.save callback
       else
-        callback err
+        res = _.extend res, repo
+        res.save callback
   ,(err)=>
     console.log "Batch write finished".debug, err
 
@@ -73,11 +74,12 @@ Tasks =
         capture_github err, message
   ]
   
+  
 
 ###
   Define task list
 ###
-  
+
 async.auto Tasks, (err, results)->  
   console.log err.error if err?
   console.log "Proxy List Has".help, results.get_proxy.length.toString().info, " items".info

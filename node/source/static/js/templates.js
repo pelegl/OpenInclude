@@ -816,7 +816,11 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   buffer += escapeExpression(stack1)
     + "'>\n      <h2>"
     + escapeExpression(((stack1 = ((stack1 = depth0.module),stack1 == null || stack1 === false ? stack1 : stack1.module_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h2>\n      <div class='readme'>\n        readme placeholder\n      </div>\n      <div class='row'>\n        <div class='span6'>\n          <div class='commitHistory'>"
+    + " <small><a class='muted' href=\""
+    + escapeExpression(((stack1 = ((stack1 = depth0.module),stack1 == null || stack1 === false ? stack1 : stack1.url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = ((stack1 = depth0.module),stack1 == null || stack1 === false ? stack1 : stack1.url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a></small></h2>      \n      <div class='row'>\n        <div class='span6'>\n          <div class='commitHistory'>"
     + "</div>\n        </div>\n        <div class='span6'>\n          <div class='startHistory'>"
     + "</div>\n        </div>\n      </div>\n      <div>\n        <div class='stackQAHistory'>"
     + "</div>\n      </div>\n    </div>\n  </div>  \n</div>";

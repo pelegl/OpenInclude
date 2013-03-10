@@ -19,13 +19,16 @@
     "grunt-contrib-less": "0.5.x",
     "grunt-contrib-concat": "*",
     "grunt-contrib-cssmin": "*",
-    "elasticsearchclient" : "*",
-    "underscore"		  : "*",
-    "humanize"			  : "*",
+    "elasticsearchclient": "*",
+    "underscore": "*",
+    "humanize": "*",
     "grunt-contrib-coffee": "*",
     "passport": "0.x",
     "passport-github": "0.x",
     "nodemailer": "0.x",
-    "stripe" : "*"
+    "stripe": "*",
+    "octonode": "git://github.com/AVVS/octonode.git",
+    "aws-sdk": "~0.9.5-pre.6",
+    "kue": "~0.5.0"
   }
 }

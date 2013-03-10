@@ -2,11 +2,11 @@
   Config
 ###
 {ObjectId}   = require('mongoose').Schema.Types
-{get_models} = require '../conf'
+{get_models, git} = require '../conf'
 async        = require 'async'
 _            = require 'underscore'
 
-[StackOverflow] = get_models ["StackOverflow"]
+[StackOverflow , Stargazers] = get_models ["StackOverflow", "ModuleStargazers"]
 
 
 ###
@@ -27,13 +27,57 @@ definition =
   followers: Number
   module_name : String  
   openinclude_followers: [{type: ObjectId, ref: 'User'}]
+  github_subscriptions: [{
+    url : String
+    updated_at : Date
+    created_at : Date
+    name       : String
+    events     : []
+    active     : Boolean
+    config     : {}
+    id         : Number
+  }]
   
 
 statics =
   get_module: (name, callback)->
     @findOne {module_name: name}, callback 
 
-methods = 
+methods =
+  repo: ->
+    return git.repo "#{@username}/#{@module_name}"
+
+  list_stargazers: (params..., callback)->    
+    @repo().stargazers params..., callback
+  
+  make_stargazers_snapshot: (stargazers, snaphost_date, callback) ->    
+    snapshot_date = snapshot_date || new Date()
+    async.forEach stargazers, (stargazer, async_call)=>
+      Stargazers.create @_id, snapshot_date, stargazer, async_call
+    ,callback
+  
+  create_subscription: (callback) ->
+    ###
+      TODO: not working, only allowed on repositories you own?
+    ###
+    message =
+      user: @username
+      repo: @module_name
+      name: "openinclude"
+      config:
+        url : "http://ec2-107-20-8-160.compute-1.amazonaws.com:8600/git/webhook"
+        content_type: "json"
+      events: ["push", "watch"]
+    
+    #console.log message
+    
+    #git.repos.createHook message, (err, response)=>
+    #  console.log err, response
+    
+    callback "Not implemented"
+  
+    
+ 
   get_questions: (opts..., callback)->
     # params
     amount = opts[0] || 365
@@ -107,8 +151,25 @@ methods =
             
     async.auto Tasks, callback        
       
-      
+virtuals = 
+  get:
+    url: -> return "https://github.com/#{@owner}/#{@module_name}"
+  set: {}
 
+
+options =
+  toObject:
+    virtuals: true
+  toJSON: 
+    virtuals: true
+
+index = [ 
+  [{stars : -1}]
+]
+
+exports.index      = index
+exports.options  = options
+exports.virtuals = virtuals
 exports.definition = definition
 exports.statics = statics
 exports.methods = methods

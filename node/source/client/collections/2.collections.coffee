@@ -138,6 +138,8 @@
     parse: (r)->
       {@statistics, questions} = r    
       
+      return [] unless questions?      
+      
       ###
         Add normalization
       ###
@@ -151,13 +153,14 @@
       
       _.each items, (item)=>
         i = _.extend {}, item
-        i.timestamp = maxTS
-        questions.push i   
+        i.timestamp = maxTS.timestamp
+        i._id += "_copy"
+        questions.push i
       
       questions
     
     keys: ->
-      @statistics.keys
+      return @statistics.keys || []
     
     initialize: (options={})->
       _.bindAll @, "chartMap"

@@ -27,6 +27,23 @@ serverOptions =
 exports.esClient = esClient = new esc serverOptions
 
 
+###
+  Github service
+###
+github = require 'octonode'
+
+GITHUB_CLIENT_ID = '2361006ea086ad268742'
+GITHUB_CLIENT_SECRET = '8983c759727c4195ae2b34916d9ed313eeafa332'
+
+GITHUB_SETS = [
+  [GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET]
+  ["fbc1f03fd6ef162b3463", "bead2882abb9409df91f4ba7fecc450c6e989d4b"]
+] 
+ 
+exports.git = github.client "client", GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
+exports.git.setTokens = (set)->
+  [@clientID, @clientSecret] = GITHUB_SETS[set] || GITHUB_SETS[0] 
+
 
 ###
   Some static helpers
@@ -96,8 +113,6 @@ exports.registerPartials = registerPartials = (dir, callback, dirViews)->
     else
       callback err
       
-GITHUB_CLIENT_ID = '2361006ea086ad268742'
-GITHUB_CLIENT_SECRET = '8983c759727c4195ae2b34916d9ed313eeafa332'
 
 exports.passport_session = () ->
   passport.session()
@@ -171,7 +186,7 @@ load = (required) ->
     unless loaded_models[name]
       module = require './models/' + name
       if module.definition
-        module.schema         = new mongoose.Schema module.definition        
+        module.schema         = new mongoose.Schema module.definition, (module.options || {})        
         module.schema.methods = module.methods if module.methods
         module.schema.statics = module.statics if module.statics
         
@@ -187,7 +202,14 @@ load = (required) ->
           if setters.length > 0
             setters.forEach (setterName)=>
               module.schema.virtual(setterName).set module.virtuals.set[setterName]
-                        
+        
+        ###
+          Set index        
+        ###
+        if module.index?
+          _.each module.index, (index)=>
+            #console.log "Applying index", index
+            module.schema.index.apply module.schema, index          
         
         unless module.modelName
           module.model = db.model name, module.schema

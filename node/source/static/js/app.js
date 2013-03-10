@@ -380,6 +380,9 @@
         var items, maxTS, questions,
           _this = this;
         this.statistics = r.statistics, questions = r.questions;
+        if (questions == null) {
+          return [];
+        }
         /*
                 Add normalization
         */
@@ -398,13 +401,14 @@
         _.each(items, function(item) {
           var i;
           i = _.extend({}, item);
-          i.timestamp = maxTS;
+          i.timestamp = maxTS.timestamp;
+          i._id += "_copy";
           return questions.push(i);
         });
         return questions;
       },
       keys: function() {
-        return this.statistics.keys;
+        return this.statistics.keys || [];
       },
       initialize: function(options) {
         if (options == null) {
@@ -1350,7 +1354,7 @@
         _.bindAll(this);
         this.margin = {
           top: 20,
-          right: 80,
+          right: 200,
           bottom: 30,
           left: 50
         };
@@ -1403,9 +1407,8 @@
             value: d.values[d.values.length - 1]
           };
         }).attr("transform", function(d) {
-          console.log(d);
           return "translate(" + _this.x(d.value.x()) + "," + _this.y(d.value.y()) + ")";
-        }).attr("x", 3).attr("dy", ".35em").text(function(d) {
+        }).attr("x", 10).attr("dy", ".35em").text(function(d) {
           return d.name;
         });
         return this;

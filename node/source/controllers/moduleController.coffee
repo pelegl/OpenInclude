@@ -119,8 +119,8 @@ class ModuleController extends require('./basicController')
       Repo.get_module @moduleName, (err, module)=>
         if !err and module
           if @req.xhr
-            @res.json module
-          else
+            @res.json 
+          else          
             @context.prepopulate = JSON.stringify module
             @context.module = module
             @context.body   = @_view 'module/view', @context

@@ -15,7 +15,7 @@
       
       @margin = 
         top     : 20
-        right   : 80
+        right   : 200
         bottom  : 30
         left    : 50
       @width = @$el.width() - @margin.right - @margin.left
@@ -86,8 +86,8 @@
       
       question.append("text")
               .datum( (d) => return {name: d.name, value: d.values[d.values.length - 1]} )
-              .attr("transform", (d) => console.log(d); return "translate(" + @x(d.value.x()) + "," + @y(d.value.y()) + ")" )
-              .attr("x", 3)
+              .attr("transform", (d) => return "translate(" + @x(d.value.x()) + "," + @y(d.value.y()) + ")" )
+              .attr("x", 10)
               .attr("dy", ".35em")
               .text( (d) => return d.name )
       
