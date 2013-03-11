@@ -63,14 +63,14 @@ def main():
     modules = db['modules']
 
     create_tasks(tasks, modules)
-
+    exit()
     db.drop_collection('module_so_nodes')
     nodes = db['module_so_nodes']
 
     run_cluster()
 
     while True:
-        nodes_list = get_nodes(['init', 'idle']) # assign, inprocess, api_limit
+        nodes_list = get_nodes(['init', 'idle']) # assign, inprocess, api_limit, dead
         tasks_list = get_tasks(['new'])
         if len(nodes_list)>0 and len(tasks_list)>0:
             i=0
