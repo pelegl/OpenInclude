@@ -454,65 +454,69 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
 
 
-  buffer += "<div id=\"updateCreditCard\" class=\"modal hide fade\" tabindex=\"-1\" role=\"dialog\" aria-hidden=\"true\">\n  <div class=\"modal-header\">\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">×</button>\n    <h3>Credit Card Information</h3>\n  </div>\n  <div class=\"modal-body\">\n    <form method='post' action='";
+  buffer += "<div class='dropdown-menu'>\n  <form role=\"menu\" method='post' action='";
   if (stack1 = helpers.update_credit_card) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.update_credit_card; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "'>\n      <label for='ccFullName'>Full Name (as it appears on the card)</label>\n      <input type='text' id='ccFullName' class='input-block-level' name='card[fullName]' required />\n      \n      <label for='ccNumber'>Card Number</label>\n      <input type='text' id='ccNumber' class='input-block-level' name='card[number]' required pattern=\"[0-9]{4}[ \\-]?[0-9]{4}[ \\-]?[0-9]{4}[ \\-]?[0-9]{4}\" />\n      \n      <label for='ccExpiration'>Expiration (MM/YYYY)</label>\n      <input type='text' id='ccExpiration' class='input-block-level' name='card[expiration]' required pattern=\"[0-9]{2}/[0-9]{4}\" />\n      \n      <label for='ccCVV'>CVV</label>\n      <input type='text' id='ccCVV' class='input-block-level'  name='card[cvv]' required pattern=\"[0-9]{3}\" />\n      \n      <span class=\"help-block muted\">Please review the <a href='#'>terms of service</a>, and <a href='#'>privacy policy</a>. All sales are final — no refunds.</span>\n      \n      <div>\n        <a class=\"btn pull-left\" data-dismiss=\"modal\" aria-hidden=\"true\">Close</a>\n        <button type='submit' class=\"btn btn-primary pull-left\" style='margin-left: 20px'>Update credit card</button>\n      </div>\n            \n    </form>\n  </div>  \n</div>";
+    + "'>  \n    <div class='row-fluid'>\n      <div class='span12'>\n        <div class='controls-row'>\n          <input type='text' class='span6' name='card[givenName]' placeholder=\"Given name\" required />\n          <input type='text' class='span6' name='card[lastName]' placeholder=\"Last name\" required />  \n        </div>     \n        <div class='controls-row'>\n          <input type='text' id='ccNumber' class='span12' name='card[number]' required placeholder=\"Card Number\" pattern=\"[0-9]{4}[ \\-]?[0-9]{4}[ \\-]?[0-9]{4}[ \\-]?[0-9]{4}\" />  \n        </div>\n        <div class='controls-row'>\n          <input type='text' id='ccExpiration' class='span6' name='card[expiration]' required placeholder=\"MM/YYYY\" pattern=\"[0-9]{2}/[0-9]{4}\" />\n          <input type='text' id='ccCVV' class='span6'  name='card[cvv]' required pattern=\"[0-9]{3}\" placeholder=\"CVV\" />\n        </div>\n        <div class='controls-row'>\n          <button type='submit' class=\"btn btn-primary pull-right\">Update credit card</button>\n        </div>    \n      </div>\n    </div>\n  </form>\n</div>";
   return buffer;
   }));
 
 Handlebars.registerPartial("member/profile", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
-helpers = helpers || Handlebars.helpers; data = data || {};
+helpers = helpers || Handlebars.helpers; partials = partials || Handlebars.partials; data = data || {};
   var buffer = "", stack1, stack2, self=this, functionType="function", escapeExpression=this.escapeExpression;
 
 function program1(depth0,data) {
   
   var buffer = "", stack1, stack2;
-  buffer += "\n                  ";
+  buffer += "\n                    ";
   stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.has_stripe), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
-  buffer += "\n                ";
+  buffer += "\n                  ";
   return buffer;
   }
 function program2(depth0,data) {
   
   
-  return "\n                    <i class='icon-ok'></i>\n                  ";
+  return "\n                      <i class='icon-ok'></i>\n                    ";
   }
 
 function program4(depth0,data) {
   
-  
-  return "\n                    <button class='btn btn-info btn-mini setupPayment'>setup payment method</button>\n                  ";
+  var buffer = "", stack1;
+  buffer += "\n                      <div class='dropup setupPayment'>\n                          <button class=\"btn btn-success btn-mini\">Setup payment method</button>\n                          ";
+  stack1 = self.invokePartial(partials['member/credit_card'], 'member/credit_card', depth0, helpers, partials, data);
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\n                      </div>                    \n                    ";
+  return buffer;
   }
 
 function program6(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                <a href='";
+  buffer += "\n                  <a href='";
   if (stack1 = helpers.merchant_agreement) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.merchant_agreement; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "' class='btn btn-success btn-mini'>Sign Up</a>\n                ";
+    + "' class='btn btn-success btn-mini'>Sign Up</a>\n                  ";
   return buffer;
   }
 
 function program8(depth0,data) {
   
   
-  return "\n                  <i class='icon-ok'></i>\n                ";
+  return "\n                    <i class='icon-ok'></i>\n                  ";
   }
 
 function program10(depth0,data) {
   
   var buffer = "", stack1;
-  buffer += "\n                  <a href='";
+  buffer += "\n                    <a href='";
   if (stack1 = helpers.developer_agreement) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.developer_agreement; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "' class='btn btn-success btn-mini'>Sign Up</a>\n                ";
+    + "' class='btn btn-success btn-mini'>Sign Up</a>\n                  ";
   return buffer;
   }
 
@@ -524,13 +528,13 @@ function program10(depth0,data) {
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "' target=\"_blank\" class='muted'>"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</a></h4>\n            <hr />\n            <h4>Account type</h4>\n            <div class='accountType'>\n              <div class='type'>\n                <p>Merchant\n                <span class='status'>\n                ";
+    + "</a></h4>\n            <hr />\n            <h4>Account type</h4>\n            <div class='accountType'>\n              <div class='type'>\n                <div>\n                  <div class='status'>\n                  ";
   stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.merchant), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
-  buffer += "\n                </span>\n                </p>                \n              </div>\n              <div class='type'>\n                <p>Developer\n                <span class='status'>\n                ";
+  buffer += "\n                  </div>\n                  <p>Client</p>\n                </div>                \n              </div>\n              <div class='type'>\n                <div>\n                  <div class='status'>\n                  ";
   stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.employee), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
-  buffer += "\n                </span>\n                </p>\n              </div>\n            </div>\n            <hr />\n            <div class='contactData'>\n              <div class='contact'>\n                <i class='icon-envelope'></i> <a class='muted' href=\"mailto:"
+  buffer += "\n                  </div>\n                  <p>Developer</p>\n                </div>\n              </div>\n            </div>\n            <hr />\n            <div class='contactData'>\n              <div class='contact'>\n                <i class='icon-envelope'></i> <a class='muted' href=\"mailto:"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
@@ -812,7 +816,14 @@ helpers = helpers || Handlebars.helpers; data = data || {};
   buffer += escapeExpression(stack1)
     + "'>\n      <h2>"
     + escapeExpression(((stack1 = ((stack1 = depth0.module),stack1 == null || stack1 === false ? stack1 : stack1.module_name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</h2>\n      <div class='readme'>\n        readme placeholder\n      </div>\n      <div class='row'>\n        <div class='span6'>\n          stars over time placeholder\n        </div>\n        <div class='span6'>\n          questions/answers over time\n        </div>\n      </div>\n      <div>\n        commits over time\n      </div>\n    </div>\n  </div>  \n</div>";
+    + " <small><a class='muted' href=\""
+    + escapeExpression(((stack1 = ((stack1 = depth0.module),stack1 == null || stack1 === false ? stack1 : stack1.url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = ((stack1 = depth0.module),stack1 == null || stack1 === false ? stack1 : stack1.url)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a></small></h2>      \n      <div class='row'>\n        <div class='span6'>\n          <div class='commitHistory'>"
+    + "</div>\n        </div>\n        <div class='span6'>\n          <div class='startHistory'>"
+    + "</div>\n        </div>\n      </div>\n      <div>\n        <div class='stackQAHistory'>"
+    + "</div>\n      </div>\n    </div>\n  </div>  \n</div>";
   return buffer;
   }));
 

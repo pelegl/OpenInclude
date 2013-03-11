@@ -42,7 +42,7 @@
     initialize: ->
       @model = new models.Tos            
       if $(".agreementContainer").length > 0
-        @$el = $(".agreementContainer") 
+        @setElement $(".agreementContainer") 
       else
         @render()
       

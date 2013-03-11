@@ -2,6 +2,15 @@
 
 exports.set = (app)->
   ###
+    git webhook
+  ###
+  app.all '/git/webhook', (req, res)->
+    console.log req.body
+    
+    res.send "ok"
+  
+  
+  ###
   Discover controller
   ###
   app.get '/discover',   app.Controllers.discover    

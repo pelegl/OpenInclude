@@ -107,17 +107,26 @@ class ModuleController extends require('./basicController')
         res.send "Error", 500
     
   module: ->
-    Repo.get_module @moduleName, (err, module)=>
-      if !err and module
-        if @req.xhr
-          @res.json module
+    [requiredData, format] = @get if @get?
+    if requiredData is 'stackoverflow' and format is 'json'
+      #TODO: pull questions from SO database
+      
+      Repo.get_module @moduleName, (err, module)=>
+        module.get_questions (err, resp)=>
+          return @res.json {err, success: false} if err?          
+          @res.json resp      
+    else
+      Repo.get_module @moduleName, (err, module)=>
+        if !err and module
+          if @req.xhr
+            @res.json 
+          else          
+            @context.prepopulate = JSON.stringify module
+            @context.module = module
+            @context.body   = @_view 'module/view', @context
+            @res.render 'base', @context
         else
-          @context.prepopulate = JSON.stringify module
-          @context.module = module
-          @context.body   = @_view 'module/view', @context
-          @res.render 'base', @context
-      else
-        @res.send "Not found", 404
+          @res.send "Not found", 404
 
 module.exports = (req,res)->
   new ModuleController req, res

@@ -153,6 +153,14 @@
 .container.profile {
   margin-top: 30px;
 }
+.container.profile .setupPayment .dropdown-menu {
+  padding: 15px;
+  margin-bottom: 5px;
+  width: 300px;
+}
+.container.profile .setupPayment .dropdown-menu form {
+  margin: 0;
+}
 .container.profile .informationBox .agreement .agreementWrapper {
   padding: 20px;
   background: #ffffff;
@@ -205,6 +213,20 @@
 }
 .container.profile .personalInformation .accountType .status a {
   vertical-align: top;
+}
+.stackQAHistory .axis path,
+.stackQAHistory .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+.stackQAHistory .axis.x path {
+  display: none;
+}
+.stackQAHistory .line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
 }
 .share-ideas {
   position: fixed;
