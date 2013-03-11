@@ -60,11 +60,16 @@ class Tasks
   ###
     Pull repositories from the database and init new job
   ###
-  repositories: (callback)->    
-    Module.find({}, "_id, username, module_name").sort({stars:-1}).exec (err, modules)=>      
-      return callback err if err?      
-      callback null, {snapshot_date: new Date(), modules, total: modules.length}
-  
+  repositories: (limit..., callback)->
+    unless limit[0]      
+      Module.find({}, "_id owner module_name").sort({stars:-1}).exec (err, modules)=>      
+        return callback err if err?      
+        callback null, {snapshot_date: new Date(), modules, total: modules.length}
+    else
+      Module.find({}, "_id owner module_name").sort({stars:-1}).limit(limit[0]).exec (err, modules)=>      
+        return callback err if err?      
+        callback null, {snapshot_date: new Date(), modules, total: modules.length}
+    
   ###
     Process repository
   ###
@@ -90,12 +95,28 @@ class Tasks
   
     console.log "Started processing module #{repository.owner}/#{repository.module_name}"  
     async.doWhilst process, test, callback
+  
+  ###
+    Get page link
+  ###
+  getPageLinks: (link)->
+    if typeof link == "object" and (link.link || link.meta.link)
+      link = link.link || link.meta.link
+    
+    links = {}
+    return links if typeof link != "string" 
+
+    # link format:
+    # '<https://api.github.com/users/aseemk/followers?page=2>; rel="next", <https://api.github.com/users/aseemk/followers?page=2>; rel="last"'      
+    link.replace /<([^>]*)>;\s*rel="([\w]*)\"/g, (m, uri, type)=>
+      links[type] = uri
       
+    links
     
   ###
     Create task wrapper
   ###
-  call: (name, args=[])->
+  call: (name, args...)->
     console.log "Calling function: #{name}"
     self = this
     return (callback)->

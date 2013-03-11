@@ -1,6 +1,8 @@
 ###
   Config
 ###
+require 'coffee-trace'
+####
 cluster   = require 'cluster'
 kue       = require 'kue'
 jobs      = kue.createQueue()
@@ -22,6 +24,6 @@ if cluster.isMaster
     console.log "worker #{worker.process.pid} died"
    
 else
-  console.log "Worked started", cluster.worker
+  console.log "Worked started", cluster.worker.id
   require('./processTasks') jobs, Job
   
