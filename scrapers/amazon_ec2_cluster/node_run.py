@@ -8,6 +8,7 @@ import sys
 from datetime import datetime
 
 from cluster_types import Task
+import cluster_types
 
 class Node():
     site = stackpy.Site('stackoverflow')
@@ -30,7 +31,7 @@ class Node():
 
     def run_task(self, task_id):
         # update node (status -> inprocess)
-        self.update_curr_node_status('inprocess')
+        self.update_curr_node_status(cluster_types.Node.STATUS_INPROGRESS)
 
         # update task (node_id, status -> inprocess)
         task = self.tasks.find_one({'_id': task_id})
@@ -54,19 +55,19 @@ class Node():
                 #     break
                 # print '.',
             # update task (status -> completed, results -> addresses)
-            message = 'Got %d question' % i
+            message = 'Task %s module=%s got %d question' % (task['_id'], task_params['module_id'], i)
             task['result'].append(message)
             task['status'] = Task.STATUS_COMPLETED
             self.tasks.save(task)
             # update node (status -> idle, task_id -> None)
-            self.update_curr_node_status('idle', message)
+            self.update_curr_node_status(cluster_types.Node.STATUS_IDLE, message)
         except stackpy.url.APIError as ex:
             # update task (status -> completed, results -> addresses)
             task['result'].append(ex._error_message)
             task['status'] = Task.STATUS_ERROR
             self.tasks.save(task)
             # update node (status -> idle, task_id -> None)
-            self.update_curr_node_status('api_limit')
+            self.update_curr_node_status(cluster_types.Node.STATUS_API_LIMIT)
 
     def init(self, argv):
         # try:
@@ -104,7 +105,7 @@ class Node():
 
         curr_node = {
             'task_id': None,
-            'status': 'init',
+            'status': cluster_types.Node.STATUS_INIT,
             'logs': ['%s: create node' % str(datetime.now())]
         }
         self.node_id = self.nodes.insert(curr_node)
@@ -113,14 +114,14 @@ class Node():
         while True:
             curr_node = self.get_curr_node()
             status = curr_node['status']
-            if status == 'assign':
+            if status == cluster_types.Node.STATUS_ASSIGN:
                 self.run_task(curr_node['task_id'])
                 # if status in ['init', 'idle', 'api_limit']:
-            elif status == 'stop':
+            elif status == cluster_types.Node.STATUS_STOP:
                 break
             sleep(5)
 
-        self.update_curr_node_status('dead')
+        self.update_curr_node_status(cluster_types.Node.STATUS_DEAD)
         self.mongoConn.close()
 
 def main():
