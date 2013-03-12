@@ -11,13 +11,6 @@ aws       = require './aws'
 [Module]  = main_conf.get_models ["Module"]
 
 ###
-  Helpers
-###
-limit = (headers)->
-  return parseInt headers['x-ratelimit-remaining']
-
-
-###
   Set of tasks for background scraping
 ###
 class Tasks  
@@ -112,6 +105,13 @@ class Tasks
       links[type] = uri
       
     links
+  
+  ###
+    Limit helper
+  ###
+  limit : (headers)->
+    return parseInt headers['x-ratelimit-remaining']
+
     
   ###
     Create task wrapper

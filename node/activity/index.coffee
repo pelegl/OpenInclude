@@ -3,27 +3,23 @@
 ###
 require 'coffee-trace'
 ####
-cluster   = require 'cluster'
-kue       = require 'kue'
-jobs      = kue.createQueue()
-Job       = kue.Job
+cluster         = require 'cluster'
+fivebeans       = require 'fivebeans'
+NumberOfWorkers = 2
+{spawn, exec} = require 'child_process'
 
 ###
   Start cluster for parallel processing
 ###
 if cluster.isMaster
-  #kue.app.listen 3000
-  startTime = new Date().getTime()/1000  
-  require('./setTasks') jobs, Job, (callback)->
-    # forking now
-    stopTime = new Date().getTime()/1000  
-    console.log "Settings tasks took: #{stopTime-startTime} seconds"  
-    cluster.fork() for i in [0...2]    
-  
-  cluster.on 'exit', (worker, code, signal)->
-    console.log "worker #{worker.process.pid} died"
-   
-else
-  console.log "Worked started", cluster.worker.id
-  require('./processTasks') jobs, Job
-  
+  # compile handlers
+  coffee = spawn '/usr/bin/coffee', ['-c', '-b', '-o', 'handlers', 'source']
+  coffee.on 'close', ->
+    # set tasks
+    require('./setTasks') fivebeans, (callback)->
+      # start workers
+      cluster.fork() for [0...NumberOfWorkers]        
+else      
+  console.log "Starting workers"
+  runner = new fivebeans.runner "Queue_worker_#{cluster.worker.id}", './worker_config.yml'    
+  runner.go()
