@@ -9,28 +9,14 @@ _         = require 'underscore'
 ###
 
 definition =
-    client: Object
+    project: ObjectId
     
-    # Project details
+    # Task details
     name : String
     description: String
     
-    # whose involved in project
-    resources: []
-    
-    # project tasks
-    tasks: [ObjectId]
-    
     # completion date
     completed: Date
-    
-    # access rights to specific tasks
-    categories: []
-    
-    # access rights for project 
-    read: [ObjectId]
-    write: [ObjectId]
-    grant: [ObjectId]
     
     # Trello ID
     trello_id : String

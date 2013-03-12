@@ -50,7 +50,15 @@ exports.set = (app)->
   app.post "/project", app.Controllers.project.create
   app.put "/project/:id", app.Controllers.project.update
   app.delete "/project/:id", app.Controllers.project.delete
-
+  
+  ###
+  Task
+  ###
+  app.get "/task/:project", app.Controllers.task.list
+  app.post "/task/:project", app.Controllers.task.create
+  app.put "/task/:id", app.Controllers.task.update
+  app.delete "/task/:id", app.Controllers.task.delete
+  
   ###
   oAuth interaction
   ###

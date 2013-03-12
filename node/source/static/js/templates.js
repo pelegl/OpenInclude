@@ -208,15 +208,19 @@ helpers = helpers || Handlebars.helpers; data = data || {};
 Handlebars.registerPartial("dashboard/create_project", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
   this.compilerInfo = [2,'>= 1.0.0-rc.3'];
 helpers = helpers || Handlebars.helpers; data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression;
+  
 
 
-  buffer += "<div id=\"createProject\" class=\"modal hide fade\" tabindex=\"-1\" role=\"dialog\" aria-hidden=\"true\">\r\n  <div class=\"modal-header\">\r\n    <button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">×</button>\r\n    <h3>Project Information</h3>\r\n  </div>\r\n  <div class=\"modal-body\">\r\n    <form method='post' action='";
-  if (stack1 = helpers.update_credit_card) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = depth0.update_credit_card; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "'>\r\n      <label for='pName'>Project name</label>\r\n      <input type='text' id='pName' class='input-block-level' name='project[name]' required />\r\n      \r\n      <div>\r\n        <a class=\"btn pull-left\" data-dismiss=\"modal\" aria-hidden=\"true\">Close</a>\r\n        <button type='submit' class=\"btn btn-primary pull-left\" style='margin-left: 20px'>Confirm</button>\r\n      </div>\r\n            \r\n    </form>\r\n  </div>  \r\n</div>\r\n";
-  return buffer;
+  return "<form method='post' action=''>\r\n  <label for='pName'>Project name</label>\r\n  <input type='text' id='pName' class='input-block-level' name='project[name]' required />\r\n  <label for='tDescription'>Description</label>\r\n  <textarea id=\"tDescription\" class=\"input-block-level\" name='project[description]' required></textarea>\r\n  \r\n  <div>\r\n    <a class=\"btn pull-left close-inline\">Close</a>\r\n    <button type='submit' class=\"btn btn-primary pull-left\" style='margin-left: 20px'>Confirm</button>\r\n  </div>\r\n        \r\n</form>\r\n\r\n";
+  }));
+
+Handlebars.registerPartial("dashboard/create_task", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
+  this.compilerInfo = [2,'>= 1.0.0-rc.3'];
+helpers = helpers || Handlebars.helpers; data = data || {};
+  
+
+
+  return "<form method='post' action=''>\r\n  <label for='tName'>Task name</label>\r\n  <input type='text' id='tName' class='input-block-level' name='task[name]' required />\r\n  <label for='tDescription'>Description</label>\r\n  <textarea id=\"tDescription\" class=\"input-block-level\" name='task[description]' required></textarea>\r\n  \r\n  <div>\r\n    <a class=\"btn pull-left close-inline\">Close</a>\r\n    <button type='submit' class=\"btn btn-primary pull-left\" style='margin-left: 20px'>Confirm</button>\r\n  </div>\r\n        \r\n</form>\r\n";
   }));
 
 Handlebars.registerPartial("dashboard/dashboard", Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
@@ -239,14 +243,83 @@ function program1(depth0,data) {
   return buffer;
   }
 
+function program3(depth0,data) {
+  
+  var buffer = "", stack1, stack2;
+  buffer += "\r\n                          <h3 id=\"project-name\">"
+    + escapeExpression(((stack1 = ((stack1 = depth0.project),stack1 == null || stack1 === false ? stack1 : stack1.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</h3>\r\n                          <h4 id=\"project-description\">"
+    + escapeExpression(((stack1 = ((stack1 = depth0.project),stack1 == null || stack1 === false ? stack1 : stack1.description)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</h4>\r\n                          <h5>Involved</h5>\r\n                          ";
+  stack2 = helpers.each.call(depth0, ((stack1 = depth0.project),stack1 == null || stack1 === false ? stack1 : stack1.resources), {hash:{},inverse:self.noop,fn:self.program(4, program4, data),data:data});
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\r\n                          <h5>Owner</h5>\r\n                          <p><a href=\"/profile/view/"
+    + escapeExpression(((stack1 = ((stack1 = ((stack1 = depth0.project),stack1 == null || stack1 === false ? stack1 : stack1.client)),stack1 == null || stack1 === false ? stack1 : stack1.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "\">"
+    + escapeExpression(((stack1 = ((stack1 = ((stack1 = depth0.project),stack1 == null || stack1 === false ? stack1 : stack1.client)),stack1 == null || stack1 === false ? stack1 : stack1.name)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
+    + "</a></p>\r\n                          <p><a href=\"";
+  if (stack2 = helpers.dashboard_url) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.dashboard_url; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  buffer += escapeExpression(stack2)
+    + "/project/";
+  if (stack2 = helpers.projectId) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.projectId; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  buffer += escapeExpression(stack2)
+    + "\" id=\"delete-project-button\" class=\"btn btn-error btn-small\">Delete</a></p>\r\n                          <ul id=\"task-list\" class=\"task-list nav nav-tabs nav-stacked\">\r\n                              ";
+  stack2 = helpers.each.call(depth0, depth0.tasks, {hash:{},inverse:self.noop,fn:self.program(6, program6, data),data:data});
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\r\n                          </ul>\r\n                          <p id=\"create-task-inline\"></p>\r\n                          <p><a href=\"";
+  if (stack2 = helpers.dashboard_url) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.dashboard_url; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  buffer += escapeExpression(stack2)
+    + "/task/create/";
+  if (stack2 = helpers.projectId) { stack2 = stack2.call(depth0, {hash:{},data:data}); }
+  else { stack2 = depth0.projectId; stack2 = typeof stack2 === functionType ? stack2.apply(depth0) : stack2; }
+  buffer += escapeExpression(stack2)
+    + "\" id=\"create-task-button\" class=\"btn btn-success btn-small\">Create</a></p>\r\n                          ";
+  return buffer;
+  }
+function program4(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n                          <p><a href=\"/profile/view/";
+  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">";
+  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</a></p>\r\n                          ";
+  return buffer;
+  }
+
+function program6(depth0,data) {
+  
+  var buffer = "", stack1;
+  buffer += "\r\n                              <li rel=\"";
+  if (stack1 = helpers._id) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0._id; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "\">";
+  if (stack1 = helpers.name) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
+  else { stack1 = depth0.name; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
+  buffer += escapeExpression(stack1)
+    + "</li>\r\n                              ";
+  return buffer;
+  }
+
   buffer += "<div class='container dashboard'>\r\n	<div class='row'>\r\n		<div class='span12'>					\r\n			<div class='row'>\r\n			  <div class='span3 dashboard-left'>\r\n			      <h3>Projects</h3>\r\n			      <ul class=\"project-list nav nav-tabs nav-stacked\">\r\n			          ";
   stack1 = helpers.each.call(depth0, depth0.projects, {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n                  </ul>\r\n                  <p><a href=\"";
+  buffer += "\r\n                  </ul>\r\n                  <p id=\"create-project-inline\"></p>\r\n                  <p><a href=\"";
   if (stack1 = helpers.dashboard_url) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
   else { stack1 = depth0.dashboard_url; stack1 = typeof stack1 === functionType ? stack1.apply(depth0) : stack1; }
   buffer += escapeExpression(stack1)
-    + "/project/create\" id=\"create-project-button\" class=\"btn btn-success btn-small\">Create</a></p>\r\n			  </div>\r\n			  <div class='span9 dashboard-right'>\r\n			      <h3>Tasks</h3>\r\n			      <ul id=\"task-list\" class=\"task-list\">\r\n			          <li>Task 1</li>\r\n			          <li>Task 2</li>\r\n			          <li>Task 3</li>\r\n			          <li>Task 4</li>\r\n			          <li>v 5</li>\r\n                  </ul>\r\n			  </div>\r\n			</div>\r\n		</div>\r\n	</div>\r\n</div>\r\n";
+    + "/project/create\" id=\"create-project-button\" class=\"btn btn-success btn-small\">Create</a></p>\r\n			  </div>\r\n			  <div class='span9 dashboard-right'>\r\n			      <div class=\"row\">\r\n			          <div class='span7 main-area'>\r\n			              ";
+  stack1 = helpers['if'].call(depth0, depth0.project, {hash:{},inverse:self.noop,fn:self.program(3, program3, data),data:data});
+  if(stack1 || stack1 === 0) { buffer += stack1; }
+  buffer += "\r\n                      </div>\r\n                      <div class='span2 supplementary-area'>\r\n                          <h3>filters, etc</h3>\r\n                      </div>\r\n                  </div>\r\n			  </div>\r\n			</div>\r\n		</div>\r\n	</div>\r\n</div>\r\n";
   return buffer;
   }));
 
@@ -528,25 +601,40 @@ helpers = helpers || Handlebars.helpers; data = data || {};
 function program1(depth0,data) {
   
   var buffer = "", stack1, stack2;
+  buffer += "\n            <h4>Account type</h4>\n            <div class='accountType'>\n              <div class='type'>\n                <p>Merchant\n                <span class='status'>\n                ";
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.merchant), {hash:{},inverse:self.program(7, program7, data),fn:self.program(2, program2, data),data:data});
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n                </span>\n                </p>                \n              </div>\n              <div class='type'>\n                <p>Developer\n                <span class='status'>\n                ";
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.employee), {hash:{},inverse:self.program(11, program11, data),fn:self.program(9, program9, data),data:data});
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n                </span>\n                </p>\n              </div>\n              <div class='type'>\n              	<p>Trello\n              	<span class='status'>\n              	";
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.trello_id), {hash:{},inverse:self.program(15, program15, data),fn:self.program(13, program13, data),data:data});
+  if(stack2 || stack2 === 0) { buffer += stack2; }
+  buffer += "\n				</span>\n				</p>\n              </div>\n            </div>\n            <hr />\n            ";
+  return buffer;
+  }
+function program2(depth0,data) {
+  
+  var buffer = "", stack1, stack2;
   buffer += "\n                  ";
-  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.has_stripe), {hash:{},inverse:self.program(4, program4, data),fn:self.program(2, program2, data),data:data});
+  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.has_stripe), {hash:{},inverse:self.program(5, program5, data),fn:self.program(3, program3, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
   buffer += "\n                ";
   return buffer;
   }
-function program2(depth0,data) {
+function program3(depth0,data) {
   
   
   return "\n                    <i class='icon-ok'></i>\n                  ";
   }
 
-function program4(depth0,data) {
+function program5(depth0,data) {
   
   
   return "\n                    <button class='btn btn-info btn-mini setupPayment'>setup payment method</button>\n                  ";
   }
 
-function program6(depth0,data) {
+function program7(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                <a href='";
@@ -557,13 +645,13 @@ function program6(depth0,data) {
   return buffer;
   }
 
-function program8(depth0,data) {
+function program9(depth0,data) {
   
   
   return "\n                  <i class='icon-ok'></i>\n                ";
   }
 
-function program10(depth0,data) {
+function program11(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n                  <a href='";
@@ -574,13 +662,13 @@ function program10(depth0,data) {
   return buffer;
   }
 
-function program12(depth0,data) {
+function program13(depth0,data) {
   
   
   return "\n              		<i class='icon-ok'></i>\n				";
   }
 
-function program14(depth0,data) {
+function program15(depth0,data) {
   
   var buffer = "", stack1;
   buffer += "\n					<a href='";
@@ -599,16 +687,10 @@ function program14(depth0,data) {
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "' target=\"_blank\" class='muted'>"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_username)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
-    + "</a></h4>\n            <hr />\n            <h4>Account type</h4>\n            <div class='accountType'>\n              <div class='type'>\n                <p>Merchant\n                <span class='status'>\n                ";
-  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.merchant), {hash:{},inverse:self.program(6, program6, data),fn:self.program(1, program1, data),data:data});
+    + "</a></h4>\n            <hr />\n            ";
+  stack2 = helpers['if'].call(depth0, depth0['private'], {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
   if(stack2 || stack2 === 0) { buffer += stack2; }
-  buffer += "\n                </span>\n                </p>                \n              </div>\n              <div class='type'>\n                <p>Developer\n                <span class='status'>\n                ";
-  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.employee), {hash:{},inverse:self.program(10, program10, data),fn:self.program(8, program8, data),data:data});
-  if(stack2 || stack2 === 0) { buffer += stack2; }
-  buffer += "\n                </span>\n                </p>\n              </div>\n              <div class='type'>\n              	<p>Trello\n              	<span class='status'>\n              	";
-  stack2 = helpers['if'].call(depth0, ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.trello_id), {hash:{},inverse:self.program(14, program14, data),fn:self.program(12, program12, data),data:data});
-  if(stack2 || stack2 === 0) { buffer += stack2; }
-  buffer += "\n				</span>\n				</p>\n              </div>\n            </div>\n            <hr />\n            <div class='contactData'>\n              <div class='contact'>\n                <i class='icon-envelope'></i> <a class='muted' href=\"mailto:"
+  buffer += "\n            <div class='contactData'>\n              <div class='contact'>\n                <i class='icon-envelope'></i> <a class='muted' href=\"mailto:"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))
     + "\">"
     + escapeExpression(((stack1 = ((stack1 = depth0.user),stack1 == null || stack1 === false ? stack1 : stack1.github_email)),typeof stack1 === functionType ? stack1.apply(depth0) : stack1))

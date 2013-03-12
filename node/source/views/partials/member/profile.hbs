@@ -8,6 +8,7 @@
             <h3>{{ user.github_display_name }}</h3>
             <h4><a href='https://github.com/{{ user.github_username }}' target="_blank" class='muted'>{{ user.github_username }}</a></h4>
             <hr />
+            {{#if private}}
             <h4>Account type</h4>
             <div class='accountType'>
               <div class='type'>
@@ -49,6 +50,7 @@
               </div>
             </div>
             <hr />
+            {{/if}}
             <div class='contactData'>
               <div class='contact'>
                 <i class='icon-envelope'></i> <a class='muted' href="mailto:{{ user.github_email }}">{{ user.github_email }}</a>

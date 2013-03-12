@@ -139,6 +139,7 @@
     
     render: ->
       @context.user = @model.toJSON()
+      @context.private = true
       html = views['member/profile'](@context)
       @$el.html html
       @$el.attr 'view-id', 'profile'

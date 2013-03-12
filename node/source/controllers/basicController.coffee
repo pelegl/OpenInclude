@@ -7,6 +7,7 @@ class BasicController
   constructor: (@req,@res)->    
     path = @req.path
     segments = _.without path.split("/"), ""
+    segments = _.map segments, (item) -> decodeURIComponent(item)
     offset = @offset || 0
     
     #@controllerName = segments[0] - not using it, omitting

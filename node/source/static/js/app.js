@@ -88,6 +88,10 @@
       idAttribute: "_id",
       url: "/project"
     });
+    exports.Task = this.Backbone.Model.extend({
+      idAttribute: "_id",
+      url: "/task"
+    });
     exports.Language = this.Backbone.Model.extend({
       idAttribute: "name",
       urlRoot: "/modules"
@@ -354,9 +358,13 @@
         return this.trigger("sort");
       }
     });
-    return exports.Projects = this.Backbone.Collection.extend({
+    exports.Projects = this.Backbone.Collection.extend({
       model: models.Project,
       url: "/project"
+    });
+    return exports.Tasks = this.Backbone.Collection.extend({
+      model: models.Task,
+      url: "/task"
     });
   }).call(this, (typeof exports === "undefined" ? this["collections"] = {} : exports), typeof exports !== "undefined");
 
@@ -809,6 +817,7 @@
       Profile.prototype.render = function() {
         var html;
         this.context.user = this.model.toJSON();
+        this.context["private"] = true;
         html = views['member/profile'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'profile');
@@ -1526,85 +1535,128 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var root, views;
+    var InlineForm, project, projectId, projects, root, tasks, views;
     root = this;
     views = this.hbt = Handlebars.partials;
-    exports.CreateProject = (function(_super) {
+    projects = new collections.Projects;
+    tasks = new collections.Tasks;
+    projectId = "";
+    project = null;
+    InlineForm = (function(_super) {
 
-      __extends(CreateProject, _super);
+      __extends(InlineForm, _super);
 
-      function CreateProject() {
-        return CreateProject.__super__.constructor.apply(this, arguments);
+      function InlineForm() {
+        return InlineForm.__super__.constructor.apply(this, arguments);
       }
 
-      CreateProject.prototype.id = 'createProject';
-
-      CreateProject.prototype.className = "modal hide fade";
-
-      CreateProject.prototype.attributes = {
-        tabindex: "-1",
-        role: "dialog",
-        "aria-hidden": "true"
+      InlineForm.prototype.events = {
+        'submit form': "submit",
+        'click .close-inline': "hide"
       };
 
-      CreateProject.prototype.events = {
-        'submit form': "createProject"
-      };
-
-      CreateProject.prototype.createProject = function(e) {
-        var data, jqxhr;
-        e.preventDefault();
-        data = Backbone.Syphon.serialize(e.currentTarget);
+      InlineForm.prototype.submit = function(event) {
+        var data;
+        event.preventDefault();
+        data = Backbone.Syphon.serialize(event.currentTarget);
         this.$("[type=submit]").addClass("disabled").text("Updating information...");
-        jqxhr = this.model.save(data, {
-          success: this.processUpdate,
-          error: this.processUpdate
+        this.model.save(data, {
+          success: this.success,
+          error: this.success
         });
         return false;
       };
 
-      CreateProject.prototype.processUpdate = function(model, response, options) {
-        var _this = this;
+      InlineForm.prototype.success = function(model, response, options) {
         if (response.success === true) {
-          app.session.set({
-            has_stripe: true
-          }, {
-            silent: true
-          });
-          this.$el.modal('hide');
-          return setTimeout(function() {
-            return app.session.trigger("change");
-          }, 300);
+          this.hide;
+          return true;
         } else {
-
+          alert(response.error);
+          return false;
         }
       };
 
-      CreateProject.prototype.initialize = function() {
-        this.model = new models.Project;
-        _.bindAll(this, "processUpdate");
+      InlineForm.prototype.show = function() {
+        return this.$el.show();
+      };
+
+      InlineForm.prototype.hide = function(event) {
+        if (event) {
+          event.preventDefault();
+        }
+        return this.$el.hide();
+      };
+
+      InlineForm.prototype.initialize = function() {
         this.context = _.extend({}, app.conf);
         return this.render();
       };
 
-      CreateProject.prototype.show = function() {
-        this.$el.modal('show');
-        return this.delegateEvents();
-      };
-
-      CreateProject.prototype.render = function() {
-        var html;
-        html = views['dashboard/create_project'](this.context);
-        this.$el = $(html);
-        this.$el.modal({
-          show: false
-        });
+      InlineForm.prototype.render = function() {
+        this.html = views[this.view](this.context);
+        this.$el.hide();
+        this.$el.html("");
+        this.$el.append(this.html);
         return this;
       };
 
-      return CreateProject;
+      return InlineForm;
 
     })(this.Backbone.View);
+    exports.CreateProjectForm = (function(_super) {
+
+      __extends(CreateProjectForm, _super);
+
+      function CreateProjectForm() {
+        return CreateProjectForm.__super__.constructor.apply(this, arguments);
+      }
+
+      CreateProjectForm.prototype.el = "#create-project-inline";
+
+      CreateProjectForm.prototype.view = "dashboard/create_project";
+
+      CreateProjectForm.prototype.success = function(model, response, options) {
+        if (CreateProjectForm.__super__.success.call(this, model, response, options)) {
+          return projects.fetch();
+        }
+      };
+
+      CreateProjectForm.prototype.initialize = function() {
+        this.model = new models.Project;
+        return CreateProjectForm.__super__.initialize.call(this);
+      };
+
+      return CreateProjectForm;
+
+    })(InlineForm);
+    exports.CreateTaskForm = (function(_super) {
+
+      __extends(CreateTaskForm, _super);
+
+      function CreateTaskForm() {
+        return CreateTaskForm.__super__.constructor.apply(this, arguments);
+      }
+
+      CreateTaskForm.prototype.el = "#create-task-inline";
+
+      CreateTaskForm.prototype.view = "dashboard/create_task";
+
+      CreateTaskForm.prototype.success = function(model, response, options) {
+        if (CreateTaskForm.__super__.success.call(this, model, response, options)) {
+          return tasks.fetch();
+        }
+      };
+
+      CreateTaskForm.prototype.initialize = function() {
+        this.model = new models.Task;
+        this.model.url = "/task/" + projectId;
+        return CreateTaskForm.__super__.initialize.call(this);
+      };
+
+      return CreateTaskForm;
+
+    })(InlineForm);
     return exports.Dashboard = (function(_super) {
 
       __extends(Dashboard, _super);
@@ -1615,11 +1667,28 @@
 
       Dashboard.prototype.events = {
         'click .project-list li': "switchProject",
-        'click #create-project-button': "showProjectForm"
+        'click #create-project-button': "showProjectForm",
+        'click #delete-project-button': "deleteProject",
+        'click #create-task-button': "showTaskForm"
       };
 
       Dashboard.prototype.clearHref = function(href) {
         return href.replace("/" + this.context.dashboard_url, "");
+      };
+
+      Dashboard.prototype.deleteProject = function(e) {
+        var _this = this;
+        e.preventDefault();
+        project.url = "/project/" + projectId;
+        return project.destroy({
+          success: function(model, response) {
+            _this.context.project = null;
+            _this.context.projectId = "";
+            project = null;
+            projectId = "";
+            return projects.fetch();
+          }
+        });
       };
 
       Dashboard.prototype.showProjectForm = function(e) {
@@ -1627,28 +1696,47 @@
         return this.createProject.show();
       };
 
+      Dashboard.prototype.showTaskForm = function(e) {
+        e.preventDefault();
+        return this.createTask.show();
+      };
+
       Dashboard.prototype.switchProject = function(e) {
-        console.log(e);
+        projectId = e.target.attributes['rel'].value;
+        this.context.projectId = projectId;
+        project = projects.get(projectId);
+        this.context.project = project.toJSON();
+        tasks.url = "/task/" + projectId;
+        tasks.fetch();
         return this.render();
       };
 
       Dashboard.prototype.initialize = function() {
-        var _this = this;
         console.log('[__dashboardView__] Init');
         this.context.title = "Dashboard";
-        this.createProject = new exports.CreateProject;
-        this.projects = new collections.Projects;
-        return this.projects.fetch({
-          success: function(collection, response, options) {
-            var projects;
-            projects = [];
-            collection.each(function(item) {
-              return projects.push(item.toJSON());
-            });
-            _this.context.projects = projects;
-            return _this.render();
-          }
+        projects.on("reset", this.updateProjectList, this);
+        projects.fetch();
+        return tasks.on("reset", this.updateTaskList, this);
+      };
+
+      Dashboard.prototype.updateProjectList = function(collection) {
+        var _projects;
+        _projects = [];
+        collection.each(function(item) {
+          return _projects.push(item.toJSON());
         });
+        this.context.projects = _projects;
+        return this.render();
+      };
+
+      Dashboard.prototype.updateTaskList = function(collection) {
+        var _tasks;
+        _tasks = [];
+        collection.each(function(item) {
+          return _tasks.push(item.toJSON());
+        });
+        this.context.tasks = _tasks;
+        return this.render();
       };
 
       Dashboard.prototype.render = function() {
@@ -1656,7 +1744,8 @@
         html = views['dashboard/dashboard'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'dashboard');
-        this.$el.append(this.createProject.$el);
+        this.createProject = new exports.CreateProjectForm;
+        this.createTask = new exports.CreateTaskForm;
         return this;
       };
 

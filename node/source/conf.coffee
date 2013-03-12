@@ -32,7 +32,7 @@ exports.esClient = esClient = new esc serverOptions
 ###
   Some static helpers
 ###
-SERVER_URL = exports.SERVER_URL = "http://ec2-107-20-8-160.compute-1.amazonaws.com:#{process.env.PORT || 8900}"
+SERVER_URL = exports.SERVER_URL = "http://ec2-54-225-224-68.compute-1.amazonaws.com:#{process.env.PORT || 8900}"
 STATIC_URL = exports.STATIC_URL = "/static/"
 
 exports.logout_url      = logout_url      =  "/auth/logout"
@@ -154,6 +154,10 @@ passport_init = exports.passport_init = () ->
     consumerSecret: TRELLO_SECRET
     callbackURL: "#{trello_auth_url}/callback"
     passReqToCallback: true
+    trelloParams:
+        scope: "read,write"
+        name: "OpenInclude.com"
+        expiration: "never"
     (req, token, tokenSecret, profile, done) ->
         if not req.user
             # user is not authenticated, log in via trello

@@ -1,4 +1,7 @@
 _            = require 'underscore'
+{get_models} = require '../conf'
+
+[User] = get_models ["User"]
 
 agreement_text = "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. "
 
@@ -6,6 +9,7 @@ class ProfileController extends require('./basicController')
   
   index: ->    
     @context.title = 'User Profile'
+    @context.private = true
     @context.body = @_view 'member/profile', @context  #рендерим {{{body}}} в контекст
     @res.render 'base', @context # рендерим layout/base.hbs с контекстом @context
  
@@ -68,6 +72,21 @@ class ProfileController extends require('./basicController')
       }
     else
       @res.send "Not permitted", 401
+  
+  view: ->
+      User.findOne({github_username: @get[0]}, (result, data) =>
+          if result or data is null
+              @res.status(404)
+              @context.title = "User not found"
+              @context.body = "Sorry, user #{@get[0]} not found"
+              @res.render "base", @context
+          else
+              @context.title = "Profile of #{@get[0]}"
+              @context.user = data.toJSON()
+              @context.private = false
+              @context.body = @_view "member/profile", @context
+              @res.render "base", @context
+      )
  
 # Здесь отдаем функцию - каждый раз когда вызывается наш контроллер - создается новый экземпляр - это мы вставим в рутер
 module.exports = (req,res)->

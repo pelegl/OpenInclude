@@ -206,6 +206,19 @@
 .container.profile .personalInformation .accountType .status a {
   vertical-align: top;
 }
+.project-list {
+  width: 220px;
+}
+.project-list li,
+.task-list li {
+  margin-bottom: 2px;
+  padding: 6px;
+  cursor: pointer;
+}
+.project-list li:hover,
+.task-list li:hover {
+  background-color: #DDD;
+}
 .share-ideas {
   position: fixed;
   height: 30px;
