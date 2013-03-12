@@ -1,12 +1,13 @@
 __author__ = 'Alexey'
 
 import pymongo
-from cluster_types import MasterNodeBase
+from cluster_types import Task
+from master_base import MasterNodeBase
 
-# MONGODB_IP = 'ec2-54-225-224-68.compute-1.amazonaws.com'
-MONGODB_IP = 'localhost'
-DB_NAME = 'openIncludeCopy'
-CLUSTER_NODES_COUNT = 15
+MONGODB_IP = 'ec2-54-225-224-68.compute-1.amazonaws.com'
+# MONGODB_IP = 'localhost'
+DB_NAME = 'openInclude'
+CLUSTER_NODES_COUNT = 13
 
 class MasterNode(MasterNodeBase):
     modules_collection_name = 'modules'
@@ -38,8 +39,8 @@ class MasterNode(MasterNodeBase):
 
 def main():
     master = MasterNode(MONGODB_IP, DB_NAME, CLUSTER_NODES_COUNT)
-    master.create_tasks()
-    # master.run_cluster()
+    # master.create_tasks()
+    master.run_cluster(False)
     master.run()
     # master.stop_cluster()
 
