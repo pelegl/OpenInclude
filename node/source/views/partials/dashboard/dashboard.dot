@@ -1,0 +1,50 @@
+<div class='container dashboard'>
+	<div class='row'>
+		<div class='span12'>					
+			<div class='row'>
+			  <div class='span3 dashboard-left'>
+			      <h3>Projects</h3>
+			      <ul class="project-list nav nav-tabs nav-stacked">
+			          {{~it.projects :project}}
+			          <li rel="{{=project._id}}">{{? project.client.id == it.user._id }}[my] {{?}}{{=project.name}}{{? it.canEdit(it.user, project) }}<span class="pull-right"><a href="{{= it.dashboard_url }}/project/edit/{{=it.projectId}}" class="btn btn-warning btn-small" style="margin-top: -3px" rel="{{=project._id}}">Edit</a></span>{{?}}</li>
+			          {{~}}
+                  </ul>
+                  <p id="create-project-inline"></p>
+                  <p><a href="{{= it.dashboard_url }}/project/create" id="create-project-button" class="btn btn-success btn-small">Create</a></p>
+			  </div>
+			  <div class='span9 dashboard-right'>
+			      <div class="row">
+			          <div class='span7 main-area'>
+                      {{? it.project}}
+                          <h3 id="project-name">{{=it.project.name}}</h3>
+                          <h4 id="project-description">{{=it.project.description}}</h4>
+                          <h5>Involved</h5>
+                          {{~ it.project.resources :resource}}
+                          <p><a href="/profile/view/{{=resource.name}}">{{=resource.name}}</a></p>
+                          {{~}}
+                          <h5>Owner</h5>
+                          <p><a href="/profile/view/{{=it.project.client.name}}">{{=it.project.client.name}}</a></p>
+                          {{? it.isOwner }}
+                          <p><a href="{{=it.dashboard_url }}/project/delete/{{=it.projectId }}"
+                          id="delete-project-button" class="btn btn-danger btn-small">Delete</a></p>
+                          {{?}}
+                          <ul id="task-list" class="task-list nav nav-tabs nav-stacked">
+                              {{~ it.tasks :task}}
+                              <li rel="{{=task._id}}">{{=task.name}}</li>
+                              {{~}}
+                          </ul>
+                          {{? it.canWrite || it.isOwner }}
+                          <p id="create-task-inline"></p>
+                          <p><a href="{{=it.dashboard_url }}/task/create/{{=it.projectId }}" id="create-task-button" class="btn btn-success btn-small">Create</a></p>
+                          {{?}}
+                      {{?}}
+                      </div>
+                      <div class='span2 supplementary-area'>
+                          <h3>filters, etc</h3>
+                      </div>
+                  </div>
+			  </div>
+			</div>
+		</div>
+	</div>
+</div>

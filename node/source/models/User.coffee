@@ -52,7 +52,7 @@ definition =
 
 methods =
   public_info: ->
-    return {@github_id, @has_stripe, @payment_methods, @merchant, @employee, @github_display_name, @github_email, @github_username, @github_avatar_url, @trello_id, is_authenticated: true}
+    return {@github_id, @has_stripe, @payment_methods, @merchant, @employee, @github_display_name, @github_email, @github_username, @github_avatar_url, @trello_id, @_id, is_authenticated: true}
 
   get_payment_method: (service, callback) ->
     async.detect @payment_methods, (method, async_detect)=>

@@ -1,7 +1,7 @@
 ((exports) ->  
 
   root = @
-  views = @hbt = Handlebars.partials
+  views = @hbt = _.extend({}, dt, Handlebars.partials)
   
   projects = new collections.Projects
   tasks = new collections.Tasks
@@ -27,7 +27,8 @@
               @hide
               return true
           else
-              alert response.error
+              console.log(response)
+              alert "An error occured"
               return false
               
       show: ->
@@ -38,8 +39,8 @@
               event.preventDefault()
           @$el.hide()
           
-      initialize: ->
-          @context = _.extend {}, app.conf
+      initialize: (context = {}) ->
+          @context = _.extend {}, context, app.conf
           @render()
       
       render: ->
@@ -57,10 +58,24 @@
           if super model, response, options
               projects.fetch()
           
-      initialize: ->
+      initialize: (context) ->
           @model = new models.Project
           
-          super()
+          super context
+          
+  class exports.EditProjectForm extends InlineForm
+      el: ".main-area"
+      view: "dashboard/edit_project"
+      
+      success: (model, response, options) ->
+          if super model, response, options
+              projects.fetch()
+              
+      initialize: (context) ->
+          @model = context.model
+          @model.url = "/project/#{context.projectId}"
+          
+          super context
           
   class exports.CreateTaskForm extends InlineForm
       el: "#create-task-inline"
@@ -78,7 +93,8 @@
 
   class exports.Dashboard extends View
     events:
-      'click .project-list li' : "switchProject"
+      'click .project-list li a' : "editProject"
+      'click .project-list li' : "switchProject"      
       
       'click #create-project-button' : "showProjectForm"
       'click #delete-project-button' : "deleteProject"
@@ -87,7 +103,48 @@
     
     clearHref: (href)->
       return href.replace "/#{@context.dashboard_url}", ""
+      
+    parsePermissions: (user, project) ->
+        @context.canRead = false
+        @context.canWrite = false
+        @context.canGrant = false
+        @context.isOwner = false
+        
+        if user._id is project.client.id
+            @context.isOwner = true
+        
+        for user in project.read
+            if user.id is @context.user._id
+                @context.canRead = true
+                break
+      
+        for user in project.write
+            if user.id is @context.user._id
+                @context.canWrite = true
+                break
+        
+        for user in project.grant
+            if user.id is @context.user._id
+                @context.canGrant = true
+                break
     
+    editProject: (e) ->
+        e.preventDefault()
+        e.stopPropagation()
+        
+        projectId = e.target.attributes['rel'].value
+        project = projects.get(projectId)
+        
+        @context.projectId = projectId
+        @context.project = project.toJSON()
+        @context.model = project
+        
+        @parsePermissions @context.user, @context.project
+        
+        editProjectForm = new exports.EditProjectForm @context
+        
+        editProjectForm.show()
+      
     deleteProject: (e) ->
         e.preventDefault()
         project.url = "/project/#{projectId}"
@@ -111,9 +168,13 @@
         
     switchProject: (e)->
       projectId = e.target.attributes['rel'].value
-      @context.projectId = projectId
       project = projects.get(projectId)
+      
+      @context.projectId = projectId
       @context.project = project.toJSON()
+      
+      @parsePermissions @context.user, @context.project
+      
       tasks.url = "/task/#{projectId}"
       tasks.fetch()
       @render()
@@ -121,8 +182,15 @@
     initialize: ->      
       console.log '[__dashboardView__] Init'      
       @context.title = "Dashboard"
+      @context.user = app.session.toJSON()
+      @context.canEdit = (user, project) ->
+        if user._id is project.client.id then return true
+        for _user in project.write
+          if _user.id is user._id then return true
+        false
       
-      projects.on "reset", @updateProjectList, @
+      @listenTo projects, "reset", @updateProjectList, @
+      
       projects.fetch()
       
       tasks.on "reset", @updateTaskList, @
@@ -132,6 +200,10 @@
         collection.each((item) ->
             _projects.push item.toJSON())
         @context.projects = _projects
+        if projectId
+            project = projects.get(projectId)
+            @context.project = project.toJSON()
+        
         @render()
         
     updateTaskList: (collection) ->

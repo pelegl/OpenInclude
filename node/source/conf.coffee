@@ -68,8 +68,9 @@ exports.setControllers = (cb)->
 ###
 
 views = {}
+partials = {}
 exports.registerPartials = registerPartials = (dir, callback, dirViews)->
-  format = "hbs"            
+  format = ["hbs", 'dot']            
   dirViews = "#{dir}/" unless dirViews    
   fs.readdir dir, (err, files) =>
     unless err
@@ -82,12 +83,19 @@ exports.registerPartials = registerPartials = (dir, callback, dirViews)->
               dirs.push file          
             else if stat.isFile()
                ext = file.replace /^.*\.([a-z]+)$/i, "$1"               
-               if ext is format              
-                 name    = file.replace(dirViews, "").replace ("." + format), ""              
-                 content = fs.readFileSync file, 'utf8'                   
-                 Handlebars.registerPartial name, content
-                 Handlebars.registerPartial name.replace(/\./g, "/"), content
-                 views[name] = content
+               if ext in format              
+                 name    = file.replace(dirViews, "").replace ("." + ext), ""              
+                 content = fs.readFileSync file, 'utf8'
+                 if ext is 'hbs'
+                     Handlebars.registerPartial name, content
+                     Handlebars.registerPartial name.replace(/\./g, "/"), content
+                 else
+                     partials[name] = content
+                 if views[ext]?
+                     views[ext][name] = content
+                 else
+                     views[ext] = {}
+                     views[ext][name] = content
                  
             async.forEach dirs, (d, acb) =>
               registerPartials d, acb, dirViews
@@ -95,7 +103,7 @@ exports.registerPartials = registerPartials = (dir, callback, dirViews)->
           else
             cb err             
       ,(err)=>    
-        callback err, views        
+        callback err, {views: views, partials: partials}        
     else
       callback err
       

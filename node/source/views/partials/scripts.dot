@@ -8,5 +8,7 @@
 <script type="text/javascript" src="/static/js/backbone.paginator.js"></script>
 <script type="text/javascript" src="/static/js/backbone.syphon.js"></script>
 <script type="text/javascript" src="/static/js/handlebars.runtime.js"></script>
+<script type="text/javascript" src="/static/js/dot.js"></script>
 <script type="text/javascript" src="/static/js/templates.js"></script>
+<script type="text/javascript" src="/static/js/templates-dot.js"></script>
 <script type="text/javascript" src="/static/js/app.js"></script>

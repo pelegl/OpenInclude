@@ -12,6 +12,10 @@
    exports.Tos        = @Backbone.Model.extend {}
    
    exports.CreditCard = @Backbone.Model.extend {}
+   
+   exports.User       = @Backbone.Model.extend
+     idAttribute: "_id"
+     url: "/session/profile"
 
    exports.Project    = @Backbone.Model.extend
      idAttribute: "_id"

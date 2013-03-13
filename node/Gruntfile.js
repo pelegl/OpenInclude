@@ -51,7 +51,22 @@ module.exports = function(grunt) {
 		      	"source/static/js/templates.js": ["source/views/partials/*.hbs", "source/views/partials/**/*.hbs"]
 		    }	
 	    }	    
-	}
+	},
+	'dot-compile': {
+	    compile: {
+            options: {
+                variable : 'dt',
+                requirejs: false,
+                node: false,
+                key: function(filename) {
+                    var base = "source/views/partials/";
+                    return filename.replace(base, "").replace(/\.dot$/, "");
+                }
+            },
+            src  : ["source/views/partials/*.dot", "source/views/partials/**/*.dot"],
+            dest : 'source/static/js/templates-dot.js'
+        }
+    }
   });
   
   
@@ -59,7 +74,8 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-coffee');
+  grunt.loadNpmTasks('grunt-dot-compiler');
 
   // Default task.    
-  grunt.registerTask('default', ['less:development', 'cssmin', 'coffee', 'handlebars']);  
+  grunt.registerTask('default', ['less:development', 'cssmin', 'coffee', 'handlebars', 'dot-compile']);  
 };

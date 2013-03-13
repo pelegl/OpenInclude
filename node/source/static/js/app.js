@@ -84,6 +84,10 @@
     });
     exports.Tos = this.Backbone.Model.extend({});
     exports.CreditCard = this.Backbone.Model.extend({});
+    exports.User = this.Backbone.Model.extend({
+      idAttribute: "_id",
+      url: "/session/profile"
+    });
     exports.Project = this.Backbone.Model.extend({
       idAttribute: "_id",
       url: "/project"
@@ -804,11 +808,19 @@
         }
       };
 
-      Profile.prototype.initialize = function() {
+      Profile.prototype.initialize = function(options) {
         console.log('[__profileView__] Init');
-        this.context.title = "Personal Profile";
-        this.agreement = new exports.Agreement;
-        this.cc = new exports.CC;
+        if (options.profile) {
+          this.model = new models.User;
+          this.model.url = "/session/profile/" + options.profile;
+          this.context.title = "Profile of " + this.profile;
+          this.context["private"] = false;
+        } else {
+          this.context.title = "Personal Profile";
+          this.context["private"] = true;
+          this.agreement = new exports.Agreement;
+          this.cc = new exports.CC;
+        }
         this.listenTo(this.model, "all", this.render);
         this.model.fetch();
         return this.render();
@@ -817,13 +829,18 @@
       Profile.prototype.render = function() {
         var html;
         this.context.user = this.model.toJSON();
-        this.context["private"] = true;
         html = views['member/profile'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'profile');
-        this.$(".informationBox").append(this.agreement.$el);
-        this.$el.append(this.cc.$el);
-        this.setAction(this.options.action);
+        if (this.agreement) {
+          this.$(".informationBox").append(this.agreement.$el);
+        }
+        if (this.cc) {
+          this.$el.append(this.cc.$el);
+        }
+        if (this.context["private"]) {
+          this.setAction(this.options.action);
+        }
         return this;
       };
 
@@ -1537,7 +1554,7 @@
   (function(exports) {
     var InlineForm, project, projectId, projects, root, tasks, views;
     root = this;
-    views = this.hbt = Handlebars.partials;
+    views = this.hbt = _.extend({}, dt, Handlebars.partials);
     projects = new collections.Projects;
     tasks = new collections.Tasks;
     projectId = "";
@@ -1572,7 +1589,8 @@
           this.hide;
           return true;
         } else {
-          alert(response.error);
+          console.log(response);
+          alert("An error occured");
           return false;
         }
       };
@@ -1588,8 +1606,11 @@
         return this.$el.hide();
       };
 
-      InlineForm.prototype.initialize = function() {
-        this.context = _.extend({}, app.conf);
+      InlineForm.prototype.initialize = function(context) {
+        if (context == null) {
+          context = {};
+        }
+        this.context = _.extend({}, context, app.conf);
         return this.render();
       };
 
@@ -1622,12 +1643,39 @@
         }
       };
 
-      CreateProjectForm.prototype.initialize = function() {
+      CreateProjectForm.prototype.initialize = function(context) {
         this.model = new models.Project;
-        return CreateProjectForm.__super__.initialize.call(this);
+        return CreateProjectForm.__super__.initialize.call(this, context);
       };
 
       return CreateProjectForm;
+
+    })(InlineForm);
+    exports.EditProjectForm = (function(_super) {
+
+      __extends(EditProjectForm, _super);
+
+      function EditProjectForm() {
+        return EditProjectForm.__super__.constructor.apply(this, arguments);
+      }
+
+      EditProjectForm.prototype.el = ".main-area";
+
+      EditProjectForm.prototype.view = "dashboard/edit_project";
+
+      EditProjectForm.prototype.success = function(model, response, options) {
+        if (EditProjectForm.__super__.success.call(this, model, response, options)) {
+          return projects.fetch();
+        }
+      };
+
+      EditProjectForm.prototype.initialize = function(context) {
+        this.model = context.model;
+        this.model.url = "/project/" + context.projectId;
+        return EditProjectForm.__super__.initialize.call(this, context);
+      };
+
+      return EditProjectForm;
 
     })(InlineForm);
     exports.CreateTaskForm = (function(_super) {
@@ -1666,6 +1714,7 @@
       }
 
       Dashboard.prototype.events = {
+        'click .project-list li a': "editProject",
         'click .project-list li': "switchProject",
         'click #create-project-button': "showProjectForm",
         'click #delete-project-button': "deleteProject",
@@ -1674,6 +1723,59 @@
 
       Dashboard.prototype.clearHref = function(href) {
         return href.replace("/" + this.context.dashboard_url, "");
+      };
+
+      Dashboard.prototype.parsePermissions = function(user, project) {
+        var _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
+        this.context.canRead = false;
+        this.context.canWrite = false;
+        this.context.canGrant = false;
+        this.context.isOwner = false;
+        if (user._id === project.client.id) {
+          this.context.isOwner = true;
+        }
+        _ref = project.read;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          user = _ref[_i];
+          if (user.id === this.context.user._id) {
+            this.context.canRead = true;
+            break;
+          }
+        }
+        _ref1 = project.write;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          user = _ref1[_j];
+          if (user.id === this.context.user._id) {
+            this.context.canWrite = true;
+            break;
+          }
+        }
+        _ref2 = project.grant;
+        _results = [];
+        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+          user = _ref2[_k];
+          if (user.id === this.context.user._id) {
+            this.context.canGrant = true;
+            break;
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      };
+
+      Dashboard.prototype.editProject = function(e) {
+        var editProjectForm;
+        e.preventDefault();
+        e.stopPropagation();
+        projectId = e.target.attributes['rel'].value;
+        project = projects.get(projectId);
+        this.context.projectId = projectId;
+        this.context.project = project.toJSON();
+        this.context.model = project;
+        this.parsePermissions(this.context.user, this.context.project);
+        editProjectForm = new exports.EditProjectForm(this.context);
+        return editProjectForm.show();
       };
 
       Dashboard.prototype.deleteProject = function(e) {
@@ -1703,9 +1805,10 @@
 
       Dashboard.prototype.switchProject = function(e) {
         projectId = e.target.attributes['rel'].value;
-        this.context.projectId = projectId;
         project = projects.get(projectId);
+        this.context.projectId = projectId;
         this.context.project = project.toJSON();
+        this.parsePermissions(this.context.user, this.context.project);
         tasks.url = "/task/" + projectId;
         tasks.fetch();
         return this.render();
@@ -1714,7 +1817,22 @@
       Dashboard.prototype.initialize = function() {
         console.log('[__dashboardView__] Init');
         this.context.title = "Dashboard";
-        projects.on("reset", this.updateProjectList, this);
+        this.context.user = app.session.toJSON();
+        this.context.canEdit = function(user, project) {
+          var _i, _len, _ref, _user;
+          if (user._id === project.client.id) {
+            return true;
+          }
+          _ref = project.write;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            _user = _ref[_i];
+            if (_user.id === user._id) {
+              return true;
+            }
+          }
+          return false;
+        };
+        this.listenTo(projects, "reset", this.updateProjectList, this);
         projects.fetch();
         return tasks.on("reset", this.updateTaskList, this);
       };
@@ -1726,6 +1844,10 @@
           return _projects.push(item.toJSON());
         });
         this.context.projects = _projects;
+        if (projectId) {
+          project = projects.get(projectId);
+          this.context.project = project.toJSON();
+        }
         return this.render();
       };
 
@@ -1835,13 +1957,14 @@
         });
       };
 
-      App.prototype.profile = function(action) {
+      App.prototype.profile = function(action, profile) {
         this.reRoute();
         if (app.session.get("is_authenticated") === true) {
           return this.view = new views.Profile({
             prevView: this.view,
             model: app.session,
-            action: "/" + action
+            action: "/" + action,
+            profile: profile
           });
         } else {
           return app.navigate('/profile/login', {
@@ -1907,9 +2030,15 @@
 
       App.prototype.dashboard = function() {
         this.reRoute();
-        return this.view = new views.Dashboard({
-          prevView: this.view
-        });
+        if (app.session.get("is_authenticated")) {
+          return this.view = new views.Dashboard({
+            prevView: this.view
+          });
+        } else {
+          return app.navigate(app.conf.signin_url, {
+            trigger: true
+          });
+        }
       };
 
       return App;
@@ -1918,8 +2047,8 @@
     return $(document).ready(function() {
       var app, route_keys, route_paths,
         _this = this;
-      route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url];
-      route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo", "dashboard", "dashboard"];
+      route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "" + conf.profile_url + "/:action/:profile", "!/" + conf.profile_url + "/:action", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url];
+      route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo", "dashboard", "dashboard"];
       App.prototype.routes = _.object(route_keys, route_paths);
       console.log('[__app__] init done!');
       exports.app = app = new App();

@@ -1,13 +1,17 @@
-.project-list {
-    width: 220px;
-}
-
 .project-list li, .task-list li {
     margin-bottom: 2px;
-    padding: 6px;
+    padding: 10px;
     cursor: pointer;
 }
 
 .project-list li:hover, .task-list li:hover {
     background-color: #DDD;
+}
+
+.project-list li span {
+    visibility: hidden;
+}
+
+.project-list li:hover span {
+    visibility: visible;
 }

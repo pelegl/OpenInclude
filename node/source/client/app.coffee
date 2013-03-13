@@ -43,10 +43,10 @@
       @reRoute()
       @view = new views.Index prevView:@view
 
-    profile: (action) ->
+    profile: (action, profile) ->
       @reRoute() 
       if app.session.get("is_authenticated") is true 
-        @view = new views.Profile { prevView: @view, model: app.session, action: "/#{action}" }
+        @view = new views.Profile { prevView: @view, model: app.session, action: "/#{action}", profile: profile }
       else
         app.navigate '/profile/login', {trigger: true}       
     
@@ -89,7 +89,10 @@
         
     dashboard: ->
       @reRoute()
-      @view = new views.Dashboard prevView:@view  
+      if app.session.get("is_authenticated")
+          @view = new views.Dashboard prevView:@view
+      else
+          app.navigate app.conf.signin_url, trigger: true
     
 
   $(document).ready ->
@@ -109,6 +112,7 @@
       "!/#{conf.profile_url}"
       
       "#{conf.profile_url}/:action"
+      "#{conf.profile_url}/:action/:profile"
       "!/#{conf.profile_url}/:action"
             
       # How-to
@@ -134,6 +138,7 @@
       "discover"
       "login"
       "login"
+      "profile"
       "profile"
       "profile"
       "profile"

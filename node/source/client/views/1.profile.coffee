@@ -124,12 +124,20 @@
           @agreement.$el.hide()
           app.navigate @context.profile_url, {trigger: false}
              
-    initialize: ->      
-      console.log '[__profileView__] Init'      
-      @context.title = "Personal Profile"                  
+    initialize: (options) ->      
+      console.log '[__profileView__] Init'
       
-      @agreement = new exports.Agreement
-      @cc        = new exports.CC
+      if options.profile
+          @model = new models.User
+          @model.url = "/session/profile/#{options.profile}"
+          @context.title = "Profile of #{@profile}"
+          @context.private = false
+      else
+          @context.title = "Personal Profile"
+          @context.private = true
+      
+          @agreement = new exports.Agreement
+          @cc        = new exports.CC
       
       @listenTo @model, "all", @render      
       @model.fetch()            
@@ -139,17 +147,19 @@
     
     render: ->
       @context.user = @model.toJSON()
-      @context.private = true
       html = views['member/profile'](@context)
       @$el.html html
       @$el.attr 'view-id', 'profile'
       
       # Append agreement
-      @$(".informationBox").append @agreement.$el      
+      if @agreement
+          @$(".informationBox").append @agreement.$el      
       # Append CC modal
-      @$el.append @cc.$el
+      if @cc
+          @$el.append @cc.$el
       
-      @setAction @options.action
+      if @context.private
+          @setAction @options.action
       
       @
       

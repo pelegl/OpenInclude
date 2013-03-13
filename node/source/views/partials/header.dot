@@ -1,0 +1,19 @@
+<header>
+  <div class="wrapper">
+    <h1><a href="/" title="Open Include">Open Include</a></h1>
+    
+    {{? !it.in_stealth_mode }}
+      {{? it.user}}      
+      <div class="sign-in"><a href="{{=it.logout_url}}" class="button">sign out</a></div>
+      <div class="sign-in"><a href="{{=it.profile_url}}" class="button">profile</a></div>
+      <div class="sign-in"><a href="{{=it.dashboard_url}}" class="button">dashboard</a></div>
+      {{??}}
+      <div class="sign-in"><a href="{{=it.signin_url}}" class="button">sign in</a></div>
+      {{?}}
+      <div class="sign-in"><a href="{{=it.discover_url}}" class="button">discover</a></div>
+      <div class="sign-in"><a href="{{=it.how_to_url}}" class="button">how to</a></div>
+      <div class="sign-in"><a href="{{=it.modules_url}}" class="button">modules</a></div>
+    {{?}}
+
+  </div>
+</header>

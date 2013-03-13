@@ -28,9 +28,9 @@ definition =
     categories: []
     
     # access rights for project 
-    read: [ObjectId]
-    write: [ObjectId]
-    grant: [ObjectId]
+    read: []
+    write: []
+    grant: []
     
     # Trello ID
     trello_id : String

@@ -1,4 +1,5 @@
-_ = require "underscore"
+_     = require "underscore"
+async = require "async"
 
 {get_models} = require '../conf'
 
@@ -6,7 +7,7 @@ _ = require "underscore"
 
 module.exports =
     list: (req, res) ->
-        Project.find({"client.id": req.user._id}).select().exec((result, data) ->
+        Project.find().or([{"client.id": req.user._id}, {"read.id": req.user._id}, {"write.id": req.user._id}, {"grant.id": req.user._id}, {"resources.id": req.user._id}]).select().exec((result, data) ->
             if result
                 res.json({success: false, error: result})
             else
@@ -16,6 +17,7 @@ module.exports =
     create: (req, res) ->
         req.body.project.client = {id: req.user._id, name: req.user.github_username}
         project = new Project(req.body.project)
+        
         project.save((result, project) ->
             if result
                 res.json({success: false, error: result})
@@ -39,12 +41,12 @@ module.exports =
                 )
                     
                 User.find({github_username: {$in: resources}}, (result, data) ->
-                    if result then return res.json({success: true, message: result})
+                    if result then return res.json({success: true, error: result})
                     ids = _.map(data, (user) ->
                         return {id: user._id, name: user.github_username}
                     )
                     
-                    project.resources = ids
+                    project.resources = project.read = ids
                     project.save((result, project) ->
                         res.json({success: true})
                     )
@@ -52,7 +54,50 @@ module.exports =
         )
 
     update: (req, res) ->
-        res.json({})
+        id = req.params.id
+        project = req.body.project
+        
+        resourcesReg = /\@(\w+)\W*?/g
+        resources = []
+        while match = resourcesReg.exec(project.resources)
+            resources.push(match[1])
+            
+        read = []
+        while match = resourcesReg.exec(project.read)
+            read.push(match[1])
+        
+        write = []
+        while match = resourcesReg.exec(project.write)
+            write.push(match[1])
+        
+        grant = []
+        while match = resourcesReg.exec(project.grant)
+            grant.push(match[1])
+            
+        queryUsers = (query) ->
+            (callback) ->
+                User.find({github_username: {$in: query}}, (result, data) ->
+                    if result
+                        return callback(result, null)
+                
+                    ids = _.map(data, (user) ->
+                        {id: user._id, name: user.github_username}
+                    )
+                    callback(result, ids)
+                )
+            
+        async.parallel(
+            resources: queryUsers(resources)
+            read: queryUsers(read)
+            write: queryUsers(write)
+            grant: queryUsers(grant)
+            (error, result) ->
+                project = _.extend project, result
+                Project.findByIdAndUpdate(id, project, (result, project) ->
+                    if result then return res.json({success: false, error: result})
+                    res.json({success: true, result: project})
+                )
+        )
 
     delete: (req, res) ->
         Project.remove({_id: req.params.id}, (result) ->

@@ -19,6 +19,7 @@
     "grunt-contrib-less": "0.5.x",
     "grunt-contrib-concat": "*",
     "grunt-contrib-cssmin": "*",
+    "grunt-dot-compiler": "0.3.x",
     "elasticsearchclient" : "*",
     "underscore"		  : "*",
     "humanize"			  : "*",
@@ -28,6 +29,9 @@
     "passport-oauth": "0.x",
     "passport-trello": "0.x",
     "nodemailer": "0.x",
-    "stripe" : "*"
+    "stripe" : "*",
+    "async": "0.2.x",
+    "dot": "1.0.x",
+    "dot-emc": "*"
   }
 }
