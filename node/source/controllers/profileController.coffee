@@ -2,7 +2,7 @@ _            = require 'underscore'
 agreement_text = "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. "
 {get_models} = require '../conf'
 
-[Stripe] = get_models ["Stripe"]
+[Stripe,Bill] = get_models ["Stripe","Bill"]
 
 class ProfileController extends require('./basicController')   
   
@@ -42,7 +42,7 @@ class ProfileController extends require('./basicController')
     else
       unless @req.xhr then @res.redirect "back" else @res.json {success: false, err: "Please, sign the agreement"}
     
-      
+  	    
   
   merchant_agreement: ->
     if @req.method is "GET"
@@ -76,6 +76,25 @@ class ProfileController extends require('./basicController')
          
     else
       @res.send "Not permitted", 401
+      
+  view_bills:(param) ->
+    console.log '[view_bills] action'
+    console.log @req.params
+    if @req.method is "GET"
+      unless @req.user.employee is true
+        Bill.get_bills @req.user._id,(err,bills) =>
+          unless err
+            billarray =
+              'bills':bills
+            @context.title = 'Bills'
+            @context.informationBox = @_view 'member/bills', billarray
+            @index()
+          else
+           @res.send "no bills"
+      else
+       @res.redirect @context.profile_url 
+    	
+	  	 
  
 # Здесь отдаем функцию - каждый раз когда вызывается наш контроллер - создается новый экземпляр - это мы вставим в рутер
 module.exports = (req,res)->

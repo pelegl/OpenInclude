@@ -58,17 +58,15 @@ methods =
       callback null, method      
   	
 statics =
-	get_user: (userId, callback)->
-    	@findOne {github_id: userId}, callback
-###
- Returns a list of people with a stripe payment method
-###    
-	get_clientswithpayment: (callback) ->
-	  @find group_id:'client', (error,users) =>
-	    async.filter users, (u, cb) =>
-	     cb u.has_stripe	     
-	    ,(results) ->
-	     callback(results)
+  get_user: (userId, callback)->
+    @findOne {github_id: userId}, callback
+
+  get_clientswithpayment: (callback) ->
+    @find merchant:true, (error,users) =>
+#      console.log users
+      async.filter users, (u, cb) =>
+        cb u.has_stripe
+      ,(results) ->callback(null,results)
 
 virtuals = 
   get : 

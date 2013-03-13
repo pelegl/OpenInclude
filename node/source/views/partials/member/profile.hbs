@@ -24,6 +24,7 @@
                     {{/if}}
                   {{else}}
                   <a href='{{merchant_agreement}}' class='btn btn-success btn-mini'>Sign Up</a>
+		
                   {{/if}}
                   </div>
                   <p>Client</p>
@@ -43,9 +44,16 @@
               </div>
             </div>
             <hr />
+	    {{#if user.merchant}}
+            {{#if user.has_stripe}}
+            <a href='{{view_bills}}' class='btn btn-success btn-mini'>View Bills</a>
+            <hr />
+	   {{/if}}
+           {{/if}}
             <div class='contactData'>
-              <div class='contact'>
+              <div class='contact2'>
                 <i class='icon-envelope'></i> <a class='muted' href="mailto:{{ user.github_email }}">{{ user.github_email }}</a>
+				
               </div>
             </div>
 			    </div>			             

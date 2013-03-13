@@ -1,0 +1,11 @@
+<div class='row-fluid'>
+  <legend>Your Bills</legend>
+
+  <div class="bills">
+	<ul>
+	{{#each bills}}
+		<li><a href="view_bills/{{this.bill_id}}">{{this.bill_id}}</a></li>
+	{{/each}}  
+	</ul>
+  </div>
+</div>

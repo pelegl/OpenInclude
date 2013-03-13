@@ -32,14 +32,20 @@ exports.esClient = esClient = new esc serverOptions
 ###
 github = require 'octonode'
 
-GITHUB_CLIENT_ID = '2361006ea086ad268742'
-GITHUB_CLIENT_SECRET = '8983c759727c4195ae2b34916d9ed313eeafa332'
+GITHUB_CLIENT_ID = '4fe07368d108592678ad'
+GITHUB_CLIENT_SECRET = 'd058f2945d3ef9ced8b03f24dd12a5aae0f9e12e'
+
+#GITHUB_SETS = [
+#  [GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET]
+#  ["fbc1f03fd6ef162b3463", "bead2882abb9409df91f4ba7fecc450c6e989d4b"]
+#] 
 
 GITHUB_SETS = [
   [GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET]
-  ["fbc1f03fd6ef162b3463", "bead2882abb9409df91f4ba7fecc450c6e989d4b"]
-] 
- 
+  ["4fe07368d108592678ad", "d058f2945d3ef9ced8b03f24dd12a5aae0f9e12e"]
+]
+
+
 exports.git = github.client "client", GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
 exports.git.setTokens = (set)->
   [@clientID, @clientSecret] = GITHUB_SETS[set] || GITHUB_SETS[0] 
@@ -48,7 +54,9 @@ exports.git.setTokens = (set)->
 ###
   Some static helpers
 ###
-SERVER_URL = exports.SERVER_URL = "http://ec2-107-20-8-160.compute-1.amazonaws.com:#{process.env.PORT || 8900}"
+#SERVER_URL = exports.SERVER_URL = "http://localhost:4500"
+SERVER_URL = exports.SERVER_URL = "http://ec2-54-225-224-68.compute-1.amazonaws.com:#{process.env.PORT || 9100}"
+#SERVER_URL = exports.SERVER_URL = "http://ec2-107-20-8-160.compute-1.amazonaws.com:#{process.env.PORT || 8900}"
 STATIC_URL = exports.STATIC_URL = "/static/"
 
 exports.logout_url      = logout_url      =  "/auth/logout"
@@ -58,10 +66,15 @@ exports.github_auth_url = github_auth_url = "/auth/github"
 exports.discover_url    = discover_url    = "/discover"
 exports.how_to_url      = how_to_url      = "/how-to"
 exports.modules_url     = modules_url     = '/modules'
+exports.admin_url     = modules_url     = '/admin'
 
 exports.merchant_agreement        = merchant_agreement  = "#{profile_url}/merchant_agreement"
 exports.developer_agreement       = developer_agreement = "#{profile_url}/developer_agreement"
 exports.update_credit_card        = update_credit_card  = "#{profile_url}/update_credit_card"
+exports.view_bills       		  = view_bills 			= "#{profile_url}/view_bills"
+
+exports.users_with_stripe         = users_with_stripe 	= "#{admin_url}/users_with_stripe"
+
 ###
   Export controllers to the app
 ###
@@ -140,8 +153,10 @@ passport_init = exports.passport_init = () ->
     # console.log(access_token, refresh_token, profile)
     console.log('verify', profile)
     User.findOne({github_id: profile.id}, (error, user) ->
+      console.log user
       if error then return done(error)
       if user then return done(null, user)
+      console.log user
 
       user = new User(
         github_id: profile.id

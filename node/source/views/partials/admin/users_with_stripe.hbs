@@ -1,0 +1,16 @@
+<div class='row-fluid'>
+  <legend>Users with stripe added</legend>
+
+  <div class="bills">
+	<ul>
+	{{#each users}}
+		<li>
+		<img src="http://www.gravatar.com/avatar/{{ this.github_avatar_url }}?s=40" class='avatar'  />
+		<h4><a href='https://github.com/{{ this.github_username }}' target="_blank" class='muted'>{{ this.github_username }}</a></h4>
+		<a href='#' class='btn btn-success btn-mini'>Issue Bill</a>
+		<hr/>
+		</li>
+	{{/each}}  
+	</ul>
+  </div>
+</div>

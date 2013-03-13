@@ -12,6 +12,12 @@ class PaymentController extends require('./basicController')
     @context.body = @_view 'payment/index', @context    
     @res.render 'base', @context
   
+
+  test: ->
+    User.get_user "261220" ,(err,user) =>
+  	  Stripe.billCustomer "513da86c8288483a69000003",user, 1000, (err,billed) ->
+			    console.log err
+			    console.log billed  
     	
     #adds a customer
   addCustomer:->

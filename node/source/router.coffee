@@ -32,6 +32,7 @@ exports.set = (app)->
   ###
 #  app.get '/payment', app.Controllers.payment
   app.get '/payment/*', app.Controllers.payment
+  app.get '/admin/*', app.Controllers.admin
   ###
   Profile interaction
   ###
