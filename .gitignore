@@ -8,3 +8,4 @@ local_settings.py
 node/node_modules
 node/source/tmp
 node/components
+node/build

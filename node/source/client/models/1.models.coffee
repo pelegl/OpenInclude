@@ -21,7 +21,7 @@
      idAttribute: "_id"
      urlRoot: "/modules"
      url: ->
-       return "#{@urlRoot}/#{@get('language')}/#{@get('module_name')}"
+       return "#{@urlRoot}/#{@get('language')}/#{@get('owner')}|#{@get('module_name')}"
    
    exports.StackOverflowQuestion = @Backbone.Model.extend
      idAttribute: "_id"

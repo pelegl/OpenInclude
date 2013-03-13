@@ -6,7 +6,7 @@
 async        = require 'async'
 _            = require 'underscore'
 
-[StackOverflow , Stargazers] = get_models ["StackOverflow", "ModuleStargazers"]
+[StackOverflow , Stargazers, Events] = get_models ["StackOverflow", "ModuleStargazers", "ModuleEvents"]
 
 
 ###
@@ -37,11 +37,29 @@ definition =
     config     : {}
     id         : Number
   }]
-  
+
+ts_ago = (days, toSeconds=true)->
+  # edge date
+  stopDate = new Date()
+  stopDate.setDate -days    
+  # edge ts
+  if toSeconds
+    stopTS = Math.round(stopDate.getTime() / 1000) # convert so seconds
+  else
+    stopTS = stopDate.getTime()    
+  stopTS
 
 statics =
   get_module: (name, callback)->
-    @findOne {module_name: name}, callback 
+    console.log "Started looking for the module"    
+    try
+      [owner, module_name] = name.split "|"
+      if !owner or !module_name
+        throw "incorrect module path" 
+    catch e      
+      return callback "incorrect module name"
+            
+    @findOne {module_name, owner}, callback 
 
 methods =
   repo: ->
@@ -56,37 +74,23 @@ methods =
       Stargazers.create @_id, snapshot_date, stargazer, async_call
     ,callback
   
-  create_subscription: (callback) ->
-    ###
-      TODO: not working, only allowed on repositories you own?
-    ###
-    message =
-      user: @username
-      repo: @module_name
-      name: "openinclude"
-      config:
-        url : "http://ec2-107-20-8-160.compute-1.amazonaws.com:8600/git/webhook"
-        content_type: "json"
-      events: ["push", "watch"]
+  ###
+    @function
+    Pulls all events for the given repo for the given time
+  ###
+  get_events: (opts..., callback)->
+    stopTS = ts_ago (opts[0] || 365), false
+    Events.pull_for_module stopTS, @_id, callback 
     
-    #console.log message
-    
-    #git.repos.createHook message, (err, response)=>
-    #  console.log err, response
-    
-    callback "Not implemented"
-  
-    
- 
+  ###  
+    @function
+    Functions pulls questions associated with the module for that past 365 days or opts[0], 
+    sorts them by timestamp, creates additional series for answered questions,
+    after that adds cummulative {@param amount - number} which indicates how many answers/questions been asked/answered at given timestamp 
+  ###
   get_questions: (opts..., callback)->
     # params
-    amount = opts[0] || 365
-    
-    # edge date
-    stopDate  = new Date()
-    stopDate.setDate -amount    
-    # edge ts
-    stopTS = Math.round(stopDate.getTime() / 1000) # convert so seconds
+    stopTS = ts_ago (opts[0] || 365)
     
     #async tasks
     Tasks = {} 

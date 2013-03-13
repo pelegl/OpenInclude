@@ -102,9 +102,16 @@
   class exports.Repo extends View
     events: {}
     
-    initialize: (opts={})->
-      {@language, @repo} = opts    
-      @model             = new models.Repo {@language, module_name: @repo}
+    initialize: (opts={})->      
+      {@language, repo} = opts
+      
+      try
+        [@owner, @repo] = repo.split "|"
+        throw "Incorrect link" if !@owner or !@repo           
+      catch e then console.log e
+        
+          
+      @model             = new models.Repo {@language, module_name: @repo, @owner}
       
       ###
         context
@@ -148,7 +155,7 @@
       @collections.stackOverflow.fetch()      
       
     initSO: ->
-      options = {@language, @repo}
+      options = {@language, @owner, @repo}
       # create collection and associated chart
       @collections.stackOverflow = so = new collections.StackOverflowQuestions options 
       @charts.stackOverflow      = new exports.MultiSeries {el: @$(".stackQAHistory"), collection: so}         

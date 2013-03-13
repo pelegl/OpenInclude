@@ -110,20 +110,28 @@ class ModuleController extends require('./basicController')
     [requiredData, format] = @get if @get?
     if requiredData is 'stackoverflow' and format is 'json'
       Repo.get_module @moduleName, (err, module)=>
+        # throw err 
+        return @res.json {err, success: false}, 404 if err or !module
+        # proceed
         module.get_questions (err, resp)=>
           return @res.json {err, success: false} if err?          
-          @res.json resp      
+          @res.json resp
+          
+    else if requiredData is 'github_events' and format is 'json'
+    
+          
     else
       Repo.get_module @moduleName, (err, module)=>
-        if !err and module
+        if !err and module          
           if @req.xhr
-            @res.json 
+            @res.json module 
           else          
             @context.prepopulate = JSON.stringify module
             @context.module = module
             @context.body   = @_view 'module/view', @context
             @res.render 'base', @context
         else
+          console.log err if err?
           @res.send "Not found", 404
 
 module.exports = (req,res)->

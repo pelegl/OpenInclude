@@ -70,7 +70,7 @@ exports.setControllers = (cb)->
     unless err
       files.forEach (file)=>
         unless /^basic/.test file
-          controllers["#{file.replace('Controller.coffee','')}"] = require "#{dir}/#{file}"
+          controllers["#{file.replace(/^(.*)Controller.[a-z]+$/i,'$1')}"] = require "#{dir}/#{file}"
       cb null, controllers
     else
       cb err

@@ -1,0 +1,39 @@
+<div class='span12 moduleComparison'>
+	<table class='table table-striped table-hover'>
+		<thead>
+			<tr>
+				{{#each headers}}
+					{{#with this}}
+						{{#unless key}}
+						<th>{{name}}</th>
+						{{else}}
+						<th><a href='#' data-sort='{{key}}' {{#if active}}class='active'{{/if}}>{{name}}
+							{{#if directionBottom}} 
+							<i class='icon-chevron-down'></i>
+							{{else}}
+							<i class='icon-chevron-up'></i>
+							{{/if}}
+						</a></th>
+						{{/unless}}
+					{{/with}}
+				{{/each}}
+			</tr>
+		</thead>
+		<tbody>
+			{{#each projects}}
+				{{#with this._source}}
+					<tr>
+						<td>{{module_name}}</td><td>{{language}}</td><td>#</td><td>{{../this.lastCommitHuman}}</td><td>{{watchers}}</td><td>#</td><td>#</td>						
+					</tr>
+				{{/with}}
+			{{/each}}
+		</tbody>
+		{{#unless projects}}
+		<tfoot>
+			<tr>
+				<td colspan=7><h3>click on the project's bubble to add it to the comparison list</h3></td>
+			</tr>
+		</tfoot>
+		{{/unless}}
+	</table>
+</div>

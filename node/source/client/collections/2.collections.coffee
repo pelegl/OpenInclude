@@ -138,7 +138,7 @@
     parse: (r)->
       {@statistics, questions} = r    
       
-      return [] unless questions?      
+      return [] unless questions.length > 0       
       
       ###
         Add normalization
@@ -166,13 +166,14 @@
       _.bindAll @, "chartMap"
       
       # init      
-      {@language, @repo} = options
+      {@language, @owner, @repo} = options
       # check
       @language ||= ""
       @repo     ||= ""
+      @owner    ||= ""
     
     url: ->
-      return "/modules/#{@language}/#{@repo}/stackoverflow/json"    
+      return "/modules/#{@language}/#{@owner}|#{@repo}/stackoverflow/json"    
       
 
 ).call(this, (if typeof exports is "undefined" then this["collections"] = {} else exports), (typeof exports isnt "undefined"))
