@@ -6,6 +6,13 @@
   
   ###
     @constructor
+    Bar chart
+  ###
+  class exports.BarChart extends @Backbone.View
+    initialize: (opts={}) ->
+      _.bindAll @
+  ###
+    @constructor
     Multi series chart view
   ###  
   class exports.MultiSeries extends @Backbone.View
@@ -145,21 +152,30 @@
         inits
       ###
       @initSO()
+      @initGE()
       ###
         Setup listeners
       ###
-      @listenTo @collections.stackOverflow, "sync", @charts.stackOverflow.render      
+      @listenTo @collections.stackOverflow, "sync", @charts.stackOverflow.render
+      #@listenTo @collections.githubEvents,  "sync", @charts.githubEvents.render      
       ###
         Start fetching data
       ###
-      @collections.stackOverflow.fetch()      
+      @collections.stackOverflow.fetch()
+      @collections.githubEvents.fetch()      
       
     initSO: ->
       options = {@language, @owner, @repo}
       # create collection and associated chart
       @collections.stackOverflow = so = new collections.StackOverflowQuestions options 
       @charts.stackOverflow      = new exports.MultiSeries {el: @$(".stackQAHistory"), collection: so}         
-        
+    
+    # Github Events
+    initGE: ->    
+      options = {@language, @owner, @repo}
+      # create collection and associated chart
+      @collections.githubEvents = ge = new collections.GithubEvents options 
+      @charts.githubEvents      = new exports.BarChart {el: @$(".eventsHistory"), collection: ge}
             
     render: ->
       @context.module = @model.toJSON()

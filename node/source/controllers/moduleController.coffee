@@ -108,31 +108,36 @@ class ModuleController extends require('./basicController')
     
   module: ->
     [requiredData, format] = @get if @get?
-    if requiredData is 'stackoverflow' and format is 'json'
-      Repo.get_module @moduleName, (err, module)=>
-        # throw err 
-        return @res.json {err, success: false}, 404 if err or !module
-        # proceed
+    # get module
+    Repo.get_module @moduleName, (err, module)=>
+      # error handling
+      if err or !module
+        console.error err if err?
+        return @res.json {err, success: false}, 404 if @req.xhr
+        return @res.send "Not found", 404
+      ####
+      # so questions      
+      if requiredData is 'stackoverflow' and format is 'json'
+        # get questions        
         module.get_questions (err, resp)=>
           return @res.json {err, success: false} if err?          
           @res.json resp
-          
-    else if requiredData is 'github_events' and format is 'json'
-    
-          
-    else
-      Repo.get_module @moduleName, (err, module)=>
-        if !err and module          
-          if @req.xhr
-            @res.json module 
-          else          
-            @context.prepopulate = JSON.stringify module
-            @context.module = module
-            @context.body   = @_view 'module/view', @context
-            @res.render 'base', @context
-        else
-          console.log err if err?
-          @res.send "Not found", 404
+      # github events
+      else if requiredData is 'github_events' and format is 'json'
+        # get events
+        module.get_events (err, events)=>
+          return @res.json {err, success: false} if err?
+          @res.json events        
+      # module data
+      else
+        # xhr                  
+        return @res.json module if @req.xhr
+        # direct access                  
+        @context.prepopulate = JSON.stringify module
+        @context.module = module
+        @context.body   = @_view 'module/view', @context
+        @res.render 'base', @context
+
 
 module.exports = (req,res)->
   new ModuleController req, res

@@ -126,6 +126,22 @@
       @models.reverse() if direction is "DESC"
       @trigger "sort"
       
+  
+  exports.GithubEvents = @Backbone.Collection.extend
+    model: models.GithubEvent
+    
+    initialize: (options={})->
+      # init      
+      {@language, @owner, @repo} = options
+      # check
+      @language ||= ""
+      @repo     ||= ""
+      @owner    ||= ""
+    
+    url: ->
+      return "/modules/#{@language}/#{@owner}|#{@repo}/github_events/json"  
+    
+  
   exports.StackOverflowQuestions = @Backbone.Collection.extend
     model: models.StackOverflowQuestion
     

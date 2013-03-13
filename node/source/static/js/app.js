@@ -111,6 +111,13 @@
         return this.get("amount");
       }
     });
+    exports.GithubEvent = this.Backbone.Model.extend({
+      idAttribute: "_id",
+      urlRoot: "/modules",
+      url: function() {
+        return "" + this.urlRoot + "/all/all/github_events/json/" + (this.get('_id'));
+      }
+    });
     return exports.Discovery = this.Backbone.Model.extend({
       /*        
           0.5 - super active - up to 7 days
@@ -364,6 +371,21 @@
           this.models.reverse();
         }
         return this.trigger("sort");
+      }
+    });
+    exports.GithubEvents = this.Backbone.Collection.extend({
+      model: models.GithubEvent,
+      initialize: function(options) {
+        if (options == null) {
+          options = {};
+        }
+        this.language = options.language, this.owner = options.owner, this.repo = options.repo;
+        this.language || (this.language = "");
+        this.repo || (this.repo = "");
+        return this.owner || (this.owner = "");
+      },
+      url: function() {
+        return "/modules/" + this.language + "/" + this.owner + "|" + this.repo + "/github_events/json";
       }
     });
     return exports.StackOverflowQuestions = this.Backbone.Collection.extend({
@@ -1335,6 +1357,29 @@
     modules_url = "/modules";
     /*
       @constructor
+      Bar chart
+    */
+
+    exports.BarChart = (function(_super) {
+
+      __extends(BarChart, _super);
+
+      function BarChart() {
+        return BarChart.__super__.constructor.apply(this, arguments);
+      }
+
+      BarChart.prototype.initialize = function(opts) {
+        if (opts == null) {
+          opts = {};
+        }
+        return _.bindAll(this);
+      };
+
+      return BarChart;
+
+    })(this.Backbone.View);
+    /*
+      @constructor
       Multi series chart view
     */
 
@@ -1489,6 +1534,7 @@
           inits
         */
         this.initSO();
+        this.initGE();
         /*
           Setup listeners
         */
@@ -1498,7 +1544,8 @@
           Start fetching data
         */
 
-        return this.collections.stackOverflow.fetch();
+        this.collections.stackOverflow.fetch();
+        return this.collections.githubEvents.fetch();
       };
 
       Repo.prototype.initSO = function() {
@@ -1512,6 +1559,20 @@
         return this.charts.stackOverflow = new exports.MultiSeries({
           el: this.$(".stackQAHistory"),
           collection: so
+        });
+      };
+
+      Repo.prototype.initGE = function() {
+        var ge, options;
+        options = {
+          language: this.language,
+          owner: this.owner,
+          repo: this.repo
+        };
+        this.collections.githubEvents = ge = new collections.GithubEvents(options);
+        return this.charts.githubEvents = new exports.BarChart({
+          el: this.$(".eventsHistory"),
+          collection: ge
         });
       };
 

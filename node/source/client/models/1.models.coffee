@@ -37,6 +37,12 @@
        
      y: ->
        return @get "amount"
+   
+   exports.GithubEvent = @Backbone.Model.extend
+     idAttribute: "_id"
+     urlRoot: "/modules"
+     url: ->
+       return "#{@urlRoot}/all/all/github_events/json/#{@get('_id')}"     
        
     
    exports.Discovery = @Backbone.Model.extend
