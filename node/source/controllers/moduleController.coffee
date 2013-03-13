@@ -109,8 +109,6 @@ class ModuleController extends require('./basicController')
   module: ->
     [requiredData, format] = @get if @get?
     if requiredData is 'stackoverflow' and format is 'json'
-      #TODO: pull questions from SO database
-      
       Repo.get_module @moduleName, (err, module)=>
         module.get_questions (err, resp)=>
           return @res.json {err, success: false} if err?          

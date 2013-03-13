@@ -86,33 +86,24 @@ methods =
     stopDate  = new Date()
     stopDate.setDate -amount    
     # edge ts
-    stopTS = stopDate.getTime() / 1000 # convert so seconds
+    stopTS = Math.round(stopDate.getTime() / 1000) # convert so seconds
     
     #async tasks
     Tasks = {} 
     
     #Questions before day X    
     Tasks.statistics = (statistics)=>
-      StackOverflow.aggregate {
-        $match:
-          module_id: @_id
-          last_activity_date:
-            $lt: stopTS
-      } , { 
-        $project:                    
-          accepted_answer_id : {$ifNull: ["$accepted_answer_id", -1]}                           
-      } , {
+      match = { $match: {module_id: @_id, last_activity_date: {$lt: stopTS}} }
+      project_one = { $project: {accepted_answer_id : {$ifNull: ["$accepted_answer_id", -1] } } }
+      project_two =
         $project:
           accepted_asnwer_id :
             $cond: [{ $ne: ["$accepted_answer_id", -1] }, "Total questions asked", "Total questions answered"]
           count:
             $add: [1]
-      } , {
-        $group:
-          _id: "$accepted_asnwer_id"
-          num : 
-            $sum: "$count"
-      } , (err, data)=>
+      group = { $group: {_id: "$accepted_asnwer_id", num : {$sum: "$count"}} }
+            
+      StackOverflow.aggregate match, project_one, project_two, group, (err, data)=>
         response = {total: 0, answered: 0, keys: ["Total questions asked", "Total questions answered"]}
         async.forEach data, (item, call)=>
           response.total    += item.num
@@ -121,34 +112,71 @@ methods =
         , =>
           statistics err, response
     
-    #Questions after day X
-    Tasks.questions = ["statistics", (questions, results)=>
-      #copy object so we do not alter it
-      statistics = _.extend {}, results.statistics
-      #get new questions
-      StackOverflow.find({module_id: @_id, last_activity_date: {$gte: stopTS}}, "question_id last_activity_date accepted_answer_id answers.is_accepted answers.last_activity_date").sort({last_activity_date:1}).exec (err, q)=>
-        return questions err if err?
+    # Questions after day X
+    Tasks.questions = ["statistics", (questions_callback, results)=>
+      #copy object so we do not alter it      
+      # set workflow
+      workflow = {}
+      # Query for questions      
+      workflow.questions = (questions)=>
+        # get new questions
+        query  = {module_id: @_id, last_activity_date: {$gte: stopTS}}
+        fields = "question_id creation_date accepted_answer_id answers.is_accepted answers.last_activity_date"        
+        StackOverflow.find query, fields, questions
+      
+      # Push answered questions
+      workflow.answered = ['questions', (return_questions, data)=>
         output = []
-        async.each q, (question, call_each)=>
+        async.each data.questions, (question, async_callback_each)=>
           # add point to total series
-          output.push {_id: question.question_id, amount : ++statistics.total, key: "Total questions asked", timestamp: question.last_activity_date }
-                    
-          # add point to answer series
+          output.push {_id: question.question_id, key: "Total questions asked", timestamp: question.creation_date }
+          # detect if this question has an answer
           if question.accepted_answer_id?
-            # detect answer            
+            # get answer
             async.detect question.answers, (answer, call_detect)=>
               call_detect answer.is_accepted is true
-            , (answer)=>              
-              # add point
-              output.push {_id: "#{question.question_id}_answered", amount : ++statistics.answered, key: "Total questions answered", timestamp: answer.last_activity_date }
-              call_each null
-          else          
-            call_each null
+            , (answer)=>
+              # add answer
+              output.push {_id: "#{question.question_id}_answered", key: "Total questions answered", timestamp: answer.last_activity_date, answer: true }
+              async_callback_each null
+          # return
+          else 
+            async_callback_each null
+        ,(err) =>
+          return_questions err, output           
+      ]  
+      
+      # Sort data      
+      workflow.sorted = ['answered', (questions, data)=>        
+        async.sortBy data.answered, (question, async_callback)=>
+          async_callback null, question.timestamp
+        ,questions
+      ]
+      
+      # Iterate over to add amount of questions
+      workflow.final = ['sorted', (questions, data)=>
+        # statistics
+        # -- total
+        # -- answered
+        statistics = _.extend {}, results.statistics
+        {sorted}   = data
+        async.eachSeries sorted, (question, async_call)=>
+          if question.answer is true            
+            question.amount = ++statistics.answered
+          else  
+            question.amount = ++statistics.total
+          
+          async_call null
         , =>
-          questions null, output
+          questions null, sorted  
+      ]        
+      
+      async.auto workflow, (err, data)=>
+        return questions_callback err if err?
+        # else we've succeeded        
+        questions_callback null, data.final
     ]
-        
-            
+                    
     async.auto Tasks, callback        
       
 virtuals = 

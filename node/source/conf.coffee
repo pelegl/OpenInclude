@@ -35,15 +35,13 @@ github = require 'octonode'
 GITHUB_CLIENT_ID = '2361006ea086ad268742'
 GITHUB_CLIENT_SECRET = '8983c759727c4195ae2b34916d9ed313eeafa332'
 
-GITHUB_SETS = [
-  [GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET]
-  ["fbc1f03fd6ef162b3463", "bead2882abb9409df91f4ba7fecc450c6e989d4b"]
-] 
- 
-exports.git = github.client "client", GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
-exports.git.setTokens = (set)->
-  [@clientID, @clientSecret] = GITHUB_SETS[set] || GITHUB_SETS[0] 
+exports.git = github.client
+  id: GITHUB_CLIENT_ID
+  secret: GITHUB_CLIENT_SECRET
 
+exports.git_second = github.client
+  id: "fbc1f03fd6ef162b3463" 
+  secret: "bead2882abb9409df91f4ba7fecc450c6e989d4b"
 
 ###
   Some static helpers

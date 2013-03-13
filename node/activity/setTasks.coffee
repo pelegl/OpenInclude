@@ -23,16 +23,17 @@ init = (fivebeans, callback)->
         call_client null, {client, tubename}
     
       
-  workflow.modules = Tasks.call 'repositories', 10
+  workflow.modules = Tasks.call 'repositories'
   
-  workflow.jobs = ['modules', (workflow_callback, data)->
+  workflow.jobs = ['modules', (workflow_callback, data)->    
     Snapshot.snapshot_make data.modules.modules, workflow_callback
   ]
   
   workflow.processSnapshot = ['activity_client', 'jobs', (workflow_callback, data)->
     snapshot = data.jobs
     {client} = data.activity_client
-    async.eachSeries snapshot.repositories, (repository, async_callback)=>
+    console.log "Rpositories returned: #{snapshot.repositories.length}"
+    async.forEach snapshot.repositories, (repository, async_callback)=>
       #jobs.create( 'activity', {title: "Scraping github events for #{repository.owner}/#{repository.module_name}", snapshot_id: snapshot._id, module: repository} ).save()
       ###
         Submit a job
@@ -52,12 +53,20 @@ init = (fivebeans, callback)->
           module     : repository
           
       payload = JSON.stringify [Activity_Tube, job]
-      client.put 10, 0, five_minutes, payload, async_callback                       
+      client.put 10, 0, five_minutes, payload
+      async_callback()
+                          
     ,workflow_callback
   ]
   
   async.auto workflow, (err, results)=>
-    console.error err if err?
+    if err?
+      console.error err
+      try
+        results.activity_client.kick 10000
+      catch e
+        console.log e 
+    
     console.info "Total modules returned: #{results.modules.total}"
     callback()
   

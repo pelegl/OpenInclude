@@ -19,8 +19,11 @@ definition =
   question_id: Number  
   accepted_answer_id: Number
   
+index = [
+  [{module_id: 1, last_activity_date: 1, timestamp: 1}]
+]
 
-
-exports.modelName  = "module_so2" 
+exports.index = index
+exports.modelName  = "module_so_test" 
 exports.definition = definition
 

@@ -1,6 +1,6 @@
 Tasks                 = require '../tasks'
 {get_models, git}     = require '../../source/conf'
-[Module, Snapshot]    = get_models ["Module", "Snapshot"]
+[Module, Snapshot, Events]    = get_models ["Module", "Snapshot", "ModuleEvents"]
 console               = require('tracer').colorConsole()
 async                 = require 'async'
 EventEmitter2         = require('eventemitter2').EventEmitter2
@@ -28,6 +28,7 @@ class ActivityHandler extends EventEmitter2
       
   
   release: (delay, callback) ->
+    @logger.info "Limit reached - delaying task"
     callback 'release', delay
     
   bury: (callback) ->
@@ -50,28 +51,38 @@ class ActivityHandler extends EventEmitter2
     name = "#{module.owner}/#{module.module_name}"      
     repo = git.repo name
     
-    process = (page)=>
-      @logger.info "Processing #{name} - page #{page}"      
+    @logger.info "Processing #{name}"    
+    process = (page)=>            
       repo.events page, (err, response, headers)=>          
         return @emit('error', err, callback) if err?
         # Check limit
         limit = Tasks.limit headers
         if limit % 50 is 0 then console.info "Current limit: %d", limit
         
-        # check pagination
-        try
-          {next, last} = Tasks.getPageLinks headers.link
-          console.log next, last
-        catch e
-          @logger.error e
-          return @emit 'success', payload, callback
-                          
-        return @emit('success', payload, callback) unless next?             
-        return @emit("release", hour, callback) unless limit > 0             
-                             
-        process parseInt next.replace /.*&page=(\d+)/, "$1"
-                        
-    process(1)     
+        ###
+          Process events here
+        ###
+        Events.publish module._id, response, (err)=>
+          return @emit('error', err, callback) if err?
+          # check pagination
+          try
+            {next, last} = Tasks.getPageLinks headers.link
+            console.log next, last
+          catch e
+            @logger.error e
+            return @emit 'success', payload, callback
+                            
+          return @emit('success', payload, callback) unless next?             
+          return @emit("release", hour, callback) unless limit > 0             
+                               
+          process parseInt next.replace /.*&page=(\d+)/, "$1"
+    
+    Snapshot.findOne {_id: snapshot_id, processed: false}, "_id", (err, snapshot)=>
+      return @emit 'error', 'no snapshot', callback unless snapshot
+      git.limit (err, left, max)=>        
+        return @emit("release", hour, callback) if left <= 0 or err?.message is 'Client rate_limit error'
+        return @emit('error', err, callback) if err?         
+        process(1)     
   
 
 module.exports = (logger) -> 
