@@ -18,7 +18,7 @@ class ModuleController extends require('./basicController')
     
     
     @language       = segments[1] if segments[1]? 
-    @moduleName     = segments[2] if segments[2]?
+    @moduleName     = decodeURI segments[2] if segments[2]?
     @get            = segments[3..] if segments.length > 3
         
     @app = @req.app
@@ -108,6 +108,7 @@ class ModuleController extends require('./basicController')
     
   module: ->
     [requiredData, format] = @get if @get?
+    
     # get module
     Repo.get_module @moduleName, (err, module)=>
       # error handling
