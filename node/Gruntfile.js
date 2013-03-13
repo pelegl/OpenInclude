@@ -105,6 +105,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   
   // Default task.    
-  grunt.registerTask('default', ['less', 'cssmin', 'concat', 'coffee', 'handlebars', 'cake']);
+  grunt.registerTask('default', ['less', 'cssmin', 'concat', 'coffee', 'handlebars']);
   
 };

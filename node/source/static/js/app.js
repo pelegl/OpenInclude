@@ -116,6 +116,9 @@
       urlRoot: "/modules",
       url: function() {
         return "" + this.urlRoot + "/all/all/github_events/json/" + (this.get('_id'));
+      },
+      x: function() {
+        return new Date(this.get("created_at"));
       }
     });
     return exports.Discovery = this.Backbone.Model.extend({
@@ -1347,7 +1350,8 @@
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   (function(exports) {
     var modules_url, qs, root, views;
@@ -1355,27 +1359,71 @@
     views = this.hbt = Handlebars.partials;
     qs = root.help.qs;
     modules_url = "/modules";
-    /*
-      @constructor
-      Bar chart
-    */
+    exports.Series = (function(_super) {
 
-    exports.BarChart = (function(_super) {
+      __extends(Series, _super);
 
-      __extends(BarChart, _super);
-
-      function BarChart() {
-        return BarChart.__super__.constructor.apply(this, arguments);
+      function Series() {
+        return Series.__super__.constructor.apply(this, arguments);
       }
 
-      BarChart.prototype.initialize = function(opts) {
+      Series.prototype.initialize = function(opts) {
+        var className,
+          _this = this;
         if (opts == null) {
           opts = {};
         }
-        return _.bindAll(this);
+        _.bindAll(this);
+        console.log(opts);
+        this.types = opts.types, this.title = opts.title;
+        this.margin = {
+          top: 20,
+          right: 100,
+          bottom: 30,
+          left: 50
+        };
+        this.width = this.$el.width() - this.margin.right - this.margin.left;
+        this.height = 300 - this.margin.top - this.margin.bottom;
+        this.x = d3.time.scale().range([0, this.width]);
+        this.y = d3.scale.linear().range([this.height, 0]);
+        this.xAxis = d3.svg.axis().scale(this.x).orient("bottom");
+        this.yAxis = d3.svg.axis().scale(this.y).orient("left");
+        this.line = d3.svg.line().x(function(d) {
+          return _this.x(d.x());
+        }).y(function(d) {
+          return _this.y(d.y);
+        });
+        className = this.$el.attr("class");
+        return this.svg = d3.select("." + className).append("svg").attr("width", this.width + this.margin.left + this.margin.right).attr("height", this.height + this.margin.top + this.margin.bottom).append("g").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
       };
 
-      return BarChart;
+      Series.prototype.render = function() {
+        /*
+        TODO: fix data
+        */
+
+        var data, prev,
+          _this = this;
+        data = this.collection.filter(function(item) {
+          var _ref;
+          return _ref = item.get("type"), __indexOf.call(_this.types, _ref) >= 0;
+        });
+        prev = 0;
+        data.forEach(function(d) {
+          return d.y = ++prev;
+        });
+        this.x.domain(d3.extent(data, function(d) {
+          return d.x();
+        }));
+        this.y.domain(d3.extent(data, function(d) {
+          return d.y;
+        }));
+        this.svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + this.height + ")").call(this.xAxis);
+        this.svg.append("g").attr("class", "y axis").call(this.yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style("text-anchor", "end").text(this.title);
+        return this.svg.append("path").datum(data).attr("class", "line").attr("d", this.line);
+      };
+
+      return Series;
 
     })(this.Backbone.View);
     /*
@@ -1408,9 +1456,9 @@
         this.height = 500 - this.margin.top - this.margin.bottom;
         this.x = d3.time.scale().range([0, this.width]);
         this.y = d3.scale.linear().range([this.height, 0]);
-        this.color = d3.scale.category10();
         this.xAxis = d3.svg.axis().scale(this.x).orient("bottom");
         this.yAxis = d3.svg.axis().scale(this.y).orient("left");
+        this.color = d3.scale.category10();
         this.line = d3.svg.line().x(function(d) {
           return _this.x(d.x());
         }).y(function(d) {
@@ -1453,9 +1501,16 @@
             value: d.values[d.values.length - 1]
           };
         }).attr("transform", function(d) {
-          return "translate(" + _this.x(d.value.x()) + "," + _this.y(d.value.y()) + ")";
+          var x, y;
+          x = d.value != null ? _this.x(d.value.x()) : 0;
+          y = d.value != null ? _this.y(d.value.y()) : 0;
+          return "translate(" + x + "," + y + ")";
         }).attr("x", 10).attr("dy", ".35em").text(function(d) {
-          return d.name;
+          if (d.value != null) {
+            return d.name;
+          } else {
+            return "";
+          }
         });
         return this;
       };
@@ -1540,6 +1595,8 @@
         */
 
         this.listenTo(this.collections.stackOverflow, "sync", this.charts.stackOverflow.render);
+        this.listenTo(this.collections.githubEvents, "sync", this.charts.githubCommits.render);
+        this.listenTo(this.collections.githubEvents, "sync", this.charts.githubWatchers.render);
         /*
           Start fetching data
         */
@@ -1570,9 +1627,17 @@
           repo: this.repo
         };
         this.collections.githubEvents = ge = new collections.GithubEvents(options);
-        return this.charts.githubEvents = new exports.BarChart({
-          el: this.$(".eventsHistory"),
-          collection: ge
+        this.charts.githubCommits = new exports.Series({
+          el: this.$(".commitHistory"),
+          collection: ge,
+          types: ["PushEvent"],
+          title: "Commits over time"
+        });
+        return this.charts.githubWatchers = new exports.Series({
+          el: this.$(".starsHistory"),
+          collection: ge,
+          types: ["WatchEvent"],
+          title: "Watchers over time"
         });
       };
 

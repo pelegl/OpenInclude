@@ -4,13 +4,82 @@
   {qs} = root.help  
   modules_url = "/modules"
   
-  ###
-    @constructor
-    Bar chart
-  ###
-  class exports.BarChart extends @Backbone.View
+      
+  class exports.Series extends @Backbone.View
     initialize: (opts={}) ->
       _.bindAll @
+      
+      console.log opts
+      
+      {@types, @title} = opts
+      
+      @margin = 
+        top     : 20
+        right   : 100
+        bottom  : 30
+        left    : 50
+      @width = @$el.width() - @margin.right - @margin.left
+      @height = 300 - @margin.top - @margin.bottom
+      
+            
+      @x = d3.time.scale().range [0, @width]
+      @y = d3.scale.linear().range [@height, 0]
+            
+      
+      @xAxis = d3.svg.axis().scale(@x).orient("bottom")
+      @yAxis = d3.svg.axis().scale(@y).orient("left")
+      
+            
+      @line = d3.svg.line()
+                      .x( (d) => return @x d.x() ) 
+                      .y( (d) => return @y d.y )
+    
+      
+      className = @$el.attr "class"
+            
+      @svg = d3.select(".#{className}").append("svg")
+                .attr("width",  @width + @margin.left + @margin.right)
+                .attr("height", @height + @margin.top + @margin.bottom)
+             .append("g")
+                .attr("transform", "translate(" + @margin.left + "," + @margin.top + ")")
+      
+    render: ->
+      ###
+      TODO: fix data
+      ###
+      
+      data = @collection.filter (item)=>
+        return item.get("type") in @types      
+      
+      prev = 0
+      data.forEach (d)=>
+        d.y = ++prev         
+    
+      @x.domain d3.extent data, (d)=> return d.x()
+      @y.domain d3.extent data, (d)=> return d.y
+    
+      @svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + @height + ")")
+          .call(@xAxis);
+    
+      @svg.append("g")
+          .attr("class", "y axis")
+          .call(@yAxis)
+        .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("dy", ".71em")
+          .style("text-anchor", "end")
+          .text(@title)
+    
+      @svg.append("path")
+          .datum(data)
+          .attr("class", "line")
+          .attr("d", @line)
+      
+      
+    
   ###
     @constructor
     Multi series chart view
@@ -31,18 +100,16 @@
             
       @x = d3.time.scale().range [0, @width]
       @y = d3.scale.linear().range [@height, 0]
-      
-      @color = d3.scale.category10()
-      
+                  
       @xAxis = d3.svg.axis().scale(@x).orient("bottom")
       @yAxis = d3.svg.axis().scale(@y).orient("left")
       
+      @color = d3.scale.category10()
             
       @line = d3.svg.line()
                       .x( (d) => return @x d.x() ) 
                       .y( (d) => return @y d.y() )
-    
-      
+          
       className = @$el.attr "class"
             
       @svg = d3.select(".#{className}").append("svg")
@@ -93,10 +160,13 @@
       
       question.append("text")
               .datum( (d) => return {name: d.name, value: d.values[d.values.length - 1]} )
-              .attr("transform", (d) => return "translate(" + @x(d.value.x()) + "," + @y(d.value.y()) + ")" )
+              .attr("transform", (d) => 
+                x = if d.value? then @x(d.value.x()) else 0
+                y = if d.value? then @y(d.value.y()) else 0
+                return "translate(#{x},#{y})" )
               .attr("x", 10)
               .attr("dy", ".35em")
-              .text( (d) => return d.name )
+              .text( (d) => return if d.value? then d.name else "" )
       
       @
       
@@ -157,7 +227,8 @@
         Setup listeners
       ###
       @listenTo @collections.stackOverflow, "sync", @charts.stackOverflow.render
-      #@listenTo @collections.githubEvents,  "sync", @charts.githubEvents.render      
+      @listenTo @collections.githubEvents,  "sync", @charts.githubCommits.render
+      @listenTo @collections.githubEvents,  "sync", @charts.githubWatchers.render      
       ###
         Start fetching data
       ###
@@ -175,7 +246,9 @@
       options = {@language, @owner, @repo}
       # create collection and associated chart
       @collections.githubEvents = ge = new collections.GithubEvents options 
-      @charts.githubEvents      = new exports.BarChart {el: @$(".eventsHistory"), collection: ge}
+      
+      @charts.githubCommits      = new exports.Series {el: @$(".commitHistory"), collection: ge, types: ["PushEvent"], title: "Commits over time"}
+      @charts.githubWatchers     = new exports.Series {el: @$(".starsHistory"),  collection: ge, types: ["WatchEvent"], title: "Watchers over time"}
             
     render: ->
       @context.module = @model.toJSON()
