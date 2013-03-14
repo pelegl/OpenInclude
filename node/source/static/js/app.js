@@ -381,7 +381,7 @@
   (function(exports) {
     var View, col, root, views;
     root = this;
-    views = this.hbt = Handlebars.partials;
+    views = this.hbt = _.extend({}, dt, Handlebars.partials);
     col = root.collections;
     exports.MetaView = (function(_super) {
 
@@ -554,7 +554,7 @@
 
       Index.prototype.render = function() {
         var html;
-        html = views['index'](this.context);
+        html = views['index'](this.context, null, this.context.partials);
         this.$el.html(html);
         this.$el.attr('view-id', 'index');
         return this;
@@ -627,7 +627,7 @@
     var agreement_text, root, views;
     agreement_text = "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. ";
     root = this;
-    views = this.hbt = Handlebars.partials;
+    views = this.hbt = _.extend({}, dt, Handlebars.partials);
     exports.SignIn = (function(_super) {
 
       __extends(SignIn, _super);
@@ -858,7 +858,7 @@
   (function(exports) {
     var root, views;
     root = this;
-    views = this.hbt = Handlebars.partials;
+    views = this.hbt = _.extend({}, dt, Handlebars.partials);
     exports.DiscoverChartPopup = (function(_super) {
 
       __extends(DiscoverChartPopup, _super);
@@ -1274,7 +1274,7 @@
   (function(exports) {
     var root, views;
     root = this;
-    views = this.hbt = Handlebars.partials;
+    views = this.hbt = _.extend({}, dt, Handlebars.partials);
     return exports.HowTo = (function(_super) {
 
       __extends(HowTo, _super);
@@ -1310,7 +1310,7 @@
   (function(exports) {
     var modules_url, qs, root, views;
     root = this;
-    views = this.hbt = Handlebars.partials;
+    views = this.hbt = _.extend({}, dt, Handlebars.partials);
     qs = root.help.qs;
     modules_url = "/modules";
     exports.Repo = (function(_super) {
@@ -1899,7 +1899,8 @@
       developer_agreement: '/profile/developer_agreement',
       update_credit_card: '/profile/update_credit_card',
       dashboard_url: "dashboard",
-      create_project_url: "dashboard/project/create"
+      create_project_url: "dashboard/project/create",
+      partials: window.dt
     };
     App = (function(_super) {
 

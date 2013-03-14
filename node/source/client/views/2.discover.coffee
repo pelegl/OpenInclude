@@ -1,6 +1,6 @@
 ((exports) ->  
   root = @  
-  views = @hbt = Handlebars.partials
+  views = @hbt = _.extend({}, dt, Handlebars.partials)
     
   class exports.DiscoverChartPopup extends @Backbone.View   
     tagName: "div"

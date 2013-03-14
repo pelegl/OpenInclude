@@ -37,7 +37,7 @@ renderFile = (filename, options, fn) ->
         catch err
             fn err
     else
-        layout = dot.template(fs.readFileSync(filename, 'utf8'), null, {partials: app.Partials})
+        layout = dot.compile(fs.readFileSync(filename, 'utf8'), {partials: app.Partials})
         if not app.Layouts
             app.Layouts = {}
             

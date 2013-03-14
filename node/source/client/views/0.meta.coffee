@@ -1,6 +1,6 @@
 ((exports) ->  
   root = @  
-  views = @hbt = Handlebars.partials
+  views = @hbt = _.extend({}, dt, Handlebars.partials)
   col = root.collections
 
   class exports.MetaView extends @Backbone.View
@@ -103,7 +103,7 @@
       @render()
 
     render:->  
-      html = views['index'](@context)
+      html = views['index'](@context, null, @context.partials)
       @$el.html html
       @$el.attr 'view-id', 'index'
       @

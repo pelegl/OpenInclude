@@ -14,7 +14,8 @@
     developer_agreement : '/profile/developer_agreement'
     update_credit_card  : '/profile/update_credit_card'
     dashboard_url       : "dashboard"
-    create_project_url  : "dashboard/project/create"    
+    create_project_url  : "dashboard/project/create"
+    partials            : window.dt
     
   class App extends Backbone.Router
     conf: conf

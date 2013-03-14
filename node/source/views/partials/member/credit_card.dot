@@ -4,7 +4,7 @@
     <h3>Credit Card Information</h3>
   </div>
   <div class="modal-body">
-    <form method='post' action='{{update_credit_card}}'>
+    <form method='post' action='{{=it.update_credit_card}}'>
       <label for='ccFullName'>Full Name (as it appears on the card)</label>
       <input type='text' id='ccFullName' class='input-block-level' name='card[fullName]' required />
       

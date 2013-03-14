@@ -1,0 +1,36 @@
+<div class='container module'>
+  <div class='row'>
+    <div class='span12'>
+      <h2>Language list</h2>
+      <ul class='unstyled' data-languages='{{=it.prepopulation}}'>
+        {{~ it.languages :language}}
+          <li><a href='{{=it.modules_url}}/{{=language.name}}'>{{=language.name}}</a></li>
+        {{~}}
+      </ul>
+      {{? it.pages}}
+      <div class="pagination pagination-centered">
+        <ul>
+          {{? it.prev}}
+          <li><a href="?page={{=it.prev}}">Prev</a></li>
+          {{??}}
+          <li class='disabled'><a>Prev</a></li>
+          {{?}}
+          
+          {{~ it.pages :page}}
+            <li {{? page.isActive}}class='active'{{?}}>
+              <a href="?page={{=page.link}}">{{=page.text}}</a>
+            </li>
+          {{~}}
+          
+          {{? it.next}}
+          <li><a href="?page={{=it.next}}">Next</a></li>
+          {{??}}
+          <li class='disabled'><a>Next</a></li>
+          {{?}}      
+              
+        </ul>
+      </div>
+      {{?}}
+    </div>
+  </div>  
+</div>

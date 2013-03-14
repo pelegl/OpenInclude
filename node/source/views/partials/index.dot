@@ -1,46 +1,46 @@
-<div class="wrapper" {{#if in_stealth_mode}}style="width:740px"{{/if}}>
+<div class="wrapper" {{? it.in_stealth_mode}}style="width:740px"{{?}}>
     <div class="features">
       <ul>
-        <li> <a href="{{#unless in_stealth_mode}}/discover{{/unless}}">
-          <div class="box"><img src="{{STATIC_URL}}images/icon-discover.png" alt="">
+        <li> <a href="{{? !it.in_stealth_mode}}/discover{{?}}">
+          <div class="box"><img src="{{=it.STATIC_URL}}images/icon-discover.png" alt="">
             <h2>Discover</h2>
             <p>quality open source projects</p>
           </div>
           </a> </li>
-        <li> <a href="{{#unless in_stealth_mode }}{% url demo %}{{/unless}}">
-          <div class="box"><img src="{{STATIC_URL}}images/icon-demo.png" alt="">
+        <li> <a href="{{? !it.in_stealth_mode}}{% url demo %}{{?}}">
+          <div class="box"><img src="{{=it.STATIC_URL}}images/icon-demo.png" alt="">
             <h2>Demo</h2>
             <p>on our virtual machines</p>
           </div>
           </a> </li>
-        <li> <a href="{{#unless in_stealth_mode }}{% url integrate %}{{/unless}}">
-          <div class="box"><img src="{{STATIC_URL}}images/icon-integrate.png" alt="">
+        <li> <a href="{{? !it.in_stealth_mode}}{% url integrate %}{{?}}">
+          <div class="box"><img src="{{=it.STATIC_URL}}images/icon-integrate.png" alt="">
             <h2>Integrate</h2>
             <p>into your current work</p>
           </div>
           </a> </li>
-{{#unless in_stealth_mode}}
+{{? !it.in_stealth_mode}}
         <li> <a href="{% url contribute %}">
-          <div class="box"><img src="{{STATIC_URL}}images/icon-contribute.png" alt="">
+          <div class="box"><img src="{{=it.STATIC_URL}}images/icon-contribute.png" alt="">
             <h2>Contribute</h2>
             <p>code or cash to the open source ecosystem</p>
           </div>
           </a> </li>
-{{/unless}}
+{{?}}
       </ul>
     </div>
 
-{{#if in_stealth_mode }}
+{{? it.in_stealth_mode }}
     <div class="email">
       <form  class="email-form" action="/prelaunch/email/" method="POST">
         <input type="text" name="email" placeholder="email address - we will get in touch for the launch.">
-        {{csrf_token}}
+        {{=it.csrf_token}}
         <button type="submit">submit</button>
       </form>
     </div>
-{{/if}}
+{{?}}
 
-{{#unless in_stealth_mode}}
+{{? !it.in_stealth_mode}}
     <div class="search">
       <form  class="search-form" action="/discover" method="GET">
         <input type="text" name="query" placeholder="discover an open source project">
@@ -58,5 +58,5 @@
         <li><a href="#">sleek web design</a></li>
       </ul>
     </div>
-{{/unless}}
+{{?}}
 </div>

@@ -1,0 +1,65 @@
+<div class='container profile'>
+	<div class='row'>
+		<div class='span12'>					
+			<div class='row'>
+			  <div class='span4'>
+			    <div class='personalInformation'>
+			      <img src="http://www.gravatar.com/avatar/{{= it.user.github_avatar_url }}?s=210" class='avatar'  />
+            <h3>{{= it.user.github_display_name }}</h3>
+            <h4><a href='https://github.com/{{= it.user.github_username }}' target="_blank" class='muted'>{{= it.user.github_username }}</a></h4>
+            <hr />
+            {{? it.private }}
+            <h4>Account type</h4>
+            <div class='accountType'>
+              <div class='type'>
+                <p>Merchant
+                <span class='status'>
+                {{? it.user.merchant }}
+                  {{? it.user.has_stripe }}
+                    <i class='icon-ok'></i>
+                  {{??}}
+                    <button class='btn btn-info btn-mini setupPayment'>setup payment method</button>
+                  {{?}}
+                {{??}}
+                <a href='{{= it.merchant_agreement }}' class='btn btn-success btn-mini backbone'>Sign Up</a>
+                {{?}}
+                </span>
+                </p>                
+              </div>
+              <div class='type'>
+                <p>Developer
+                <span class='status'>
+                {{? it.user.employee }}
+                  <i class='icon-ok'></i>
+                {{??}}
+                  <a href='{{= it.developer_agreement }}' class='btn btn-success btn-mini backbone'>Sign Up</a>
+                {{?}}
+                </span>
+                </p>
+              </div>
+              <div class='type'>
+              	<p>Trello
+              	<span class='status'>
+              	{{? it.user.trello_id }}
+              		<i class='icon-ok'></i>
+				{{??}}
+					<a href='{{= it.trello_auth_url }}' class='btn btn-success btn-mini'>Authorize</a>
+				{{?}}
+				</span>
+				</p>
+              </div>
+            </div>
+            <hr />
+            {{?}}
+            <div class='contactData'>
+              <div class='contact'>
+                <i class='icon-envelope'></i> <a class='muted' href="mailto:{{= it.user.github_email }}">{{= it.user.github_email }}</a>
+              </div>
+            </div>
+			    </div>			             
+			  </div>
+			  <div class='span8 informationBox'>{{= it.informationBox }}</div>
+			</div>
+		</div>
+	</div>
+</div>

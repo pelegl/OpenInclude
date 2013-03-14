@@ -45,7 +45,7 @@ class BasicController
       
   _view : (name, context)=>
     if @app.Views['dot'].hasOwnProperty(name)
-        dot.template(@app.Views['dot'][name])(context, null, {partials: @app.Partials})
+        dot.compile(@app.Views['dot'][name], {partials: @app.Partials})(context, null, {partials: @app.Partials})
     else
         hb.compile(@app.Views['hbs'][name])(context)
 

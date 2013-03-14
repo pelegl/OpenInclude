@@ -1,6 +1,6 @@
 ((exports) ->  
   root = @
-  views = @hbt = Handlebars.partials  
+  views = @hbt = _.extend({}, dt, Handlebars.partials)
   {qs} = root.help
   
   modules_url = "/modules"
