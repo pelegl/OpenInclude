@@ -18,7 +18,7 @@ class ModuleController extends require('./basicController')
     
     
     @language       = segments[1] if segments[1]? 
-    @moduleName     = decodeURI segments[2] if segments[2]?
+    @moduleName     = segments[2] if segments[2]?
     @get            = segments[3..] if segments.length > 3
         
     @app = @req.app

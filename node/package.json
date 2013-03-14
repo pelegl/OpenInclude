@@ -11,6 +11,11 @@
   },
   "contributors": [
     {
+      "name" : "Vitaly Aminev",
+      "email": "getstarted@avvs.co",
+      "url"  : "http://avvs.co"
+    },
+    {
       "name" : "Dmitry Gorbunov",
       "email": "atskiisotona@gmail.com",
       "url"  : "http://dgorbunov.ru"
@@ -38,8 +43,7 @@
     "aws-sdk": "~0.9.5-pre.6",
     "fivebeans": "git://github.com/AVVS/fivebeans.git",
     "eventemitter2": "~0.4.11",
-    "dot": "1.0.x",
-    "dot-emc": "*"
+    "dot": "1.0.x"
   },
   "devDependencies": {
     "coffee-trace": "~1.3.4",
@@ -52,6 +56,6 @@
     "grunt-contrib-concat": "*",
     "grunt-contrib-cssmin": "*",
     "grunt-contrib-coffee": "*",
-    "grunt-dot-compiler": "0.3.x"
+    "grunt-dotjs": "*"
   }
 }

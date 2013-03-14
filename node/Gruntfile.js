@@ -33,22 +33,6 @@ module.exports = function(grunt) {
   			}			
   		}
   	},
-  	handlebars: {
-  		options: {
-  	      	namespace: "hbt",
-  	      	wrapped: true,	      	
-  	      	processPartialName: function(filename){
-  	      		var base = "source/views/partials/";
-  	      		return filename.replace(base, "").replace(/\.hbs$/, "");
-  	      	},
-  	      	partialRegex: /.*/
-  	    },
-  	    compile: {
-  	    	files: {	      	
-  		      	"source/static/js/templates.js": ["source/views/partials/*.hbs", "source/views/partials/**/*.hbs"]
-  		    }	
-  	    }	    
-  	},	
   	cake : {
   	  build: {}
   	},
@@ -60,13 +44,6 @@ module.exports = function(grunt) {
            interrupt: true
          }
   	   },
-  	   handlebars: {
-         files: ['source/views/**/.hbs'],
-         tasks: ['handlebars', 'cake'],
-         options: {
-           interrupt: true
-         }
-       },
        coffee: {
          files: ['source/client/**/.coffee'],
          tasks: ['coffee', 'cake'],
@@ -82,7 +59,7 @@ module.exports = function(grunt) {
          }
        }  	          
   	},
-    "dot-compile": {
+    dotjs: {
         compile: {
               options: {
                   variable : 'dt',
@@ -118,9 +95,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-coffee');  
   grunt.loadNpmTasks('grunt-contrib-watch');  
-  grunt.loadNpmTasks('grunt-dot-compiler');
+  grunt.loadNpmTasks('grunt-dotjs');
 
   // Default task.    
-  grunt.registerTask('default', ['less', 'cssmin', 'concat', 'coffee', 'handlebars', 'dot-compile']);  
+  grunt.registerTask('default', ['less', 'cssmin', 'concat', 'coffee', 'dotjs']);  
 
 };

@@ -13,11 +13,10 @@
 	<span id='view-wrapper'>
 		<section class="contents">		
 		    {{=it.body}}	    
-	    </section>
-    </span>
-    {{#def.partials['footer']}}
-    
-      
+	  </section>
+  </span>
+  {{#def.partials['footer']}}
+          
   <div class="share-common">
     <a href="#" role="button" class="share-ideas">Share your ideas</a>
     <!-- Modal -->
