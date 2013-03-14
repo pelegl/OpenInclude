@@ -1,5 +1,0 @@
-StripePlugin = (schema) ->
-	schema.statics.Stripe = (options) ->
-	
-
-	

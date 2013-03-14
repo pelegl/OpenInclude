@@ -5,4 +5,7 @@
 local_settings.py
 *.bak
 *.db
-node_modules
+node/node_modules
+node/source/tmp
+node/components
+node/build

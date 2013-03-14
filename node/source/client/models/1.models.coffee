@@ -33,8 +33,34 @@
      idAttribute: "_id"
      urlRoot: "/modules"
      url: ->
-       return "#{@urlRoot}/#{@get('language')}/#{@get('module_name')}"
+       return "#{@urlRoot}/#{@get('language')}/#{@get('owner')}|#{@get('module_name')}"
    
+   exports.StackOverflowQuestion = @Backbone.Model.extend
+     idAttribute: "_id"
+     urlRoot: "/modules"
+     url: ->
+       return "#{@urlRoot}/all/all/stackoverflow/json/#{@get('_id')}"
+      
+     date: ->
+       return new Date @get("timestamp")*1000
+     
+     x: ->
+       return @get("timestamp")*1000
+       
+     y: ->
+       return @get "amount"
+   
+   exports.GithubEvent = @Backbone.Model.extend
+     idAttribute: "_id"
+     urlRoot: "/modules"
+     url: ->
+       return "#{@urlRoot}/all/all/github_events/json/#{@get('_id')}"     
+      
+     x: ->       
+       return new Date @get("created_at")     
+     
+         
+    
    exports.Discovery = @Backbone.Model.extend
       ###        
           0.5 - super active - up to 7 days

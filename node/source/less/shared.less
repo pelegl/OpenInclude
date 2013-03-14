@@ -5,7 +5,7 @@
 @translucent: fadeout(@black, 30%);
 @background: @white;    
 
-@root : ~"/static/img/";
+@root : ~"/static/images/";
 
 .imp(@img: ""){
   background-image: url("@{root}@{img}") !important;
@@ -16,7 +16,7 @@
 @tablet : ~"(max-width: 767px)";
 @mobile : ~"(max-width: 480px)";
 
-.img(@name : "", @repeat: no-repeat, @position: center center, @color: @background) {
+.img(@name : "", @repeat: no-repeat, @position: center center, @color: transparent) {
   background: @color url("@{root}@{name}") @repeat @position;
 }
 .bg-repeat(@name: "", @position: center center){

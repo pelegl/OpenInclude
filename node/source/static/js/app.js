@@ -104,7 +104,33 @@
       idAttribute: "_id",
       urlRoot: "/modules",
       url: function() {
-        return "" + this.urlRoot + "/" + (this.get('language')) + "/" + (this.get('module_name'));
+        return "" + this.urlRoot + "/" + (this.get('language')) + "/" + (this.get('owner')) + "|" + (this.get('module_name'));
+      }
+    });
+    exports.StackOverflowQuestion = this.Backbone.Model.extend({
+      idAttribute: "_id",
+      urlRoot: "/modules",
+      url: function() {
+        return "" + this.urlRoot + "/all/all/stackoverflow/json/" + (this.get('_id'));
+      },
+      date: function() {
+        return new Date(this.get("timestamp") * 1000);
+      },
+      x: function() {
+        return this.get("timestamp") * 1000;
+      },
+      y: function() {
+        return this.get("amount");
+      }
+    });
+    exports.GithubEvent = this.Backbone.Model.extend({
+      idAttribute: "_id",
+      urlRoot: "/modules",
+      url: function() {
+        return "" + this.urlRoot + "/all/all/github_events/json/" + (this.get('_id'));
+      },
+      x: function() {
+        return new Date(this.get("created_at"));
       }
     });
     return exports.Discovery = this.Backbone.Model.extend({
@@ -366,9 +392,82 @@
       model: models.Project,
       url: "/project"
     });
-    return exports.Tasks = this.Backbone.Collection.extend({
+    exports.Tasks = this.Backbone.Collection.extend({
       model: models.Task,
       url: "/task"
+    });
+    exports.GithubEvents = this.Backbone.Collection.extend({
+      model: models.GithubEvent,
+      initialize: function(options) {
+        if (options == null) {
+          options = {};
+        }
+        this.language = options.language, this.owner = options.owner, this.repo = options.repo;
+        this.language || (this.language = "");
+        this.repo || (this.repo = "");
+        return this.owner || (this.owner = "");
+      },
+      url: function() {
+        return "/modules/" + this.language + "/" + this.owner + "|" + this.repo + "/github_events/json";
+      }
+    });
+    return exports.StackOverflowQuestions = this.Backbone.Collection.extend({
+      model: models.StackOverflowQuestion,
+      chartMap: function(name) {
+        return {
+          name: name,
+          values: this.where({
+            key: name
+          })
+        };
+      },
+      parse: function(r) {
+        var items, maxTS, questions,
+          _this = this;
+        this.statistics = r.statistics, questions = r.questions;
+        if (!(questions.length > 0)) {
+          return [];
+        }
+        /*
+          Add normalization
+        */
+
+        items = [];
+        _.each(this.statistics.keys, function(key) {
+          var list;
+          list = _.where(questions, {
+            key: key
+          });
+          return items.push(_.last(list));
+        });
+        maxTS = _.max(items, function(item) {
+          return item.timestamp;
+        });
+        _.each(items, function(item) {
+          var i;
+          i = _.extend({}, item);
+          i.timestamp = maxTS.timestamp;
+          i._id += "_copy";
+          return questions.push(i);
+        });
+        return questions;
+      },
+      keys: function() {
+        return this.statistics.keys || [];
+      },
+      initialize: function(options) {
+        if (options == null) {
+          options = {};
+        }
+        _.bindAll(this, "chartMap");
+        this.language = options.language, this.owner = options.owner, this.repo = options.repo;
+        this.language || (this.language = "");
+        this.repo || (this.repo = "");
+        return this.owner || (this.owner = "");
+      },
+      url: function() {
+        return "/modules/" + this.language + "/" + this.owner + "|" + this.repo + "/stackoverflow/json";
+      }
     });
   }).call(this, (typeof exports === "undefined" ? this["collections"] = {} : exports), typeof exports !== "undefined");
 
@@ -462,7 +561,7 @@
         var action, agreement, _ref;
         this.model = new models.Tos;
         if ($(".agreementContainer").length > 0) {
-          this.$el = $(".agreementContainer");
+          this.setElement($(".agreementContainer"));
         } else {
           this.render();
         }
@@ -661,18 +760,16 @@
         return CC.__super__.constructor.apply(this, arguments);
       }
 
-      CC.prototype.id = 'updateCreditCard';
-
-      CC.prototype.className = "modal hide fade";
-
-      CC.prototype.attributes = {
-        tabindex: "-1",
-        role: "dialog",
-        "aria-hidden": "true"
-      };
+      CC.prototype.className = "dropdown-menu";
 
       CC.prototype.events = {
+        'click  form': "stopPropagation",
         'submit form': "updateCardData"
+      };
+
+      CC.prototype.stopPropagation = function(e) {
+        console.log("prop");
+        return e.stopPropagation();
       };
 
       CC.prototype.updateCardData = function(e) {
@@ -680,6 +777,7 @@
         e.preventDefault();
         data = Backbone.Syphon.serialize(e.currentTarget);
         this.$("[type=submit]").addClass("disabled").text("Updating information...");
+        console.log(data);
         this.model.set(data);
         this.model.save(null, {
           success: this.processUpdate,
@@ -689,43 +787,33 @@
       };
 
       CC.prototype.processUpdate = function(model, response, options) {
-        var _this = this;
         if (response.success === true) {
-          app.session.set({
+          return app.session.set({
             has_stripe: true
-          }, {
-            silent: true
           });
-          this.$el.modal('hide');
-          return setTimeout(function() {
-            return app.session.trigger("change");
-          }, 300);
         } else {
 
         }
       };
 
       CC.prototype.initialize = function() {
+        var $el;
         this.model = new models.CreditCard;
         this.model.url = app.conf.update_credit_card;
         _.bindAll(this, "processUpdate");
         this.context = _.extend({}, app.conf);
-        return this.render();
-      };
-
-      CC.prototype.show = function() {
-        this.$("#ccFullName").val(app.session.get("github_display_name"));
-        this.$el.modal('show');
-        return this.delegateEvents();
+        $el = $(".setupPayment .dropdown-menu");
+        if ($el.length > 0) {
+          return this.setElement($el);
+        } else {
+          return this.render();
+        }
       };
 
       CC.prototype.render = function() {
         var html;
         html = views['member/credit_card'](this.context);
-        this.$el = $(html);
-        this.$el.modal({
-          show: false
-        });
+        this.$el.html($(html).html());
         return this;
       };
 
@@ -742,7 +830,12 @@
 
       Profile.prototype.events = {
         'click .accountType a[class*=backbone]': "accountUpgrade",
-        'click .setupPayment': "setupPayment"
+        'click .setupPayment > button': "update_cc_events"
+      };
+
+      Profile.prototype.update_cc_events = function(e) {
+        this.cc.delegateEvents();
+        return $(e.currentTarget).dropdown('toggle');
       };
 
       Profile.prototype.clearHref = function(href) {
@@ -755,11 +848,6 @@
         href = $this.attr("href");
         this.setAction(this.clearHref(href));
         return false;
-      };
-
-      Profile.prototype.setupPayment = function() {
-        this.stopListening(this.agreement.model);
-        return this.cc.show();
       };
 
       Profile.prototype.setAction = function(action) {
@@ -836,7 +924,8 @@
           this.$(".informationBox").append(this.agreement.$el);
         }
         if (this.cc) {
-          this.$el.append(this.cc.$el);
+          this.cc.setElement(this.$(".setupPayment .dropdown-menu"));
+          this.cc.$el.prev().dropdown();
         }
         if (this.context["private"]) {
           this.setAction(this.options.action);
@@ -1305,7 +1394,8 @@
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   (function(exports) {
     var modules_url, qs, root, views;
@@ -1313,6 +1403,170 @@
     views = this.hbt = _.extend({}, dt, Handlebars.partials);
     qs = root.help.qs;
     modules_url = "/modules";
+    exports.Series = (function(_super) {
+
+      __extends(Series, _super);
+
+      function Series() {
+        return Series.__super__.constructor.apply(this, arguments);
+      }
+
+      Series.prototype.initialize = function(opts) {
+        var className,
+          _this = this;
+        if (opts == null) {
+          opts = {};
+        }
+        _.bindAll(this);
+        console.log(opts);
+        this.types = opts.types, this.title = opts.title;
+        this.margin = {
+          top: 20,
+          right: 100,
+          bottom: 30,
+          left: 50
+        };
+        this.width = this.$el.width() - this.margin.right - this.margin.left;
+        this.height = 300 - this.margin.top - this.margin.bottom;
+        this.x = d3.time.scale().range([0, this.width]);
+        this.y = d3.scale.linear().range([this.height, 0]);
+        this.xAxis = d3.svg.axis().scale(this.x).orient("bottom");
+        this.yAxis = d3.svg.axis().scale(this.y).orient("left");
+        this.line = d3.svg.line().x(function(d) {
+          return _this.x(d.x());
+        }).y(function(d) {
+          return _this.y(d.y);
+        });
+        className = this.$el.attr("class");
+        return this.svg = d3.select("." + className).append("svg").attr("width", this.width + this.margin.left + this.margin.right).attr("height", this.height + this.margin.top + this.margin.bottom).append("g").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+      };
+
+      Series.prototype.render = function() {
+        /*
+        TODO: fix data
+        */
+
+        var data, prev,
+          _this = this;
+        data = this.collection.filter(function(item) {
+          var _ref;
+          return _ref = item.get("type"), __indexOf.call(_this.types, _ref) >= 0;
+        });
+        prev = 0;
+        data.forEach(function(d) {
+          return d.y = ++prev;
+        });
+        this.x.domain(d3.extent(data, function(d) {
+          return d.x();
+        }));
+        this.y.domain(d3.extent(data, function(d) {
+          return d.y;
+        }));
+        this.svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + this.height + ")").call(this.xAxis);
+        this.svg.append("g").attr("class", "y axis").call(this.yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style("text-anchor", "end").text(this.title);
+        return this.svg.append("path").datum(data).attr("class", "line").attr("d", this.line);
+      };
+
+      return Series;
+
+    })(this.Backbone.View);
+    /*
+      @constructor
+      Multi series chart view
+    */
+
+    exports.MultiSeries = (function(_super) {
+
+      __extends(MultiSeries, _super);
+
+      function MultiSeries() {
+        return MultiSeries.__super__.constructor.apply(this, arguments);
+      }
+
+      MultiSeries.prototype.initialize = function(opts) {
+        var className,
+          _this = this;
+        if (opts == null) {
+          opts = {};
+        }
+        _.bindAll(this);
+        this.margin = {
+          top: 20,
+          right: 200,
+          bottom: 30,
+          left: 50
+        };
+        this.width = this.$el.width() - this.margin.right - this.margin.left;
+        this.height = 500 - this.margin.top - this.margin.bottom;
+        this.x = d3.time.scale().range([0, this.width]);
+        this.y = d3.scale.linear().range([this.height, 0]);
+        this.xAxis = d3.svg.axis().scale(this.x).orient("bottom");
+        this.yAxis = d3.svg.axis().scale(this.y).orient("left");
+        this.color = d3.scale.category10();
+        this.line = d3.svg.line().x(function(d) {
+          return _this.x(d.x());
+        }).y(function(d) {
+          return _this.y(d.y());
+        });
+        className = this.$el.attr("class");
+        return this.svg = d3.select("." + className).append("svg").attr("width", this.width + this.margin.left + this.margin.right).attr("height", this.height + this.margin.top + this.margin.bottom).append("g").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+      };
+
+      MultiSeries.prototype.render = function() {
+        var max, min, question, questions,
+          _this = this;
+        this.color.domain(this.collection.keys());
+        questions = this.color.domain().map(this.collection.chartMap);
+        this.x.domain(d3.extent(this.collection.models, function(d) {
+          return d.x();
+        }));
+        min = d3.min(questions, function(c) {
+          return d3.min(c.values, function(v) {
+            return v.y();
+          });
+        });
+        max = d3.max(questions, function(c) {
+          return d3.max(c.values, function(v) {
+            return v.y();
+          });
+        });
+        this.y.domain([0.5 * min, 1.1 * max]);
+        this.svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + this.height + ")").call(this.xAxis);
+        this.svg.append("g").attr("class", "y axis").call(this.yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style("text-anchor", "end").text("Questions");
+        question = this.svg.selectAll(".question").data(questions).enter().append("g").attr("class", "question");
+        question.append("path").attr("class", "line").attr("d", function(d) {
+          return _this.line(d.values);
+        }).style("stroke", function(d) {
+          return _this.color(d.name);
+        });
+        question.append("text").datum(function(d) {
+          return {
+            name: d.name,
+            value: d.values[d.values.length - 1]
+          };
+        }).attr("transform", function(d) {
+          var x, y;
+          x = d.value != null ? _this.x(d.value.x()) : 0;
+          y = d.value != null ? _this.y(d.value.y()) : 0;
+          return "translate(" + x + "," + y + ")";
+        }).attr("x", 10).attr("dy", ".35em").text(function(d) {
+          if (d.value != null) {
+            return d.name;
+          } else {
+            return "";
+          }
+        });
+        return this;
+      };
+
+      return MultiSeries;
+
+    })(this.Backbone.View);
+    /*
+      @constructor
+      Repository view
+    */
+
     exports.Repo = (function(_super) {
 
       __extends(Repo, _super);
@@ -1324,25 +1578,111 @@
       Repo.prototype.events = {};
 
       Repo.prototype.initialize = function(opts) {
-        var preloadedData;
-        this.language = opts.language, this.repo = opts.repo;
+        var preloadedData, repo, _ref;
+        if (opts == null) {
+          opts = {};
+        }
+        this.language = opts.language, repo = opts.repo;
+        try {
+          _ref = repo.split("|"), this.owner = _ref[0], this.repo = _ref[1];
+          if (!this.owner || !this.repo) {
+            throw "Incorrect link";
+          }
+        } catch (e) {
+          console.log(e);
+        }
         this.model = new models.Repo({
           language: this.language,
-          module_name: this.repo
+          module_name: this.repo,
+          owner: this.owner
         });
+        /*
+          context
+        */
+
         this.context = {
           modules_url: modules_url
         };
+        /*
+          events
+        */
+
+        _.bindAll(this);
         this.listenTo(this.model, "sync", this.render);
+        this.listenTo(this.model, "sync", this.initCharts);
+        this.collections = {};
+        this.charts = {};
+        /*
+          setup render and load data
+        */
+
         preloadedData = this.$("[data-repo]");
         if (preloadedData.length > 0) {
           this.model.set(preloadedData.data("repo"), {
             silent: true
           });
-          return this.render();
+          this.render();
+          return this.initCharts();
         } else {
           return this.model.fetch();
         }
+      };
+
+      Repo.prototype.initCharts = function() {
+        /*
+          inits
+        */
+        this.initSO();
+        this.initGE();
+        /*
+          Setup listeners
+        */
+
+        this.listenTo(this.collections.stackOverflow, "sync", this.charts.stackOverflow.render);
+        this.listenTo(this.collections.githubEvents, "sync", this.charts.githubCommits.render);
+        this.listenTo(this.collections.githubEvents, "sync", this.charts.githubWatchers.render);
+        /*
+          Start fetching data
+        */
+
+        this.collections.stackOverflow.fetch();
+        return this.collections.githubEvents.fetch();
+      };
+
+      Repo.prototype.initSO = function() {
+        var options, so;
+        options = {
+          language: this.language,
+          owner: this.owner,
+          repo: this.repo
+        };
+        this.collections.stackOverflow = so = new collections.StackOverflowQuestions(options);
+        return this.charts.stackOverflow = new exports.MultiSeries({
+          el: this.$(".stackQAHistory"),
+          collection: so
+        });
+      };
+
+      Repo.prototype.initGE = function() {
+        var ge, options;
+        options = {
+          language: this.language,
+          owner: this.owner,
+          repo: this.repo
+        };
+        this.collections.githubEvents = ge = new collections.GithubEvents(options);
+        this.charts.githubCommits = new exports.Series({
+          el: this.$(".commitHistory"),
+          collection: ge,
+          types: ["PushEvent"],
+          title: "Commits over time"
+        });
+        return this.charts.githubWatchers = new exports.Series({
+          el: this.$(".starsHistory"),
+          collection: ge,
+          types: ["WatchEvent"],
+          title: "Watchers over time"
+        });
       };
 
       Repo.prototype.render = function() {

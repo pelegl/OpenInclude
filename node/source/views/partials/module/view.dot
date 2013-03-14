@@ -2,19 +2,19 @@
   <div class='row'>
     <div class='span12' data-repo='{{=it.prepopulate}}'>
       <h2>{{=it.module.module_name}}</h2>
-      <div class='readme'>
-        readme placeholder
-      </div>
       <div class='row'>
         <div class='span6'>
-          stars over time placeholder
+          <!-- stacked bar chart #52 weeks history -->
+          <div class='commitHistory'></div>
         </div>
         <div class='span6'>
-          questions/answers over time
+          <!-- bar chart #52 weeks history -->
+          <div class='starsHistory'></div>
         </div>
-      </div>
+      </div>      
       <div>
-        commits over time
+        <!-- multi series - new questions, new answers #52 week history -->
+        <div class='stackQAHistory'></div>
       </div>
     </div>
   </div>  

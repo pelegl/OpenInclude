@@ -28,6 +28,21 @@ serverOptions =
 exports.esClient = esClient = new esc serverOptions
 
 
+###
+  Github service
+###
+github = require 'octonode'
+
+GITHUB_CLIENT_ID = '2361006ea086ad268742'
+GITHUB_CLIENT_SECRET = '8983c759727c4195ae2b34916d9ed313eeafa332'
+
+exports.git = github.client
+  id: GITHUB_CLIENT_ID
+  secret: GITHUB_CLIENT_SECRET
+
+exports.git_second = github.client
+  id: "fbc1f03fd6ef162b3463" 
+  secret: "bead2882abb9409df91f4ba7fecc450c6e989d4b"
 
 ###
   Some static helpers
@@ -58,7 +73,7 @@ exports.setControllers = (cb)->
     unless err
       files.forEach (file)=>
         unless /^basic/.test file
-          controllers["#{file.replace('Controller.coffee','')}"] = require "#{dir}/#{file}"
+          controllers["#{file.replace(/^(.*)Controller.[a-z]+$/i,'$1')}"] = require "#{dir}/#{file}"
       cb null, controllers
     else
       cb err
@@ -107,8 +122,6 @@ exports.registerPartials = registerPartials = (dir, callback, dirViews)->
     else
       callback err
       
-GITHUB_CLIENT_ID = '2361006ea086ad268742'
-GITHUB_CLIENT_SECRET = '8983c759727c4195ae2b34916d9ed313eeafa332'
 
 TRELLO_ID = '48d2041e5c3684d893ef877b2ae2bad3'
 TRELLO_SECRET = '0c3da5c0d7afb77ac90b09dd34264d7521498c5b030774af2d853d8a6c00f939'
@@ -219,7 +232,7 @@ load = (required) ->
     unless loaded_models[name]
       module = require './models/' + name
       if module.definition
-        module.schema         = new mongoose.Schema module.definition        
+        module.schema         = new mongoose.Schema module.definition, (module.options || {})        
         module.schema.methods = module.methods if module.methods
         module.schema.statics = module.statics if module.statics
         
@@ -235,10 +248,20 @@ load = (required) ->
           if setters.length > 0
             setters.forEach (setterName)=>
               module.schema.virtual(setterName).set module.virtuals.set[setterName]
-                        
-        name = module.modelName if module.modelName
         
-        module.model = db.model name, module.schema
+        ###
+          Set index        
+        ###
+        if module.index?
+          _.each module.index, (index)=>
+            #console.log "Applying index", index
+            module.schema.index.apply module.schema, index          
+        
+        unless module.modelName
+          module.model = db.model name, module.schema
+        else
+          module.model = db.model name, module.schema, module.modelName
+          
         models.push module.model
 
       loaded_models[name] = module

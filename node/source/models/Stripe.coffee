@@ -11,7 +11,8 @@ async        = require 'async'
   Stripe
 ###
 ObjectId = require('mongoose').Schema.Types.ObjectId
-api_key = 'sk_test_nKT89JJk0amZjpRcjIrCr1kX'
+#api_key = 'sk_test_07bvlXeoFTA2bKM42Vt0O9SY' #
+api_key = "sk_test_HkMUKw1bjVE6Sxo218IiMNWP"
 stripe = require("stripe")(api_key)
 
 definition =
@@ -38,7 +39,7 @@ statics =
           exp_month  : expmonth
           exp_year   : expyear
           cvc        : cvc
-          fullName   : fullName
+          name       : fullName
       , token
     
     ###
@@ -55,13 +56,13 @@ statics =
         ###
         stripe.customers.create
           description : desc
-          card        : token
+          card        : token.id
         , customer_callback
       else
         ###
           Update existing customer
         ###
-        stripe.customers.update existing_payment_method.id, {card: token}, customer_callback            
+        stripe.customers.update existing_payment_method.id, {card: token.id}, customer_callback            
     ]
     
     ###
@@ -82,8 +83,8 @@ statics =
     ###
       Perform tasks
     ###
-    async.auto Tasks, (err) =>
-      callback err, user
+    async.auto Tasks, (err,results) =>
+      callback err, user      
 
 
 #Billing a customer

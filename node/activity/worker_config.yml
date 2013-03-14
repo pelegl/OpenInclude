@@ -1,0 +1,10 @@
+beanstalkd:
+    host: "127.0.0.1"
+    port: 11300
+watch:
+    - 'ActivityTube'
+handlers:
+    - "./handlers/activity.js"    
+
+logdir: "./logs"
+ignoreDefault: true

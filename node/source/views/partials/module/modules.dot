@@ -4,7 +4,7 @@
       <h2>{{=it.language}}: Module list</h2>
       <ul class='unstyled' data-modules='{{=it.prepopulation}}'>
         {{~ it.modules :module}}
-          <li><a href='{{=it.modules_url}}/{{=module.language}}/{{=module.module_name}}'>{{=module.module_name}}</a></li>
+          <li><a href='{{=it.modules_url}}/{{=module.language}}/{{=module.owner}}|{{=module.module_name}}'>{{=module.module_name}}</a></li>
         {{~}}
       </ul>
       {{? it.pages}}

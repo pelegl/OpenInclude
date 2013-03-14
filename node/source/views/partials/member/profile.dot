@@ -12,41 +12,44 @@
             <h4>Account type</h4>
             <div class='accountType'>
               <div class='type'>
-                <p>Merchant
-                <span class='status'>
-                {{? it.user.merchant }}
-                  {{? it.user.has_stripe }}
-                    <i class='icon-ok'></i>
-                  {{??}}
-                    <button class='btn btn-info btn-mini setupPayment'>setup payment method</button>
-                  {{?}}
-                {{??}}
-                <a href='{{= it.merchant_agreement }}' class='btn btn-success btn-mini backbone'>Sign Up</a>
-                {{?}}
-                </span>
-                </p>                
+                <div>
+                  <div class='status'>
+                    {{? it.user.merchant }}
+                      {{? it.user.has_stripe }}
+                        <i class='icon-ok'></i>
+                      {{??}}
+                        <button class='btn btn-info btn-mini setupPayment'>setup payment method</button>
+                      {{?}}
+                    {{??}}
+                    <a href='{{= it.merchant_agreement }}' class='btn btn-success btn-mini backbone'>Sign Up</a>
+                    {{?}}
+                  </div>
+                  <p>Client</p>
+                </div>                
+              </div>
+              <div class='type'>                
+                <div>
+                  <div class='status'>
+                    {{? it.user.employee }}
+                      <i class='icon-ok'></i>
+                    {{??}}
+                      <a href='{{= it.developer_agreement }}' class='btn btn-success btn-mini backbone'>Sign Up</a>
+                    {{?}}
+                  </div>
+                  <p>Developer</p>
+                </div>
               </div>
               <div class='type'>
-                <p>Developer
-                <span class='status'>
-                {{? it.user.employee }}
-                  <i class='icon-ok'></i>
-                {{??}}
-                  <a href='{{= it.developer_agreement }}' class='btn btn-success btn-mini backbone'>Sign Up</a>
-                {{?}}
-                </span>
-                </p>
-              </div>
-              <div class='type'>
-              	<p>Trello
-              	<span class='status'>
-              	{{? it.user.trello_id }}
-              		<i class='icon-ok'></i>
-				{{??}}
-					<a href='{{= it.trello_auth_url }}' class='btn btn-success btn-mini'>Authorize</a>
-				{{?}}
-				</span>
-				</p>
+                <div>              	
+                	<div class='status'>
+                	{{? it.user.trello_id }}
+                	  <i class='icon-ok'></i>
+          				{{??}}
+          					<a href='{{= it.trello_auth_url }}' class='btn btn-success btn-mini'>Authorize</a>
+          				{{?}}
+          				</div>
+  				        <p>Trello</p>
+  				      </div>
               </div>
             </div>
             <hr />
