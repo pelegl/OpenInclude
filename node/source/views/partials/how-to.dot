@@ -1,7 +1,7 @@
 <div class='container profile'>
 	<div class='row'>
 		<div class='span12'>
-			<h2>{{ title }}</h2>
+			<h2>{{= it.title }}</h2>
 			<h3>Features</h3>
 			<ul class='unstyled'>
         <li>Discover</li>

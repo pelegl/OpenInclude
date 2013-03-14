@@ -81,8 +81,23 @@ module.exports = function(grunt) {
            interrupt: true
          }
        }  	          
-  	}	
-  });
+  	},
+    "dot-compile": {
+        compile: {
+              options: {
+                  variable : 'dt',
+                  requirejs: false,
+                  node: false,
+                  key: function(filename) {
+                      var base = "source/views/partials/";
+                      return filename.replace(base, "").replace(/\.dot$/, "");
+                  }
+              },
+              src  : ["source/views/partials/*.dot", "source/views/partials/**/*.dot"],
+              dest : 'source/static/js/templates-dot.js'
+          }
+     }
+});
   
   
   var spawn = require('child_process').spawn;
@@ -102,9 +117,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-cssmin');
   grunt.loadNpmTasks('grunt-contrib-coffee');  
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  
+  grunt.loadNpmTasks('grunt-contrib-watch');  
+  grunt.loadNpmTasks('grunt-dot-compiler');
+
   // Default task.    
-  grunt.registerTask('default', ['less', 'cssmin', 'concat', 'coffee', 'handlebars']);
-  
+  grunt.registerTask('default', ['less', 'cssmin', 'concat', 'coffee', 'handlebars', 'dot-compile']);  
+
 };

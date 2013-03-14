@@ -1,7 +1,7 @@
 ((exports) ->  
   agreement_text = "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. "
   root = @  
-  views = @hbt = Handlebars.partials
+  views = @hbt = _.extend({}, dt, Handlebars.partials)
         
   
   class exports.SignIn extends View
@@ -67,7 +67,7 @@
   
   class exports.Profile extends View
     events:
-      'click .accountType a' : "accountUpgrade"
+      'click .accountType a[class*=backbone]' : "accountUpgrade"
       'click .setupPayment > button' : "update_cc_events"    
     
     update_cc_events: (e) ->    
@@ -86,6 +86,7 @@
     setAction: (action)->
       dev           = @clearHref @context.developer_agreement
       merc          = @clearHref @context.merchant_agreement
+      trello		    = @clearHref @context.trello_auth_url
       
       if action is dev and app.session.get("employee") is false
           ###
@@ -100,7 +101,14 @@
           ### 
           app.navigate @context.merchant_agreement, {trigger: false}          
           @agreement.$el.show()
-          @agreement.setData agreement_text, @context.merchant_agreement              
+          @agreement.setData agreement_text, @context.merchant_agreement
+          
+          @listenTo @agreement.model, "sync", @setupPayment      
+      else if action is trello
+      	  ###
+      	  	navigate to Trell authorization
+		      ###
+      	  app.navigate @context.trello_auth_url, {trigger: true}
       else
           ###
             hide agreement and navigate back to profile
@@ -108,12 +116,20 @@
           @agreement.$el.hide()
           app.navigate @context.profile_url, {trigger: false}
              
-    initialize: ->      
-      console.log '[__profileView__] Init'      
-      @context.title = "Personal Profile"                  
+    initialize: (options) ->      
+      console.log '[__profileView__] Init'
       
-      @agreement = new exports.Agreement
-      @cc        = new exports.CC      
+      if options.profile
+          @model = new models.User
+          @model.url = "/session/profile/#{options.profile}"
+          @context.title = "Profile of #{@profile}"
+          @context.private = false
+      else
+          @context.title = "Personal Profile"
+          @context.private = true
+      
+          @agreement = new exports.Agreement
+          @cc        = new exports.CC
       
       @listenTo @model, "all", @render      
       @model.fetch()            
@@ -128,13 +144,16 @@
       @$el.attr 'view-id', 'profile'
       
       # Append agreement
-      @$(".informationBox").append @agreement.$el            
-      # Setup CC view
-      @cc.setElement @$(".setupPayment .dropdown-menu")      
-      @cc.$el.prev().dropdown()  
-            
-      @setAction @options.action
-            
+      if @agreement
+          @$(".informationBox").append @agreement.$el      
+      # Append CC modal
+      if @cc
+          @cc.setElement @$(".setupPayment .dropdown-menu")      
+          @cc.$el.prev().dropdown()
+      
+      if @context.private
+          @setAction @options.action
+      
       @
       
     

@@ -125,7 +125,14 @@
       
       @models.reverse() if direction is "DESC"
       @trigger "sort"
-      
+
+  exports.Projects = @Backbone.Collection.extend
+    model: models.Project
+    url: "/project"
+    
+  exports.Tasks = @Backbone.Collection.extend
+    model: models.Task
+    url: "/task"      
   
   exports.GithubEvents = @Backbone.Collection.extend
     model: models.GithubEvent

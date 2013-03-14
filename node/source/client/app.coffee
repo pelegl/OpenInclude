@@ -6,12 +6,16 @@
     profile_url         : "profile"
     signin_url          : "profile/login"
     github_auth_url     : "/auth/github"
+    trello_auth_url     : "/auth/trello"
     discover_url        : "discover"
     how_to_url          : "how-to"
     modules_url         : 'modules'
     merchant_agreement  : '/profile/merchant_agreement'
     developer_agreement : '/profile/developer_agreement'
-    update_credit_card  : '/profile/update_credit_card'    
+    update_credit_card  : '/profile/update_credit_card'
+    dashboard_url       : "dashboard"
+    create_project_url  : "dashboard/project/create"
+    partials            : window.dt
     
   class App extends Backbone.Router
     conf: conf
@@ -40,10 +44,10 @@
       @reRoute()
       @view = new views.Index prevView:@view
 
-    profile: (action) ->
+    profile: (action, profile) ->
       @reRoute() 
       if app.session.get("is_authenticated") is true 
-        @view = new views.Profile { prevView: @view, model: app.session, action: "/#{action}" }
+        @view = new views.Profile { prevView: @view, model: app.session, action: "/#{action}", profile: profile }
       else
         app.navigate '/profile/login', {trigger: true}       
     
@@ -83,6 +87,13 @@
         prevView: @view
         language: language
         repo: repo
+        
+    dashboard: ->
+      @reRoute()
+      if app.session.get("is_authenticated")
+          @view = new views.Dashboard prevView:@view
+      else
+          app.navigate app.conf.signin_url, trigger: true
     
 
   $(document).ready ->
@@ -102,6 +113,7 @@
       "!/#{conf.profile_url}"
       
       "#{conf.profile_url}/:action"
+      "#{conf.profile_url}/:action/:profile"
       "!/#{conf.profile_url}/:action"
             
       # How-to
@@ -115,6 +127,9 @@
       "!/#{conf.modules_url}/:language"
       "#{conf.modules_url}/:language/:repo"
       "!/#{conf.modules_url}/:language/:repo"
+      
+      conf.dashboard_url
+      "!/#{conf.dashboard_url}"
     ]
     
     route_paths = [
@@ -128,6 +143,7 @@
       "profile"
       "profile"
       "profile"
+      "profile"
       "how-to"
       "how-to"
       "language_list"
@@ -136,6 +152,8 @@
       "repo_list"
       "repo"
       "repo"
+      "dashboard"
+      "dashboard"
     ]
           
     App.prototype.routes = _.object route_keys, route_paths

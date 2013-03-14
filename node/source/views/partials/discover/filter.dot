@@ -1,0 +1,15 @@
+<h3>Filter</h3>
+{{~ it.filters :filter}}
+<div class='filterBox'>
+    <h4>{{=filter.name}} <a href='#' class='pull-right' data-reset='{{=filter.key}}'>reset filter</a></h4>
+    <ul class='unstyled'>			
+        {{~ filter.languages :language}}
+            <li>
+                <label class='checkbox'>
+                    <input type='checkbox' name='{{=filter.key}}' value="{{=language}}" /> {{language}} 				
+                </label>
+            </li>
+        {{~}}
+    </ul>
+</div>
+{{~}}

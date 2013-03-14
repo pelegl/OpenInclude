@@ -22,6 +22,11 @@ definition =
   github_avatar_url: String
   github_email: String
   github_json: {}
+  
+  trello_id: String
+  trello_token: String
+  trello_token_secret: String
+  
   status: { type: ObjectId, ref: 'Module' }
   
   # determines whether the User has signed merchant agreement or not - allows him to hire people
@@ -47,7 +52,7 @@ definition =
 
 methods =
   public_info: ->
-    return {@github_id, @has_stripe, @payment_methods, @merchant, @employee, @github_display_name, @github_email, @github_username, @github_avatar_url, is_authenticated: true}
+    return {@github_id, @has_stripe, @payment_methods, @merchant, @employee, @github_display_name, @github_email, @github_username, @github_avatar_url, @trello_id, @_id, is_authenticated: true}
 
   get_payment_method: (service, callback) ->
     async.detect @payment_methods, (method, async_detect)=>

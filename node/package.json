@@ -4,7 +4,18 @@
   "private": true,
   "description": "OpenInclude - opensource aggregation tool",
   "main": "app.coffee",
-  "author": "Vitaly Aminev",
+  "author": {
+    "name" : "Vitaly Aminev",
+    "email": "getstarted@avvs.co",
+    "url"  : "http://avvs.co"
+  },
+  "contributors": [
+    {
+      "name" : "Dmitry Gorbunov",
+      "email": "atskiisotona@gmail.com",
+      "url"  : "http://dgorbunov.ru"
+    }
+  ],  
   "dependencies": {
     "express": "*",
     "async": "*",
@@ -13,29 +24,34 @@
     "consolidate": "0.8.x",
     "handlebars": "*",
     "mongoose": "*",
-    "hiredis": "*",
-    "grunt": "0.4.x",
-    "grunt-contrib-handlebars": "0.5.x",
-    "grunt-contrib-less": "0.5.x",
-    "grunt-contrib-concat": "*",
-    "grunt-contrib-cssmin": "*",
+    "hiredis": "*",    
     "elasticsearchclient": "*",
     "underscore": "*",
-    "humanize": "*",
-    "grunt-contrib-coffee": "*",
+    "humanize": "*",        
     "passport": "0.x",
     "passport-github": "0.x",
+    "passport-oauth": "0.x",
+    "passport-trello": "0.x",
     "nodemailer": "0.x",
     "stripe": "*",
     "octonode": "git://github.com/AVVS/octonode.git",
     "aws-sdk": "~0.9.5-pre.6",
     "fivebeans": "git://github.com/AVVS/fivebeans.git",
-    "eventemitter2": "~0.4.11"
+    "eventemitter2": "~0.4.11",
+    "dot": "1.0.x",
+    "dot-emc": "*"
   },
   "devDependencies": {
     "coffee-trace": "~1.3.4",
     "ncp": "*",
     "fs-extra": "~0.5.0",
-    "grunt-contrib-watch": "~0.3.1"
+    "grunt": "0.4.x",
+    "grunt-contrib-watch": "~0.3.1",    
+    "grunt-contrib-handlebars": "0.5.x",
+    "grunt-contrib-less": "0.5.x",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-cssmin": "*",
+    "grunt-contrib-coffee": "*",
+    "grunt-dot-compiler": "0.3.x"
   }
 }

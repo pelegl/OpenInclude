@@ -1,8 +1,8 @@
 <div class='container login'>  
   <div class='row'>
-  	  <div class='offset2 span8 text-center''>		  
+  	  <div class='offset2 span8 text-center'>		  
 		  <form name="signin" method="post" action="">              
-		    <a href="{{github_auth_url}}" class="github-auth">Authenticate with GitHub</a>
+		    <a href="{{= it.github_auth_url}}" class="github-auth">Authenticate with GitHub</a>
 		  </form>  	
 	  </div>
   </div>

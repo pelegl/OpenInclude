@@ -84,6 +84,18 @@
     });
     exports.Tos = this.Backbone.Model.extend({});
     exports.CreditCard = this.Backbone.Model.extend({});
+    exports.User = this.Backbone.Model.extend({
+      idAttribute: "_id",
+      url: "/session/profile"
+    });
+    exports.Project = this.Backbone.Model.extend({
+      idAttribute: "_id",
+      url: "/project"
+    });
+    exports.Task = this.Backbone.Model.extend({
+      idAttribute: "_id",
+      url: "/task"
+    });
     exports.Language = this.Backbone.Model.extend({
       idAttribute: "name",
       urlRoot: "/modules"
@@ -376,6 +388,14 @@
         return this.trigger("sort");
       }
     });
+    exports.Projects = this.Backbone.Collection.extend({
+      model: models.Project,
+      url: "/project"
+    });
+    exports.Tasks = this.Backbone.Collection.extend({
+      model: models.Task,
+      url: "/task"
+    });
     exports.GithubEvents = this.Backbone.Collection.extend({
       model: models.GithubEvent,
       initialize: function(options) {
@@ -460,7 +480,7 @@
   (function(exports) {
     var View, col, root, views;
     root = this;
-    views = this.hbt = Handlebars.partials;
+    views = this.hbt = _.extend({}, dt, Handlebars.partials);
     col = root.collections;
     exports.MetaView = (function(_super) {
 
@@ -633,7 +653,7 @@
 
       Index.prototype.render = function() {
         var html;
-        html = views['index'](this.context);
+        html = views['index'](this.context, null, this.context.partials);
         this.$el.html(html);
         this.$el.attr('view-id', 'index');
         return this;
@@ -706,7 +726,7 @@
     var agreement_text, root, views;
     agreement_text = "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. ";
     root = this;
-    views = this.hbt = Handlebars.partials;
+    views = this.hbt = _.extend({}, dt, Handlebars.partials);
     exports.SignIn = (function(_super) {
 
       __extends(SignIn, _super);
@@ -809,7 +829,7 @@
       }
 
       Profile.prototype.events = {
-        'click .accountType a': "accountUpgrade",
+        'click .accountType a[class*=backbone]': "accountUpgrade",
         'click .setupPayment > button': "update_cc_events"
       };
 
@@ -831,9 +851,10 @@
       };
 
       Profile.prototype.setAction = function(action) {
-        var dev, merc;
+        var dev, merc, trello;
         dev = this.clearHref(this.context.developer_agreement);
         merc = this.clearHref(this.context.merchant_agreement);
+        trello = this.clearHref(this.context.trello_auth_url);
         if (action === dev && app.session.get("employee") === false) {
           /*
             show developer license agreement
@@ -853,7 +874,16 @@
             trigger: false
           });
           this.agreement.$el.show();
-          return this.agreement.setData(agreement_text, this.context.merchant_agreement);
+          this.agreement.setData(agreement_text, this.context.merchant_agreement);
+          return this.listenTo(this.agreement.model, "sync", this.setupPayment);
+        } else if (action === trello) {
+          /*
+                	  	navigate to Trell authorization
+          */
+
+          return app.navigate(this.context.trello_auth_url, {
+            trigger: true
+          });
         } else {
           /*
             hide agreement and navigate back to profile
@@ -866,11 +896,19 @@
         }
       };
 
-      Profile.prototype.initialize = function() {
+      Profile.prototype.initialize = function(options) {
         console.log('[__profileView__] Init');
-        this.context.title = "Personal Profile";
-        this.agreement = new exports.Agreement;
-        this.cc = new exports.CC;
+        if (options.profile) {
+          this.model = new models.User;
+          this.model.url = "/session/profile/" + options.profile;
+          this.context.title = "Profile of " + this.profile;
+          this.context["private"] = false;
+        } else {
+          this.context.title = "Personal Profile";
+          this.context["private"] = true;
+          this.agreement = new exports.Agreement;
+          this.cc = new exports.CC;
+        }
         this.listenTo(this.model, "all", this.render);
         this.model.fetch();
         return this.render();
@@ -882,10 +920,16 @@
         html = views['member/profile'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'profile');
-        this.$(".informationBox").append(this.agreement.$el);
-        this.cc.setElement(this.$(".setupPayment .dropdown-menu"));
-        this.cc.$el.prev().dropdown();
-        this.setAction(this.options.action);
+        if (this.agreement) {
+          this.$(".informationBox").append(this.agreement.$el);
+        }
+        if (this.cc) {
+          this.cc.setElement(this.$(".setupPayment .dropdown-menu"));
+          this.cc.$el.prev().dropdown();
+        }
+        if (this.context["private"]) {
+          this.setAction(this.options.action);
+        }
         return this;
       };
 
@@ -903,7 +947,7 @@
   (function(exports) {
     var root, views;
     root = this;
-    views = this.hbt = Handlebars.partials;
+    views = this.hbt = _.extend({}, dt, Handlebars.partials);
     exports.DiscoverChartPopup = (function(_super) {
 
       __extends(DiscoverChartPopup, _super);
@@ -1319,7 +1363,7 @@
   (function(exports) {
     var root, views;
     root = this;
-    views = this.hbt = Handlebars.partials;
+    views = this.hbt = _.extend({}, dt, Handlebars.partials);
     return exports.HowTo = (function(_super) {
 
       __extends(HowTo, _super);
@@ -1356,7 +1400,7 @@
   (function(exports) {
     var modules_url, qs, root, views;
     root = this;
-    views = this.hbt = Handlebars.partials;
+    views = this.hbt = _.extend({}, dt, Handlebars.partials);
     qs = root.help.qs;
     modules_url = "/modules";
     exports.Series = (function(_super) {
@@ -1848,6 +1892,337 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
+    var InlineForm, project, projectId, projects, root, tasks, views;
+    root = this;
+    views = this.hbt = _.extend({}, dt, Handlebars.partials);
+    projects = new collections.Projects;
+    tasks = new collections.Tasks;
+    projectId = "";
+    project = null;
+    InlineForm = (function(_super) {
+
+      __extends(InlineForm, _super);
+
+      function InlineForm() {
+        return InlineForm.__super__.constructor.apply(this, arguments);
+      }
+
+      InlineForm.prototype.events = {
+        'submit form': "submit",
+        'click .close-inline': "hide"
+      };
+
+      InlineForm.prototype.submit = function(event) {
+        var data;
+        event.preventDefault();
+        data = Backbone.Syphon.serialize(event.currentTarget);
+        this.$("[type=submit]").addClass("disabled").text("Updating information...");
+        this.model.save(data, {
+          success: this.success,
+          error: this.success
+        });
+        return false;
+      };
+
+      InlineForm.prototype.success = function(model, response, options) {
+        if (response.success === true) {
+          this.hide;
+          return true;
+        } else {
+          console.log(response);
+          alert("An error occured");
+          return false;
+        }
+      };
+
+      InlineForm.prototype.show = function() {
+        return this.$el.show();
+      };
+
+      InlineForm.prototype.hide = function(event) {
+        if (event) {
+          event.preventDefault();
+        }
+        return this.$el.hide();
+      };
+
+      InlineForm.prototype.initialize = function(context) {
+        if (context == null) {
+          context = {};
+        }
+        this.context = _.extend({}, context, app.conf);
+        return this.render();
+      };
+
+      InlineForm.prototype.render = function() {
+        this.html = views[this.view](this.context);
+        this.$el.hide();
+        this.$el.html("");
+        this.$el.append(this.html);
+        return this;
+      };
+
+      return InlineForm;
+
+    })(this.Backbone.View);
+    exports.CreateProjectForm = (function(_super) {
+
+      __extends(CreateProjectForm, _super);
+
+      function CreateProjectForm() {
+        return CreateProjectForm.__super__.constructor.apply(this, arguments);
+      }
+
+      CreateProjectForm.prototype.el = "#create-project-inline";
+
+      CreateProjectForm.prototype.view = "dashboard/create_project";
+
+      CreateProjectForm.prototype.success = function(model, response, options) {
+        if (CreateProjectForm.__super__.success.call(this, model, response, options)) {
+          return projects.fetch();
+        }
+      };
+
+      CreateProjectForm.prototype.initialize = function(context) {
+        this.model = new models.Project;
+        return CreateProjectForm.__super__.initialize.call(this, context);
+      };
+
+      return CreateProjectForm;
+
+    })(InlineForm);
+    exports.EditProjectForm = (function(_super) {
+
+      __extends(EditProjectForm, _super);
+
+      function EditProjectForm() {
+        return EditProjectForm.__super__.constructor.apply(this, arguments);
+      }
+
+      EditProjectForm.prototype.el = ".main-area";
+
+      EditProjectForm.prototype.view = "dashboard/edit_project";
+
+      EditProjectForm.prototype.success = function(model, response, options) {
+        if (EditProjectForm.__super__.success.call(this, model, response, options)) {
+          return projects.fetch();
+        }
+      };
+
+      EditProjectForm.prototype.initialize = function(context) {
+        this.model = context.model;
+        this.model.url = "/project/" + context.projectId;
+        return EditProjectForm.__super__.initialize.call(this, context);
+      };
+
+      return EditProjectForm;
+
+    })(InlineForm);
+    exports.CreateTaskForm = (function(_super) {
+
+      __extends(CreateTaskForm, _super);
+
+      function CreateTaskForm() {
+        return CreateTaskForm.__super__.constructor.apply(this, arguments);
+      }
+
+      CreateTaskForm.prototype.el = "#create-task-inline";
+
+      CreateTaskForm.prototype.view = "dashboard/create_task";
+
+      CreateTaskForm.prototype.success = function(model, response, options) {
+        if (CreateTaskForm.__super__.success.call(this, model, response, options)) {
+          return tasks.fetch();
+        }
+      };
+
+      CreateTaskForm.prototype.initialize = function() {
+        this.model = new models.Task;
+        this.model.url = "/task/" + projectId;
+        return CreateTaskForm.__super__.initialize.call(this);
+      };
+
+      return CreateTaskForm;
+
+    })(InlineForm);
+    return exports.Dashboard = (function(_super) {
+
+      __extends(Dashboard, _super);
+
+      function Dashboard() {
+        return Dashboard.__super__.constructor.apply(this, arguments);
+      }
+
+      Dashboard.prototype.events = {
+        'click .project-list li a': "editProject",
+        'click .project-list li': "switchProject",
+        'click #create-project-button': "showProjectForm",
+        'click #delete-project-button': "deleteProject",
+        'click #create-task-button': "showTaskForm"
+      };
+
+      Dashboard.prototype.clearHref = function(href) {
+        return href.replace("/" + this.context.dashboard_url, "");
+      };
+
+      Dashboard.prototype.parsePermissions = function(user, project) {
+        var _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
+        this.context.canRead = false;
+        this.context.canWrite = false;
+        this.context.canGrant = false;
+        this.context.isOwner = false;
+        if (user._id === project.client.id) {
+          this.context.isOwner = true;
+        }
+        _ref = project.read;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          user = _ref[_i];
+          if (user.id === this.context.user._id) {
+            this.context.canRead = true;
+            break;
+          }
+        }
+        _ref1 = project.write;
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          user = _ref1[_j];
+          if (user.id === this.context.user._id) {
+            this.context.canWrite = true;
+            break;
+          }
+        }
+        _ref2 = project.grant;
+        _results = [];
+        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
+          user = _ref2[_k];
+          if (user.id === this.context.user._id) {
+            this.context.canGrant = true;
+            break;
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      };
+
+      Dashboard.prototype.editProject = function(e) {
+        var editProjectForm;
+        e.preventDefault();
+        e.stopPropagation();
+        projectId = e.target.attributes['rel'].value;
+        project = projects.get(projectId);
+        this.context.projectId = projectId;
+        this.context.project = project.toJSON();
+        this.context.model = project;
+        this.parsePermissions(this.context.user, this.context.project);
+        editProjectForm = new exports.EditProjectForm(this.context);
+        return editProjectForm.show();
+      };
+
+      Dashboard.prototype.deleteProject = function(e) {
+        var _this = this;
+        e.preventDefault();
+        project.url = "/project/" + projectId;
+        return project.destroy({
+          success: function(model, response) {
+            _this.context.project = null;
+            _this.context.projectId = "";
+            project = null;
+            projectId = "";
+            return projects.fetch();
+          }
+        });
+      };
+
+      Dashboard.prototype.showProjectForm = function(e) {
+        e.preventDefault();
+        return this.createProject.show();
+      };
+
+      Dashboard.prototype.showTaskForm = function(e) {
+        e.preventDefault();
+        return this.createTask.show();
+      };
+
+      Dashboard.prototype.switchProject = function(e) {
+        projectId = e.target.attributes['rel'].value;
+        project = projects.get(projectId);
+        this.context.projectId = projectId;
+        this.context.project = project.toJSON();
+        this.parsePermissions(this.context.user, this.context.project);
+        tasks.url = "/task/" + projectId;
+        tasks.fetch();
+        return this.render();
+      };
+
+      Dashboard.prototype.initialize = function() {
+        console.log('[__dashboardView__] Init');
+        this.context.title = "Dashboard";
+        this.context.user = app.session.toJSON();
+        this.context.canEdit = function(user, project) {
+          var _i, _len, _ref, _user;
+          if (user._id === project.client.id) {
+            return true;
+          }
+          _ref = project.write;
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            _user = _ref[_i];
+            if (_user.id === user._id) {
+              return true;
+            }
+          }
+          return false;
+        };
+        this.listenTo(projects, "reset", this.updateProjectList, this);
+        projects.fetch();
+        return tasks.on("reset", this.updateTaskList, this);
+      };
+
+      Dashboard.prototype.updateProjectList = function(collection) {
+        var _projects;
+        _projects = [];
+        collection.each(function(item) {
+          return _projects.push(item.toJSON());
+        });
+        this.context.projects = _projects;
+        if (projectId) {
+          project = projects.get(projectId);
+          this.context.project = project.toJSON();
+        }
+        return this.render();
+      };
+
+      Dashboard.prototype.updateTaskList = function(collection) {
+        var _tasks;
+        _tasks = [];
+        collection.each(function(item) {
+          return _tasks.push(item.toJSON());
+        });
+        this.context.tasks = _tasks;
+        return this.render();
+      };
+
+      Dashboard.prototype.render = function() {
+        var html;
+        html = views['dashboard/dashboard'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'dashboard');
+        this.createProject = new exports.CreateProjectForm;
+        this.createTask = new exports.CreateTaskForm;
+        return this;
+      };
+
+      return Dashboard;
+
+    })(View);
+  }).call(this, window.views);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+  (function(exports) {
     var App, conf;
     conf = {
       STATIC_URL: "/static/",
@@ -1856,12 +2231,16 @@
       profile_url: "profile",
       signin_url: "profile/login",
       github_auth_url: "/auth/github",
+      trello_auth_url: "/auth/trello",
       discover_url: "discover",
       how_to_url: "how-to",
       modules_url: 'modules',
       merchant_agreement: '/profile/merchant_agreement',
       developer_agreement: '/profile/developer_agreement',
-      update_credit_card: '/profile/update_credit_card'
+      update_credit_card: '/profile/update_credit_card',
+      dashboard_url: "dashboard",
+      create_project_url: "dashboard/project/create",
+      partials: window.dt
     };
     App = (function(_super) {
 
@@ -1919,13 +2298,14 @@
         });
       };
 
-      App.prototype.profile = function(action) {
+      App.prototype.profile = function(action, profile) {
         this.reRoute();
         if (app.session.get("is_authenticated") === true) {
           return this.view = new views.Profile({
             prevView: this.view,
             model: app.session,
-            action: "/" + action
+            action: "/" + action,
+            profile: profile
           });
         } else {
           return app.navigate('/profile/login', {
@@ -1989,14 +2369,27 @@
         });
       };
 
+      App.prototype.dashboard = function() {
+        this.reRoute();
+        if (app.session.get("is_authenticated")) {
+          return this.view = new views.Dashboard({
+            prevView: this.view
+          });
+        } else {
+          return app.navigate(app.conf.signin_url, {
+            trigger: true
+          });
+        }
+      };
+
       return App;
 
     })(Backbone.Router);
     return $(document).ready(function() {
       var app, route_keys, route_paths,
         _this = this;
-      route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo"];
-      route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo"];
+      route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "" + conf.profile_url + "/:action/:profile", "!/" + conf.profile_url + "/:action", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url];
+      route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo", "dashboard", "dashboard"];
       App.prototype.routes = _.object(route_keys, route_paths);
       console.log('[__app__] init done!');
       exports.app = app = new App();
