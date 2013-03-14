@@ -99,3 +99,4 @@ class ProfileController extends require('./basicController')
 # Здесь отдаем функцию - каждый раз когда вызывается наш контроллер - создается новый экземпляр - это мы вставим в рутер
 module.exports = (req,res)->
   new ProfileController req, res
+

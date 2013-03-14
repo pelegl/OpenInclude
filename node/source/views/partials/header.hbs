@@ -6,6 +6,9 @@
       {{#if user}}      
       <div class="sign-in"><a href="{{logout_url}}" class="button">sign out</a></div>
       <div class="sign-in"><a href="{{profile_url}}" class="button">profile</a></div>
+      	{{#if is_superuser}}
+      	<div class="sign-in"><a href="{{admin_url}}" class="button">admin</a></div>
+      	{{/if}}  
       {{else}}
       <div class="sign-in"><a href="{{signin_url}}" class="button">sign in</a></div>
       {{/if}}
@@ -16,3 +19,4 @@
 
   </div>
 </header>
+

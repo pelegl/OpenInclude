@@ -11,8 +11,8 @@ async        = require 'async'
   Stripe
 ###
 ObjectId = require('mongoose').Schema.Types.ObjectId
-api_key = 'sk_test_07bvlXeoFTA2bKM42Vt0O9SY' #
-#api_key = "sk_test_HkMUKw1bjVE6Sxo218IiMNWP"
+#api_key = 'sk_test_07bvlXeoFTA2bKM42Vt0O9SY'
+api_key = "sk_test_HkMUKw1bjVE6Sxo218IiMNWP"
 
 stripe = require("stripe")(api_key)
 

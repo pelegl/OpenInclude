@@ -32,7 +32,6 @@ exports.set = (app)->
   ###
 #  app.get '/payment', app.Controllers.payment
   app.get '/payment/*', app.Controllers.payment
-  app.get '/admin/*', app.Controllers.admin
   ###
   Profile interaction
   ###
@@ -41,6 +40,8 @@ exports.set = (app)->
   app.all '/profile/:action',  is_authenticated, app.Controllers.profile
   app.get  '/profile*',         is_authenticated, app.Controllers.profile  
   
+  app.get '/admin*', app.Controllers.admin
+  app.post '/admin*', app.Controllers.admin
   ###
   Session interaction
   ###

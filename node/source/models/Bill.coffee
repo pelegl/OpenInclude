@@ -16,18 +16,18 @@ definition =
   bill_id: String
   bill_amount: Number
   bill_date: Date
-  billing_user: { type: ObjectId, ref: 'User' } # Creator of bill
-  billed_user: { type: ObjectId, ref: 'User' }  # who is to be billed
+  bil_to_whome: { type: ObjectId, ref: 'User' }
+  bill_description: String  # The Description
   
   
 methods =
   public_info: ->
-    return {@bill_id, @bill_amount, @bill_date, @billing_user, @billed_user}
+    return {@bill_id, @bill_amount, @bill_date, @bil_to_whome, @bill_description}
   
 statics =
-	get_bills:(userid, callback)=>
+	get_bills:(userid, callback)->
   		@find billed_user:userid ,(err,bills) =>
-	 		return callback(err,bills)
+	 		  return callback(err,bills)
 
 exports.definition  = definition
 exports.methods     = methods

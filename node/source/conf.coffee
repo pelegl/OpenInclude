@@ -66,12 +66,13 @@ exports.github_auth_url = github_auth_url = "/auth/github"
 exports.discover_url    = discover_url    = "/discover"
 exports.how_to_url      = how_to_url      = "/how-to"
 exports.modules_url     = modules_url     = '/modules'
-exports.admin_url     = modules_url     = '/admin'
+exports.admin_url       = admin_url     = '/admin'
 
 exports.merchant_agreement        = merchant_agreement  = "#{profile_url}/merchant_agreement"
 exports.developer_agreement       = developer_agreement = "#{profile_url}/developer_agreement"
 exports.update_credit_card        = update_credit_card  = "#{profile_url}/update_credit_card"
 exports.view_bills       		  = view_bills 			= "#{profile_url}/view_bills"
+exports.create_bills       		  = create_bills 			= "#{admin_url}/create_bills"
 
 exports.users_with_stripe         = users_with_stripe 	= "#{admin_url}/users_with_stripe"
 
@@ -179,7 +180,16 @@ exports.github_auth = (options) ->
 exports.logout = (req, res) ->
   req.logout()
   res.redirect "back"
+  
 
+#exports.is_superuser = (request, response) ->
+#  unless request.isAuthenticated()
+#    return false
+#  else
+#  	return request.user.group_id is 'admin'
+
+exports.is_superuser =true
+  
 exports.is_authenticated = (request, response, next) ->
   unless request.isAuthenticated()
     return response.redirect signin_url
@@ -241,3 +251,4 @@ load = (required) ->
   models
 
 exports.get_models = load
+

@@ -59,7 +59,10 @@ methods =
   	
 statics =
   get_user: (userId, callback)->
-    @findOne {github_id: userId}, callback
+    console.log userId
+    @findOne {github_id: userId}, (err,user)->
+    	console.log user
+    	return callback(err,user)
 
   get_clientswithpayment: (callback) ->
     @find merchant:true, (error,users) =>
