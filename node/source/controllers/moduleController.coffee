@@ -15,7 +15,7 @@ class ModuleController extends require('./basicController')
   constructor: (@req,@res)->    
     path = @req.path
     segments = _.without path.split("/"), ""
-    
+    segments = _.map segments, (item) -> decodeURIComponent item
     
     @language       = segments[1] if segments[1]? 
     @moduleName     = segments[2] if segments[2]?

@@ -6,6 +6,7 @@ github_scraper  = require 'github-repo-scraper'
 {start}         = require 'node.io'
 async           = require 'async'
 fs              = require 'fs'
+_               = require 'underscore'
 
 colors = require 'colors'
 colors.setTheme
@@ -30,8 +31,8 @@ main_conf = require '../source/conf'
 Write_to_database = (repos)->
   async.forEach Object.keys(repos), (repoKey, callback)=>
     repo = repos[repoKey]
-    {module_name, username} = repo
-    Module.findOne {username, module_name}, (err, res)=>
+    {module_name, owner} = repo
+    Module.findOne {owner, module_name}, (err, res)=>
       #console.log res
       unless res
         repository = new Module repo
@@ -67,13 +68,11 @@ Tasks =
   # get github repo list
   get_github: (capture_github)->    
     console.log "Started git scraping".info    
-    github_scraper proxy_list, (err, message, completed)->      
+    github_scraper null, (err, message, completed)->      
       unless completed
         Write_to_database message
       else
         capture_github err, message
-  ]
-  
   
 
 ###

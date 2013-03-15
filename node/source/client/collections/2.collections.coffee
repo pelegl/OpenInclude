@@ -107,7 +107,7 @@
       $.getJSON "#{collection.url}?q=#{query}" , (r)->
         collection.maxScore = r.maxScore                
         collection.groupedModules = _.groupBy r.searchData, (module)=>
-          return module._source.language
+          return module._source.language               
         collection.reset r.searchData
         
   

@@ -24,7 +24,7 @@ class DiscoverController extends require('./basicController')
           fields: ["description", "module_name^2", "language^1.5"]
     
     options =
-      size: 50
+      size: 100
     
     #TODO: add variable size and offset handling
             

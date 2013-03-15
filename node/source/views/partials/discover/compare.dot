@@ -3,24 +3,24 @@
 		<thead>
 			<tr>
 				{{~ it.headers :header}}
-                    {{? !header.key }}
-                    <th>{{=header.name}}</th>
-                    {{??}}
-                    <th><a href='#' data-sort='{{=header.key}}' {{? header.active}}class='active'{{?}}>{{=header.name}}
-                        {{? header.directionBottom}} 
-                        <i class='icon-chevron-down'></i>
-                        {{??}}
-                        <i class='icon-chevron-up'></i>
-                        {{?}}
-                    </a></th>
-                    {{?}}
+            {{? !header.key }}
+            <th>{{=header.name}}</th>
+            {{??}}
+            <th><a href='#' data-sort='{{=header.key}}' {{? header.active}}class='active'{{?}}><span class='name'>{{=header.name}}</span>
+                {{? header.directionBottom}} 
+                <i class='icon-chevron-down'></i>
+                {{??}}
+                <i class='icon-chevron-up'></i>
+                {{?}}
+            </a></th>
+            {{?}}
 				{{~}}
 			</tr>
 		</thead>
 		<tbody>
 			{{~ it.projects :project}}
             <tr>
-                <td>{{=project._source.module_name}}</td><td>{{=project._source.language}}</td><td>#</td><td>{{=project.lastCommitHuman}}</td><td>{{=project._source.watchers}}</td><td>#</td><td>#</td>						
+                <td><a href='/modules/{{=project._source.language}}/{{=project._source.owner}}|{{=project._source.module_name}}'>{{=project._source.module_name}}</a></td><td>{{=project._source.language}}</td><td>#</td><td>{{=project.lastCommitHuman}}</td><td>{{=project._source.watchers}}</td><td>#</td><td>#</td>						
             </tr>
 			{{~}}
 		</tbody>

@@ -16,13 +16,13 @@ module.exports = function(grunt) {
   	cssmin: {
   	  compress: {
   	    files: {
-  	      "source/static/css/app.css": ["source/static/css/comm.css", "source/static/css/app.css"]
+  	      "source/static/css/app.concat.css": ["source/static/css/app.css"]
   	    }
   	  }
   	},
   	concat: {
   	  dist: {
-  	    src: ["source/static/css/bootstrap.min.css", "source/static/css/app.css"],
+  	    src: ["source/static/css/bootstrap.min.css", "source/static/css/app.concat.css"],
   	    dest: "source/static/css/app.min.css"
   	  }
   	},

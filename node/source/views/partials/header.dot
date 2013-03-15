@@ -1,4 +1,4 @@
-<header class="navbar navbar-static-top">
+<header class="navbar navbar-fixed-top">
   <div class="navbar-inner">
     <div class="container">
  
@@ -11,20 +11,30 @@
  
       <!-- Be sure to leave the brand out there if you want it shown -->
       <a class="brand" href="/"></a>
+      
+      <form class="navbar-search pull-left form-search" method='get' action="/discover">
+        <div class='input-append'>
+           <input type="text" class="search-query" name='q' placeholder="Discover...">
+           <button class="btn" type="button"><i class='icon-search'></i></button>
+        </div>
+      </form>
+
  
       <!-- Everything you want hidden at 940px or less, place within here -->
       <div class="nav-collapse collapse">
-        <ul class="nav pull-right">          
-          {{? it.user}}      
-          <li><a href="{{=it.logout_url}}" class="button">sign out</a></li>
-          <li><a href="{{=it.profile_url}}" class="button">profile</a></li>
-          <li><a href="{{=it.dashboard_url}}" class="button">dashboard</a></li>
+        <ul class="nav pull-right nav-pills">                    
+          <li><a href="{{=it.discover_url}}"  >discover</a></li>
+          <li><a href="{{=it.how_to_url}}"    >how to</a></li>
+          <li><a href="{{=it.modules_url}}"   >modules</a></li>
+          {{? it.user}}                
+          <li><a href="{{=it.profile_url}}"   >profile</a></li>
+          <li><a href="{{=it.dashboard_url}}" >dashboard</a></li>
+          <li class='divider'></li>
+          <li><a href="{{=it.logout_url}}"    >sign out</a></li>
           {{??}}
-          <li><a href="{{=it.signin_url}}" class="button">sign in</a></li>
+          <li class='divider'></li>
+          <li><a href="{{=it.signin_url}}"    >sign in</a></li>
           {{?}}
-          <li><a href="{{=it.discover_url}}" class="button">discover</a></li>
-          <li><a href="{{=it.how_to_url}}" class="button">how to</a></li>
-          <li><a href="{{=it.modules_url}}" class="button">modules</a></li>
         </ul>
       </div>
  

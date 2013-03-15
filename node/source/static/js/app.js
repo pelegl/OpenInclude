@@ -1584,7 +1584,7 @@
         }
         this.language = opts.language, repo = opts.repo;
         try {
-          _ref = repo.split("|"), this.owner = _ref[0], this.repo = _ref[1];
+          _ref = decodeURI(repo).split("|"), this.owner = _ref[0], this.repo = _ref[1];
           if (!this.owner || !this.repo) {
             throw "Incorrect link";
           }

@@ -49,6 +49,7 @@
       @moduleStars.html("").append activity, activityStars      
                               
       @show()
+      
       @$el.css
         bottom: (@options.scope.outerHeight()-y-(@$el.outerHeight()/2)-15)+'px'
         left: x+@options.margin.left+(width/2)+15+'px'
@@ -87,7 +88,7 @@
         
       @collection.trigger "filter"
           
-    render: ->      
+    render: ->
       @context.filters[0].languages = @collection.languageList()
       html = views['discover/filter'](@context)      
       @$el.html html
@@ -209,12 +210,14 @@
       @setRadiusScale()
       
       languages = _.keys @collection.filters
+            
+      
       if languages.length > 0
         data = @collection.filter (module)=>          
           return $.inArray(module.get("_source").language, languages) isnt -1
       else
         data = @collection.models
-      
+                  
       @dot = @dots.selectAll(".dot")
                     .data(data)                  
                   
