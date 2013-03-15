@@ -31,7 +31,7 @@ class AdminController extends require('./basicController')
       else
         @res.redirect @context.admin_url
     else
-      @res.send "Not Permitted"
+      @res.send "Not Permitted",401
   
   create_bills: ->
     console.log '[create_bill] action'
@@ -42,7 +42,6 @@ class AdminController extends require('./basicController')
           bill_amount: amount
           bill_to_whome: userid
           bill_description: description
-        console.log billObj
         Bill.create billObj, (err, result)=>
           unless err 
           	@res.redirect @context.users_with_stripe

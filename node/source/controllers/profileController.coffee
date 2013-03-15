@@ -79,20 +79,26 @@ class ProfileController extends require('./basicController')
       
   view_bills:(param) ->
     console.log '[view_bills] action'
-    console.log @req.params
     if @req.method is "GET"
       unless @req.user.employee is true
-        Bill.get_bills @req.user._id,(err,bills) =>
-          unless err
-            billarray =
-              'bills':bills
-            @context.title = 'Bills'
-            @context.informationBox = @_view 'member/bills', billarray
-            @index()
-          else
-           @res.send "no bills"
+#        params = @req.params[0]
+#        params = params.split '/' if typeof params isnt 'undefined'
+#        if params[2] isnt undefined and params[2] isnt ''
+#          bill_id =params[2]
+        if false
+        	true
+        else
+          Bill.get_bills @req.user._id,(err,bills) =>
+            unless err
+              billarray =
+                'bills':bills
+              @context.title = 'Bills'
+              @context.informationBox = @_view 'member/bills', billarray
+              @index()
+            else
+              @res.send "no bills"	
       else
-       @res.redirect @context.profile_url 
+        @res.redirect @context.profile_url 
     	
 	  	 
  
