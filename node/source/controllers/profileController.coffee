@@ -77,16 +77,21 @@ class ProfileController extends require('./basicController')
     else
       @res.send "Not permitted", 401
       
-  view_bills:(param) ->
+  view_bills: ->
     console.log '[view_bills] action'
     if @req.method is "GET"
       unless @req.user.employee is true
-#        params = @req.params[0]
-#        params = params.split '/' if typeof params isnt 'undefined'
-#        if params[2] isnt undefined and params[2] isnt ''
-#          bill_id =params[2]
-        if false
-        	true
+        if @get
+          id = @get[0]
+          Bill.findOne _id:id,(error,bill) =>
+          	console.log typeof bill.bill_to_whome
+          	console.log typeof @req.user._id
+          	if not error and (bill.bill_to_whome.equals(@req.user._id))
+              @context.bill = bill
+              @context.informationBox = @_view 'member/bill', @context
+              @index()
+            else
+              @res.send 'Not Found', 404
         else
           Bill.get_bills @req.user._id,(err,bills) =>
             unless err
