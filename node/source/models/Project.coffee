@@ -15,6 +15,10 @@ definition =
     name : String
     description: String
     
+    # Child projects
+    parent: Object
+    children: []
+    
     # whose involved in project
     resources: []
     

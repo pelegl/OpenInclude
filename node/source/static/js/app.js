@@ -2057,6 +2057,7 @@
         'click .project-list li a': "editProject",
         'click .project-list li': "switchProject",
         'click #create-project-button': "showProjectForm",
+        'click #create-subproject-button': "showSubProjectForm",
         'click #delete-project-button': "deleteProject",
         'click #create-task-button': "showTaskForm"
       };
@@ -2133,8 +2134,15 @@
         });
       };
 
+      Dashboard.prototype.showSubProjectForm = function(e) {
+        e.preventDefault();
+        this.createProject = new exports.CreateProjectForm(this.context);
+        return this.createProject.show();
+      };
+
       Dashboard.prototype.showProjectForm = function(e) {
         e.preventDefault();
+        this.createProject = new exports.CreateProjectForm(this.context);
         return this.createProject.show();
       };
 
@@ -2206,7 +2214,6 @@
         html = views['dashboard/dashboard'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'dashboard');
-        this.createProject = new exports.CreateProjectForm;
         this.createTask = new exports.CreateTaskForm;
         return this;
       };

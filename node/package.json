@@ -39,9 +39,7 @@
     "passport-trello": "0.x",
     "nodemailer": "0.x",
     "stripe": "*",
-    "octonode": "git://github.com/AVVS/octonode.git",
     "aws-sdk": "~0.9.5-pre.6",
-    "fivebeans": "git://github.com/AVVS/fivebeans.git",
     "eventemitter2": "~0.4.11",
     "dot": "1.0.x"
   },

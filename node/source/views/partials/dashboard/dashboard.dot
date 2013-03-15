@@ -25,7 +25,7 @@
                           <h5>Owner</h5>
                           <p><a href="/profile/view/{{=it.project.client.name}}">{{=it.project.client.name}}</a></p>
                           {{? it.isOwner }}
-                          <p><a href="{{=it.dashboard_url }}/project/delete/{{=it.projectId }}"
+                          <p><a href="{{=it.dashboard_url }}/project/create/{{=it.projectId }}" id="create-subproject-button" class="btn btn-success btn-small">Add subproject</a><a href="{{=it.dashboard_url }}/project/delete/{{=it.projectId }}"
                           id="delete-project-button" class="btn btn-danger btn-small">Delete</a></p>
                           {{?}}
                           <ul id="task-list" class="task-list nav nav-tabs nav-stacked">

@@ -97,6 +97,7 @@
       'click .project-list li' : "switchProject"      
       
       'click #create-project-button' : "showProjectForm"
+      'click #create-subproject-button' : "showSubProjectForm"
       'click #delete-project-button' : "deleteProject"
       
       'click #create-task-button' : "showTaskForm"
@@ -158,8 +159,14 @@
                 projects.fetch()
         )
     
+    showSubProjectForm: (e) ->
+        e.preventDefault()
+        @createProject = new exports.CreateProjectForm @context
+        @createProject.show()
+        
     showProjectForm: (e) ->
         e.preventDefault()
+        @createProject = new exports.CreateProjectForm @context
         @createProject.show()
     
     showTaskForm: (e) ->
@@ -217,8 +224,7 @@
       html = views['dashboard/dashboard'](@context)
       @$el.html html
       @$el.attr 'view-id', 'dashboard'
-      
-      @createProject = new exports.CreateProjectForm
+
       @createTask = new exports.CreateTaskForm
       
       @

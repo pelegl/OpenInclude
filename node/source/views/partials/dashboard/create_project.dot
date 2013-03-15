@@ -3,6 +3,9 @@
   <input type='text' id='pName' class='input-block-level' name='project[name]' required />
   <label for='tDescription'>Description</label>
   <textarea id="tDescription" class="input-block-level" name='project[description]' required></textarea>
+  {{? it.project }}
+  <input type="hidden" name="project['parent']" value="{{= it.project._id }}" />
+  {{?}}
   
   <div>
     <a class="btn pull-left close-inline">Close</a>
