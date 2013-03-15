@@ -50,6 +50,7 @@
         perPage: limit
         currentPage: page
   
+  
   exports.Language = requestPager.extend
     
     comparator: (language)->

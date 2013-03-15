@@ -995,7 +995,7 @@
         lastContribution = humanize.relativeTime(new Date(data.pushed_at).getTime() / 1000);
         activity = $("<p class='activity' />").html("<i class='icon-star'></i>Last checking <strong>" + lastContribution + "</strong>");
         activityStars = $("<p class='stars' />").html("<i class='icon-star'></i><strong>" + stars + " stars</strong> on GitHub");
-        this.moduleName.text(data.module_name);
+        this.moduleName.text("" + data.owner + "/" + data.module_name);
         this.moduleLanguage.find(".name").text(data.language).end().find(".color").css({
           background: color
         });

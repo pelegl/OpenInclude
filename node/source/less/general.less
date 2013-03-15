@@ -18,16 +18,16 @@ body {
 
 header.navbar {
   .navbar-inner {
-    .gradient(top, #DDD, #FFF);
+    .gradient(top, #FFF, #DDD);
     a.brand {
       display: inline-block;
-      .img("openinclude.png", no-repeat, 50% 2px);
+      .img("openinclude.png");
       width: 220px;
       height: @navHeight;
-      padding: 0; 
+      padding: 0;
     }
     .navbar-search {
-      margin: 7px 0 0 10px;
+      margin: 9px 0px 0px 10px;
       input {
         .transition(width 0.2s ease-in-out 0.1s);
         &:focus {
@@ -109,7 +109,7 @@ section.contents {
 footer {
   position: absolute;
   top: 100%;
-  .gradient(top, #005b88, #0088CC);
+  .gradient(top, #0088CC, #005b88);
   margin-top: -(@navHeight - 5px);
   height: @navHeight - 5px;
   padding: 0;
