@@ -33,6 +33,7 @@
               
       show: ->
           @$el.show()
+          @$("form input").focus()
           
       hide: (event) ->
           if event
@@ -94,7 +95,7 @@
   class exports.Dashboard extends View
     events:
       'click .project-list li a' : "editProject"
-      'click .project-list li' : "switchProject"      
+      'click .project-list li'   : "switchProject"      
       
       'click #create-project-button' : "showProjectForm"
       'click #delete-project-button' : "deleteProject"
@@ -148,7 +149,7 @@
     deleteProject: (e) ->
         e.preventDefault()
         project.url = "/project/#{projectId}"
-        project.destroy(
+        project.destroy
             success: (model, response) =>
                 @context.project = null
                 @context.projectId = ""
@@ -156,7 +157,6 @@
                 projectId = ""
                 
                 projects.fetch()
-        )
     
     showProjectForm: (e) ->
         e.preventDefault()
@@ -219,7 +219,7 @@
       @$el.attr 'view-id', 'dashboard'
       
       @createProject = new exports.CreateProjectForm
-      @createTask = new exports.CreateTaskForm
+      @createTask    = new exports.CreateTaskForm
       
       @
     

@@ -6,7 +6,7 @@
         {{~ filter.languages :language}}
             <li>
                 <label class='checkbox'>
-                    <input type='checkbox' name='{{=filter.key}}' value="{{=language}}" /> {{=language}} 				
+                    <input type='checkbox' name='{{=filter.key}}' value="{{=language.name}}" /> {{=language.name}} 				
                 </label>
             </li>
         {{~}}

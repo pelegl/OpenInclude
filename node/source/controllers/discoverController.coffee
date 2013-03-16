@@ -85,19 +85,19 @@ class DiscoverController extends require('./basicController')
               $sum: "$has_answer"
                                                                                            
                 
-        StackOverflow.aggregate match, project, project_2, unwind, group, (err, statistics)=>
+        StackOverflow.aggregate match, project, project_2, group, (err, statistics)=>
           return callback err if err?
           result = {}
-          console.log statistics
           async.forEach statistics, (module, async_callback)=>
-            result[module._id] = module
+            id = if Array.isArray module._id then module._id[0] else module._id
+            result[id] = module
             async_callback null
           , => callback null, result                      
       
       workflow.map = ['color', 'questions', (callback, results)=>
-         {color, questions} = results         
-         async.map output, (module, async_callback)=>
-           module.color    = color[module.language] || "#cccccc" #gray for non-specified color
+         {color, questions} = results
+         async.map output, (module, async_callback)=>           
+           module.color    = color[module._source.language]?.color || "cccccc" #gray for non-specified color
            if (q = questions[module._source._id])?
              module.asked    = q.asked
              module.answered = q.answered

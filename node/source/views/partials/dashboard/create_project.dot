@@ -1,13 +1,10 @@
-<form method='post' action=''>
-  <label for='pName'>Project name</label>
-  <input type='text' id='pName' class='input-block-level' name='project[name]' required />
-  <label for='tDescription'>Description</label>
-  <textarea id="tDescription" class="input-block-level" name='project[description]' required></textarea>
+<form method='post' action='' class='inline-popover'>  
+
+  <input type='text' id='pName' class='input-block-level' name='project[name]' required placeholder="Project name" />
+  <textarea id="tDescription" class="input-block-level" name='project[description]' required placeholder="Description"></textarea>
   
-  <div>
-    <a class="btn pull-left close-inline">Close</a>
-    <button type='submit' class="btn btn-primary pull-left" style='margin-left: 20px'>Confirm</button>
-  </div>
-        
+  <button type='submit' class="btn btn-success">Confirm</button>
+  <a href="#" class="close-inline">Close</a>
+            
 </form>
 

@@ -69,11 +69,13 @@
         ]
       
       @listenTo @collection, "reset", @render
+      @listenTo @collection, "reset", @resetFilter
       @render()
     
     resetFilter: (e)->
-      $this = $(e.currentTarget)
-      $this.closest(".filterBox").find("input[type=checkbox]").prop("checked", false)
+      if e?.currentTarget?
+        $this = $(e.currentTarget)
+        $this.closest(".filterBox").find("input[type=checkbox]").prop("checked", false)
       @collection.filters = []
       @collection.trigger "filter"
       return false
@@ -83,17 +85,17 @@
       languageName = $this.val()
       
       if $this.is(":checked")
-        @collection.filters[languageName] = true
+        @collection.filters[languageName] = true 
       else
         delete @collection.filters[languageName]
         
       @collection.trigger "filter"
           
-    render: ->
+    render: ->      
       @context.filters[0].languages = @collection.languageList()
       html = views['discover/filter'](@context)      
       @$el.html html
-      @$el.attr 'view-id', 'discoverFilter'
+      @$el.attr 'view-id', 'discoverFilter'      
       @
         
     
@@ -139,8 +141,8 @@
           {name: "Active Contributors"}
           {name: "Last Commit", key: "_source.pushed_at"}
           {name: "Stars on GitHub", key: "_source.watchers"}
-          {name: "Questions on StackOverflow"}
-          {name: "Percentage answered"}
+          {name: "Questions on StackOverflow", key: "asked"}
+          {name: "Percentage answered", key: "answered"}
         ]
       @render()  
             
@@ -230,7 +232,7 @@
                       
                       
       @dot.transition()
-          .style("fill", (moduleModel)=> @colorScale(moduleModel.color()) )
+          .style("fill", (moduleModel)=> moduleModel.color() )
           .call(@position)
                   
       @dot.exit().transition()

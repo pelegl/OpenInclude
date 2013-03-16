@@ -187,7 +187,7 @@
       */
 
       color: function() {
-        return this.get('_source').language;
+        return "#" + this.get('color');
       },
       /*
         Key
@@ -346,11 +346,17 @@
         });
       },
       languageList: function() {
-        if (this.groupedModules) {
-          return _.keys(this.groupedModules);
-        } else {
-          return [];
-        }
+        var languageNames, list,
+          _this = this;
+        languageNames = this.groupedModules ? _.keys(this.groupedModules) : [];
+        list = [];
+        _.each(languageNames, function(lang) {
+          return list.push({
+            name: lang,
+            color: _this.groupedModules[lang][0].color
+          });
+        });
+        return list;
       },
       filters: {},
       fetch: function() {
@@ -374,10 +380,17 @@
         var _this = this;
         key = key != null ? key.split(".") : "_id";
         this.models = _.sortBy(this.models, function(module) {
-          var value;
-          value = $.isArray(key) ? module.get(key[0])[key[1]] : module.get(key);
+          var asked, value;
+          value = key.length === 2 ? module.get(key[0])[key[1]] : module.get(key[0]);
           if (key[1] === 'pushed_at') {
             return new Date(value);
+          } else if (key[0] === 'answered') {
+            asked = module.get("asked");
+            if (asked === 0) {
+              return 0;
+            } else {
+              return value / asked;
+            }
           } else {
             return value;
           }
@@ -1035,13 +1048,16 @@
           ]
         };
         this.listenTo(this.collection, "reset", this.render);
+        this.listenTo(this.collection, "reset", this.resetFilter);
         return this.render();
       };
 
       DiscoverFilter.prototype.resetFilter = function(e) {
         var $this;
-        $this = $(e.currentTarget);
-        $this.closest(".filterBox").find("input[type=checkbox]").prop("checked", false);
+        if ((e != null ? e.currentTarget : void 0) != null) {
+          $this = $(e.currentTarget);
+          $this.closest(".filterBox").find("input[type=checkbox]").prop("checked", false);
+        }
         this.collection.filters = [];
         this.collection.trigger("filter");
         return false;
@@ -1132,9 +1148,11 @@
               name: "Stars on GitHub",
               key: "_source.watchers"
             }, {
-              name: "Questions on StackOverflow"
+              name: "Questions on StackOverflow",
+              key: "asked"
             }, {
-              name: "Percentage answered"
+              name: "Percentage answered",
+              key: "answered"
             }
           ]
         };
@@ -1249,7 +1267,7 @@
         this.dot = this.dots.selectAll(".dot").data(data);
         this.dot.enter().append("circle").attr("class", "dot").on("mouseover", this.popup('show', this.$el)).on("mouseout", this.popup('hide')).on("click", this.addToComparison);
         this.dot.transition().style("fill", function(moduleModel) {
-          return _this.colorScale(moduleModel.color());
+          return moduleModel.color();
         }).call(this.position);
         this.dot.exit().transition().attr("r", 0).remove();
         this.dot.append("title").text(function(d) {
@@ -1936,7 +1954,8 @@
       };
 
       InlineForm.prototype.show = function() {
-        return this.$el.show();
+        this.$el.show();
+        return this.$("form input").focus();
       };
 
       InlineForm.prototype.hide = function(event) {

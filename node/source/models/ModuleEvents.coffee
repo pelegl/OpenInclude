@@ -46,7 +46,7 @@ statics =
     
   pull_for_module: (stopTS, module_id, callback)->
     date = new Date stopTS
-    @find({module_id, created_at: {$gt: date}}).sort({created_at: 1}).exec callback
+    @find({module_id, created_at: {$gt: date}}, "type created_at module_id").sort({created_at: 1}).exec callback
       
     
 index = [ 

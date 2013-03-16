@@ -109,7 +109,7 @@
         TODO: make color persist in different searches
       ###
       color: ->
-        return @get('_source').language
+        return "#" + @get('color')
         
       ###
         Key
