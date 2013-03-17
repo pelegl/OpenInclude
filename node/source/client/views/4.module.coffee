@@ -183,7 +183,7 @@
       {@language, repo} = opts
       
       try
-        [@owner, @repo] = repo.split "|"
+        [@owner, @repo] = decodeURI(repo).split "|"
         throw "Incorrect link" if !@owner or !@repo           
       catch e then console.log e
         

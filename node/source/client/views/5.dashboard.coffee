@@ -102,6 +102,7 @@
 
     show: ->
       @$el.show()
+      @$("form input").focus()
 
     hide: (event) ->
       if event
@@ -212,23 +213,18 @@
       editProjectForm.show()
 
     deleteProject: (e) ->
-      e.preventDefault()
-      project.url = "/project/#{projectId}"
-      project.destroy(
-        success: (model, response) =>
-          @context.project = null
-          @context.projectId = ""
-          project = null
-          projectId = ""
-
-          projects.fetch()
-      )
-
-    showSubProjectForm: (e) ->
-      e.preventDefault()
-      @createProject = new exports.CreateProjectForm @context
-      @createProject.show()
-
+        e.preventDefault()
+        project.url = "/project/#{projectId}"
+        project.destroy(
+            success: (model, response) =>
+                @context.project = null
+                @context.projectId = ""
+                project = null
+                projectId = ""
+                
+                projects.fetch()
+        )
+    
     showProjectForm: (e) ->
       e.preventDefault()
       @context.project = null

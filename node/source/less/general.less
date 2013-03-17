@@ -1,8 +1,121 @@
-a {
-  &.brand {
-    display: inline-block;
-    .img("openinclude.png");
-    width: 150px;
-    height: 100px; 
-  } 
+@navHeight: 45px;
+
+html {    
+    height: 100%;
+}
+
+body {    
+    background:#f3f3f3 url(../images/main-bg.png);
+    height: auto !important;
+    min-height: 100%;
+    height: 100%;
+    position: relative;
+    padding-bottom: 150px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+hr {
+  margin: 15px 0 10px;
+  border-top-color: #999; 
+}
+
+header.navbar {
+  .navbar-inner {
+    .gradient(top, #FFF, #DDD);
+    a.brand {
+      display: inline-block;
+      .img("openinclude.png");
+      width: 220px;
+      height: @navHeight;
+      padding: 0;
+    }
+    .navbar-search {
+      margin: 9px 0px 0px 10px;
+      input {
+        .transition(width 0.2s ease-in-out 0.1s);
+        &:focus {
+          width: 300px;
+        }
+      }
+    }    
+    .nav {
+      a {
+        line-height: @navHeight - 20;         
+      }
+    }
+  }
+}
+
+section.contents {
+  .features {    
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -118px 0 0 -355px;
+    ul {
+      margin: 0;
+      overflow: hidden;
+      list-style: none;
+      li {
+        float: left;
+        width: 210px;
+        padding-left: 40px;
+        background:url(../images/arrow.png) no-repeat 9px 50%;
+        &:first-child {
+          padding-left:0;
+          background:none;
+        }
+        a {
+          &:hover {
+            text-decoration: none;
+            .box {
+              border:5px solid #1279BE;
+              background:#fdffe3;
+            }
+          }          
+        }
+        .box {
+          width:180px;
+          text-align:center;
+          color:#626056;
+          border:5px solid #106CAA;
+          .border-radius(4px);          
+          background:#fff;
+          padding:4px 10px 0 10px;
+          min-height:140px;
+          a {
+            display: inline-block;
+          }
+          h2 {
+            font-size:20px;
+            font-weight:500;
+            text-transform:uppercase;
+            margin:-5px 0 6px 0;
+          }
+          p {
+            font-size: 13px;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+  }
+}
+
+
+#view-wrapper {
+  > * {
+    padding-top: @navHeight + 20px;
+  }
+}
+
+footer {
+  position: absolute;
+  top: 100%;
+  .gradient(top, #0088CC, #005b88);
+  margin-top: -(@navHeight - 5px);
+  height: @navHeight - 5px;
+  padding: 0;
+  width: 100%;
 }

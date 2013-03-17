@@ -13,6 +13,7 @@
                                    .append("<span class='name' />")
       @moduleDescription = $("<p />").addClass("moduleDescription")
       @moduleStars = $("<div />").addClass("moduleStars")
+      #@notification = $("<p class='muted reminder' >").text "click to compare"      
       
       @render()
           
@@ -41,7 +42,7 @@
       activity = $("<p class='activity' />").html("<i class='icon-star'></i>Last checking <strong>#{lastContribution}</strong>")
       activityStars = $("<p class='stars' />").html("<i class='icon-star'></i><strong>#{stars} stars</strong> on GitHub")
       
-      @moduleName.text data.module_name          
+      @moduleName.text "#{data.owner}/#{data.module_name}"          
       @moduleLanguage
                      .find(".name").text(data.language).end()
                      .find(".color").css({background: color})    
@@ -49,6 +50,7 @@
       @moduleStars.html("").append activity, activityStars      
                               
       @show()
+      
       @$el.css
         bottom: (@options.scope.outerHeight()-y-(@$el.outerHeight()/2)-15)+'px'
         left: x+@options.margin.left+(width/2)+15+'px'
@@ -67,11 +69,13 @@
         ]
       
       @listenTo @collection, "reset", @render
+      @listenTo @collection, "reset", @resetFilter
       @render()
     
     resetFilter: (e)->
-      $this = $(e.currentTarget)
-      $this.closest(".filterBox").find("input[type=checkbox]").prop("checked", false)
+      if e?.currentTarget?
+        $this = $(e.currentTarget)
+        $this.closest(".filterBox").find("input[type=checkbox]").prop("checked", false)
       @collection.filters = []
       @collection.trigger "filter"
       return false
@@ -81,7 +85,7 @@
       languageName = $this.val()
       
       if $this.is(":checked")
-        @collection.filters[languageName] = true
+        @collection.filters[languageName] = true 
       else
         delete @collection.filters[languageName]
         
@@ -91,7 +95,7 @@
       @context.filters[0].languages = @collection.languageList()
       html = views['discover/filter'](@context)      
       @$el.html html
-      @$el.attr 'view-id', 'discoverFilter'
+      @$el.attr 'view-id', 'discoverFilter'      
       @
         
     
@@ -137,8 +141,8 @@
           {name: "Active Contributors"}
           {name: "Last Commit", key: "_source.pushed_at"}
           {name: "Stars on GitHub", key: "_source.watchers"}
-          {name: "Questions on StackOverflow"}
-          {name: "Percentage answered"}
+          {name: "Questions on StackOverflow", key: "asked"}
+          {name: "Percentage answered", key: "answered"}
         ]
       @render()  
             
@@ -209,12 +213,14 @@
       @setRadiusScale()
       
       languages = _.keys @collection.filters
+            
+      
       if languages.length > 0
         data = @collection.filter (module)=>          
           return $.inArray(module.get("_source").language, languages) isnt -1
       else
         data = @collection.models
-      
+                  
       @dot = @dots.selectAll(".dot")
                     .data(data)                  
                   
@@ -226,7 +232,7 @@
                       
                       
       @dot.transition()
-          .style("fill", (moduleModel)=> @colorScale(moduleModel.color()) )
+          .style("fill", (moduleModel)=> moduleModel.color() )
           .call(@position)
                   
       @dot.exit().transition()

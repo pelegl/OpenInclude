@@ -50,6 +50,7 @@
         perPage: limit
         currentPage: page
   
+  
   exports.Language = requestPager.extend
     
     comparator: (language)->
@@ -94,8 +95,13 @@
       return d3.max @models, (data)=>
         return data.radius()
     
-    languageList: ->
-      return if @groupedModules then _.keys @groupedModules else [] 
+    languageList: ->      
+      languageNames = if @groupedModules then _.keys @groupedModules else []
+      list = []
+      _.each languageNames, (lang)=>
+        list.push { name : lang, color: @groupedModules[lang][0].color }
+      return list
+         
     
     filters: {}
            
@@ -107,7 +113,7 @@
       $.getJSON "#{collection.url}?q=#{query}" , (r)->
         collection.maxScore = r.maxScore                
         collection.groupedModules = _.groupBy r.searchData, (module)=>
-          return module._source.language
+          return module._source.language               
         collection.reset r.searchData
         
   
@@ -117,9 +123,12 @@
     sortBy: (key, direction) ->
       key = if key? then key.split(".") else "_id"
       @models = _.sortBy @models, (module)=>        
-        value = if $.isArray key then module.get(key[0])[key[1]] else module.get key
+        value = if key.length is 2 then module.get(key[0])[key[1]] else module.get key[0]
         if key[1] is 'pushed_at'
           return new Date value
+        else if key[0] is 'answered'
+          asked = module.get("asked")          
+          return if asked is 0 then 0 else value/asked
         else
           return value        
       

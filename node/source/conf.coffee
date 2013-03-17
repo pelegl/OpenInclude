@@ -276,4 +276,4 @@ load = (required) ->
 
   models
 
-exports.get_models = load
+exports.model = exports.get_models = load
