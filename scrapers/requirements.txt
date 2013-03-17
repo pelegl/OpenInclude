@@ -1,3 +1,4 @@
+stackpy
 mongodb
 pymongo
 scrapy
