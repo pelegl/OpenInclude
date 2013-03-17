@@ -1892,13 +1892,105 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var InlineForm, project, projectId, projects, root, tasks, views;
+    var InlineForm, TypeAhead, Users, project, projectId, projects, root, tasks, views;
     root = this;
     views = this.hbt = _.extend({}, dt, Handlebars.partials);
     projects = new collections.Projects;
     tasks = new collections.Tasks;
     projectId = "";
     project = null;
+    Users = (function(_super) {
+
+      __extends(Users, _super);
+
+      function Users() {
+        return Users.__super__.constructor.apply(this, arguments);
+      }
+
+      Users.prototype.model = models.User;
+
+      Users.prototype.url = "/session/list";
+
+      return Users;
+
+    })(this.Backbone.Collection);
+    TypeAhead = (function(_super) {
+
+      __extends(TypeAhead, _super);
+
+      function TypeAhead() {
+        return TypeAhead.__super__.constructor.apply(this, arguments);
+      }
+
+      TypeAhead.prototype.el = "#typeahead";
+
+      TypeAhead.prototype.events = {
+        'click li.suggestion': "select"
+      };
+
+      TypeAhead.prototype.initialize = function(context) {
+        if (context == null) {
+          context = {};
+        }
+        this.context = context;
+        this.suggestions = new Users;
+        return this.listenTo(this.suggestions, "reset", this.render);
+      };
+
+      TypeAhead.prototype.position = function(element) {
+        var height, offset, width;
+        offset = $(element).offset();
+        width = $(element).width();
+        height = $(element).height();
+        this.$el.css('left', offset.left + width / 2);
+        this.$el.css('top', offset.top + height / 2);
+        if (!this.context.listener) {
+          return this.context.listener = element;
+        }
+      };
+
+      TypeAhead.prototype.select = function(event) {
+        var value;
+        value = $(event.target).attr("rel");
+        value = $(this.context.listener).val() + value + " ";
+        $(this.context.listener).val(value);
+        return this.hide();
+      };
+
+      TypeAhead.prototype.showUser = function(part) {
+        if (part == null) {
+          part = "";
+        }
+        this.suggestions.url = "/session/list/" + part;
+        return this.suggestions.fetch();
+      };
+
+      TypeAhead.prototype.showProject = function(part) {
+        if (part == null) {
+          part = "";
+        }
+        this.suggestions.url = "/project/suggest/" + part;
+        return this.suggestions.fetch();
+      };
+
+      TypeAhead.prototype.showTask = function(part) {};
+
+      TypeAhead.prototype.hide = function() {
+        return this.$el.hide();
+      };
+
+      TypeAhead.prototype.render = function() {
+        var html;
+        this.context.suggestions = this.suggestions.toJSON();
+        html = views['dashboard/typeahead'](this.context);
+        this.$el.html(html);
+        this.$el.show();
+        return this;
+      };
+
+      return TypeAhead;
+
+    })(this.Backbone.View);
     InlineForm = (function(_super) {
 
       __extends(InlineForm, _super);
@@ -1909,7 +2001,33 @@
 
       InlineForm.prototype.events = {
         'submit form': "submit",
-        'click .close-inline': "hide"
+        'click .close-inline': "hide",
+        'keypress textarea.typeahead': "typeahead"
+      };
+
+      InlineForm.prototype.initialize = function(context) {
+        if (context == null) {
+          context = {};
+        }
+        this.context = _.extend({}, context, app.conf);
+        this.tah = new TypeAhead(this.context);
+        return this.render();
+      };
+
+      InlineForm.prototype.typeahead = function(event) {
+        var char;
+        char = String.fromCharCode(event.which || event.keyCode || event.charCode);
+        this.tah.position(event.target);
+        switch (char) {
+          case '@':
+            return this.tah.showUser();
+          case '#':
+            return this.tah.showTask();
+          case '+':
+            return this.tah.showProject();
+          case ' ':
+            return this.tah.hide();
+        }
       };
 
       InlineForm.prototype.submit = function(event) {
@@ -1944,14 +2062,6 @@
           event.preventDefault();
         }
         return this.$el.hide();
-      };
-
-      InlineForm.prototype.initialize = function(context) {
-        if (context == null) {
-          context = {};
-        }
-        this.context = _.extend({}, context, app.conf);
-        return this.render();
       };
 
       InlineForm.prototype.render = function() {
@@ -2142,6 +2252,7 @@
 
       Dashboard.prototype.showProjectForm = function(e) {
         e.preventDefault();
+        this.context.project = null;
         this.createProject = new exports.CreateProjectForm(this.context);
         return this.createProject.show();
       };

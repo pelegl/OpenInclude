@@ -6,7 +6,7 @@
 			      <h3>Projects</h3>
 			      <ul class="project-list nav nav-tabs nav-stacked">
 			          {{~it.projects :project}}
-			          <li rel="{{=project._id}}">{{? project.client.id == it.user._id }}[my] {{?}}{{=project.name}}{{? it.canEdit(it.user, project) }}<span class="pull-right"><a href="{{= it.dashboard_url }}/project/edit/{{=it.projectId}}" class="btn btn-warning btn-small" style="margin-top: -3px" rel="{{=project._id}}">Edit</a></span>{{?}}</li>
+			          <li rel="{{=project._id}}">{{ for (i = 0; i < project.level; i++) { }}+ {{ } }}{{? project.client.id == it.user._id }}[my] {{?}}{{=project.name}}{{? it.canEdit(it.user, project) }}<span class="pull-right"><a href="{{= it.dashboard_url }}/project/edit/{{=it.projectId}}" class="btn btn-warning btn-small" style="margin-top: -3px" rel="{{=project._id}}">Edit</a></span>{{?}}</li>
 			          {{~}}
                   </ul>
                   <p id="create-project-inline"></p>
@@ -25,8 +25,12 @@
                           <h5>Owner</h5>
                           <p><a href="/profile/view/{{=it.project.client.name}}">{{=it.project.client.name}}</a></p>
                           {{? it.isOwner }}
-                          <p><a href="{{=it.dashboard_url }}/project/create/{{=it.projectId }}" id="create-subproject-button" class="btn btn-success btn-small">Add subproject</a><a href="{{=it.dashboard_url }}/project/delete/{{=it.projectId }}"
-                          id="delete-project-button" class="btn btn-danger btn-small">Delete</a></p>
+                          <p>
+                              {{? it.project.level < 4 }}
+                              <a href="{{=it.dashboard_url }}/project/create/{{=it.projectId }}" id="create-subproject-button" class="btn btn-success btn-small">Add subproject</a>&nbsp;
+                              {{?}}
+                              <a href="{{=it.dashboard_url }}/project/delete/{{=it.projectId }}" id="delete-project-button" class="btn btn-danger btn-small">Delete</a>
+                          </p>
                           {{?}}
                           <ul id="task-list" class="task-list nav nav-tabs nav-stacked">
                               {{~ it.tasks :task}}
@@ -48,3 +52,4 @@
 		</div>
 	</div>
 </div>
+<div id="typeahead"></div>

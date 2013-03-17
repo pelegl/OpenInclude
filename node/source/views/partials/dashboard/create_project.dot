@@ -2,9 +2,10 @@
   <label for='pName'>Project name</label>
   <input type='text' id='pName' class='input-block-level' name='project[name]' required />
   <label for='tDescription'>Description</label>
-  <textarea id="tDescription" class="input-block-level" name='project[description]' required></textarea>
+  <textarea id="tDescription" class="input-block-level typeahead" name='project[description]' required></textarea>
   {{? it.project }}
-  <input type="hidden" name="project['parent']" value="{{= it.project._id }}" />
+    <input type="hidden" name="project[parent]" value="{{= it.project._id }}" />
+    <input type="hidden" name="project[level]" value="{{= it.project.level + 1 }}" />
   {{?}}
   
   <div>

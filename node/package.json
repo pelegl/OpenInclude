@@ -29,6 +29,7 @@
     "consolidate": "0.8.x",
     "handlebars": "*",
     "mongoose": "*",
+    "mongoose-tree": "*",
     "hiredis": "*",    
     "elasticsearchclient": "*",
     "underscore": "*",

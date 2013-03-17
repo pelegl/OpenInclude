@@ -33,8 +33,8 @@ exports.esClient = esClient = new esc serverOptions
 ###
 #github = require 'octonode'
 
-GITHUB_CLIENT_ID = '2361006ea086ad268742'
-GITHUB_CLIENT_SECRET = '8983c759727c4195ae2b34916d9ed313eeafa332'
+GITHUB_CLIENT_ID = require("./github").id || '2361006ea086ad268742'
+GITHUB_CLIENT_SECRET = require("./github").secret || '8983c759727c4195ae2b34916d9ed313eeafa332'
 
 #exports.git = github.client
 #  id: GITHUB_CLIENT_ID
@@ -47,7 +47,7 @@ GITHUB_CLIENT_SECRET = '8983c759727c4195ae2b34916d9ed313eeafa332'
 ###
   Some static helpers
 ###
-SERVER_URL = exports.SERVER_URL = "http://ec2-54-225-224-68.compute-1.amazonaws.com:#{process.env.PORT || 8900}"
+SERVER_URL = exports.SERVER_URL = "#{process.env.HOST || "http://ec2-54-225-224-68.compute-1.amazonaws.com"}:#{process.env.PORT || 8900}"
 STATIC_URL = exports.STATIC_URL = "/static/"
 
 exports.logout_url      = logout_url      =  "/auth/logout"
@@ -147,7 +147,7 @@ passport_init = exports.passport_init = () ->
   passport.use new GithubStrategy(
     clientID: GITHUB_CLIENT_ID,
     clientSecret: GITHUB_CLIENT_SECRET,
-    callbackURL: "#{SERVER_URL}/auth/github/callback"
+    #callbackURL: "#{SERVER_URL}/auth/github/callback"
   , (access_token, refresh_token, profile, done) ->
     # console.log(access_token, refresh_token, profile)
     console.log('verify', profile)
@@ -235,7 +235,12 @@ load = (required) ->
         module.schema         = new mongoose.Schema module.definition, (module.options || {})        
         module.schema.methods = module.methods if module.methods
         module.schema.statics = module.statics if module.statics
-        
+        if module.plugins?
+          plugin = require(module.plugins)
+          if plugin
+            module.schema.plugin(plugin)
+
+        module.schema.set "toJSON", getters: true, virtuals: true
         ###
           Set virtuals
         ###

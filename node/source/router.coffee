@@ -56,6 +56,8 @@ exports.set = (app)->
   Project
   ###
   app.get "/project", app.Controllers.project.list
+  app.get "/project/suggest/:part?", app.Controllers.project.suggest
+
   app.post "/project", app.Controllers.project.create
   app.put "/project/:id", app.Controllers.project.update
   app.delete "/project/:id", app.Controllers.project.delete

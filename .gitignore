@@ -9,3 +9,4 @@ node/node_modules
 node/source/tmp
 node/components
 node/build
+.idea

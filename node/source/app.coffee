@@ -4,8 +4,6 @@
 express       = require 'express'
 connect       = require 'connect'
 
-RedisStore    = require('connect-redis')(connect)
-store         = new RedisStore()
 secret        = "dsakldaSAKDLJkasl192a12"
 
 cluster       = require 'cluster'
@@ -16,6 +14,9 @@ conf          = require './conf'
 async         = require 'async'
 _ = require 'underscore'
 
+
+RedisStore    = require('connect-redis')(connect)
+store         = new RedisStore()
 
 ###
 Configuration of the variables
