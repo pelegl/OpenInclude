@@ -213,18 +213,23 @@
       editProjectForm.show()
 
     deleteProject: (e) ->
-        e.preventDefault()
-        project.url = "/project/#{projectId}"
-        project.destroy(
-            success: (model, response) =>
-                @context.project = null
-                @context.projectId = ""
-                project = null
-                projectId = ""
-                
-                projects.fetch()
-        )
-    
+      e.preventDefault()
+      project.url = "/project/#{projectId}"
+      project.destroy(
+        success: (model, response) =>
+          @context.project = null
+          @context.projectId = ""
+          project = null
+          projectId = ""
+
+          projects.fetch()
+      )
+
+    showSubProjectForm: (e) ->
+      e.preventDefault()
+      @createProject = new exports.CreateProjectForm @context
+      @createProject.show()
+
     showProjectForm: (e) ->
       e.preventDefault()
       @context.project = null

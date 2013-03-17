@@ -1,7 +1,11 @@
 <form method='post' action='' class='inline-popover'>  
 
   <input type='text' id='pName' class='input-block-level' name='project[name]' required placeholder="Project name" />
-  <textarea id="tDescription" class="input-block-level" name='project[description]' required placeholder="Description"></textarea>
+  <textarea id="tDescription" class="input-block-level typeahead" name='project[description]' required placeholder="Description"></textarea>
+
+    {{? it.project }}
+    <input type="hidden" name="project[parent]" value="{{= it.project._id }}" />
+    {{?}}
   
   <button type='submit' class="btn btn-success">Confirm</button>
   <a href="#" class="close-inline">Close</a>

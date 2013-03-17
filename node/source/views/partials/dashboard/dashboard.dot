@@ -1,80 +1,93 @@
 <div class='container dashboard'>
-	<div class='row'>
-		<div class='span12'>					
-			<div class='row'>
-			  <div class='span3 dashboard-left'>
-			      <h3>Projects</h3>
-			      <hr />
-			      <ul class="project-list nav nav-tabs nav-stacked">
-	           {{~it.projects :project}}
-	             <li rel="{{=project._id}}">
-	               {{? project.client.id == it.user._id }}
-	                 [my] 
-	               {{?}}
-	                 {{=project.name}}
-	               {{? it.canEdit(it.user, project) }}
-	                 <span class="pull-right">
-	                   <a href="{{= it.dashboard_url }}/project/edit/{{=it.projectId}}" class="btn btn-warning btn-small" style="margin-top: -3px" rel="{{=project._id}}">Edit</a>
-	                 </span>
-	               {{?}}
-	               </li>
-	           {{~}}
-            </ul>
-            <p id="create-project-inline"></p>
-            <p>
-              <a href="{{= it.dashboard_url }}/project/create" id="create-project-button" >Create new project</a>
-            </p>                       
-			  </div>
-			  <div class='span9 dashboard-right'>
-			      <div class="row-fluid">
-			          <div class='span9 main-area'>
-                  {{? it.project}}
-                      <h3 id="project-name">
-                        {{=it.project.name}}
-                        {{? it.isOwner }}
-                          <a href="{{=it.dashboard_url }}/project/delete/{{=it.projectId }}" id="delete-project-button" class="btn btn-danger btn-small pull-right">Delete</a>
-                        {{?}}
-                      </h3>
-                      <hr>
-                      <h4 id="project-description" class='muted'>{{=it.project.description}}</h4>
-                      
-                      <div class='tag-list'>
-                        <h5>Involved</h5>
-                        <ul class='inline unstyled'>
-                          {{~ it.project.resources :resource}}
-                          <li><a href="/profile/view/{{=resource.name}}" class='label label-info'>{{=resource.name}}</a></li>
-                          {{~}}
-                        </ul>  
-                      </div>
-                      
-                      <div class='tag-list'>
-                        <h5>Owner</h5>
-                        <ul class='inline unstyled'>
-                          {{~ it.project.resources :resource}}
-                          <li><a href="/profile/view/{{=it.project.client.name}}" class='label'>{{=it.project.client.name}}</a></li>
-                          {{~}}
-                        </ul>  
-                      </div>
-                      {{? it.tasks}}
-                      <h3>Tasks:</h3>
-                      {{?}}
-                      <ul id="task-list" class="task-list nav nav-tabs nav-stacked">
-                          {{~ it.tasks :task}}
-                          <li rel="{{=task._id}}">{{=task.name}}</li>
-                          {{~}}
-                      </ul>
-                      {{? it.canWrite || it.isOwner }}
-                      <p id="create-task-inline"></p>
-                      <p><a href="{{=it.dashboard_url }}/task/create/{{=it.projectId }}" id="create-task-button" class="btn btn-success btn-small">Create</a></p>
-                      {{?}}
-                  {{?}}
+    <div class='row'>
+        <div class='span12'>
+            <div class='row'>
+                <div class='span3 dashboard-left'>
+                    <h3>Projects</h3>
+                    <hr/>
+                    <ul class="project-list nav nav-tabs nav-stacked">
+                        {{~it.projects :project}}
+                        <li rel="{{=project._id}}">
+                            {{ for (i = 0; i < project.level; i++) { }}&nbsp{{ } }}
+                            {{? project.client.id == it.user._id }}
+                            [my]
+                            {{?}}
+                            {{=project.name}}
+                            {{? it.canEdit(it.user, project) }}
+                            <span class="pull-right">
+                                <a href="{{= it.dashboard_url }}/project/edit/{{=it.projectId}}"
+                                    class="btn btn-warning btn-small" style="margin-top: -3px" rel="{{=project._id}}">Edit</a>
+                            </span>
+                            {{?}}
+                        </li>
+                        {{~}}
+                    </ul>
+                    <p id="create-project-inline"></p>
+
+                    <p>
+                        <a href="{{= it.dashboard_url }}/project/create" id="create-project-button">Create new
+                            project</a>
+                    </p>
                 </div>
-                <div class='span3 supplementary-area'>
-                    <h3>filters, etc</h3>
+                <div class='span9 dashboard-right'>
+                    <div class="row-fluid">
+                        <div class='span9 main-area'>
+                            {{? it.project}}
+                            <h3 id="project-name">
+                                {{=it.project.name}}
+                                {{? it.isOwner }}
+                                {{? it.project.level < 4 }}
+                                <a href="{{=it.dashboard_url }}/project/create/{{=it.projectId }}" id="create-subproject-button" class="btn btn-success btn-small">Add subproject</a>&nbsp;
+                                {{?}}
+                                <a href="{{=it.dashboard_url }}/project/delete/{{=it.projectId }}"
+                                   id="delete-project-button" class="btn btn-danger btn-small pull-right">Delete</a>
+                                {{?}}
+                            </h3>
+                            <hr>
+                            <h4 id="project-description" class='muted'>{{=it.project.description}}</h4>
+
+                            <div class='tag-list'>
+                                <h5>Involved</h5>
+                                <ul class='inline unstyled'>
+                                    {{~ it.project.resources :resource}}
+                                    <li><a href="/profile/view/{{=resource.name}}" class='label label-info'>{{=resource.name}}</a>
+                                    </li>
+                                    {{~}}
+                                </ul>
+                            </div>
+
+                            <div class='tag-list'>
+                                <h5>Owner</h5>
+                                <ul class='inline unstyled'>
+                                    {{~ it.project.resources :resource}}
+                                    <li><a href="/profile/view/{{=it.project.client.name}}" class='label'>{{=it.project.client.name}}</a>
+                                    </li>
+                                    {{~}}
+                                </ul>
+                            </div>
+                            {{? it.tasks}}
+                            <h3>Tasks:</h3>
+                            {{?}}
+                            <ul id="task-list" class="task-list nav nav-tabs nav-stacked">
+                                {{~ it.tasks :task}}
+                                <li rel="{{=task._id}}">{{=task.name}}</li>
+                                {{~}}
+                            </ul>
+                            {{? it.canWrite || it.isOwner }}
+                            <p id="create-task-inline"></p>
+
+                            <p><a href="{{=it.dashboard_url }}/task/create/{{=it.projectId }}" id="create-task-button"
+                                  class="btn btn-success btn-small">Create</a></p>
+                            {{?}}
+                            {{?}}
+                        </div>
+                        <div class='span3 supplementary-area'>
+                            <h3>filters, etc</h3>
+                        </div>
+                    </div>
                 </div>
             </div>
-			  </div>
-			</div>
-		</div>
-	</div>
+        </div>
+    </div>
 </div>
+<div id="typeahead"></div>

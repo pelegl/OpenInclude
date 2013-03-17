@@ -400,6 +400,24 @@ footer {
 .project-list li:hover span {
   visibility: visible;
 }
+#typeahead {
+  position: absolute;
+  z-index: 100;
+  background-color: white;
+  border: 1px solid gray;
+}
+.typeahead-container {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+.typeahead-container li {
+  padding: 6px;
+  cursor: pointer;
+}
+.typeahead-container li:hover {
+  background-color: gray;
+}
 .dashboard {
   margin-top: 35px;
 }
