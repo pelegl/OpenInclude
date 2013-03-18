@@ -125,7 +125,7 @@ methods =
       workflow.questions = (questions)=>
         # get new questions
         query  = {module_id: @_id, last_activity_date: {$gte: stopTS}}
-        fields = "question_id creation_date accepted_answer_id answers.is_accepted answers.last_activity_date"        
+        fields = "question_id creation_date accepted_answer_id answers.is_accepted answers.last_activity_date"
         StackOverflow.find query, fields, questions
       
       # Push answered questions

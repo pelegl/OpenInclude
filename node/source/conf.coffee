@@ -67,6 +67,24 @@ exports.dashboard_url   = dashboard_url   = "/dashboard"
 exports.merchant_agreement        = merchant_agreement  = "#{profile_url}/merchant_agreement"
 exports.developer_agreement       = developer_agreement = "#{profile_url}/developer_agreement"
 exports.update_credit_card        = update_credit_card  = "#{profile_url}/update_credit_card"
+
+# Transitioning to exports.urls = {}
+
+exports.urls =
+  logout_url:           "/auth/logout"
+  profile_url:          "/profile"
+  signin_url:           "#{profile_url}/login"
+  github_auth_url:      "/auth/github"
+  trello_auth_url:      "/auth/trello"
+  discover_url:         "/discover"
+  how_to_url:           "/how-to"
+  modules_url:          "/modules"
+  dashboard_url:        "/dashboard"
+  merchant_agreement:   "#{profile_url}/merchant_agreement"
+  developer_agreement:  "#{profile_url}/developer_agreement"
+  update_credit_card:   "#{profile_url}/update_credit_card"
+
+
 ###
   Export controllers to the app
 ###

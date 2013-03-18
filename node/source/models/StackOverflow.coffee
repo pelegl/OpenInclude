@@ -18,11 +18,23 @@ definition =
   owner: {}
   question_id: Number  
   accepted_answer_id: Number
-  
+
+
+
+
+statics =
+  # get questions
+  get_questions_for_module: (module_id, stopTS, callback) ->
+    query  = {module_id, last_activity_date: {$gte: stopTS}}
+    fields = "question_id creation_date accepted_answer_id answers.is_accepted answers.last_activity_date"
+    @find query, fields,
+
 index = [
   [{module_id: 1, last_activity_date: 1, timestamp: 1}]
 ]
 
+
+exports.statics = statics
 exports.index = index
 exports.modelName  = "module_so_test" 
 exports.definition = definition

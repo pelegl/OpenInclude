@@ -1,8 +1,8 @@
 ###
   Loading config
 ###
-_            = require 'underscore'
-{get_models, dashboard_url, STATIC_URL, logout_url, signin_url, profile_url, github_auth_url, discover_url, how_to_url, modules_url} = require '../conf'
+_ = require 'underscore'
+{get_models, STATIC_URL, urls} = require '../conf'
 
 
 ###
@@ -22,21 +22,14 @@ class ModuleController extends require('./basicController')
     @get            = segments[3..] if segments.length > 3
         
     @app = @req.app
-    @context = {
-      title: "Home Page"
-      STATIC_URL,
-      in_stealth_mode: false,
-      user: @req.user,
-      logout_url,
-      signin_url,
-      profile_url,
-      github_auth_url,
-      discover_url,
-      how_to_url,
-      modules_url,
-      dashboard_url
-    } 
-        
+
+    config =
+      title:      "Module details"
+      STATIC_URL: STATIC_URL
+      user:       @req.user
+
+    @context = _.extend {}, urls, config
+
     
     unless @language
       @index()
