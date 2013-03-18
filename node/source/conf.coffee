@@ -5,11 +5,14 @@ esc         = require 'elasticsearchclient'
 mongoose    = require 'mongoose'
 _           = require 'underscore'
 
-passport = require 'passport'
+passport       = require 'passport'
 GithubStrategy = require('passport-github').Strategy
 TrelloStrategy = require('passport-trello').Strategy
 
-exports.db = db = mongoose.createConnection 'localhost', 'openInclude'
+if !process.env.mongo
+  exports.db = db = mongoose.createConnection 'localhost', 'openInclude'
+else
+  exports.db = db = mongoose.createConnection process.env.mongo
 
 ###
   String capitalize
@@ -21,7 +24,7 @@ String.prototype.capitalize = ->
   Elastic search module
 ###
 serverOptions =
-  host: 'localhost'
+  host: process.env.esHost || 'localhost'
   port: 9200    
   secure: false
 
@@ -33,21 +36,22 @@ exports.esClient = esClient = new esc serverOptions
 ###
 github = require 'octonode'
 
-GITHUB_CLIENT_ID = '2361006ea086ad268742'
-GITHUB_CLIENT_SECRET = '8983c759727c4195ae2b34916d9ed313eeafa332'
+git_sets = [
+  ['2361006ea086ad268742', '8983c759727c4195ae2b34916d9ed313eeafa332']
+  ['fbc1f03fd6ef162b3463', 'bead2882abb9409df91f4ba7fecc450c6e989d4b']
+]
+
+[GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET] = if process.env.github_local then git_sets[1] else git_sets[0]
 
 exports.git = github.client
   id: GITHUB_CLIENT_ID
   secret: GITHUB_CLIENT_SECRET
 
-exports.git_second = github.client
-  id: "fbc1f03fd6ef162b3463" 
-  secret: "bead2882abb9409df91f4ba7fecc450c6e989d4b"
-
 ###
   Some static helpers
 ###
-SERVER_URL = exports.SERVER_URL = "http://ec2-54-225-224-68.compute-1.amazonaws.com:#{process.env.PORT || 8900}"
+host       = if process.env.github_local then "localhost" else "http://ec2-54-225-224-68.compute-1.amazonaws.com"
+SERVER_URL = exports.SERVER_URL = "http://#{host}:#{process.env.PORT || 8900}"
 STATIC_URL = exports.STATIC_URL = "/static/"
 
 exports.logout_url      = logout_url      =  "/auth/logout"

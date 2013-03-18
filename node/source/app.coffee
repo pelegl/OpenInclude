@@ -11,10 +11,10 @@ secret        = "dsakldaSAKDLJkasl192a12"
 cluster       = require 'cluster'
 numCPUs       = require('os').cpus().length
 
-hbs           = require('consolidate').handlebars
+#hbs           = require('consolidate').handlebars
 conf          = require './conf'
 async         = require 'async'
-_ = require 'underscore'
+_             = require 'underscore'
 
 
 ###
@@ -50,7 +50,7 @@ renderFile = (filename, options, fn) ->
 
 startApp = ->
   app.configure ->
-    app.engine 'hbs', hbs
+    #app.engine 'hbs', hbs
     app.set 'env'         , process.env.NODE_ENV || 'dev'
     #app.set 'view engine' , 'hbs'
     app.engine "dot", renderFile

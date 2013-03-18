@@ -1,7 +1,7 @@
 (function() {
-
   (function(exports, isServer) {
     var root;
+
     if (isServer) {
       this.Backbone = require('backbone');
     }
@@ -12,6 +12,7 @@
     return exports.qs = {
       stringify: function(obj) {
         var key, string, v, value, _i, _len;
+
         string = [];
         for (key in obj) {
           value = obj[key];
@@ -34,6 +35,7 @@
       },
       parse: function(string) {
         var chunk, i, key, result, s, value, _i, _len, _ref;
+
         s = string.split('?', 2).slice(-1).pop();
         if (s.length <= 1) {
           return {};
@@ -46,6 +48,7 @@
           value = chunk.split('=', 2)[1];
           if (_.indexOf((function() {
             var _results;
+
             _results = [];
             for (i in result) {
               _results.push(i);
@@ -69,9 +72,9 @@
 }).call(this);
 
 (function() {
-
   (function(exports, isServer) {
     var helpers;
+
     if (isServer) {
       this.Backbone = require('backbone');
     }
@@ -145,6 +148,7 @@
       x: function() {
         var currentDate, datesDifference, difference_ms, lastCommit, lastCommitBucket, self,
           _this = this;
+
         self = this.get('_source');
         lastCommit = new Date(self.pushed_at).getTime();
         currentDate = new Date().getTime();
@@ -169,6 +173,7 @@
 
       y: function(maxScore) {
         var score;
+
         score = this.get('_score');
         return score / maxScore;
       },
@@ -178,6 +183,7 @@
 
       radius: function() {
         var watchers;
+
         watchers = this.get('_source').watchers;
         return 10 + watchers * 5;
       },
@@ -209,6 +215,7 @@
 
       toJSON: function(options) {
         var attr;
+
         attr = _.clone(this.attributes);
         attr.lastCommitHuman = this.lastCommitHuman();
         return attr;
@@ -224,17 +231,18 @@
     __slice = [].slice;
 
   (function(exports, isServer) {
-    var api, requestPager;
+    var api, requestPager, _ref;
+
     api = "/api/v.1";
     if (isServer) {
       this.Backbone = require('backbone');
     }
     requestPager = (function(_super) {
-
       __extends(requestPager, _super);
 
       function requestPager() {
-        return requestPager.__super__.constructor.apply(this, arguments);
+        _ref = requestPager.__super__.constructor.apply(this, arguments);
+        return _ref;
       }
 
       requestPager.prototype.toJSON = function(options) {
@@ -243,6 +251,7 @@
 
       requestPager.prototype.goTo = function(page, options) {
         var response;
+
         if (page !== void 0) {
           this.currentPage = parseInt(page, 10);
           if (this.cache[this.currentPage] != null) {
@@ -309,6 +318,7 @@
       url: "/modules",
       parse: function(response) {
         var languages;
+
         this.cache[this.currentPage] = languages = response.languages;
         this.totalRecords = response.total_count;
         return languages;
@@ -327,6 +337,7 @@
       },
       parse: function(response) {
         var modules;
+
         this.cache[this.currentPage] = modules = response.modules;
         this.totalRecords = response.total_count;
         return modules;
@@ -334,13 +345,15 @@
     });
     exports.Discovery = this.Backbone.Collection.extend({
       parse: function(r) {
-        var _ref;
-        return (_ref = r.response) != null ? _ref : [];
+        var _ref1;
+
+        return (_ref1 = r.response) != null ? _ref1 : [];
       },
       model: models.Discovery,
       url: "/discover/search",
       maxRadius: function() {
         var _this = this;
+
         return d3.max(this.models, function(data) {
           return data.radius();
         });
@@ -348,6 +361,7 @@
       languageList: function() {
         var languageNames, list,
           _this = this;
+
         languageNames = this.groupedModules ? _.keys(this.groupedModules) : [];
         list = [];
         _.each(languageNames, function(lang) {
@@ -360,12 +374,14 @@
       },
       filters: {},
       fetch: function() {
-        var collection, opts, query, _ref;
-        _ref = Array.prototype.slice.apply(arguments), query = _ref[0], opts = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
+        var collection, opts, query, _ref1;
+
+        _ref1 = Array.prototype.slice.apply(arguments), query = _ref1[0], opts = 2 <= _ref1.length ? __slice.call(_ref1, 1) : [];
         query = query != null ? query : "";
         collection = this;
         return $.getJSON("" + collection.url + "?q=" + query, function(r) {
           var _this = this;
+
           collection.maxScore = r.maxScore;
           collection.groupedModules = _.groupBy(r.searchData, function(module) {
             return module._source.language;
@@ -378,9 +394,11 @@
       model: models.Discovery,
       sortBy: function(key, direction) {
         var _this = this;
+
         key = key != null ? key.split(".") : "_id";
         this.models = _.sortBy(this.models, function(module) {
           var asked, value;
+
           value = key.length === 2 ? module.get(key[0])[key[1]] : module.get(key[0]);
           if (key[1] === 'pushed_at') {
             return new Date(value);
@@ -437,6 +455,7 @@
       parse: function(r) {
         var items, maxTS, questions,
           _this = this;
+
         this.statistics = r.statistics, questions = r.questions;
         if (!(questions.length > 0)) {
           return [];
@@ -448,6 +467,7 @@
         items = [];
         _.each(this.statistics.keys, function(key) {
           var list;
+
           list = _.where(questions, {
             key: key
           });
@@ -458,6 +478,7 @@
         });
         _.each(items, function(item) {
           var i;
+
           i = _.extend({}, item);
           i.timestamp = maxTS.timestamp;
           i._id += "_copy";
@@ -491,16 +512,17 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var View, col, root, views;
+    var View, col, root, views, _ref, _ref1, _ref2, _ref3, _ref4;
+
     root = this;
     views = this.hbt = _.extend({}, dt, Handlebars.partials);
     col = root.collections;
     exports.MetaView = (function(_super) {
-
       __extends(MetaView, _super);
 
       function MetaView() {
-        return MetaView.__super__.constructor.apply(this, arguments);
+        _ref = MetaView.__super__.constructor.apply(this, arguments);
+        return _ref;
       }
 
       MetaView.prototype.events = {};
@@ -514,11 +536,11 @@
 
     })(this.Backbone.View);
     exports.Loader = (function(_super) {
-
       __extends(Loader, _super);
 
       function Loader() {
-        return Loader.__super__.constructor.apply(this, arguments);
+        _ref1 = Loader.__super__.constructor.apply(this, arguments);
+        return _ref1;
       }
 
       Loader.prototype.tagName = 'img';
@@ -531,11 +553,11 @@
 
     })(this.Backbone.View);
     exports.Agreement = (function(_super) {
-
       __extends(Agreement, _super);
 
       function Agreement() {
-        return Agreement.__super__.constructor.apply(this, arguments);
+        _ref2 = Agreement.__super__.constructor.apply(this, arguments);
+        return _ref2;
       }
 
       Agreement.prototype.tagName = 'div';
@@ -548,6 +570,7 @@
 
       Agreement.prototype.processSubmit = function(e) {
         var isChecked;
+
         e.preventDefault();
         /*
           Perform async form process
@@ -571,14 +594,15 @@
       };
 
       Agreement.prototype.initialize = function() {
-        var action, agreement, _ref;
+        var action, agreement, _ref3;
+
         this.model = new models.Tos;
         if ($(".agreementContainer").length > 0) {
           this.setElement($(".agreementContainer"));
         } else {
           this.render();
         }
-        _ref = this.options, agreement = _ref.agreement, action = _ref.action;
+        _ref3 = this.options, agreement = _ref3.agreement, action = _ref3.action;
         this.listenTo(this, "init", this.niceScroll);
         this.listenTo(this.model, "sync", this.signed);
         return this.setData(agreement, action);
@@ -586,6 +610,7 @@
 
       Agreement.prototype.renderData = function() {
         var output;
+
         output = views['member/agreement'](this.context);
         this.$el.html($(output).unwrap().html());
         return this.trigger("init");
@@ -610,6 +635,7 @@
 
       Agreement.prototype.render = function() {
         var html;
+
         html = views['member/agreement'](this.context || {});
         this.$el = $(html);
         this.delegateEvents();
@@ -620,7 +646,6 @@
 
     })(this.Backbone.View);
     root.View = View = (function(_super) {
-
       __extends(View, _super);
 
       View.prototype.tagName = 'section';
@@ -651,11 +676,11 @@
 
     })(this.Backbone.View);
     exports.Index = (function(_super) {
-
       __extends(Index, _super);
 
       function Index() {
-        return Index.__super__.constructor.apply(this, arguments);
+        _ref3 = Index.__super__.constructor.apply(this, arguments);
+        return _ref3;
       }
 
       Index.prototype.initialize = function() {
@@ -666,6 +691,7 @@
 
       Index.prototype.render = function() {
         var html;
+
         html = views['index'](this.context, null, this.context.partials);
         this.$el.html(html);
         this.$el.attr('view-id', 'index');
@@ -676,11 +702,11 @@
 
     })(View);
     return exports.ShareIdeas = (function(_super) {
-
       __extends(ShareIdeas, _super);
 
       function ShareIdeas() {
-        return ShareIdeas.__super__.constructor.apply(this, arguments);
+        _ref4 = ShareIdeas.__super__.constructor.apply(this, arguments);
+        return _ref4;
       }
 
       ShareIdeas.prototype.events = {
@@ -699,6 +725,7 @@
 
       ShareIdeas.prototype.submit = function() {
         var $email, $ideas, $self;
+
         $email = $('#email');
         $ideas = $('#ideas');
         $self = $('.submit');
@@ -736,16 +763,17 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var agreement_text, root, views;
+    var agreement_text, root, views, _ref, _ref1, _ref2;
+
     agreement_text = "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. ";
     root = this;
     views = this.hbt = _.extend({}, dt, Handlebars.partials);
     exports.SignIn = (function(_super) {
-
       __extends(SignIn, _super);
 
       function SignIn() {
-        return SignIn.__super__.constructor.apply(this, arguments);
+        _ref = SignIn.__super__.constructor.apply(this, arguments);
+        return _ref;
       }
 
       SignIn.prototype.initialize = function() {
@@ -756,6 +784,7 @@
 
       SignIn.prototype.render = function() {
         var html;
+
         html = views['registration/login'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'registration');
@@ -766,11 +795,11 @@
 
     })(View);
     exports.CC = (function(_super) {
-
       __extends(CC, _super);
 
       function CC() {
-        return CC.__super__.constructor.apply(this, arguments);
+        _ref1 = CC.__super__.constructor.apply(this, arguments);
+        return _ref1;
       }
 
       CC.prototype.className = "dropdown-menu";
@@ -787,6 +816,7 @@
 
       CC.prototype.updateCardData = function(e) {
         var data;
+
         e.preventDefault();
         data = Backbone.Syphon.serialize(e.currentTarget);
         this.$("[type=submit]").addClass("disabled").text("Updating information...");
@@ -811,6 +841,7 @@
 
       CC.prototype.initialize = function() {
         var $el;
+
         this.model = new models.CreditCard;
         this.model.url = app.conf.update_credit_card;
         _.bindAll(this, "processUpdate");
@@ -825,6 +856,7 @@
 
       CC.prototype.render = function() {
         var html;
+
         html = views['member/credit_card'](this.context);
         this.$el.html($(html).html());
         return this;
@@ -834,11 +866,11 @@
 
     })(this.Backbone.View);
     return exports.Profile = (function(_super) {
-
       __extends(Profile, _super);
 
       function Profile() {
-        return Profile.__super__.constructor.apply(this, arguments);
+        _ref2 = Profile.__super__.constructor.apply(this, arguments);
+        return _ref2;
       }
 
       Profile.prototype.events = {
@@ -857,6 +889,7 @@
 
       Profile.prototype.accountUpgrade = function(e) {
         var $this, href;
+
         $this = $(e.currentTarget);
         href = $this.attr("href");
         this.setAction(this.clearHref(href));
@@ -865,6 +898,7 @@
 
       Profile.prototype.setAction = function(action) {
         var dev, merc, trello;
+
         dev = this.clearHref(this.context.developer_agreement);
         merc = this.clearHref(this.context.merchant_agreement);
         trello = this.clearHref(this.context.trello_auth_url);
@@ -929,6 +963,7 @@
 
       Profile.prototype.render = function() {
         var html;
+
         this.context.user = this.model.toJSON();
         html = views['member/profile'](this.context);
         this.$el.html(html);
@@ -958,15 +993,16 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var root, views;
+    var root, views, _ref, _ref1, _ref2, _ref3, _ref4;
+
     root = this;
     views = this.hbt = _.extend({}, dt, Handlebars.partials);
     exports.DiscoverChartPopup = (function(_super) {
-
       __extends(DiscoverChartPopup, _super);
 
       function DiscoverChartPopup() {
-        return DiscoverChartPopup.__super__.constructor.apply(this, arguments);
+        _ref = DiscoverChartPopup.__super__.constructor.apply(this, arguments);
+        return _ref;
       }
 
       DiscoverChartPopup.prototype.tagName = "div";
@@ -999,6 +1035,7 @@
 
       DiscoverChartPopup.prototype.setData = function(datum, $this, scope) {
         var activity, activityStars, color, data, height, lastContribution, stars, width, x, y;
+
         width = height = parseInt($this.attr("r")) * 2;
         x = parseInt($this.attr("cx"));
         y = parseInt($this.attr("cy"));
@@ -1025,11 +1062,11 @@
 
     })(this.Backbone.View);
     exports.DiscoverFilter = (function(_super) {
-
       __extends(DiscoverFilter, _super);
 
       function DiscoverFilter() {
-        return DiscoverFilter.__super__.constructor.apply(this, arguments);
+        _ref1 = DiscoverFilter.__super__.constructor.apply(this, arguments);
+        return _ref1;
       }
 
       DiscoverFilter.prototype.events = {
@@ -1054,6 +1091,7 @@
 
       DiscoverFilter.prototype.resetFilter = function(e) {
         var $this;
+
         if ((e != null ? e.currentTarget : void 0) != null) {
           $this = $(e.currentTarget);
           $this.closest(".filterBox").find("input[type=checkbox]").prop("checked", false);
@@ -1065,6 +1103,7 @@
 
       DiscoverFilter.prototype.filterResults = function(e) {
         var $this, languageName;
+
         $this = $(e.currentTarget);
         languageName = $this.val();
         if ($this.is(":checked")) {
@@ -1077,6 +1116,7 @@
 
       DiscoverFilter.prototype.render = function() {
         var html;
+
         this.context.filters[0].languages = this.collection.languageList();
         html = views['discover/filter'](this.context);
         this.$el.html(html);
@@ -1088,11 +1128,11 @@
 
     })(this.Backbone.View);
     exports.DiscoverComparison = (function(_super) {
-
       __extends(DiscoverComparison, _super);
 
       function DiscoverComparison() {
-        return DiscoverComparison.__super__.constructor.apply(this, arguments);
+        _ref2 = DiscoverComparison.__super__.constructor.apply(this, arguments);
+        return _ref2;
       }
 
       DiscoverComparison.prototype.events = {
@@ -1102,6 +1142,7 @@
       DiscoverComparison.prototype.sortComparison = function(e) {
         var $this, direction, index, key,
           _this = this;
+
         $this = $(e.currentTarget);
         /*
           sort key
@@ -1161,6 +1202,7 @@
 
       DiscoverComparison.prototype.render = function() {
         var html;
+
         this.context.projects = this.collection.toJSON();
         html = views['discover/compare'](this.context);
         this.$el.html(html);
@@ -1172,11 +1214,11 @@
 
     })(this.Backbone.View);
     exports.DiscoverChart = (function(_super) {
-
       __extends(DiscoverChart, _super);
 
       function DiscoverChart() {
-        return DiscoverChart.__super__.constructor.apply(this, arguments);
+        _ref3 = DiscoverChart.__super__.constructor.apply(this, arguments);
+        return _ref3;
       }
 
       DiscoverChart.prototype.initialize = function() {
@@ -1222,6 +1264,7 @@
 
       DiscoverChart.prototype.position = function(dot) {
         var _this = this;
+
         return dot.attr("cx", function(d) {
           return _this.xScale(d.x());
         }).attr("cy", function(d) {
@@ -1237,6 +1280,7 @@
 
       DiscoverChart.prototype.popup = function(action, scope) {
         var self;
+
         self = this;
         return function(d, i) {
           switch (action) {
@@ -1255,6 +1299,7 @@
       DiscoverChart.prototype.renderChart = function() {
         var data, languages,
           _this = this;
+
         this.setRadiusScale();
         languages = _.keys(this.collection.filters);
         if (languages.length > 0) {
@@ -1279,6 +1324,7 @@
 
       DiscoverChart.prototype.render = function() {
         var _this = this;
+
         this.xAxis = d3.svg.axis().orient("bottom").scale(this.xScale).tickValues([0.5, 1.5, 2.5, 3.5]).tickFormat(this.formatterX);
         this.yAxis = d3.svg.axis().scale(this.yScale).orient("left").tickValues([1]).tickFormat(function(d, i) {
           if (d === 1) {
@@ -1300,11 +1346,11 @@
 
     })(View);
     return exports.Discover = (function(_super) {
-
       __extends(Discover, _super);
 
       function Discover() {
-        return Discover.__super__.constructor.apply(this, arguments);
+        _ref4 = Discover.__super__.constructor.apply(this, arguments);
+        return _ref4;
       }
 
       Discover.prototype.events = {
@@ -1313,6 +1359,7 @@
 
       Discover.prototype.initialize = function() {
         var qs;
+
         console.log('[__discoverView__] Init');
         _.bindAll(this, "fetchSearchData", "render", "searchSubmit");
         qs = root.help.qs.parse(location.search);
@@ -1346,6 +1393,7 @@
 
       Discover.prototype.searchSubmit = function(e) {
         var pathname, q;
+
         e.preventDefault();
         q = this.$("[name=q]").val();
         pathname = window.location.pathname;
@@ -1361,6 +1409,7 @@
 
       Discover.prototype.render = function() {
         var html;
+
         html = views['discover/index'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'discover');
@@ -1379,15 +1428,16 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var root, views;
+    var root, views, _ref;
+
     root = this;
     views = this.hbt = _.extend({}, dt, Handlebars.partials);
     return exports.HowTo = (function(_super) {
-
       __extends(HowTo, _super);
 
       function HowTo() {
-        return HowTo.__super__.constructor.apply(this, arguments);
+        _ref = HowTo.__super__.constructor.apply(this, arguments);
+        return _ref;
       }
 
       HowTo.prototype.initialize = function() {
@@ -1397,6 +1447,7 @@
 
       HowTo.prototype.render = function() {
         var html;
+
         html = views['how-to'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'how-to');
@@ -1416,22 +1467,24 @@
     __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   (function(exports) {
-    var modules_url, qs, root, views;
+    var modules_url, qs, root, views, _ref, _ref1, _ref2, _ref3, _ref4;
+
     root = this;
     views = this.hbt = _.extend({}, dt, Handlebars.partials);
     qs = root.help.qs;
     modules_url = "/modules";
     exports.Series = (function(_super) {
-
       __extends(Series, _super);
 
       function Series() {
-        return Series.__super__.constructor.apply(this, arguments);
+        _ref = Series.__super__.constructor.apply(this, arguments);
+        return _ref;
       }
 
       Series.prototype.initialize = function(opts) {
         var className,
           _this = this;
+
         if (opts == null) {
           opts = {};
         }
@@ -1466,9 +1519,11 @@
 
         var data, prev,
           _this = this;
+
         data = this.collection.filter(function(item) {
-          var _ref;
-          return _ref = item.get("type"), __indexOf.call(_this.types, _ref) >= 0;
+          var _ref1;
+
+          return _ref1 = item.get("type"), __indexOf.call(_this.types, _ref1) >= 0;
         });
         prev = 0;
         data.forEach(function(d) {
@@ -1494,16 +1549,17 @@
     */
 
     exports.MultiSeries = (function(_super) {
-
       __extends(MultiSeries, _super);
 
       function MultiSeries() {
-        return MultiSeries.__super__.constructor.apply(this, arguments);
+        _ref1 = MultiSeries.__super__.constructor.apply(this, arguments);
+        return _ref1;
       }
 
       MultiSeries.prototype.initialize = function(opts) {
         var className,
           _this = this;
+
         if (opts == null) {
           opts = {};
         }
@@ -1533,6 +1589,7 @@
       MultiSeries.prototype.render = function() {
         var max, min, question, questions,
           _this = this;
+
         this.color.domain(this.collection.keys());
         questions = this.color.domain().map(this.collection.chartMap);
         this.x.domain(d3.extent(this.collection.models, function(d) {
@@ -1564,6 +1621,7 @@
           };
         }).attr("transform", function(d) {
           var x, y;
+
           x = d.value != null ? _this.x(d.value.x()) : 0;
           y = d.value != null ? _this.y(d.value.y()) : 0;
           return "translate(" + x + "," + y + ")";
@@ -1586,27 +1644,29 @@
     */
 
     exports.Repo = (function(_super) {
-
       __extends(Repo, _super);
 
       function Repo() {
-        return Repo.__super__.constructor.apply(this, arguments);
+        _ref2 = Repo.__super__.constructor.apply(this, arguments);
+        return _ref2;
       }
 
       Repo.prototype.events = {};
 
       Repo.prototype.initialize = function(opts) {
-        var preloadedData, repo, _ref;
+        var e, preloadedData, repo, _ref3;
+
         if (opts == null) {
           opts = {};
         }
         this.language = opts.language, repo = opts.repo;
         try {
-          _ref = decodeURI(repo).split("|"), this.owner = _ref[0], this.repo = _ref[1];
+          _ref3 = decodeURI(repo).split("|"), this.owner = _ref3[0], this.repo = _ref3[1];
           if (!this.owner || !this.repo) {
             throw "Incorrect link";
           }
-        } catch (e) {
+        } catch (_error) {
+          e = _error;
           console.log(e);
         }
         this.model = new models.Repo({
@@ -1669,6 +1729,7 @@
 
       Repo.prototype.initSO = function() {
         var options, so;
+
         options = {
           language: this.language,
           owner: this.owner,
@@ -1683,6 +1744,7 @@
 
       Repo.prototype.initGE = function() {
         var ge, options;
+
         options = {
           language: this.language,
           owner: this.owner,
@@ -1705,6 +1767,7 @@
 
       Repo.prototype.render = function() {
         var html;
+
         this.context.module = this.model.toJSON();
         html = views['module/view'](this.context);
         this.$el.html(html);
@@ -1716,11 +1779,11 @@
 
     })(View);
     exports.ModuleList = (function(_super) {
-
       __extends(ModuleList, _super);
 
       function ModuleList() {
-        return ModuleList.__super__.constructor.apply(this, arguments);
+        _ref3 = ModuleList.__super__.constructor.apply(this, arguments);
+        return _ref3;
       }
 
       ModuleList.prototype.events = {
@@ -1728,14 +1791,15 @@
       };
 
       ModuleList.prototype.initialize = function(opts) {
-        var data, limit, page, preloadedData, _ref;
+        var data, limit, page, preloadedData, _ref4;
+
         console.log('[__ModuleListView__] Init');
         this.language = opts.language;
         this.context = {
           modules_url: modules_url,
           language: this.language.capitalize()
         };
-        _ref = qs.parse(window.location.search), page = _ref.page, limit = _ref.limit;
+        _ref4 = qs.parse(window.location.search), page = _ref4.page, limit = _ref4.limit;
         page = page ? parseInt(page) : 0;
         limit = limit ? parseInt(limit) : 30;
         /*
@@ -1759,6 +1823,7 @@
 
       ModuleList.prototype.changePage = function(e) {
         var href, loader, page, view;
+
         href = $(e.currentTarget).attr("href");
         if (href) {
           page = href.replace(/.*page=([0-9]+).*/, "$1");
@@ -1777,9 +1842,10 @@
       };
 
       ModuleList.prototype.render = function() {
-        var currentPage, html, i, totalPages, _i, _ref;
+        var currentPage, html, i, totalPages, _i, _ref4;
+
         this.context.modules = this.collection.toJSON();
-        _ref = this.collection.info(), totalPages = _ref.totalPages, currentPage = _ref.currentPage;
+        _ref4 = this.collection.info(), totalPages = _ref4.totalPages, currentPage = _ref4.currentPage;
         if (totalPages > 0) {
           this.context.pages = [];
           for (i = _i = 1; 1 <= totalPages ? _i <= totalPages : _i >= totalPages; i = 1 <= totalPages ? ++_i : --_i) {
@@ -1808,11 +1874,11 @@
 
     })(View);
     return exports.Languages = (function(_super) {
-
       __extends(Languages, _super);
 
       function Languages() {
-        return Languages.__super__.constructor.apply(this, arguments);
+        _ref4 = Languages.__super__.constructor.apply(this, arguments);
+        return _ref4;
       }
 
       Languages.prototype.events = {
@@ -1820,7 +1886,8 @@
       };
 
       Languages.prototype.initialize = function() {
-        var data, limit, page, preloadedData, _ref;
+        var data, limit, page, preloadedData, _ref5;
+
         console.log('[__ModuleViewInit__] Init');
         /*
           Context
@@ -1831,7 +1898,7 @@
           QS limits
         */
 
-        _ref = qs.parse(window.location.search), page = _ref.page, limit = _ref.limit;
+        _ref5 = qs.parse(window.location.search), page = _ref5.page, limit = _ref5.limit;
         page = page ? parseInt(page) : 0;
         limit = limit ? parseInt(limit) : 30;
         this.collection = app.meta.Languages;
@@ -1853,6 +1920,7 @@
 
       Languages.prototype.changePage = function(e) {
         var href, loader, page, view;
+
         href = $(e.currentTarget).attr("href");
         if (href) {
           page = href.replace(/.*page=([0-9]+).*/, "$1");
@@ -1871,9 +1939,10 @@
       };
 
       Languages.prototype.render = function() {
-        var currentPage, html, i, totalPages, _i, _ref;
+        var currentPage, html, i, totalPages, _i, _ref5;
+
         this.context.languages = this.collection.toJSON();
-        _ref = this.collection.info(), totalPages = _ref.totalPages, currentPage = _ref.currentPage;
+        _ref5 = this.collection.info(), totalPages = _ref5.totalPages, currentPage = _ref5.currentPage;
         if (totalPages > 0) {
           this.context.pages = [];
           for (i = _i = 1; 1 <= totalPages ? _i <= totalPages : _i >= totalPages; i = 1 <= totalPages ? ++_i : --_i) {
@@ -1910,7 +1979,8 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var InlineForm, project, projectId, projects, root, tasks, views;
+    var InlineForm, project, projectId, projects, root, tasks, views, _ref, _ref1, _ref2, _ref3, _ref4;
+
     root = this;
     views = this.hbt = _.extend({}, dt, Handlebars.partials);
     projects = new collections.Projects;
@@ -1918,11 +1988,11 @@
     projectId = "";
     project = null;
     InlineForm = (function(_super) {
-
       __extends(InlineForm, _super);
 
       function InlineForm() {
-        return InlineForm.__super__.constructor.apply(this, arguments);
+        _ref = InlineForm.__super__.constructor.apply(this, arguments);
+        return _ref;
       }
 
       InlineForm.prototype.events = {
@@ -1932,6 +2002,7 @@
 
       InlineForm.prototype.submit = function(event) {
         var data;
+
         event.preventDefault();
         data = Backbone.Syphon.serialize(event.currentTarget);
         this.$("[type=submit]").addClass("disabled").text("Updating information...");
@@ -1985,11 +2056,11 @@
 
     })(this.Backbone.View);
     exports.CreateProjectForm = (function(_super) {
-
       __extends(CreateProjectForm, _super);
 
       function CreateProjectForm() {
-        return CreateProjectForm.__super__.constructor.apply(this, arguments);
+        _ref1 = CreateProjectForm.__super__.constructor.apply(this, arguments);
+        return _ref1;
       }
 
       CreateProjectForm.prototype.el = "#create-project-inline";
@@ -2011,11 +2082,11 @@
 
     })(InlineForm);
     exports.EditProjectForm = (function(_super) {
-
       __extends(EditProjectForm, _super);
 
       function EditProjectForm() {
-        return EditProjectForm.__super__.constructor.apply(this, arguments);
+        _ref2 = EditProjectForm.__super__.constructor.apply(this, arguments);
+        return _ref2;
       }
 
       EditProjectForm.prototype.el = ".main-area";
@@ -2038,11 +2109,11 @@
 
     })(InlineForm);
     exports.CreateTaskForm = (function(_super) {
-
       __extends(CreateTaskForm, _super);
 
       function CreateTaskForm() {
-        return CreateTaskForm.__super__.constructor.apply(this, arguments);
+        _ref3 = CreateTaskForm.__super__.constructor.apply(this, arguments);
+        return _ref3;
       }
 
       CreateTaskForm.prototype.el = "#create-task-inline";
@@ -2065,11 +2136,11 @@
 
     })(InlineForm);
     return exports.Dashboard = (function(_super) {
-
       __extends(Dashboard, _super);
 
       function Dashboard() {
-        return Dashboard.__super__.constructor.apply(this, arguments);
+        _ref4 = Dashboard.__super__.constructor.apply(this, arguments);
+        return _ref4;
       }
 
       Dashboard.prototype.events = {
@@ -2085,7 +2156,8 @@
       };
 
       Dashboard.prototype.parsePermissions = function(user, project) {
-        var _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
+        var _i, _j, _k, _len, _len1, _len2, _ref5, _ref6, _ref7, _results;
+
         this.context.canRead = false;
         this.context.canWrite = false;
         this.context.canGrant = false;
@@ -2093,26 +2165,26 @@
         if (user._id === project.client.id) {
           this.context.isOwner = true;
         }
-        _ref = project.read;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          user = _ref[_i];
+        _ref5 = project.read;
+        for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
+          user = _ref5[_i];
           if (user.id === this.context.user._id) {
             this.context.canRead = true;
             break;
           }
         }
-        _ref1 = project.write;
-        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-          user = _ref1[_j];
+        _ref6 = project.write;
+        for (_j = 0, _len1 = _ref6.length; _j < _len1; _j++) {
+          user = _ref6[_j];
           if (user.id === this.context.user._id) {
             this.context.canWrite = true;
             break;
           }
         }
-        _ref2 = project.grant;
+        _ref7 = project.grant;
         _results = [];
-        for (_k = 0, _len2 = _ref2.length; _k < _len2; _k++) {
-          user = _ref2[_k];
+        for (_k = 0, _len2 = _ref7.length; _k < _len2; _k++) {
+          user = _ref7[_k];
           if (user.id === this.context.user._id) {
             this.context.canGrant = true;
             break;
@@ -2125,6 +2197,7 @@
 
       Dashboard.prototype.editProject = function(e) {
         var editProjectForm;
+
         e.preventDefault();
         e.stopPropagation();
         projectId = e.target.attributes['rel'].value;
@@ -2139,6 +2212,7 @@
 
       Dashboard.prototype.deleteProject = function(e) {
         var _this = this;
+
         e.preventDefault();
         project.url = "/project/" + projectId;
         return project.destroy({
@@ -2178,13 +2252,14 @@
         this.context.title = "Dashboard";
         this.context.user = app.session.toJSON();
         this.context.canEdit = function(user, project) {
-          var _i, _len, _ref, _user;
+          var _i, _len, _ref5, _user;
+
           if (user._id === project.client.id) {
             return true;
           }
-          _ref = project.write;
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            _user = _ref[_i];
+          _ref5 = project.write;
+          for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
+            _user = _ref5[_i];
             if (_user.id === user._id) {
               return true;
             }
@@ -2198,6 +2273,7 @@
 
       Dashboard.prototype.updateProjectList = function(collection) {
         var _projects;
+
         _projects = [];
         collection.each(function(item) {
           return _projects.push(item.toJSON());
@@ -2212,6 +2288,7 @@
 
       Dashboard.prototype.updateTaskList = function(collection) {
         var _tasks;
+
         _tasks = [];
         collection.each(function(item) {
           return _tasks.push(item.toJSON());
@@ -2222,6 +2299,7 @@
 
       Dashboard.prototype.render = function() {
         var html;
+
         html = views['dashboard/dashboard'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'dashboard');
@@ -2242,7 +2320,8 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var App, conf;
+    var App, conf, _ref;
+
     conf = {
       STATIC_URL: "/static/",
       in_stealth_mode: false,
@@ -2262,17 +2341,18 @@
       partials: window.dt
     };
     App = (function(_super) {
-
       __extends(App, _super);
 
       function App() {
-        return App.__super__.constructor.apply(this, arguments);
+        _ref = App.__super__.constructor.apply(this, arguments);
+        return _ref;
       }
 
       App.prototype.conf = conf;
 
       App.prototype.init = function() {
         var hash;
+
         if (!Backbone.history._hasPushState) {
           hash = Backbone.history.getHash();
           this.navigate('', {
@@ -2407,6 +2487,7 @@
     return $(document).ready(function() {
       var app, route_keys, route_paths,
         _this = this;
+
       route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "" + conf.profile_url + "/:action/:profile", "!/" + conf.profile_url + "/:action", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url];
       route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo", "dashboard", "dashboard"];
       App.prototype.routes = _.object(route_keys, route_paths);
@@ -2427,6 +2508,7 @@
         app.init();
         return $(document).delegate("a", "click", function(e) {
           var href, path, search, uri;
+
           href = e.currentTarget.getAttribute('href');
           if (!href) {
             return true;
