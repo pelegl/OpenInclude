@@ -2,7 +2,7 @@
   Loading config
 ###
 _            = require 'underscore'
-{get_models, STATIC_URL, logout_url, signin_url, profile_url, github_auth_url, discover_url, how_to_url, modules_url} = require '../conf'
+{get_models, dashboard_url, STATIC_URL, logout_url, signin_url, profile_url, github_auth_url, discover_url, how_to_url, modules_url} = require '../conf'
 
 
 ###
@@ -33,7 +33,8 @@ class ModuleController extends require('./basicController')
       github_auth_url,
       discover_url,
       how_to_url,
-      modules_url
+      modules_url,
+      dashboard_url
     } 
         
     
