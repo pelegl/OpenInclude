@@ -5,7 +5,7 @@ dot = require 'dot'
 {STATIC_URL, urls} = require '../conf'
 
 class BasicController
-  constructor: (@req,@res)->    
+  constructor: (@req, @res)->
     path = @req.path
     segments = _.without path.split("/"), ""
     segments = _.map segments, (item) -> decodeURIComponent(item)
@@ -19,18 +19,19 @@ class BasicController
       @app = @req.app
 
       config =
-        title:      "Home Page"
-        STATIC_URL: STATIC_URL
-        user:       @req.user
+        title:        "Home Page"
+        STATIC_URL:   STATIC_URL
+        user:         @req.user
 
       context = _.extend {}, urls, config
 
       if @context then _.extend @context, context else @context = context #extend our context - maybe we had already set it up in the child contstructor
       
       @[@funcName]()
+
     else
       @res.send "Error 404", 404
-   #   console.log "404 error"
+
       
   _view : (name, context)=>
     if @app.Views['dot'].hasOwnProperty(name)

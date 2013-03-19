@@ -3,7 +3,7 @@
     <form class='agreement' method='post' action='{{=it.agreement_signup_action}}' >
       <legend>Terms of Service</legend>
       <div class='agreementWrapper'>
-        <div class='agreementText'>{{=it.agreement_text}}</div>  
+        <div class='agreementText'>{{= it.agreement_text }}</div>
       </div>            
       <button type='submit' class='btn btn-success pull-left'>Upgrade Account</button>
       <label class='checkbox'>

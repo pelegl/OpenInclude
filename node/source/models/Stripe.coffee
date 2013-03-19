@@ -4,21 +4,22 @@
 {get_models} = require '../conf'
 async        = require 'async'
 
-[User] = get_models ["User"]
+[User,Bill] = get_models ["User","Bill"]
 
 
 ###
   Stripe
 ###
 ObjectId = require('mongoose').Schema.Types.ObjectId
-#api_key = 'sk_test_07bvlXeoFTA2bKM42Vt0O9SY' #
+#api_key = 'sk_test_07bvlXeoFTA2bKM42Vt0O9SY'
 api_key = "sk_test_HkMUKw1bjVE6Sxo218IiMNWP"
+
 stripe = require("stripe")(api_key)
 
 definition =
   date:            Date #date of payment
-	rate:            Number #payment rate
-	fee:             Number #fee to our system
+  rate:            Number #payment rate
+  fee:             Number #fee to our system
 	hours:           Number #hours
 	client:          ObjectId #client that paid
 	receivepayment:  Number #developer or project manager that receives the payment
@@ -83,22 +84,34 @@ statics =
     ###
       Perform tasks
     ###
+
     async.auto Tasks, (err,results) =>
-      callback err, user      
+        callback err, user      
 
-
-#Billing a customer
-	billCustomer: (user, amount, callback) ->
-		user.get_payment_method 'Stripe', (err, method)=>
-		  if method
-		    stripe.charges.create
-		      amount: amount
-		      currency: 'usd'
-		      customer: method.id
-		    , callback
-		  else
-		    callback "No payment method set"
-
-				
+  billCustomer: (fromuser, user, amount, callback) ->
+	  user.get_payment_method "Stripe", (err, method) ->
+	    if method
+	      stripe.charges.create
+	        amount: amount
+	        currency: "usd"
+	        customer: method.id
+	      , (error, charge) ->
+	        bill = undefined
+	        billObj = undefined
+	        unless error
+	          bill =
+	            bill_id: charge.id
+	            bill_amount: amount
+	            billing_user: fromuser._id
+	            billed_user: user._id
+	
+	          billObj = new Bill(bill)
+	          billObj.save (err, succ) ->
+	            callback err, succ
+	        else
+	          callback error, null
+	    else
+	      callback "No payment method set"
+	      
 exports.definition = definition
 exports.statics = statics

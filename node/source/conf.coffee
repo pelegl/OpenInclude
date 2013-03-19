@@ -5,6 +5,9 @@ esc         = require 'elasticsearchclient'
 mongoose    = require 'mongoose'
 _           = require 'underscore'
 
+
+require('coffee-trace')
+
 passport       = require 'passport'
 GithubStrategy = require('passport-github').Strategy
 TrelloStrategy = require('passport-trello').Strategy
@@ -43,6 +46,8 @@ git_sets = [
 
 [GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET] = if process.env.github_local then git_sets[1] else git_sets[0]
 
+exports.git = github.client "client", GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
+
 exports.git = github.client
   id: GITHUB_CLIENT_ID
   secret: GITHUB_CLIENT_SECRET
@@ -50,6 +55,7 @@ exports.git = github.client
 ###
   Some static helpers
 ###
+
 host       = if process.env.github_local then "localhost" else "http://ec2-54-225-224-68.compute-1.amazonaws.com"
 SERVER_URL = exports.SERVER_URL = "http://#{host}:#{process.env.PORT || 8900}"
 STATIC_URL = exports.STATIC_URL = "/static/"
@@ -64,12 +70,16 @@ exports.how_to_url      = how_to_url      = "/how-to"
 exports.modules_url     = modules_url     = "/modules"
 exports.dashboard_url   = dashboard_url   = "/dashboard"
 
+exports.admin_url       = admin_url       = '/admin'
+exports.view_bills      = view_bills 			= "#{profile_url}/view_bills"
+exports.create_bills    = create_bills 			= "#{admin_url}/create_bills"
+exports.users_with_stripe = users_with_stripe = "#{admin_url}/users_with_stripe"
+
 exports.merchant_agreement        = merchant_agreement  = "#{profile_url}/merchant_agreement"
 exports.developer_agreement       = developer_agreement = "#{profile_url}/developer_agreement"
 exports.update_credit_card        = update_credit_card  = "#{profile_url}/update_credit_card"
 
 # Transitioning to exports.urls = {}
-
 exports.urls =
   logout_url:           "/auth/logout"
   profile_url:          "/profile"
@@ -83,7 +93,10 @@ exports.urls =
   merchant_agreement:   "#{profile_url}/merchant_agreement"
   developer_agreement:  "#{profile_url}/developer_agreement"
   update_credit_card:   "#{profile_url}/update_credit_card"
-
+  admin_url:            "/admin"
+  view_bills:           "#{profile_url}/view_bills"
+  create_bills:         "#{admin_url}/create_bills"
+  users_with_stripe:    "#{admin_url}/users_with_stripe"
 
 ###
   Export controllers to the app
@@ -174,8 +187,10 @@ passport_init = exports.passport_init = () ->
     # console.log(access_token, refresh_token, profile)
     console.log('verify', profile)
     User.findOne({github_id: profile.id}, (error, user) ->
+      console.log user
       if error then return done(error)
       if user then return done(null, user)
+      console.log user
 
       user = new User(
         github_id: profile.id
@@ -206,9 +221,6 @@ passport_init = exports.passport_init = () ->
             # user is not authenticated, log in via trello
             # TODO
         else
-            user = req.user
-            console.log(req.session)
-            
             User.findById(req.user._id, (error, user) ->
                 if error then return done(error)
                 
@@ -229,7 +241,7 @@ exports.github_auth = (options) ->
 exports.logout = (req, res) ->
   req.logout()
   res.redirect "back"
-
+  
 exports.is_authenticated = (request, response, next) ->
   unless request.isAuthenticated()
     return response.redirect signin_url
@@ -250,7 +262,7 @@ loaded_models = {}
 load = (required) ->
   models = []
 
-  required.forEach((name) ->
+  required.forEach (name) ->
     unless loaded_models[name]
       module = require './models/' + name
       if module.definition
@@ -288,9 +300,9 @@ load = (required) ->
 
       loaded_models[name] = module
     else
-      models.push(loaded_models[name].model)
-  )
+      models.push loaded_models[name].model
 
   models
+
 
 exports.model = exports.get_models = load

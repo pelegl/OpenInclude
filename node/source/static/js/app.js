@@ -2338,7 +2338,11 @@
       update_credit_card: '/profile/update_credit_card',
       dashboard_url: "dashboard",
       create_project_url: "dashboard/project/create",
-      partials: window.dt
+      partials: window.dt,
+      admin_url: "admin",
+      view_bills: "/profile/view_bills",
+      create_bills: "/admin/create_bills",
+      users_with_stripe: "/admin/users_with_stripe"
     };
     App = (function(_super) {
       __extends(App, _super);

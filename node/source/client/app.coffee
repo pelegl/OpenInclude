@@ -16,6 +16,11 @@
     dashboard_url       : "dashboard"
     create_project_url  : "dashboard/project/create"
     partials            : window.dt
+    admin_url           : "admin"
+    view_bills 			    : "/profile/view_bills"
+    create_bills 			  : "/admin/create_bills"
+    users_with_stripe   : "/admin/users_with_stripe"
+
     
   class App extends Backbone.Router
     conf: conf
@@ -115,6 +120,7 @@
       "#{conf.profile_url}/:action"
       "#{conf.profile_url}/:action/:profile"
       "!/#{conf.profile_url}/:action"
+      "!/#{conf.profile_url}/:action/:profile"
             
       # How-to
       conf.how_to_url  
@@ -139,6 +145,7 @@
       "discover"
       "login"
       "login"
+      "profile"
       "profile"
       "profile"
       "profile"
