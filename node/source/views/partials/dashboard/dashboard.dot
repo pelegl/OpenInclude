@@ -36,13 +36,13 @@
                         {{?}}
                       </h3>
                       <hr>
-                      <h4 id="project-description" class='muted'>{{=it.project.description}}</h4>
+                      <h4 id="project-description" class='muted'>{{! it.project.description }}</h4>
                       
                       <div class='tag-list'>
                         <h5>Involved</h5>
                         <ul class='inline unstyled'>
                           {{~ it.project.resources :resource}}
-                          <li><a href="/profile/view/{{=resource.name}}" class='label label-info'>{{=resource.name}}</a></li>
+                            <li><a href="/profile/view/{{=resource.name}}" class='label label-info'>{{! resource.name }}</a></li>
                           {{~}}
                         </ul>  
                       </div>
@@ -51,7 +51,7 @@
                         <h5>Owner</h5>
                         <ul class='inline unstyled'>
                           {{~ it.project.resources :resource}}
-                          <li><a href="/profile/view/{{=it.project.client.name}}" class='label'>{{=it.project.client.name}}</a></li>
+                          <li><a href="/profile/view/{{! it.project.client.name }}" class='label'>{{! it.project.client.name}}</a></li>
                           {{~}}
                         </ul>  
                       </div>
@@ -60,12 +60,12 @@
                       {{?}}
                       <ul id="task-list" class="task-list nav nav-tabs nav-stacked">
                           {{~ it.tasks :task}}
-                          <li rel="{{=task._id}}">{{=task.name}}</li>
+                          <li rel="{{! task._id}}">{{! task.name}}</li>
                           {{~}}
                       </ul>
                       {{? it.canWrite || it.isOwner }}
                       <p id="create-task-inline"></p>
-                      <p><a href="{{=it.dashboard_url }}/task/create/{{=it.projectId }}" id="create-task-button" class="btn btn-success btn-small">Create</a></p>
+                      <p><a href="{{= it.dashboard_url }}/task/create/{{= it.projectId }}" id="create-task-button" class="btn btn-success btn-small">Create</a></p>
                       {{?}}
                   {{?}}
                 </div>

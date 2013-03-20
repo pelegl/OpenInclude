@@ -15,8 +15,6 @@ class ProfileController extends require('./basicController')
     @context.private = true
     @context.body = @_view 'member/profile', @context  #рендерим {{{body}}} в контекст
 
-    console.log @context
-
     @res.render 'base', @context # рендерим layout/base.hbs с контекстом @context
  
   login: ->    
@@ -101,25 +99,30 @@ class ProfileController extends require('./basicController')
     if @req.method is "GET"
       [id] = @get if @get?
       if id
-        Bill.findById id, (error, bill) =>
-          if not error and (bill.bill_to_whome.equals(@req.user._id))
-            @context.bill = bill
-            @context.informationBox = @_view 'member/bill', @context
-            @index()
-          else
-            @res.send 'Not Found', 404
+        Bill.findOne {_id: id, bill_to_whome: @req.user._id}, (err, bill) =>
+          # err
+          return @res.send 'Not Found', 404 if err
+          # xhr
+          return @res.json bill if @req.xhr
+
+          @context.bill = bill
+          @context.informationBox = @_view 'member/bill', @context
+          @index()
+
       else
-        Bill.get_bills @req.user._id,(err,bills) =>
-          unless err
-            @context.title = 'Bills'
-            @context.informationBox = @_view 'member/bills', bills
-            @index()
-          else
-            @res.send "smth crashed", 500
+        Bill.get_bills @req.user._id, (err, bills) =>
+          # err
+          return @res.send 'Not Found', 404 if err
+          # xhr
+          return @res.json bills if @req.xhr
+
+          @context.title = 'Bills'
+          @context.informationBox = @_view 'member/bills', bills
+          @index()
+
     else
       @res.send "Incorrect verb", 403
  
 # Здесь отдаем функцию - каждый раз когда вызывается наш контроллер - создается новый экземпляр - это мы вставим в рутер
 module.exports = (req,res)->
   new ProfileController req, res
-

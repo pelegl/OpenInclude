@@ -1,19 +1,19 @@
 {{? it.isOwner || it.canWrite }}
-<h3>Edit project “{{=it.project.name}}”</h3>
+<h3>Edit project “{{! it.project.name }}”</h3>
 <form method='post' action=''>
   <label for='name'>Project name</label>
-  <input type='text' id='name' class='input-block-level' name='project[name]' value="{{=it.project.name}}" required />
+  <input type='text' id='name' class='input-block-level' name='project[name]' value="{{! it.project.name }}" required />
   <label for='description'>Description</label>
   <textarea id="description" class="input-block-level" name='project[description]' required>{{=it.project.description}}</textarea>
   {{? it.isOwner || it.canGrant }}
   <label for='resources'>Resources</label>
-  <textarea id="resources" class="input-block-level" name='project[resources]'>{{~ it.project.resources :resource}}@{{=resource.name}} {{~}}</textarea>
+  <textarea id="resources" class="input-block-level" name='project[resources]'>{{~ it.project.resources :resource}}@{{! resource.name }} {{~}}</textarea>
   <label for='read'>Grant read permissions to</label>
-  <textarea id="read" class="input-block-level" name='project[read]'>{{~ it.project.read :resource}}@{{=resource.name}} {{~}}</textarea>
+  <textarea id="read" class="input-block-level" name='project[read]'>{{~ it.project.read :resource}}@{{! resource.name }} {{~}}</textarea>
   <label for='write'>Grant write permissions to</label>
-  <textarea id="write" class="input-block-level" name='project[write]'>{{~ it.project.write :resource}}@{{=resource.name}} {{~}}</textarea>
+  <textarea id="write" class="input-block-level" name='project[write]'>{{~ it.project.write :resource}}@{{! resource.name }} {{~}}</textarea>
   <label for='grant'>Grant grant permissions to</label>
-  <textarea id="grant" class="input-block-level" name='project[grant]'>{{~ it.project.grant :resource}}@{{=resource.name}} {{~}}</textarea>  
+  <textarea id="grant" class="input-block-level" name='project[grant]'>{{~ it.project.grant :resource}}@{{! resource.name }} {{~}}</textarea>
   {{?}}
   <div>
     <a class="btn pull-left close-inline">Close</a>

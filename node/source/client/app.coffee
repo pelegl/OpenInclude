@@ -49,10 +49,13 @@
       @reRoute()
       @view = new views.Index prevView:@view
 
-    profile: (action, profile) ->
+    profile: (action, opts...) ->
       @reRoute() 
-      if app.session.get("is_authenticated") is true 
-        @view = new views.Profile { prevView: @view, model: app.session, action: "/#{action}", profile: profile }
+      if app.session.get("is_authenticated") is true
+        if action is 'view'
+          @view = new views.Profile { prevView: @view, model: app.session, action: "/#{action}", profile: opts[0] }
+        else
+          @view = new views.Profile { prevView: @view, model: app.session, action: "/#{action}", opts }
       else
         app.navigate '/profile/login', {trigger: true}       
     
@@ -174,7 +177,7 @@
     app.session     = new models.Session()
     app.session.fetch()
     
-    app.session.once "change", =>
+    app.session.once "sync", =>
 
       Backbone.history.start {pushState: true}        
       app.init()

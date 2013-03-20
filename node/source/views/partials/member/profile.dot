@@ -5,8 +5,8 @@
 			  <div class='span4'>
 			    <div class='personalInformation'>
 			      <img src="http://www.gravatar.com/avatar/{{= it.user.github_avatar_url }}?s=210" class='avatar'  />
-            <h3>{{= it.user.github_display_name }}</h3>
-            <h4><a href='https://github.com/{{= it.user.github_username }}' target="_blank" class='muted'>{{= it.user.github_username }}</a></h4>
+            <h3>{{! it.user.github_display_name }}</h3>
+            <h4><a href='https://github.com/{{! it.user.github_username }}' target="_blank" class='muted'>{{! it.user.github_username }}</a></h4>
             <hr />
             {{? it.private }}
             <h4>Account type</h4>
@@ -16,7 +16,7 @@
                   <div class='status'>
                     {{? it.user.merchant }}
                       {{? it.user.has_stripe }}
-                        <a href='{{= it.view_bills}}' class='btn btn-success btn-mini'>View Bills</a>
+                        <a href='{{= it.view_bills}}' class='btn btn-success btn-mini backbone'>View Bills</a>
                       {{??}}
                         <button class='btn btn-info btn-mini setupPayment'>setup payment method</button>
                       {{?}}
@@ -56,12 +56,12 @@
             {{?}}
             <div class='contactData'>
               <div class='contact'>
-                <i class='icon-envelope'></i> <a class='muted' href="mailto:{{= it.user.github_email }}">{{= it.user.github_email }}</a>
+                <i class='icon-envelope'></i> <a class='muted' href="mailto:{{= it.user.github_email }}">{{! it.user.github_email }}</a>
               </div>
             </div>
 			    </div>			             
 			  </div>
-			  <div class='span8 informationBox'>{{= it.informationBox }}</div>
+			  <div class='span8 informationBox'>{{= it.informationBox || "" }}</div>
 			</div>
 		</div>
 	</div>

@@ -1,11 +1,7 @@
-<div class='row-fluid'>
-  <legend>Your Bills</legend>
-
-  <div class="bills">
-	<ul>
+<div class="bills">
+    <ul>
     {{~it.bills :bill}}
-		<li><a href="view_bills/{{=bill._id}}">{{= bill.bill_description}}</a></li>
-	{{~}}
-	</ul>
-  </div>
+        <li><a href="{{= it.view_bills }}/{{= bill._id }}" class='backbone'>{{! bill.bill_description}}</a></li>
+    {{~}}
+    </ul>
 </div>

@@ -8,7 +8,11 @@
    exports.Session = @Backbone.Model.extend
      idAttribute: "_id"
      url: "/session"
-      
+
+   exports.Bill = @Backbone.Model.extend
+     idAttribute: "_id"
+     urlRoot:     "/profile/view_bills"
+
    exports.Tos        = @Backbone.Model.extend {}
    
    exports.CreditCard = @Backbone.Model.extend {}

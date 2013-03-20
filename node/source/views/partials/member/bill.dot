@@ -1,9 +1,8 @@
-<div class='row-fluid'>
-  <legend>Bill Info</legend>
-
-  <div class="bills">
-	<label> Description :</label> <h4>{{= it.bill.bill_description}} </h4>
-	<label> Issued Date :</label> <h4> {{= it.bill.bill_date}} </h4>
-	<label> Amount : </ label> <h4> {{= it.bill.bill_amount}} (in Cents)</h4>
-  </div>
+<div class="bill">
+    <h4>Description</h4>
+    <p>{{! it.bill.bill_description}}</p>
+    <h4>Issued</h4>
+    <p>{{! it.bill.bill_date}}</p>
+    <h4>To be paid</h4>
+    <p>{{! Math.round(it.bill.bill_amount/100,2) }}</p>
 </div>

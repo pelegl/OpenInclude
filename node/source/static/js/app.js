@@ -9,6 +9,14 @@
     String.prototype.capitalize = function() {
       return this.charAt(0).toUpperCase() + this.slice(1);
     };
+    exports.exchange = function(view, html) {
+      var prevEl;
+
+      prevEl = view.$el;
+      view.setElement($(html));
+      prevEl.replaceWith(view.$el);
+      return prevEl.remove();
+    };
     return exports.qs = {
       stringify: function(obj) {
         var key, string, v, value, _i, _len;
@@ -84,6 +92,10 @@
     exports.Session = this.Backbone.Model.extend({
       idAttribute: "_id",
       url: "/session"
+    });
+    exports.Bill = this.Backbone.Model.extend({
+      idAttribute: "_id",
+      urlRoot: "/profile/view_bills"
     });
     exports.Tos = this.Backbone.Model.extend({});
     exports.CreditCard = this.Backbone.Model.extend({});
@@ -427,6 +439,10 @@
       model: models.Task,
       url: "/task"
     });
+    exports.Bills = this.Backbone.Collection.extend({
+      model: models.Bill,
+      url: "/profile/view_bills"
+    });
     exports.GithubEvents = this.Backbone.Collection.extend({
       model: models.GithubEvent,
       initialize: function(options) {
@@ -512,17 +528,35 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var View, col, root, views, _ref, _ref1, _ref2, _ref3, _ref4;
+    var View, col, root, views, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
 
     root = this;
     views = this.hbt = _.extend({}, dt, Handlebars.partials);
     col = root.collections;
+    exports.NotFound = (function(_super) {
+      __extends(NotFound, _super);
+
+      function NotFound() {
+        _ref = NotFound.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      NotFound.prototype.className = "error-404";
+
+      NotFound.prototype.render = function() {
+        this.$el.html("Error 404 - not found");
+        return this;
+      };
+
+      return NotFound;
+
+    })(this.Backbone.View);
     exports.MetaView = (function(_super) {
       __extends(MetaView, _super);
 
       function MetaView() {
-        _ref = MetaView.__super__.constructor.apply(this, arguments);
-        return _ref;
+        _ref1 = MetaView.__super__.constructor.apply(this, arguments);
+        return _ref1;
       }
 
       MetaView.prototype.events = {};
@@ -539,8 +573,8 @@
       __extends(Loader, _super);
 
       function Loader() {
-        _ref1 = Loader.__super__.constructor.apply(this, arguments);
-        return _ref1;
+        _ref2 = Loader.__super__.constructor.apply(this, arguments);
+        return _ref2;
       }
 
       Loader.prototype.tagName = 'img';
@@ -556,8 +590,8 @@
       __extends(Agreement, _super);
 
       function Agreement() {
-        _ref2 = Agreement.__super__.constructor.apply(this, arguments);
-        return _ref2;
+        _ref3 = Agreement.__super__.constructor.apply(this, arguments);
+        return _ref3;
       }
 
       Agreement.prototype.tagName = 'div';
@@ -566,6 +600,14 @@
 
       Agreement.prototype.events = {
         'submit form': 'processSubmit'
+      };
+
+      Agreement.prototype.show = function() {
+        return this.$el.show();
+      };
+
+      Agreement.prototype.hide = function() {
+        return this.$el.hide();
       };
 
       Agreement.prototype.processSubmit = function(e) {
@@ -594,7 +636,7 @@
       };
 
       Agreement.prototype.initialize = function() {
-        var action, agreement, _ref3;
+        var action, agreement, _ref4;
 
         this.model = new models.Tos;
         if ($(".agreementContainer").length > 0) {
@@ -602,7 +644,7 @@
         } else {
           this.render();
         }
-        _ref3 = this.options, agreement = _ref3.agreement, action = _ref3.action;
+        _ref4 = this.options, agreement = _ref4.agreement, action = _ref4.action;
         this.listenTo(this, "init", this.niceScroll);
         this.listenTo(this.model, "sync", this.signed);
         return this.setData(agreement, action);
@@ -679,8 +721,8 @@
       __extends(Index, _super);
 
       function Index() {
-        _ref3 = Index.__super__.constructor.apply(this, arguments);
-        return _ref3;
+        _ref4 = Index.__super__.constructor.apply(this, arguments);
+        return _ref4;
       }
 
       Index.prototype.initialize = function() {
@@ -705,8 +747,8 @@
       __extends(ShareIdeas, _super);
 
       function ShareIdeas() {
-        _ref4 = ShareIdeas.__super__.constructor.apply(this, arguments);
-        return _ref4;
+        _ref5 = ShareIdeas.__super__.constructor.apply(this, arguments);
+        return _ref5;
       }
 
       ShareIdeas.prototype.events = {
@@ -760,10 +802,11 @@
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __slice = [].slice;
 
   (function(exports) {
-    var agreement_text, root, views, _ref, _ref1, _ref2;
+    var agreement_text, root, views, _ref, _ref1, _ref2, _ref3, _ref4;
 
     agreement_text = "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. ";
     root = this;
@@ -783,10 +826,7 @@
       };
 
       SignIn.prototype.render = function() {
-        var html;
-
-        html = views['registration/login'](this.context);
-        this.$el.html(html);
+        this.$el.html(views['registration/login'](this.context));
         this.$el.attr('view-id', 'registration');
         return this;
       };
@@ -794,12 +834,72 @@
       return SignIn;
 
     })(View);
+    exports.Bill = (function(_super) {
+      __extends(Bill, _super);
+
+      function Bill() {
+        _ref1 = Bill.__super__.constructor.apply(this, arguments);
+        return _ref1;
+      }
+
+      Bill.prototype.className = "bill";
+
+      Bill.prototype.initialize = function() {
+        return this.render();
+      };
+
+      Bill.prototype.render = function() {
+        var bill, html;
+
+        bill = this.model.toJSON();
+        html = views['member/bill']({
+          bill: bill
+        });
+        help.exchange(this, html);
+        return this;
+      };
+
+      return Bill;
+
+    })(this.Backbone.View);
+    exports.Bills = (function(_super) {
+      __extends(Bills, _super);
+
+      function Bills() {
+        _ref2 = Bills.__super__.constructor.apply(this, arguments);
+        return _ref2;
+      }
+
+      Bills.prototype.className = "bills";
+
+      Bills.prototype.initialize = function() {
+        this.collection = new collections.Bills;
+        this.listenTo(this.collection, "sync", this.render);
+        return this.collection.fetch();
+      };
+
+      Bills.prototype.render = function() {
+        var bills, html, view_bills;
+
+        view_bills = app.conf.view_bills;
+        bills = this.collection.toJSON();
+        html = views['member/bills']({
+          bills: bills,
+          view_bills: view_bills
+        });
+        help.exchange(this, html);
+        return this;
+      };
+
+      return Bills;
+
+    })(this.Backbone.View);
     exports.CC = (function(_super) {
       __extends(CC, _super);
 
       function CC() {
-        _ref1 = CC.__super__.constructor.apply(this, arguments);
-        return _ref1;
+        _ref3 = CC.__super__.constructor.apply(this, arguments);
+        return _ref3;
       }
 
       CC.prototype.className = "dropdown-menu";
@@ -820,7 +920,6 @@
         e.preventDefault();
         data = Backbone.Syphon.serialize(e.currentTarget);
         this.$("[type=submit]").addClass("disabled").text("Updating information...");
-        console.log(data);
         this.model.set(data);
         this.model.save(null, {
           success: this.processUpdate,
@@ -869,12 +968,12 @@
       __extends(Profile, _super);
 
       function Profile() {
-        _ref2 = Profile.__super__.constructor.apply(this, arguments);
-        return _ref2;
+        _ref4 = Profile.__super__.constructor.apply(this, arguments);
+        return _ref4;
       }
 
       Profile.prototype.events = {
-        'click .accountType a[class*=backbone]': "accountUpgrade",
+        'click a[class*=backbone]': "processAction",
         'click .setupPayment > button': "update_cc_events"
       };
 
@@ -887,21 +986,34 @@
         return href.replace("/" + this.context.profile_url, "");
       };
 
-      Profile.prototype.accountUpgrade = function(e) {
-        var $this, href;
+      Profile.prototype.processAction = function(e) {
+        var $this, action, href, _ref5;
 
         $this = $(e.currentTarget);
-        href = $this.attr("href");
-        this.setAction(this.clearHref(href));
+        href = this.clearHref($this.attr("href"));
+        _ref5 = _.without(href.split("/"), ""), action = _ref5[0], this.get = 2 <= _ref5.length ? __slice.call(_ref5, 1) : [];
+        this.setAction("/" + action);
         return false;
       };
 
+      Profile.prototype.empty = function() {
+        var opts;
+
+        opts = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+        this.informationBox.children().detach();
+        if (opts != null) {
+          return this.informationBox.append(opts);
+        }
+      };
+
       Profile.prototype.setAction = function(action) {
-        var dev, merc, trello;
+        var billId, bills, dev, findBill, merc, navigateTo, trello, _ref5,
+          _this = this;
 
         dev = this.clearHref(this.context.developer_agreement);
         merc = this.clearHref(this.context.merchant_agreement);
         trello = this.clearHref(this.context.trello_auth_url);
+        bills = this.clearHref(this.context.view_bills);
         if (action === dev && app.session.get("employee") === false) {
           /*
             show developer license agreement
@@ -920,23 +1032,55 @@
           app.navigate(this.context.merchant_agreement, {
             trigger: false
           });
-          this.agreement.$el.show();
+          this.empty(this.agreement.$el);
+          this.agreement.show();
           this.agreement.setData(agreement_text, this.context.merchant_agreement);
           return this.listenTo(this.agreement.model, "sync", this.setupPayment);
         } else if (action === trello) {
           /*
-                	  	navigate to Trell authorization
+                	  	navigate to Trello authorization
           */
 
           return app.navigate(this.context.trello_auth_url, {
             trigger: true
+          });
+        } else if (action === bills) {
+          /*
+            navigate to view bills
+          */
+
+          console.log(this.get);
+          if (!(((_ref5 = this.get) != null ? _ref5.length : void 0) > 0)) {
+            navigateTo = this.context.view_bills;
+            this.empty(this.bills.$el);
+          } else {
+            navigateTo = "" + this.context.view_bills + "/" + (this.get.join("/"));
+            billId = this.get[0];
+            findBill = function() {
+              var bill, billView;
+
+              bill = _this.bills.collection.get(billId);
+              if (bill) {
+                billView = new exports.Bill({
+                  model: bill
+                });
+                return _this.empty(billView.$el);
+              } else {
+                _this.bills.collection.once("sync", findBill);
+                return _this.empty((new exports.NotFound()).$el);
+              }
+            };
+            findBill();
+          }
+          return app.navigate(navigateTo, {
+            trigger: false
           });
         } else {
           /*
             hide agreement and navigate back to profile
           */
 
-          this.agreement.$el.hide();
+          this.informationBox.children().detach();
           return app.navigate(this.context.profile_url, {
             trigger: false
           });
@@ -945,6 +1089,7 @@
 
       Profile.prototype.initialize = function(options) {
         console.log('[__profileView__] Init');
+        this.get = options.opts || [];
         if (options.profile) {
           this.model = new models.User;
           this.model.url = "/session/profile/" + options.profile;
@@ -955,8 +1100,9 @@
           this.context["private"] = true;
           this.agreement = new exports.Agreement;
           this.cc = new exports.CC;
+          this.bills = new exports.Bills;
         }
-        this.listenTo(this.model, "all", this.render);
+        this.listenTo(this.model, "change", this.render);
         this.model.fetch();
         return this.render();
       };
@@ -964,13 +1110,13 @@
       Profile.prototype.render = function() {
         var html;
 
+        console.log("Rendering profile view");
+        console.log("action: ", this.options.action, this.get);
         this.context.user = this.model.toJSON();
         html = views['member/profile'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'profile');
-        if (this.agreement) {
-          this.$(".informationBox").append(this.agreement.$el);
-        }
+        this.informationBox = this.$(".informationBox");
         if (this.cc) {
           this.cc.setElement(this.$(".setupPayment .dropdown-menu"));
           this.cc.$el.prev().dropdown();
@@ -2317,7 +2463,8 @@
 
 (function() {
   var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __slice = [].slice;
 
   (function(exports) {
     var App, conf, _ref;
@@ -2401,15 +2548,27 @@
         });
       };
 
-      App.prototype.profile = function(action, profile) {
+      App.prototype.profile = function() {
+        var action, opts;
+
+        action = arguments[0], opts = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
         this.reRoute();
         if (app.session.get("is_authenticated") === true) {
-          return this.view = new views.Profile({
-            prevView: this.view,
-            model: app.session,
-            action: "/" + action,
-            profile: profile
-          });
+          if (action === 'view') {
+            return this.view = new views.Profile({
+              prevView: this.view,
+              model: app.session,
+              action: "/" + action,
+              profile: opts[0]
+            });
+          } else {
+            return this.view = new views.Profile({
+              prevView: this.view,
+              model: app.session,
+              action: "/" + action,
+              opts: opts
+            });
+          }
         } else {
           return app.navigate('/profile/login', {
             trigger: true
@@ -2492,8 +2651,8 @@
       var app, route_keys, route_paths,
         _this = this;
 
-      route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "" + conf.profile_url + "/:action/:profile", "!/" + conf.profile_url + "/:action", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url];
-      route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo", "dashboard", "dashboard"];
+      route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "" + conf.profile_url + "/:action/:profile", "!/" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action/:profile", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url];
+      route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo", "dashboard", "dashboard"];
       App.prototype.routes = _.object(route_keys, route_paths);
       console.log('[__app__] init done!');
       exports.app = app = new App();
@@ -2505,7 +2664,7 @@
       });
       app.session = new models.Session();
       app.session.fetch();
-      return app.session.once("change", function() {
+      return app.session.once("sync", function() {
         Backbone.history.start({
           pushState: true
         });

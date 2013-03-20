@@ -3,6 +3,13 @@
   views = @hbt = _.extend({}, dt, Handlebars.partials)
   col = root.collections
 
+  class exports.NotFound extends @Backbone.View
+    className: "error-404"
+
+    render: ->
+      @$el.html "Error 404 - not found"
+      @
+
   class exports.MetaView extends @Backbone.View
     events: {}
     
@@ -22,7 +29,13 @@
     
     events: 
       'submit form' : 'processSubmit'
-    
+
+    show: ->
+      @$el.show()
+
+    hide: ->
+      @$el.hide()
+
     processSubmit: (e) ->
       e.preventDefault()
       ###
