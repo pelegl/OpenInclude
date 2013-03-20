@@ -44,7 +44,7 @@ git_sets = [
   ['fbc1f03fd6ef162b3463', 'bead2882abb9409df91f4ba7fecc450c6e989d4b']
 ]
 
-[GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET] = if process.env.github_local then git_sets[1] else git_sets[0]
+[GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET] = if process.env.github_local? then git_sets[1] else git_sets[0]
 
 exports.git = github.client "client", GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
 
@@ -56,7 +56,7 @@ exports.git = github.client
   Some static helpers
 ###
 
-host       = if process.env.github_local then "localhost" else "http://ec2-54-225-224-68.compute-1.amazonaws.com"
+host       = if process.env.github_local? then "localhost" else "ec2-54-225-224-68.compute-1.amazonaws.com"
 SERVER_URL = exports.SERVER_URL = "http://#{host}:#{process.env.PORT || 8900}"
 STATIC_URL = exports.STATIC_URL = "/static/"
 
