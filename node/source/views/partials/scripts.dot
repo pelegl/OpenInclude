@@ -12,4 +12,5 @@
 <script type="text/javascript" src="/static/js/dot.js"></script>
 <script type="text/javascript" src="/static/js/templates.js"></script>
 <script type="text/javascript" src="/static/js/templates-dot.js"></script>
+<script type="text/javascript" src="/static/js/moment.js"></script>
 <script type="text/javascript" src="/static/js/app.js"></script>

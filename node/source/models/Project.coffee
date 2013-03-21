@@ -17,7 +17,7 @@ definition =
     
     # whose involved in project
     resources: []
-    
+
     # project tasks
     tasks: [ObjectId]
     
@@ -36,14 +36,17 @@ definition =
     trello_id : String
 
 methods = {}
-        
-statics = {}        
+
+statics = {}
 
 virtuals =
     get: {}
     set: {}
 
+plugins = "mongoose-tree"
+
 exports.virtuals    = virtuals
 exports.definition  = definition
 exports.methods     = methods
 exports.statics     = statics
+exports.plugins     = plugins

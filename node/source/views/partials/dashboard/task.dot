@@ -1,0 +1,10 @@
+<div id="task-{{= it.task._id }}" class="task-extended">
+    <span class="task-description">{{= it.task.description }}</span>
+    <ul class="task-comments">
+        {{~ it.task.comments :comment}}
+        <li>{{= comment }}</li>
+        {{~}}
+    </ul>
+    <a href="#" id="task-add-comment-button" class="btn btn-small btn-success">Add comment</a>
+    <div id="task-add-comment-{{= it.task._id}}"></div>
+</div>

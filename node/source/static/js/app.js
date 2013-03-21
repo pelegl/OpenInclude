@@ -163,6 +163,9 @@
       idAttribute: "_id",
       url: "/task"
     });
+    exports.TaskComment = this.Backbone.Model.extend({
+      idAttribute: "_id"
+    });
     exports.Language = this.Backbone.Model.extend({
       idAttribute: "name",
       urlRoot: "/modules"
@@ -2193,7 +2196,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var InlineForm, project, projectId, projects, root, tasks, views, _ref, _ref1, _ref2, _ref3, _ref4;
+    var InlineForm, Task, TypeAhead, Users, project, projectId, projects, root, task, taskEl, taskId, tasks, views, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
 
     root = this;
     views = this.hbt = _.extend({}, dt, Handlebars.partials);
@@ -2201,23 +2204,179 @@
     tasks = new collections.Tasks;
     projectId = "";
     project = null;
+    taskId = "";
+    task = null;
+    taskEl = null;
+    Users = (function(_super) {
+      __extends(Users, _super);
+
+      function Users() {
+        _ref = Users.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      Users.prototype.model = models.User;
+
+      Users.prototype.url = "/session/list";
+
+      return Users;
+
+    })(this.Backbone.Collection);
+    TypeAhead = (function(_super) {
+      __extends(TypeAhead, _super);
+
+      function TypeAhead() {
+        _ref1 = TypeAhead.__super__.constructor.apply(this, arguments);
+        return _ref1;
+      }
+
+      TypeAhead.prototype.el = "#typeahead";
+
+      TypeAhead.prototype.events = {
+        'click li.suggestion': "select"
+      };
+
+      TypeAhead.prototype.initialize = function(context) {
+        if (context == null) {
+          context = {};
+        }
+        this.context = context;
+        this.suggestions = new Users;
+        return this.listenTo(this.suggestions, "reset", this.render);
+      };
+
+      TypeAhead.prototype.position = function(element) {
+        var height, offset, width;
+
+        offset = $(element).offset();
+        width = $(element).width();
+        height = $(element).height();
+        this.$el.css('left', offset.left + width / 2);
+        this.$el.css('top', offset.top + height / 2);
+        if (!this.context.listener) {
+          return this.context.listener = element;
+        }
+      };
+
+      TypeAhead.prototype.select = function(event) {
+        var value;
+
+        value = $(event.target).attr("rel");
+        value = $(this.context.listener).val() + value + " ";
+        $(this.context.listener).val(value);
+        return this.hide();
+      };
+
+      TypeAhead.prototype.showUser = function() {
+        this.base = "/session/list";
+        this.suggestions.url = "/session/list";
+        return this.suggestions.fetch();
+      };
+
+      TypeAhead.prototype.showProject = function() {
+        this.base = "project/suggest";
+        this.suggestions.url = "/project/suggest";
+        return this.suggestions.fetch();
+      };
+
+      TypeAhead.prototype.showTask = function(part) {};
+
+      TypeAhead.prototype.updateQuery = function(part) {
+        this.suggestions.url = "" + this.base + "/" + part;
+        console.log(this.suggestions.url);
+        return this.suggestions.fetch();
+      };
+
+      TypeAhead.prototype.hide = function() {
+        this.$el.hide();
+        return this.available = false;
+      };
+
+      TypeAhead.prototype.render = function() {
+        var html;
+
+        this.context.suggestions = this.suggestions.toJSON();
+        html = views['dashboard/typeahead'](this.context);
+        this.$el.html(html);
+        this.$el.show();
+        this.available = true;
+        return this;
+      };
+
+      return TypeAhead;
+
+    })(this.Backbone.View);
     InlineForm = (function(_super) {
       __extends(InlineForm, _super);
 
       function InlineForm() {
-        _ref = InlineForm.__super__.constructor.apply(this, arguments);
-        return _ref;
+        _ref2 = InlineForm.__super__.constructor.apply(this, arguments);
+        return _ref2;
       }
 
       InlineForm.prototype.events = {
         'submit form': "submit",
-        'click .close-inline': "hide"
+        'click button[type=submit]': "preventPropagation",
+        'click .close-inline': "hide",
+        'keypress textarea.typeahead': "typeahead"
+      };
+
+      InlineForm.prototype.preventPropagation = function(event) {
+        return event.stopPropagation();
+      };
+
+      InlineForm.prototype.initialize = function(context) {
+        if (context == null) {
+          context = {};
+        }
+        this.context = _.extend({}, context, app.conf);
+        InlineForm.__super__.initialize.call(this, context);
+        this.tah = new TypeAhead(this.context);
+        return this.render();
+      };
+
+      InlineForm.prototype.typeahead = function(event) {
+        var char, code;
+
+        code = event.which || event.keyCode || event.charCode;
+        char = String.fromCharCode(code);
+        this.tah.position(event.target);
+        switch (char) {
+          case '@':
+            this.buf = '';
+            return this.tah.showUser();
+          case '#':
+            this.buf = '';
+            return this.tah.showTask();
+          case '+':
+            this.buf = '';
+            return this.tah.showProject();
+          case ' ':
+            this.buf = '';
+            this.tah.hide();
+            return true;
+          default:
+            if (code === 8) {
+              this.buf = this.buf.substring(0, this.buf.length - 1);
+              return true;
+            }
+            if (event.charCode === 0) {
+              return true;
+            }
+            if (this.tah.available) {
+              this.buf += char;
+            }
+            if (this.buf.length > 0) {
+              return this.tah.updateQuery(this.buf);
+            }
+        }
       };
 
       InlineForm.prototype.submit = function(event) {
         var data;
 
         event.preventDefault();
+        event.stopPropagation();
         data = Backbone.Syphon.serialize(event.currentTarget);
         this.$("[type=submit]").addClass("disabled").text("Updating information...");
         this.model.save(data, {
@@ -2246,16 +2405,9 @@
       InlineForm.prototype.hide = function(event) {
         if (event) {
           event.preventDefault();
+          event.stopPropagation();
         }
         return this.$el.hide();
-      };
-
-      InlineForm.prototype.initialize = function(context) {
-        if (context == null) {
-          context = {};
-        }
-        this.context = _.extend({}, context, app.conf);
-        return this.render();
       };
 
       InlineForm.prototype.render = function() {
@@ -2273,8 +2425,8 @@
       __extends(CreateProjectForm, _super);
 
       function CreateProjectForm() {
-        _ref1 = CreateProjectForm.__super__.constructor.apply(this, arguments);
-        return _ref1;
+        _ref3 = CreateProjectForm.__super__.constructor.apply(this, arguments);
+        return _ref3;
       }
 
       CreateProjectForm.prototype.el = "#create-project-inline";
@@ -2299,8 +2451,8 @@
       __extends(EditProjectForm, _super);
 
       function EditProjectForm() {
-        _ref2 = EditProjectForm.__super__.constructor.apply(this, arguments);
-        return _ref2;
+        _ref4 = EditProjectForm.__super__.constructor.apply(this, arguments);
+        return _ref4;
       }
 
       EditProjectForm.prototype.el = ".main-area";
@@ -2326,8 +2478,8 @@
       __extends(CreateTaskForm, _super);
 
       function CreateTaskForm() {
-        _ref3 = CreateTaskForm.__super__.constructor.apply(this, arguments);
-        return _ref3;
+        _ref5 = CreateTaskForm.__super__.constructor.apply(this, arguments);
+        return _ref5;
       }
 
       CreateTaskForm.prototype.el = "#create-task-inline";
@@ -2349,20 +2501,74 @@
       return CreateTaskForm;
 
     })(InlineForm);
+    exports.CreateTaskCommentForm = (function(_super) {
+      __extends(CreateTaskCommentForm, _super);
+
+      function CreateTaskCommentForm() {
+        _ref6 = CreateTaskCommentForm.__super__.constructor.apply(this, arguments);
+        return _ref6;
+      }
+
+      CreateTaskCommentForm.prototype.view = "dashboard/create_task_comment";
+
+      CreateTaskCommentForm.prototype.success = function(model, response, options) {
+        if (CreateTaskCommentForm.__super__.success.call(this, model, response, options)) {
+          return tasks.fetch();
+        }
+      };
+
+      CreateTaskCommentForm.prototype.initialize = function(context) {
+        this.model = new models.TaskComment;
+        this.model.url = "/task/comment/" + taskId;
+        return CreateTaskCommentForm.__super__.initialize.call(this, context);
+      };
+
+      return CreateTaskCommentForm;
+
+    })(InlineForm);
+    Task = (function(_super) {
+      __extends(Task, _super);
+
+      function Task() {
+        _ref7 = Task.__super__.constructor.apply(this, arguments);
+        return _ref7;
+      }
+
+      Task.prototype.initialize = function(context) {
+        this.context = context;
+        Task.__super__.initialize.call(this, context);
+        return this.render();
+      };
+
+      Task.prototype.render = function() {
+        var html;
+
+        html = views['dashboard/task'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'dashboard-task');
+        return this;
+      };
+
+      return Task;
+
+    })(View);
     return exports.Dashboard = (function(_super) {
       __extends(Dashboard, _super);
 
       function Dashboard() {
-        _ref4 = Dashboard.__super__.constructor.apply(this, arguments);
-        return _ref4;
+        _ref8 = Dashboard.__super__.constructor.apply(this, arguments);
+        return _ref8;
       }
 
       Dashboard.prototype.events = {
         'click .project-list li a': "editProject",
         'click .project-list li': "switchProject",
         'click #create-project-button': "showProjectForm",
+        'click #create-subproject-button': "showSubProjectForm",
         'click #delete-project-button': "deleteProject",
-        'click #create-task-button': "showTaskForm"
+        'click #create-task-button': "showTaskForm",
+        'click #task-add-comment-button': "showTaskCommentForm",
+        'click #task-list li': "openTask"
       };
 
       Dashboard.prototype.clearHref = function(href) {
@@ -2370,7 +2576,7 @@
       };
 
       Dashboard.prototype.parsePermissions = function(user, project) {
-        var _i, _j, _k, _len, _len1, _len2, _ref5, _ref6, _ref7, _results;
+        var _i, _j, _k, _len, _len1, _len2, _ref10, _ref11, _ref9, _results;
 
         this.context.canRead = false;
         this.context.canWrite = false;
@@ -2379,26 +2585,26 @@
         if (user._id === project.client.id) {
           this.context.isOwner = true;
         }
-        _ref5 = project.read;
-        for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
-          user = _ref5[_i];
+        _ref9 = project.read;
+        for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
+          user = _ref9[_i];
           if (user.id === this.context.user._id) {
             this.context.canRead = true;
             break;
           }
         }
-        _ref6 = project.write;
-        for (_j = 0, _len1 = _ref6.length; _j < _len1; _j++) {
-          user = _ref6[_j];
+        _ref10 = project.write;
+        for (_j = 0, _len1 = _ref10.length; _j < _len1; _j++) {
+          user = _ref10[_j];
           if (user.id === this.context.user._id) {
             this.context.canWrite = true;
             break;
           }
         }
-        _ref7 = project.grant;
+        _ref11 = project.grant;
         _results = [];
-        for (_k = 0, _len2 = _ref7.length; _k < _len2; _k++) {
-          user = _ref7[_k];
+        for (_k = 0, _len2 = _ref11.length; _k < _len2; _k++) {
+          user = _ref11[_k];
           if (user.id === this.context.user._id) {
             this.context.canGrant = true;
             break;
@@ -2407,6 +2613,23 @@
           }
         }
         return _results;
+      };
+
+      Dashboard.prototype.openTask = function(e) {
+        if (typeof e !== 'object') {
+          taskId = e;
+        } else {
+          e.preventDefault();
+          e.stopPropagation();
+          taskId = e.target.attributes['rel'].value;
+        }
+        task = tasks.get(taskId);
+        app.navigate("/dashboard/project/" + projectId + "/task/" + taskId, {
+          trigger: false
+        });
+        this.context.task = task.toJSON();
+        this.context.el = "#main-area";
+        return this.taskView = new Task(this.context);
       };
 
       Dashboard.prototype.editProject = function(e) {
@@ -2440,8 +2663,16 @@
         });
       };
 
+      Dashboard.prototype.showSubProjectForm = function(e) {
+        e.preventDefault();
+        this.createProject = new exports.CreateProjectForm(this.context);
+        return this.createProject.show();
+      };
+
       Dashboard.prototype.showProjectForm = function(e) {
         e.preventDefault();
+        this.context.project = null;
+        this.createProject = new exports.CreateProjectForm(this.context);
         return this.createProject.show();
       };
 
@@ -2450,30 +2681,48 @@
         return this.createTask.show();
       };
 
+      Dashboard.prototype.showTaskCommentForm = function(e) {
+        var createTaskComment;
+
+        e.preventDefault();
+        e.stopPropagation();
+        createTaskComment = new exports.CreateTaskCommentForm(_.extend(this.context, {
+          el: "#task-add-comment-" + taskId
+        }));
+        return createTaskComment.show();
+      };
+
       Dashboard.prototype.switchProject = function(e) {
-        projectId = e.target.attributes['rel'].value;
+        if (typeof e !== 'object') {
+          projectId = e;
+        } else {
+          projectId = e.target.attributes['rel'].value;
+        }
         project = projects.get(projectId);
         this.context.projectId = projectId;
         this.context.project = project.toJSON();
         this.parsePermissions(this.context.user, this.context.project);
+        app.navigate("/dashboard/project/" + projectId, {
+          trigger: false
+        });
+        taskId = null;
         tasks.url = "/task/" + projectId;
-        tasks.fetch();
-        return this.render();
+        return tasks.fetch();
       };
 
-      Dashboard.prototype.initialize = function() {
+      Dashboard.prototype.initialize = function(params) {
         console.log('[__dashboardView__] Init');
         this.context.title = "Dashboard";
         this.context.user = app.session.toJSON();
         this.context.canEdit = function(user, project) {
-          var _i, _len, _ref5, _user;
+          var _i, _len, _ref9, _user;
 
           if (user._id === project.client.id) {
             return true;
           }
-          _ref5 = project.write;
-          for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
-            _user = _ref5[_i];
+          _ref9 = project.write;
+          for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
+            _user = _ref9[_i];
             if (_user.id === user._id) {
               return true;
             }
@@ -2481,8 +2730,10 @@
           return false;
         };
         this.listenTo(projects, "reset", this.updateProjectList, this);
-        projects.fetch();
-        return tasks.on("reset", this.updateTaskList, this);
+        this.listenTo(tasks, "reset", this.updateTaskList, this);
+        projectId = params.project;
+        taskId = params.task;
+        return projects.fetch();
       };
 
       Dashboard.prototype.updateProjectList = function(collection) {
@@ -2494,8 +2745,12 @@
         });
         this.context.projects = _projects;
         if (projectId) {
-          project = projects.get(projectId);
-          this.context.project = project.toJSON();
+          if (taskId) {
+            tasks.url = "/task/" + projectId;
+            tasks.fetch();
+          } else {
+            return this.switchProject(projectId);
+          }
         }
         return this.render();
       };
@@ -2508,6 +2763,9 @@
           return _tasks.push(item.toJSON());
         });
         this.context.tasks = _tasks;
+        if (taskId) {
+          return this.openTask(taskId);
+        }
         return this.render();
       };
 
@@ -2517,7 +2775,6 @@
         html = views['dashboard/dashboard'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'dashboard');
-        this.createProject = new exports.CreateProjectForm;
         this.createTask = new exports.CreateTaskForm;
         return this;
       };
@@ -2717,6 +2974,35 @@
         }
       };
 
+      App.prototype.project = function(id) {
+        this.reRoute();
+        if (app.session.get("is_authenticated")) {
+          return this.view = new views.Dashboard({
+            prevView: this.view,
+            project: id
+          });
+        } else {
+          return app.navigate(app.conf.signin_url, {
+            trigger: true
+          });
+        }
+      };
+
+      App.prototype.task = function(project, task) {
+        this.reRoute();
+        if (app.session.get("is_authenticated")) {
+          return this.view = new views.Dashboard({
+            prevView: this.view,
+            project: project,
+            task: task
+          });
+        } else {
+          return app.navigate(app.conf.signin_url, {
+            trigger: true
+          });
+        }
+      };
+
       return App;
 
     })(Backbone.Router);
@@ -2724,8 +3010,8 @@
       var app, route_keys, route_paths,
         _this = this;
 
-      route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "" + conf.profile_url + "/:action/:profile", "!/" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action/:profile", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url];
-      route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo", "dashboard", "dashboard"];
+      route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "" + conf.profile_url + "/:action/:profile", "!/" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action/:profile", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url, "dashboard/project/:id", "!/dashboard/project/:id", "dashboard/project/:project/task/:task", "!/dashboard/project/:project/task/:task"];
+      route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo", "dashboard", "dashboard", "project", "project", "task", "task"];
       App.prototype.routes = _.object(route_keys, route_paths);
       console.log('[__app__] init done!');
       exports.app = app = new App();

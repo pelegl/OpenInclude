@@ -1,11 +1,15 @@
-_            = require 'underscore'
+_ = require 'underscore'
+BasicController = require('./basicController')
+{get_models} = require("../conf")
 
-class DashboardController extends require('./basicController')   
-  
-  index: ->    
+[Project] = get_models ["Project"]
+
+class DashboardController extends BasicController
+
+  index: ->
     @context.title = 'Dashboard'
     @context.body = @_view 'dashboard/dashboard', @context
     @res.render 'base', @context
- 
-module.exports = (req,res)->
+
+module.exports = (req, res)->
   new DashboardController req, res

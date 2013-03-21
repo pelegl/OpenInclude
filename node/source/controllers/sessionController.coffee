@@ -1,8 +1,9 @@
 {esClient, get_models} = require '../conf'
-
+BasicController = require './basicController'
+_ = require 'underscore'
 [User] = get_models ["User"]
 
-class SessionController extends require('./basicController') 
+class SessionController extends BasicController
   
   constructor: (@req,@res)->
     if @req.xhr
@@ -23,6 +24,21 @@ class SessionController extends require('./basicController')
             @res.json({success: false})
         else
             @res.json(user.public_info())
+    )
+
+  list: ->
+    query = User.find().select()
+    if @get?
+      regexp = new RegExp("^#{@get[0]}")
+      query.where 'github_username', regexp
+    query.exec((result, users) =>
+      if result then return @res.json success: false
+
+      data = _.map(users, (user) ->
+        return {title: user.get("github_username"), value: user.get("github_username")}
+      )
+
+      @res.json data
     )
      
 

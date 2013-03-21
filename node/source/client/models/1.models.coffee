@@ -73,6 +73,9 @@
    exports.Task       = @Backbone.Model.extend
      idAttribute: "_id"
      url: "/task"
+
+   exports.TaskComment = @Backbone.Model.extend
+     idAttribute: "_id"
    
    exports.Language = @Backbone.Model.extend
      idAttribute: "name"

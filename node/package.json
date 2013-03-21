@@ -5,22 +5,22 @@
   "description": "OpenInclude - opensource aggregation tool",
   "main": "app.coffee",
   "author": {
-    "name": "Vitaly Aminev",
+    "name" : "Vitaly Aminev",
     "email": "getstarted@avvs.co",
-    "url": "http://avvs.co"
+    "url"  : "http://avvs.co"
   },
   "contributors": [
     {
-      "name": "Vitaly Aminev",
+      "name" : "Vitaly Aminev",
       "email": "getstarted@avvs.co",
-      "url": "http://avvs.co"
+      "url"  : "http://avvs.co"
     },
     {
-      "name": "Dmitry Gorbunov",
+      "name" : "Dmitry Gorbunov",
       "email": "atskiisotona@gmail.com",
-      "url": "http://dgorbunov.ru"
+      "url"  : "http://dgorbunov.ru"
     }
-  ],
+  ],  
   "dependencies": {
     "express": "*",
     "async": "*",
@@ -29,10 +29,11 @@
     "consolidate": "0.8.x",
     "handlebars": "*",
     "mongoose": "*",
-    "hiredis": "*",
+    "mongoose-tree": "*",
+    "hiredis": "*",    
     "elasticsearchclient": "*",
     "underscore": "*",
-    "humanize": "*",
+    "humanize": "*",        
     "passport": "0.x",
     "passport-github": "0.x",
     "passport-oauth": "0.x",
@@ -43,14 +44,15 @@
     "aws-sdk": "~0.9.5-pre.6",
     "fivebeans": "git://github.com/AVVS/fivebeans.git",
     "eventemitter2": "~0.4.11",
-    "dot": "1.0.x"
+    "dot": "1.0.x",
+    "moment": "*"
   },
   "devDependencies": {
     "coffee-trace": "~1.3.4",
     "ncp": "*",
     "fs-extra": "~0.5.0",
     "grunt": "0.4.x",
-    "grunt-contrib-watch": "~0.3.1",
+    "grunt-contrib-watch": "~0.3.1",    
     "grunt-contrib-handlebars": "0.5.x",
     "grunt-contrib-less": "0.5.x",
     "grunt-contrib-concat": "*",

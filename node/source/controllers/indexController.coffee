@@ -1,6 +1,7 @@
 {esClient} = require '../conf'
+BasicController = require('./basicController')
 
-class IndexController extends require('./basicController') 
+class IndexController extends BasicController
   constructor: (@req, @res)->    
     @offset = 1
     super

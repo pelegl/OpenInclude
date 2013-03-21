@@ -16,6 +16,44 @@
     visibility: visible;
 }
 
+.task-list li span {
+  margin-left: 15px;
+}
+
+.task-list li input {
+  margin-top: -3px;
+}
+
+.task-list .task-extended {
+  display: none;
+  padding-top: 6px;
+}
+
+.task-list .task-extended > * {
+  margin: 6px;
+}
+
+#typeahead {
+  position: absolute;
+  z-index: 100;
+  background-color: white;
+  border: 1px solid gray;
+}
+
+.typeahead-container {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.typeahead-container li {
+  padding: 6px;
+  cursor: pointer;
+}
+
+.typeahead-container li:hover {
+  background-color: gray;
+}
 .dashboard {
   margin-top: 35px;
   .dashboard-left {
