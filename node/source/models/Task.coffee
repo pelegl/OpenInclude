@@ -14,9 +14,16 @@ definition =
     # Task details
     name : String
     description: String
+    person: Object
+    status: String
+    label: String
+    due: Date
     
     # completion date
     completed: Date
+
+    # comments thread
+    comments: []
     
     # Trello ID
     trello_id : String

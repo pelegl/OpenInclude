@@ -69,6 +69,8 @@ exports.set = (app)->
   app.post "/task/:project", app.Controllers.task.create
   app.put "/task/:id", app.Controllers.task.update
   app.delete "/task/:id", app.Controllers.task.delete
+
+  app.post '/task/comment/:id', app.Controllers.task.comment
   
   ###
   oAuth interaction

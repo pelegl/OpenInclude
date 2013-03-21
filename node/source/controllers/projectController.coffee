@@ -160,7 +160,7 @@ module.exports =
     query = Project.find().select()
     if req.params.part?
       regexp = new RegExp("^#{req.params.part}")
-      query.where {name: regexp}
+      query.where 'name', regexp
     query.exec((result, projects) =>
       if result then return res.json success: false
 

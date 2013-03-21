@@ -400,6 +400,19 @@ footer {
 .project-list li:hover span {
   visibility: visible;
 }
+.task-list li span {
+  margin-left: 15px;
+}
+.task-list li input {
+  margin-top: -3px;
+}
+.task-list .task-extended {
+  display: none;
+  padding-top: 6px;
+}
+.task-list .task-extended > * {
+  margin: 6px;
+}
 #typeahead {
   position: absolute;
   z-index: 100;

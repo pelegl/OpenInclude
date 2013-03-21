@@ -6,6 +6,9 @@
   tasks = new collections.Tasks
   projectId = ""
   project = null
+  taskId = ""
+  task = null
+  taskEl = null
 
   class Users extends @Backbone.Collection
     model : models.User
@@ -40,50 +43,89 @@
       $(@context.listener).val(value)
       @hide()
 
-    showUser: (part = "") ->
-      @suggestions.url = "/session/list/#{part}"
+    showUser: () ->
+      @base = "/session/list"
+      @suggestions.url = "/session/list"
       @suggestions.fetch()
 
-    showProject: (part = "") ->
-      @suggestions.url = "/project/suggest/#{part}"
+    showProject: () ->
+      @base = "project/suggest"
+      @suggestions.url = "/project/suggest"
       @suggestions.fetch()
 
     showTask: (part) ->
       return
 
+    updateQuery: (part) ->
+      @suggestions.url = "#{@base}/#{part}"
+      console.log @suggestions.url
+      @suggestions.fetch()
+
     hide: ->
       @$el.hide()
+      @available = false
 
     render: ->
       @context.suggestions = @suggestions.toJSON()
       html = views['dashboard/typeahead'](@context)
       @$el.html html
       @$el.show()
+      @available = true
       @
 
   class InlineForm extends @Backbone.View
     events:
       'submit form': "submit"
+      'click button[type=submit]': "preventPropagation"
       'click .close-inline': "hide"
       'keypress textarea.typeahead': "typeahead"
 
+    preventPropagation: (event) ->
+      event.stopPropagation()
+
     initialize: (context = {}) ->
       @context = _.extend {}, context, app.conf
+      super context
+
       @tah = new TypeAhead @context
       @render()
 
     typeahead: (event) ->
-      char = String.fromCharCode(event.which or event.keyCode or event.charCode)
+      code = event.which or event.keyCode or event.charCode
+      char = String.fromCharCode code
+
       @tah.position(event.target)
+
       switch char
-        when '@' then @tah.showUser()
-        when '#' then @tah.showTask()
-        when '+' then @tah.showProject()
-        when ' ' then @tah.hide()
-        else return
+        when '@'
+          @buf = ''
+          @tah.showUser()
+        when '#'
+          @buf = ''
+          @tah.showTask()
+        when '+'
+          @buf = ''
+          @tah.showProject()
+        when ' '
+          @buf = ''
+          @tah.hide()
+          true
+        else
+          if code is 8
+            # backspace
+            @buf = @buf.substring(0, @buf.length - 1)
+            return true
+
+          if event.charCode is 0
+            return true
+          if @tah.available
+            @buf += char
+          if @buf.length > 0
+            @tah.updateQuery @buf
 
     submit: (event) ->
       event.preventDefault()
+      event.stopPropagation()
 
       data = Backbone.Syphon.serialize event.currentTarget
       @$("[type=submit]").addClass("disabled").text("Updating information...")
@@ -107,6 +149,7 @@
     hide: (event) ->
       if event
         event.preventDefault()
+        event.stopPropagation()
       @$el.hide()
 
     render: ->
@@ -157,6 +200,19 @@
 
       super()
 
+  class exports.CreateTaskCommentForm extends InlineForm
+    view: "dashboard/create_task_comment"
+
+    success: (model, response, options) ->
+      if super model, response, options
+        tasks.fetch()
+
+    initialize: (context) ->
+      @model = new models.TaskComment
+      @model.url = "/task/comment/#{taskId}"
+
+      super context
+
   class exports.Dashboard extends View
     events:
       'click .project-list li a': "editProject"
@@ -167,6 +223,9 @@
       'click #delete-project-button': "deleteProject"
 
       'click #create-task-button': "showTaskForm"
+
+      'click #task-add-comment-button': "showTaskCommentForm"
+      'click #task-list li': "openTask"
 
     clearHref: (href)->
       return href.replace "/#{@context.dashboard_url}", ""
@@ -194,6 +253,24 @@
         if user.id is @context.user._id
           @context.canGrant = true
           break
+
+    openTask: (e) ->
+      e.preventDefault()
+      e.stopPropagation()
+
+      if taskId is e.target.attributes['rel'].value
+        taskEl.hide "drop"
+        return
+
+      if taskEl
+        taskEl.hide "drop"
+
+      taskId = e.target.attributes['rel'].value
+      task = tasks.get(taskId)
+
+      taskEl = $("#task-#{taskId}")
+
+      taskEl.show "drop"
 
     editProject: (e) ->
       e.preventDefault()
@@ -240,6 +317,12 @@
       e.preventDefault()
       @createTask.show()
 
+    showTaskCommentForm: (e) ->
+      e.preventDefault()
+      e.stopPropagation()
+      createTaskComment = new exports.CreateTaskCommentForm _.extend(@context, el: "#task-add-comment-#{taskId}")
+      createTaskComment.show()
+
     switchProject: (e)->
       projectId = e.target.attributes['rel'].value
       project = projects.get(projectId)
@@ -248,6 +331,8 @@
       @context.project = project.toJSON()
 
       @parsePermissions @context.user, @context.project
+
+      app.navigate "/dashboard/project/#{projectId}", trigger: false
 
       tasks.url = "/task/#{projectId}"
       tasks.fetch()

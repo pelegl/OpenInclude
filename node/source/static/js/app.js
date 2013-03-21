@@ -96,6 +96,9 @@
       idAttribute: "_id",
       url: "/task"
     });
+    exports.TaskComment = this.Backbone.Model.extend({
+      idAttribute: "_id"
+    });
     exports.Language = this.Backbone.Model.extend({
       idAttribute: "name",
       urlRoot: "/modules"
@@ -1910,13 +1913,16 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var InlineForm, TypeAhead, Users, project, projectId, projects, root, tasks, views;
+    var InlineForm, TypeAhead, Users, project, projectId, projects, root, task, taskEl, taskId, tasks, views;
     root = this;
     views = this.hbt = _.extend({}, dt, Handlebars.partials);
     projects = new collections.Projects;
     tasks = new collections.Tasks;
     projectId = "";
     project = null;
+    taskId = "";
+    task = null;
+    taskEl = null;
     Users = (function(_super) {
 
       __extends(Users, _super);
@@ -1975,26 +1981,29 @@
         return this.hide();
       };
 
-      TypeAhead.prototype.showUser = function(part) {
-        if (part == null) {
-          part = "";
-        }
-        this.suggestions.url = "/session/list/" + part;
+      TypeAhead.prototype.showUser = function() {
+        this.base = "/session/list";
+        this.suggestions.url = "/session/list";
         return this.suggestions.fetch();
       };
 
-      TypeAhead.prototype.showProject = function(part) {
-        if (part == null) {
-          part = "";
-        }
-        this.suggestions.url = "/project/suggest/" + part;
+      TypeAhead.prototype.showProject = function() {
+        this.base = "project/suggest";
+        this.suggestions.url = "/project/suggest";
         return this.suggestions.fetch();
       };
 
       TypeAhead.prototype.showTask = function(part) {};
 
+      TypeAhead.prototype.updateQuery = function(part) {
+        this.suggestions.url = "" + this.base + "/" + part;
+        console.log(this.suggestions.url);
+        return this.suggestions.fetch();
+      };
+
       TypeAhead.prototype.hide = function() {
-        return this.$el.hide();
+        this.$el.hide();
+        return this.available = false;
       };
 
       TypeAhead.prototype.render = function() {
@@ -2003,6 +2012,7 @@
         html = views['dashboard/typeahead'](this.context);
         this.$el.html(html);
         this.$el.show();
+        this.available = true;
         return this;
       };
 
@@ -2019,8 +2029,13 @@
 
       InlineForm.prototype.events = {
         'submit form': "submit",
+        'click button[type=submit]': "preventPropagation",
         'click .close-inline': "hide",
         'keypress textarea.typeahead': "typeahead"
+      };
+
+      InlineForm.prototype.preventPropagation = function(event) {
+        return event.stopPropagation();
       };
 
       InlineForm.prototype.initialize = function(context) {
@@ -2028,29 +2043,51 @@
           context = {};
         }
         this.context = _.extend({}, context, app.conf);
+        InlineForm.__super__.initialize.call(this, context);
         this.tah = new TypeAhead(this.context);
         return this.render();
       };
 
       InlineForm.prototype.typeahead = function(event) {
-        var char;
-        char = String.fromCharCode(event.which || event.keyCode || event.charCode);
+        var char, code;
+        code = event.which || event.keyCode || event.charCode;
+        char = String.fromCharCode(code);
         this.tah.position(event.target);
         switch (char) {
           case '@':
+            this.buf = '';
             return this.tah.showUser();
           case '#':
+            this.buf = '';
             return this.tah.showTask();
           case '+':
+            this.buf = '';
             return this.tah.showProject();
           case ' ':
-            return this.tah.hide();
+            this.buf = '';
+            this.tah.hide();
+            return true;
+          default:
+            if (code === 8) {
+              this.buf = this.buf.substring(0, this.buf.length - 1);
+              return true;
+            }
+            if (event.charCode === 0) {
+              return true;
+            }
+            if (this.tah.available) {
+              this.buf += char;
+            }
+            if (this.buf.length > 0) {
+              return this.tah.updateQuery(this.buf);
+            }
         }
       };
 
       InlineForm.prototype.submit = function(event) {
         var data;
         event.preventDefault();
+        event.stopPropagation();
         data = Backbone.Syphon.serialize(event.currentTarget);
         this.$("[type=submit]").addClass("disabled").text("Updating information...");
         this.model.save(data, {
@@ -2079,6 +2116,7 @@
       InlineForm.prototype.hide = function(event) {
         if (event) {
           event.preventDefault();
+          event.stopPropagation();
         }
         return this.$el.hide();
       };
@@ -2174,6 +2212,31 @@
       return CreateTaskForm;
 
     })(InlineForm);
+    exports.CreateTaskCommentForm = (function(_super) {
+
+      __extends(CreateTaskCommentForm, _super);
+
+      function CreateTaskCommentForm() {
+        return CreateTaskCommentForm.__super__.constructor.apply(this, arguments);
+      }
+
+      CreateTaskCommentForm.prototype.view = "dashboard/create_task_comment";
+
+      CreateTaskCommentForm.prototype.success = function(model, response, options) {
+        if (CreateTaskCommentForm.__super__.success.call(this, model, response, options)) {
+          return tasks.fetch();
+        }
+      };
+
+      CreateTaskCommentForm.prototype.initialize = function(context) {
+        this.model = new models.TaskComment;
+        this.model.url = "/task/comment/" + taskId;
+        return CreateTaskCommentForm.__super__.initialize.call(this, context);
+      };
+
+      return CreateTaskCommentForm;
+
+    })(InlineForm);
     return exports.Dashboard = (function(_super) {
 
       __extends(Dashboard, _super);
@@ -2188,7 +2251,9 @@
         'click #create-project-button': "showProjectForm",
         'click #create-subproject-button': "showSubProjectForm",
         'click #delete-project-button': "deleteProject",
-        'click #create-task-button': "showTaskForm"
+        'click #create-task-button': "showTaskForm",
+        'click #task-add-comment-button': "showTaskCommentForm",
+        'click #task-list li': "openTask"
       };
 
       Dashboard.prototype.clearHref = function(href) {
@@ -2232,6 +2297,22 @@
           }
         }
         return _results;
+      };
+
+      Dashboard.prototype.openTask = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (taskId === e.target.attributes['rel'].value) {
+          taskEl.hide("drop");
+          return;
+        }
+        if (taskEl) {
+          taskEl.hide("drop");
+        }
+        taskId = e.target.attributes['rel'].value;
+        task = tasks.get(taskId);
+        taskEl = $("#task-" + taskId);
+        return taskEl.show("drop");
       };
 
       Dashboard.prototype.editProject = function(e) {
@@ -2281,12 +2362,25 @@
         return this.createTask.show();
       };
 
+      Dashboard.prototype.showTaskCommentForm = function(e) {
+        var createTaskComment;
+        e.preventDefault();
+        e.stopPropagation();
+        createTaskComment = new exports.CreateTaskCommentForm(_.extend(this.context, {
+          el: "#task-add-comment-" + taskId
+        }));
+        return createTaskComment.show();
+      };
+
       Dashboard.prototype.switchProject = function(e) {
         projectId = e.target.attributes['rel'].value;
         project = projects.get(projectId);
         this.context.projectId = projectId;
         this.context.project = project.toJSON();
         this.parsePermissions(this.context.user, this.context.project);
+        app.navigate("/dashboard/project/" + projectId, {
+          trigger: false
+        });
         tasks.url = "/task/" + projectId;
         tasks.fetch();
         return this.render();

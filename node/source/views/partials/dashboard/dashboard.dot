@@ -25,8 +25,7 @@
                     <p id="create-project-inline"></p>
 
                     <p>
-                        <a href="{{= it.dashboard_url }}/project/create" id="create-project-button">Create new
-                            project</a>
+                        <a href="{{= it.dashboard_url }}/project/create" id="create-project-button" class="btn btn-small btn-success">Create</a>
                     </p>
                 </div>
                 <div class='span9 dashboard-right'>
@@ -37,7 +36,7 @@
                                 {{=it.project.name}}
                                 {{? it.isOwner }}
                                 {{? it.project.level < 4 }}
-                                <a href="{{=it.dashboard_url }}/project/create/{{=it.projectId }}" id="create-subproject-button" class="btn btn-success btn-small">Add subproject</a>&nbsp;
+                                <a href="{{=it.dashboard_url }}/project/create/{{=it.projectId }}" id="create-subproject-button" class="btn btn-success btn-small pull-right">Add subproject</a>&nbsp;
                                 {{?}}
                                 <a href="{{=it.dashboard_url }}/project/delete/{{=it.projectId }}"
                                    id="delete-project-button" class="btn btn-danger btn-small pull-right">Delete</a>
@@ -65,14 +64,33 @@
                                     {{~}}
                                 </ul>
                             </div>
-                            {{? it.tasks}}
+                            {{? it.tasks.length > 0 }}
                             <h3>Tasks:</h3>
-                            {{?}}
                             <ul id="task-list" class="task-list nav nav-tabs nav-stacked">
                                 {{~ it.tasks :task}}
-                                <li rel="{{=task._id}}">{{=task.name}}</li>
+                                <li rel="{{=task._id}}">
+                                    {{? task.person }}
+                                    {}
+                                    {{?}}
+                                    <input type="checkbox" {{? task.completed }}checked{{?}}/>
+                                    <span class="task-label">{{= task.label }}</span>
+                                    <span class="task-name">{{= task.name}}</span>
+                                    <span class="task-comments">Comments</span>
+                                    <span class="task-due pull-right">{{= moment(task.due).calendar() }}</span>
+                                    <div id="task-{{= task._id }}" class="task-extended">
+                                        <span class="task-description">{{= task.description }}</span>
+                                        <ul class="task-comments">
+                                            {{~ task.comments :comment}}
+                                            <li>{{= comment }}</li>
+                                            {{~}}
+                                        </ul>
+                                        <a href="#" id="task-add-comment-button" class="btn btn-small btn-success">Add comment</a>
+                                        <div id="task-add-comment-{{= task._id}}"></div>
+                                    </div>
+                                </li>
                                 {{~}}
                             </ul>
+                            {{?}}
                             {{? it.canWrite || it.isOwner }}
                             <p id="create-task-inline"></p>
 

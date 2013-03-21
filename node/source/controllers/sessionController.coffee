@@ -30,7 +30,7 @@ class SessionController extends BasicController
     query = User.find().select()
     if @get?
       regexp = new RegExp("^#{@get[0]}")
-      query.where {github_username: regexp}
+      query.where 'github_username', regexp
     query.exec((result, users) =>
       if result then return @res.json success: false
 
