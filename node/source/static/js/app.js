@@ -1307,13 +1307,16 @@
       };
 
       DiscoverFilter.prototype.resetFilter = function(e) {
-        var $this;
+        var filters;
 
-        if ((e != null ? e.currentTarget : void 0) != null) {
-          $this = $(e.currentTarget);
-          $this.closest(".filterBox").find("input[type=checkbox]").prop("checked", false);
-        }
-        this.collection.filters = [];
+        filters = {};
+        this.$(".filterBox").find("input[type=checkbox]").prop("checked", true).each(function() {
+          var languageName;
+
+          languageName = $(this).val();
+          return filters[languageName] = true;
+        });
+        this.collection.filters = filters;
         this.collection.trigger("filter");
         return false;
       };

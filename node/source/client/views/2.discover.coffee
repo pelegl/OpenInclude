@@ -67,16 +67,20 @@
         filters: [
           {name: "Language", key: "languageFilters"}
         ]
-      
+
       @listenTo @collection, "reset", @render
       @listenTo @collection, "reset", @resetFilter
+
       @render()
     
     resetFilter: (e)->
-      if e?.currentTarget?
-        $this = $(e.currentTarget)
-        $this.closest(".filterBox").find("input[type=checkbox]").prop("checked", false)
-      @collection.filters = []
+
+      filters = {}
+      @$(".filterBox").find("input[type=checkbox]").prop("checked", true).each ->
+        languageName          = $(this).val()
+        filters[languageName] = true
+
+      @collection.filters = filters
       @collection.trigger "filter"
       return false
     

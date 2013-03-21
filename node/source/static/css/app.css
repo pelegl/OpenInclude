@@ -423,6 +423,15 @@ footer {
 .container.profile .personalInformation .accountType .status a {
   vertical-align: top;
 }
+.stackQAHistory,
+.commitHistory,
+.starsHistory {
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  background: #ffffff;
+  margin-bottom: 20px;
+}
 .stackQAHistory .axis path,
 .commitHistory .axis path,
 .starsHistory .axis path,
@@ -593,7 +602,7 @@ footer {
   position: fixed;
   z-index: 1000;
   top: 130px;
-  left: -560px;
+  left: -394px;
   transition: left 0.3s ease-out;
   -webkit-transition: left 0.3s ease-out;
   -moz-transition: left 0.3s ease-out;
@@ -607,13 +616,19 @@ footer {
   -webkit-box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
   -moz-box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
 }
+#shareYourThoughts .close {
+  margin-bottom: 10px;
+}
+#shareYourThoughts textarea {
+  resize: none;
+}
 .show #shareYourThoughts {
   left: 0;
 }
 .show .share-ideas {
-  left: 475px;
+  left: 309px;
 }
 #ideas,
 #email {
-  width: 516px;
+  width: 350px;
 }

@@ -31,7 +31,7 @@
                 <td>{{! project.asked }}</td>
                 <td>
                   {{? project.asked > 0}}
-                    {{= Math.round(project.answered/project.asked) }}%
+                    {{= Math.round(project.answered/project.asked*100) }}%
                   {{??}}
                     -
                   {{?}}                  						

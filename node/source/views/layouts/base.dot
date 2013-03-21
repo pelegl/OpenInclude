@@ -16,38 +16,8 @@
 	  </section>
   </span>
   {{#def.partials['footer']}}
-          
-  <div class="share-common">
-    <a href="#" role="button" class="share-ideas">Suggest Ideas</a>
-    <!-- Modal -->
-    <div id="shareYourThoughts" class="" tabindex="-1">
-      <div class="modal-header">
-        <button type="button" class="close">&times;</button>
-        <h3>Share your ideas</h3>
-      </div>
-        <div class="modal-body">        
-          <form >
-              {{? !it.user}}    
-              <div class='control-group'>
-                <label class='control-label' for='email'>Email</label>
-                <div class='controls'>
-                  <input type="text" name="email" id='email' />
-                </div> 
-              </div>
-              {{?}}
-              <div class='control-group'>
-                <label class='control-label'>Ideas</label>
-                <div class='controls' for='ideas'>
-                  <textarea id='ideas' name="ideas" rows="5" resize='none'></textarea>
-                </div> 
-              </div>
-          </form>    
-        </div>
-        <div class="modal-footer">
-          <button class="submit btn btn-primary">Share</button>
-        </div>
-    </div>
-  </div>
+
+  {{#def.partials['suggest-idea']}}
   
 </body>
 </html>

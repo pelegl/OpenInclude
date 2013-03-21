@@ -1,0 +1,26 @@
+<div class="share-common">
+    <a href="#" role="button" class="share-ideas">Suggest Ideas</a>
+    <!-- Modal -->
+    <div id="shareYourThoughts" class="" tabindex="-1">
+        <div class="modal-body">
+            <button type="button" class="close">&times;</button>
+            <form >
+                {{? !it.user}}
+                <div class='control-group'>
+                    <div class='controls'>
+                        <input type="text" name="email" id='email' placeholder="E-mail" />
+                    </div>
+                </div>
+                {{?}}
+                <div class='control-group'>
+                    <div class='controls' for='ideas'>
+                        <textarea id='ideas' name="ideas" rows="5" resize='none' placeholder="Write your comment here..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="submit btn btn-primary">Share</button>
+        </div>
+    </div>
+</div>

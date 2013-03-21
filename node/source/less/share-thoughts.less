@@ -1,3 +1,6 @@
+@share-textarea-width: 350px;
+
+
 .share-ideas {
   position: fixed;
   height: 30px;
@@ -26,11 +29,20 @@
   position: fixed;
   z-index: 1000;
   top: 130px;
-  left: -560px;
+  //left: -560px;  // 516 + 44px initially
+  left: -@share-textarea-width - 44;
   .transition(left 0.3s ease-out);
   background: @white;
   .border-radius(0 0 5px 0);
   .box-shadow(0 3px 3px, 30%);
+
+  .close {
+    margin-bottom: 10px;
+  }
+
+  textarea {
+    resize: none;
+  }
 }
 
 .show { 
@@ -38,10 +50,11 @@
     left: 0;
   }
   .share-ideas {
-    left: 475px;
+    //left: 475px; // 516 - 39
+    left: @share-textarea-width - 41;
   }
 }
 
 #ideas, #email {
-  width: 516px;
+  width: @share-textarea-width; //516px initially
 }

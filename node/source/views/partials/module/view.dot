@@ -1,7 +1,7 @@
 <div class='container module'>
   <div class='row'>
     <div class='span12' data-repo='{{=it.prepopulate}}'>
-      <h2>{{=it.module.module_name}} <small><a href="{{=it.module.url}}" class='muted'>{{! it.module.url}}</a></small></h2>
+      <h2>{{=it.module.module_name}} <small><a href="{{=it.module.url}}" class='muted' target="_blank">{{! it.module.url}}</a></small></h2>
       <div class='row'>
         <div class='span6'>
           <!-- stacked bar chart #52 weeks history -->

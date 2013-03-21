@@ -4,7 +4,7 @@
       <div class="features text-center">
         <ul>
           <li>
-            <a href="/discover">
+            <a href="/{{= it.discover_url }}">
               <div class="box"><img src="{{=it.STATIC_URL}}images/icon-discover.png" alt="">
                 <h2>Discover</h2>
                 <p>quality open source projects</p>
@@ -12,7 +12,7 @@
             </a> 
           </li>
           <li>
-            <a href="#">
+            <a href="/{{= it.how_to_url }}">
               <div class="box"><img src="{{=it.STATIC_URL}}images/icon-demo.png" alt="">
                 <h2>Demo</h2>
                 <p>on our virtual machines</p>
@@ -20,7 +20,7 @@
             </a>
           </li>
           <li>
-            <a href="#">
+            <a href="/{{= it.how_to_url }}">
               <div class="box"><img src="{{=it.STATIC_URL}}images/icon-integrate.png" alt="">
                 <h2>Integrate</h2>
                 <p>into your current work</p>
