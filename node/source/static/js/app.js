@@ -845,7 +845,17 @@
       Bill.prototype.className = "bill";
 
       Bill.prototype.initialize = function() {
-        return this.render();
+        var bill, billId;
+
+        _.bindAll(this, "initialize");
+        billId = this.options.billId;
+        bill = this.collection.get(billId);
+        if (bill) {
+          this.model = bill;
+          return this.render();
+        } else {
+          return this.collection.once("sync", this.initialize);
+        }
       };
 
       Bill.prototype.render = function() {
@@ -1007,8 +1017,7 @@
       };
 
       Profile.prototype.setAction = function(action) {
-        var billId, bills, dev, findBill, merc, navigateTo, trello, _ref5,
-          _this = this;
+        var billId, billView, bills, dev, merc, navigateTo, notFound, trello, _ref5;
 
         dev = this.clearHref(this.context.developer_agreement);
         merc = this.clearHref(this.context.merchant_agreement);
@@ -1056,21 +1065,16 @@
           } else {
             navigateTo = "" + this.context.view_bills + "/" + (this.get.join("/"));
             billId = this.get[0];
-            findBill = function() {
-              var bill, billView;
-
-              bill = _this.bills.collection.get(billId);
-              if (bill) {
-                billView = new exports.Bill({
-                  model: bill
-                });
-                return _this.empty(billView.$el);
-              } else {
-                _this.bills.collection.once("sync", findBill);
-                return _this.empty((new exports.NotFound()).$el);
-              }
-            };
-            findBill();
+            if (billId != null) {
+              billView = new exports.Bill({
+                collection: this.bills.collection,
+                billId: billId
+              });
+              this.empty(billView.$el);
+            } else {
+              notFound = new exports.NotFound;
+              this.empty(notFound.$el);
+            }
           }
           return app.navigate(navigateTo, {
             trigger: false

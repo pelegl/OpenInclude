@@ -18,8 +18,17 @@
   class exports.Bill extends @Backbone.View
     className: "bill"
 
-    initialize: ->
-      @render()
+    initialize:  ->
+      _.bindAll this, "initialize"
+
+
+      {billId} = @options
+      bill     = @collection.get billId
+      if bill
+        @model = bill
+        @render()
+      else
+        @collection.once "sync", @initialize
 
     render: ->
       bill = @model.toJSON()
@@ -173,17 +182,12 @@
             navigateTo = "#{@context.view_bills}/#{@get.join("/")}"
             # show bill
             [billId] = @get
-
-            findBill = =>
-              bill = @bills.collection.get billId
-              if bill
-                billView = new exports.Bill {model : bill}
-                @empty billView.$el
-              else
-                @bills.collection.once "sync", findBill
-                @empty (new exports.NotFound()).$el
-
-            findBill()
+            if billId?
+              billView = new exports.Bill {collection: @bills.collection, billId}
+              @empty billView.$el
+            else
+              notFound = new exports.NotFound
+              @empty notFound.$el
 
 
           app.navigate navigateTo, {trigger: false}
