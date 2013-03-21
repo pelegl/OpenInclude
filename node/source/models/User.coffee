@@ -45,9 +45,8 @@ definition =
   group_id:
     type: String
     enum: ["admin","developer","project manager","client"]
-  
-  # TODO: clarify how we use this string - we might have multiple hashes from stripe, so probably should do different setup
-  payment_methods: 
+
+  payment_methods:
     type: [PaymentMethod]
     default: []  
 

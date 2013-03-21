@@ -1,8 +1,17 @@
 <div class='container login'>  
   <div class='row'>
   	  <div class='offset2 span8 text-center'>		  
-		  <form name="signin" method="post" action="">              
+		  <form name="signin" method="post" action="">
+            {{? !it.user}}
 		    <a href="{{= it.github_auth_url}}" class="github-auth">Authenticate with GitHub</a>
+            {{??}}
+            <div class='welcome-back'>
+                <img src='http://www.gravatar.com/avatar/{{= it.user.github_avatar_url }}?s=40' />
+                <p class='name'>Welcome back, {{! it.user.github_display_name }}!</p>
+                <a href="{{= it.github_auth_url}}" class="btn btn-primary">Sign in</a>
+                <a href="{{= it.github_auth_url}}" class="btn btn-danger">That's not me</a>
+            </div>
+            {{?}}
 		  </form>  	
 	  </div>
   </div>

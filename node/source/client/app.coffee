@@ -1,4 +1,11 @@
 ((exports)->
+  ###
+    Configuring plugins
+  ###
+
+  $.cookie.json = true
+
+
   conf = 
     STATIC_URL          : "/static/"
     in_stealth_mode     : false
@@ -168,14 +175,12 @@
           
     App.prototype.routes = _.object route_keys, route_paths
     
-    
     console.log '[__app__] init done!'
     exports.app = app = new App()
     
     app.meta        = new views.MetaView el:$('body')
     app.shareIdeas  = new views.ShareIdeas el:$('.share-common')
     app.session     = new models.Session()
-    app.session.fetch()
     
     app.session.once "sync", =>
 

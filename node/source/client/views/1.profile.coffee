@@ -5,12 +5,24 @@
         
   
   class exports.SignIn extends View
+    events:
+      'click .welcome-back .btn-danger': 'switchUser'
+
+    switchUser: ->
+      app.session.unload()
+      @render()
+
     initialize: ->
       console.log '[_signInView__] Init'
-      @context.title = "Authentication"      
+
+      @context.title = "Authentication"
+      @listenTo app.session, "sync", @render
+
       @render()
     
     render: ->
+      @context.user  = app.session.user || null
+
       @$el.html views['registration/login'] @context
       @$el.attr 'view-id', 'registration'
       @

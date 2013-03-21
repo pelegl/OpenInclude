@@ -90,8 +90,60 @@
       oneDay: 1000 * 60 * 60 * 24
     };
     exports.Session = this.Backbone.Model.extend({
+      /*
+       @param {String}   github_id
+       @param {Boolean}  has_stripe
+       @param {Array}    payment_methods
+       @param {Boolean}  merchant
+       @param {Boolean}  employee
+       @param {String}   github_display_name
+       @param {String}   github_email
+       @param {String}   github_username
+       @param {String}   github_avatar_url
+       @param {String}   trello_id
+       @param {ObjectId} _id
+       @param {Boolean}  is_authenticated
+      */
+
       idAttribute: "_id",
-      url: "/session"
+      url: "/session",
+      initialize: function() {
+        return this.load();
+      },
+      parse: function(response, options) {
+        var github_avatar_url, github_display_name;
+
+        if (response.is_authenticated) {
+          /*
+           set cookie for consiquent sign in attempts
+          */
+
+          github_display_name = response.github_display_name, github_avatar_url = response.github_avatar_url;
+          this.user = {
+            github_display_name: github_display_name,
+            github_avatar_url: github_avatar_url
+          };
+          $.cookie("returning_customer", {
+            user: this.user
+          }, {
+            expires: 30
+          });
+        }
+        return response;
+      },
+      unload: function() {
+        delete this.user;
+        return $.removeCookie("returning_customer");
+      },
+      load: function() {
+        var cookie;
+
+        cookie = $.cookie("returning_customer");
+        if (cookie != null) {
+          this.user = cookie.user;
+        }
+        return this.fetch();
+      }
     });
     exports.Bill = this.Backbone.Model.extend({
       idAttribute: "_id",
@@ -819,13 +871,24 @@
         return _ref;
       }
 
+      SignIn.prototype.events = {
+        'click .welcome-back .btn-danger': 'switchUser'
+      };
+
+      SignIn.prototype.switchUser = function() {
+        app.session.unload();
+        return this.render();
+      };
+
       SignIn.prototype.initialize = function() {
         console.log('[_signInView__] Init');
         this.context.title = "Authentication";
+        this.listenTo(app.session, "sync", this.render);
         return this.render();
       };
 
       SignIn.prototype.render = function() {
+        this.context.user = app.session.user || null;
         this.$el.html(views['registration/login'](this.context));
         this.$el.attr('view-id', 'registration');
         return this;
@@ -2471,8 +2534,13 @@
     __slice = [].slice;
 
   (function(exports) {
+    /*
+      Configuring plugins
+    */
+
     var App, conf, _ref;
 
+    $.cookie.json = true;
     conf = {
       STATIC_URL: "/static/",
       in_stealth_mode: false,
@@ -2667,7 +2735,6 @@
         el: $('.share-common')
       });
       app.session = new models.Session();
-      app.session.fetch();
       return app.session.once("sync", function() {
         Backbone.history.start({
           pushState: true
