@@ -6,11 +6,12 @@
   
   class exports.SignIn extends View
     events:
-      'click .welcome-back .btn-danger': 'switchUser'
+      'click .welcome-back .thats-not-me': 'switchUser'
 
     switchUser: ->
       app.session.unload()
       @render()
+      false
 
     initialize: ->
       console.log '[_signInView__] Init'

@@ -55,7 +55,7 @@ header.navbar .navbar-inner a.brand {
   padding: 0;
 }
 header.navbar .navbar-inner .navbar-search {
-  margin: 9px 0px 0px 10px;
+  margin: 9px 20px 0px 10px;
 }
 header.navbar .navbar-inner .navbar-search input {
   transition: width 0.2s ease-in-out 0.1s;
@@ -301,6 +301,49 @@ footer {
   line-height: 128px;
   display: inline-block;
   font-size: 48px;
+}
+.container.login .welcome-back {
+  width: 350px;
+  height: 120px;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  background-color: #ffffff;
+  background-image: -webkit-linear-gradient(top, #ffffff, #d9d9d9);
+  background-image: -moz-linear-gradient(top, #ffffff, #d9d9d9);
+  background-image: -o-linear-gradient(top, #ffffff, #d9d9d9);
+  background-image: -ms-linear-gradient(top, #ffffff, #d9d9d9);
+  background-image: linear-gradient(top, #ffffff, #d9d9d9);
+  margin: 0 auto;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  padding: 18px 20px;
+}
+.container.login .welcome-back > img {
+  float: left;
+  margin: 0 25px 0 0;
+  border: 1px solid #cccccc;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+.container.login .welcome-back .name {
+  text-align: left;
+  font-size: 16px;
+  padding: 15px 0;
+}
+.container.login .welcome-back .controls {
+  text-align: left;
+  display: inline-block;
+}
+.container.login .welcome-back .controls a {
+  margin-right: 15px;
+  margin-top: 10px;
+}
+.container.login .welcome-back .controls a.thats-not-me {
+  display: inline-block;
+  font-size: 10px;
+  vertical-align: middle;
 }
 .container.profile {
   margin-top: 30px;

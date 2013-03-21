@@ -6,10 +6,14 @@
 		    <a href="{{= it.github_auth_url}}" class="github-auth">Authenticate with GitHub</a>
             {{??}}
             <div class='welcome-back'>
-                <img src='http://www.gravatar.com/avatar/{{= it.user.github_avatar_url }}?s=40' />
-                <p class='name'>Welcome back, {{! it.user.github_display_name }}!</p>
-                <a href="{{= it.github_auth_url}}" class="btn btn-primary">Sign in</a>
-                <a href="{{= it.github_auth_url}}" class="btn btn-danger">That's not me</a>
+                <img src='http://www.gravatar.com/avatar/{{= it.user.github_avatar_url }}?s=80' />
+                <p class='name'>
+                    Howdy, {{! it.user.github_display_name }}!
+                    <span class='controls clearfix'>
+                        <a href="{{= it.github_auth_url}}" class="btn btn-success">Sign in</a>
+                        <a href="#" class="thats-not-me">That's not me</a>
+                    </span>
+                </p>
             </div>
             {{?}}
 		  </form>  	

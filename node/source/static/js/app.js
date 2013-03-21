@@ -872,12 +872,13 @@
       }
 
       SignIn.prototype.events = {
-        'click .welcome-back .btn-danger': 'switchUser'
+        'click .welcome-back .thats-not-me': 'switchUser'
       };
 
       SignIn.prototype.switchUser = function() {
         app.session.unload();
-        return this.render();
+        this.render();
+        return false;
       };
 
       SignIn.prototype.initialize = function() {
