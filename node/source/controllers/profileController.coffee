@@ -1,6 +1,9 @@
+require('coffee-trace')
 _            = require 'underscore'
 {get_models} = require '../conf'
-[User, Stripe]       = get_models ["User", "Stripe"]
+[User, Stripe, Bill]       = get_models ["User", "Stripe", "Bill"]
+
+
 
 agreement_text = "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. "
 
@@ -11,6 +14,7 @@ class ProfileController extends require('./basicController')
     @context.title = 'User Profile'
     @context.private = true
     @context.body = @_view 'member/profile', @context  #рендерим {{{body}}} в контекст
+
     @res.render 'base', @context # рендерим layout/base.hbs с контекстом @context
  
   login: ->    
@@ -42,7 +46,7 @@ class ProfileController extends require('./basicController')
     else
       unless @req.xhr then @res.redirect "back" else @res.json {success: false, err: "Please, sign the agreement"}
     
-      
+  	    
   
   merchant_agreement: ->
     if @req.method is "GET"
@@ -76,9 +80,9 @@ class ProfileController extends require('./basicController')
          
     else
       @res.send "Not permitted", 401
-  
+
   view: ->
-      User.findOne({github_username: @get[0]}, (result, data) =>
+      User.findOne {github_username: @get[0]}, (result, data) =>
           if result or data is null
               @res.status(404)
               @context.title = "User not found"
@@ -90,7 +94,34 @@ class ProfileController extends require('./basicController')
               @context.private = false
               @context.body = @_view "member/profile", @context
               @res.render "base", @context
-      )
+
+  view_bills: ->
+    if @req.method is "GET"
+      [id] = @get if @get?
+      if id
+        Bill.findOne {_id: id, bill_to_whome: @req.user._id}, (err, bill) =>
+          # err
+          return @res.send 'Not Found', 404 if err
+          # xhr
+          return @res.json bill if @req.xhr
+
+          @context.bill = bill
+          @context.informationBox = @_view 'member/bill', @context
+          @index()
+
+      else
+        Bill.get_bills @req.user._id, (err, bills) =>
+          # err
+          return @res.send 'Not Found', 404 if err
+          # xhr
+          return @res.json bills if @req.xhr
+
+          @context.title = 'Bills'
+          @context.informationBox = @_view 'member/bills', bills
+          @index()
+
+    else
+      @res.send "Incorrect verb", 403
  
 # Здесь отдаем функцию - каждый раз когда вызывается наш контроллер - создается новый экземпляр - это мы вставим в рутер
 module.exports = (req,res)->

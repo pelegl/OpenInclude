@@ -11,11 +11,46 @@
       @render()
     
     render: ->
-      html = views['registration/login'](@context)
-      @$el.html html
+      @$el.html views['registration/login'] @context
       @$el.attr 'view-id', 'registration'
       @
-  
+
+  class exports.Bill extends @Backbone.View
+    className: "bill"
+
+    initialize: ->
+      @render()
+
+    render: ->
+      bill = @model.toJSON()
+      html = views['member/bill'] {bill}
+
+      help.exchange this, html
+
+      @
+
+
+  class exports.Bills extends @Backbone.View
+    className: "bills"
+
+    initialize: ->
+      @collection = new collections.Bills
+
+      @listenTo @collection, "sync", @render
+
+      @collection.fetch()
+
+    render: ->
+      # bills
+      {view_bills} = app.conf
+      bills = @collection.toJSON()
+      html  = views['member/bills'] {bills, view_bills}
+
+      help.exchange this, html
+
+      @
+
+
   class exports.CC extends @Backbone.View    
     className: "dropdown-menu"
     
@@ -32,8 +67,6 @@
       data = Backbone.Syphon.serialize e.currentTarget
       
       @$("[type=submit]").addClass("disabled").text("Updating information...")
-      
-      console.log data
       
       @model.set data
       @model.save null, {success: @processUpdate, error: @processUpdate}        
@@ -67,7 +100,7 @@
   
   class exports.Profile extends View
     events:
-      'click .accountType a[class*=backbone]' : "accountUpgrade"
+      'click a[class*=backbone]'     : "processAction"
       'click .setupPayment > button' : "update_cc_events"    
     
     update_cc_events: (e) ->    
@@ -76,18 +109,29 @@
     
     clearHref: (href)->
       return href.replace "/#{@context.profile_url}", ""
-    
-    accountUpgrade: (e) ->
-      $this = $(e.currentTarget)
-      href  = $this.attr "href"      
-      @setAction @clearHref href                
+
+    processAction: (e) ->
+      $this  = $(e.currentTarget)
+      href   = @clearHref $this.attr "href"
+
+      [action, @get...] = _.without href.split("/"), ""
+
+      @setAction "/#{action}"
       false    
-    
+
+    empty: (opts...)->
+      @informationBox.children().detach()
+      if opts?
+        @informationBox.append opts
+
     setAction: (action)->
+
       dev           = @clearHref @context.developer_agreement
       merc          = @clearHref @context.merchant_agreement
       trello		    = @clearHref @context.trello_auth_url
-      
+      bills         = @clearHref @context.view_bills
+
+
       if action is dev and app.session.get("employee") is false
           ###
             show developer license agreement
@@ -99,26 +143,62 @@
           ###
             show client license agreement
           ### 
-          app.navigate @context.merchant_agreement, {trigger: false}          
-          @agreement.$el.show()
+          app.navigate @context.merchant_agreement, {trigger: false}
+
+          @empty @agreement.$el
+
+          @agreement.show()
           @agreement.setData agreement_text, @context.merchant_agreement
           
-          @listenTo @agreement.model, "sync", @setupPayment      
+          @listenTo @agreement.model, "sync", @setupPayment
+
       else if action is trello
       	  ###
-      	  	navigate to Trell authorization
+      	  	navigate to Trello authorization
 		      ###
       	  app.navigate @context.trello_auth_url, {trigger: true}
+
+      else if action is bills
+          ###
+            navigate to view bills
+          ###
+
+          console.log @get
+
+          unless @get?.length > 0
+            navigateTo = @context.view_bills
+            # show bills
+            @empty @bills.$el
+          else
+            navigateTo = "#{@context.view_bills}/#{@get.join("/")}"
+            # show bill
+            [billId] = @get
+
+            findBill = =>
+              bill = @bills.collection.get billId
+              if bill
+                billView = new exports.Bill {model : bill}
+                @empty billView.$el
+              else
+                @bills.collection.once "sync", findBill
+                @empty (new exports.NotFound()).$el
+
+            findBill()
+
+
+          app.navigate navigateTo, {trigger: false}
       else
           ###
             hide agreement and navigate back to profile
           ###
-          @agreement.$el.hide()
+          @informationBox.children().detach()
           app.navigate @context.profile_url, {trigger: false}
              
     initialize: (options) ->      
       console.log '[__profileView__] Init'
-      
+      # get variables - we may use them for actions later on
+      @get = options.opts || []
+
       if options.profile
           @model = new models.User
           @model.url = "/session/profile/#{options.profile}"
@@ -127,33 +207,37 @@
       else
           @context.title = "Personal Profile"
           @context.private = true
-      
+
           @agreement = new exports.Agreement
           @cc        = new exports.CC
-      
-      @listenTo @model, "all", @render      
-      @model.fetch()            
-      
-      @render()      
-      
+          @bills     = new exports.Bills
+
+
+      @listenTo @model, "change", @render
+      @model.fetch()
+
+      @render()
+
     
     render: ->
+      console.log "Rendering profile view"
+      console.log "action: ", @options.action, @get
+
       @context.user = @model.toJSON()
       html = views['member/profile'](@context)
       @$el.html html
       @$el.attr 'view-id', 'profile'
-      
-      # Append agreement
-      if @agreement
-          @$(".informationBox").append @agreement.$el      
+
+      @informationBox = @$ ".informationBox"
+
       # Append CC modal
       if @cc
           @cc.setElement @$(".setupPayment .dropdown-menu")      
           @cc.$el.prev().dropdown()
-      
+
       if @context.private
           @setAction @options.action
-      
+
       @
       
     

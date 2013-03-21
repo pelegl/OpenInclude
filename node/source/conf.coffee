@@ -5,11 +5,17 @@ esc         = require 'elasticsearchclient'
 mongoose    = require 'mongoose'
 _           = require 'underscore'
 
-passport = require 'passport'
+
+require('coffee-trace')
+
+passport       = require 'passport'
 GithubStrategy = require('passport-github').Strategy
 TrelloStrategy = require('passport-trello').Strategy
 
-exports.db = db = mongoose.createConnection 'localhost', 'openInclude'
+if !process.env.mongo
+  exports.db = db = mongoose.createConnection 'localhost', 'openInclude'
+else
+  exports.db = db = mongoose.createConnection process.env.mongo
 
 ###
   String capitalize
@@ -21,7 +27,7 @@ String.prototype.capitalize = ->
   Elastic search module
 ###
 serverOptions =
-  host: 'localhost'
+  host: process.env.esHost || 'localhost'
   port: 9200    
   secure: false
 
@@ -60,9 +66,34 @@ exports.how_to_url      = how_to_url      = "/how-to"
 exports.modules_url     = modules_url     = "/modules"
 exports.dashboard_url   = dashboard_url   = "/dashboard"
 
+exports.admin_url       = admin_url       = '/admin'
+exports.view_bills      = view_bills 			= "#{profile_url}/view_bills"
+exports.create_bills    = create_bills 			= "#{admin_url}/create_bills"
+exports.users_with_stripe = users_with_stripe = "#{admin_url}/users_with_stripe"
+
 exports.merchant_agreement        = merchant_agreement  = "#{profile_url}/merchant_agreement"
 exports.developer_agreement       = developer_agreement = "#{profile_url}/developer_agreement"
 exports.update_credit_card        = update_credit_card  = "#{profile_url}/update_credit_card"
+
+# Transitioning to exports.urls = {}
+exports.urls =
+  logout_url:           "/auth/logout"
+  profile_url:          "/profile"
+  signin_url:           "#{profile_url}/login"
+  github_auth_url:      "/auth/github"
+  trello_auth_url:      "/auth/trello"
+  discover_url:         "/discover"
+  how_to_url:           "/how-to"
+  modules_url:          "/modules"
+  dashboard_url:        "/dashboard"
+  merchant_agreement:   "#{profile_url}/merchant_agreement"
+  developer_agreement:  "#{profile_url}/developer_agreement"
+  update_credit_card:   "#{profile_url}/update_credit_card"
+  admin_url:            "/admin"
+  view_bills:           "#{profile_url}/view_bills"
+  create_bills:         "#{admin_url}/create_bills"
+  users_with_stripe:    "#{admin_url}/users_with_stripe"
+
 ###
   Export controllers to the app
 ###
@@ -184,9 +215,6 @@ passport_init = exports.passport_init = () ->
             # user is not authenticated, log in via trello
             # TODO
         else
-            user = req.user
-            console.log(req.session)
-            
             User.findById(req.user._id, (error, user) ->
                 if error then return done(error)
                 

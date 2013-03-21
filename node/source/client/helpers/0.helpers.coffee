@@ -6,6 +6,12 @@
   String.prototype.capitalize = ->
     return @charAt(0).toUpperCase() + @slice(1)
 
+  exports.exchange = (view, html)->
+    prevEl = view.$el
+    view.setElement $(html)
+    prevEl.replaceWith view.$el
+    prevEl.remove()
+
   exports.qs = 
     stringify:(obj)->
       string = []

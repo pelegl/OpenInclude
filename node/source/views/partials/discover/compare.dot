@@ -6,7 +6,7 @@
             {{? !header.key }}
             <th>{{=header.name}}</th>
             {{??}}
-            <th><a href='#' data-sort='{{=header.key}}' {{? header.active}}class='active'{{?}}><span class='name'>{{=header.name}}</span>
+            <th><a href='#' data-sort='{{= header.key }}' {{? header.active}}class='active'{{?}}><span class='name'>{{! header.name }}</span>
                 {{? header.directionBottom}} 
                 <i class='icon-chevron-down'></i>
                 {{??}}
@@ -20,15 +20,15 @@
 		<tbody>
 			{{~ it.projects :project}}
             <tr>
-                <td><a href='/modules/{{=project._source.language}}/{{=project._source.owner}}|{{=project._source.module_name}}'>{{=project._source.module_name}}</a></td>
+                <td><a href='/modules/{{=project._source.language}}/{{=project._source.owner}}|{{=project._source.module_name}}'>{{! project._source.module_name }}</a></td>
                 <td>
                   <span class='color' style='background: #{{=project.color}}'></span>
-                  {{=project._source.language}}
+                  {{! project._source.language }}
                 </td>
                 <td>#</td>
-                <td>{{=project.lastCommitHuman}}</td>
-                <td>{{=project._source.watchers}}</td>
-                <td>{{=project.asked}}</td>
+                <td>{{! project.lastCommitHuman }}</td>
+                <td>{{! project._source.watchers }}</td>
+                <td>{{! project.asked }}</td>
                 <td>
                   {{? project.asked > 0}}
                     {{= Math.round(project.answered/project.asked) }}%

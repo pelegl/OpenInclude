@@ -1,0 +1,7 @@
+<div class="bills">
+    <ul>
+    {{~it.bills :bill}}
+        <li><a href="{{= it.view_bills }}/{{= bill._id }}" class='backbone'>{{! bill.bill_description}}</a></li>
+    {{~}}
+    </ul>
+</div>

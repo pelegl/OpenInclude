@@ -16,6 +16,11 @@
     dashboard_url       : "dashboard"
     create_project_url  : "dashboard/project/create"
     partials            : window.dt
+    admin_url           : "admin"
+    view_bills 			    : "/profile/view_bills"
+    create_bills 			  : "/admin/create_bills"
+    users_with_stripe   : "/admin/users_with_stripe"
+
     
   class App extends Backbone.Router
     conf: conf
@@ -44,10 +49,13 @@
       @reRoute()
       @view = new views.Index prevView:@view
 
-    profile: (action, profile) ->
+    profile: (action, opts...) ->
       @reRoute() 
-      if app.session.get("is_authenticated") is true 
-        @view = new views.Profile { prevView: @view, model: app.session, action: "/#{action}", profile: profile }
+      if app.session.get("is_authenticated") is true
+        if action is 'view'
+          @view = new views.Profile { prevView: @view, model: app.session, action: "/#{action}", profile: opts[0] }
+        else
+          @view = new views.Profile { prevView: @view, model: app.session, action: "/#{action}", opts }
       else
         app.navigate '/profile/login', {trigger: true}       
     
@@ -115,6 +123,7 @@
       "#{conf.profile_url}/:action"
       "#{conf.profile_url}/:action/:profile"
       "!/#{conf.profile_url}/:action"
+      "!/#{conf.profile_url}/:action/:profile"
             
       # How-to
       conf.how_to_url  
@@ -144,6 +153,7 @@
       "profile"
       "profile"
       "profile"
+      "profile"
       "how-to"
       "how-to"
       "language_list"
@@ -167,7 +177,7 @@
     app.session     = new models.Session()
     app.session.fetch()
     
-    app.session.once "change", =>
+    app.session.once "sync", =>
 
       Backbone.history.start {pushState: true}        
       app.init()

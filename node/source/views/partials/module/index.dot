@@ -4,7 +4,7 @@
       <h2>Language list</h2>
       <ul class='unstyled' data-languages='{{=it.prepopulation}}'>
         {{~ it.languages :language}}
-          <li><a href='{{=it.modules_url}}/{{=language.name}}'>{{=language.name}}</a></li>
+          <li><a href='{{=it.modules_url}}/{{=language.name}}'>{{! language.name }}</a></li>
         {{~}}
       </ul>
       {{? it.pages}}

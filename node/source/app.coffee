@@ -9,10 +9,10 @@ secret        = "dsakldaSAKDLJkasl192a12"
 cluster       = require 'cluster'
 numCPUs       = require('os').cpus().length
 
-hbs           = require('consolidate').handlebars
+#hbs           = require('consolidate').handlebars
 conf          = require './conf'
 async         = require 'async'
-_ = require 'underscore'
+_             = require 'underscore'
 
 
 RedisStore    = require('connect-redis')(connect)
@@ -51,7 +51,7 @@ renderFile = (filename, options, fn) ->
 
 startApp = ->
   app.configure ->
-    app.engine 'hbs', hbs
+    #app.engine 'hbs', hbs
     app.set 'env'         , process.env.NODE_ENV || 'dev'
     #app.set 'view engine' , 'hbs'
     app.engine "dot", renderFile
@@ -82,7 +82,7 @@ startApp = ->
       res.send "Error", 500
   
   app.configure "dev", ->
-    app.set 'port', process.env.PORT || 8900
+    app.set 'port', process.env.PORT || 9100
     app.set 'host', '0.0.0.0'
     app.use express.errorHandler
       dumpExceptions: true

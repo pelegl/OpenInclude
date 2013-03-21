@@ -142,7 +142,11 @@
   exports.Tasks = @Backbone.Collection.extend
     model: models.Task
     url: "/task"      
-  
+
+  exports.Bills = @Backbone.Collection.extend
+    model: models.Bill
+    url: "/profile/view_bills"
+
   exports.GithubEvents = @Backbone.Collection.extend
     model: models.GithubEvent
     
