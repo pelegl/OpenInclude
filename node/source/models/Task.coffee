@@ -18,6 +18,8 @@ definition =
     status: String
     label: String
     due: Date
+    duration: Number
+    price: Number
     
     # completion date
     completed: Date

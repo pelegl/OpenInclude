@@ -213,6 +213,18 @@
 
       super context
 
+  class Task extends View
+    initialize: (context) ->
+      @context = context
+      super context
+      @render()
+
+    render: ->
+      html = views['dashboard/task'](@context)
+      @$el.html html
+      @$el.attr 'view-id', 'dashboard-task'
+      @
+
   class exports.Dashboard extends View
     events:
       'click .project-list li a': "editProject"
@@ -255,22 +267,21 @@
           break
 
     openTask: (e) ->
-      e.preventDefault()
-      e.stopPropagation()
+      if typeof e isnt 'object'
+        taskId = e
+      else
+        e.preventDefault()
+        e.stopPropagation()
 
-      if taskId is e.target.attributes['rel'].value
-        taskEl.hide "drop"
-        return
+        taskId = e.target.attributes['rel'].value
 
-      if taskEl
-        taskEl.hide "drop"
-
-      taskId = e.target.attributes['rel'].value
       task = tasks.get(taskId)
 
-      taskEl = $("#task-#{taskId}")
+      app.navigate "/dashboard/project/#{projectId}/task/#{taskId}", trigger: false
 
-      taskEl.show "drop"
+      @context.task = task.toJSON()
+      @context.el = "#main-area"
+      @taskView = new Task @context
 
     editProject: (e) ->
       e.preventDefault()
@@ -324,7 +335,10 @@
       createTaskComment.show()
 
     switchProject: (e)->
-      projectId = e.target.attributes['rel'].value
+      if typeof e isnt 'object'
+        projectId = e
+      else
+        projectId = e.target.attributes['rel'].value
       project = projects.get(projectId)
 
       @context.projectId = projectId
@@ -334,11 +348,13 @@
 
       app.navigate "/dashboard/project/#{projectId}", trigger: false
 
+      taskId = null
+
       tasks.url = "/task/#{projectId}"
       tasks.fetch()
-      @render()
+      #@render()
 
-    initialize: ->
+    initialize: (params) ->
       console.log '[__dashboardView__] Init'
       @context.title = "Dashboard"
       @context.user = app.session.toJSON()
@@ -349,10 +365,12 @@
         false
 
       @listenTo projects, "reset", @updateProjectList, @
+      @listenTo tasks, "reset", @updateTaskList, @
+
+      projectId = params.project
+      taskId = params.task
 
       projects.fetch()
-
-      tasks.on "reset", @updateTaskList, @
 
     updateProjectList: (collection) ->
       _projects = []
@@ -360,8 +378,11 @@
         _projects.push item.toJSON())
       @context.projects = _projects
       if projectId
-        project = projects.get(projectId)
-        @context.project = project.toJSON()
+        if taskId
+          tasks.url = "/task/#{projectId}"
+          tasks.fetch()
+        else
+          return @switchProject projectId
 
       @render()
 
@@ -370,6 +391,9 @@
       collection.each((item) ->
         _tasks.push item.toJSON())
       @context.tasks = _tasks
+      if taskId
+        return @openTask taskId
+
       @render()
 
     render: ->

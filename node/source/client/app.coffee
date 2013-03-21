@@ -102,7 +102,20 @@
           @view = new views.Dashboard prevView:@view
       else
           app.navigate app.conf.signin_url, trigger: true
-    
+
+    project: (id) ->
+      @reRoute()
+      if app.session.get("is_authenticated")
+        @view = new views.Dashboard prevView:@view, project: id
+      else
+        app.navigate app.conf.signin_url, trigger: true
+
+    task: (project, task) ->
+      @reRoute()
+      if app.session.get("is_authenticated")
+        @view = new views.Dashboard prevView:@view, project: project, task: task
+      else
+        app.navigate app.conf.signin_url, trigger: true
 
   $(document).ready ->
     route_keys = [
@@ -139,6 +152,12 @@
       
       conf.dashboard_url
       "!/#{conf.dashboard_url}"
+
+      "dashboard/project/:id"
+      "!/dashboard/project/:id"
+
+      "dashboard/project/:project/task/:task"
+      "!/dashboard/project/:project/task/:task"
     ]
     
     route_paths = [
@@ -164,6 +183,10 @@
       "repo"
       "dashboard"
       "dashboard"
+      "project"
+      "project"
+      "task"
+      "task"
     ]
           
     App.prototype.routes = _.object route_keys, route_paths

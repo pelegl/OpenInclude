@@ -15,24 +15,26 @@ class BasicController
     @funcName       = if segments[(1-offset)]? and ! /^_/.test(segments[(1-offset)]) then segments[(1-offset)] else 'index' # functions starting with _ - are internal functions
     @get            = segments[(2-offset)..] if segments.length > (2-offset)
     
-    if typeof @[@funcName] is 'function'
-      @app = @req.app
+    if typeof @[@funcName] isnt 'function'
+      if typeof @['index'] is 'function'
+        @funcName = 'index'
+      else
+        @res.send "Error 404", 404
+        return
 
-      config =
-        title:        "Home Page"
-        STATIC_URL:   STATIC_URL
-        user:         @req.user
+    @app = @req.app
 
-      context = _.extend {}, urls, config
+    config =
+      title:        "Home Page"
+      STATIC_URL:   STATIC_URL
+      user:         @req.user
 
-      if @context then _.extend @context, context else @context = context #extend our context - maybe we had already set it up in the child contstructor
-      
-      @[@funcName]()
+    context = _.extend {}, urls, config
 
-    else
-      @res.send "Error 404", 404
+    if @context then _.extend @context, context else @context = context #extend our context - maybe we had already set it up in the child contstructor
 
-      
+    @[@funcName]()
+
   _view : (name, context)=>
     if @app.Views['dot'].hasOwnProperty(name)
         dot.compile(@app.Views['dot'][name], {partials: @app.Partials})(context, null, {partials: @app.Partials})

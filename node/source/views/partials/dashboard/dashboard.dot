@@ -30,7 +30,7 @@
                 </div>
                 <div class='span9 dashboard-right'>
                     <div class="row-fluid">
-                        <div class='span9 main-area'>
+                        <div id="main-area" class='span9 main-area'>
                             {{? it.project}}
                             <h3 id="project-name">
                                 {{=it.project.name}}
@@ -77,16 +77,6 @@
                                     <span class="task-name">{{= task.name}}</span>
                                     <span class="task-comments">Comments</span>
                                     <span class="task-due pull-right">{{= moment(task.due).calendar() }}</span>
-                                    <div id="task-{{= task._id }}" class="task-extended">
-                                        <span class="task-description">{{= task.description }}</span>
-                                        <ul class="task-comments">
-                                            {{~ task.comments :comment}}
-                                            <li>{{= comment }}</li>
-                                            {{~}}
-                                        </ul>
-                                        <a href="#" id="task-add-comment-button" class="btn btn-small btn-success">Add comment</a>
-                                        <div id="task-add-comment-{{= task._id}}"></div>
-                                    </div>
                                 </li>
                                 {{~}}
                             </ul>
