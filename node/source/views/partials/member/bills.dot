@@ -1,7 +1,29 @@
 <div class="bills">
-    <ul>
-    {{~it.bills :bill}}
-        <li><a href="{{= it.view_bills }}/{{= bill._id }}" class='backbone'>{{! bill.bill_description}}</a></li>
-    {{~}}
-    </ul>
+    <h2> Bills </h2>
+    <table class='table table-bordered table-striped'>
+        <thead>
+            <tr>
+                <th>Bill id</th>
+                <th>Issue date</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{~it.bills :bill}}
+                 <tr>
+                     <td>
+                         <a href="{{= it.view_bills }}/{{= bill._id }}" class='backbone'>
+                         {{= bill._id.substr(0,10) }}...
+                         </a>
+                     </td>
+                     <td>{{= moment(bill.bill_date).format("LL") }}</td>
+                     <td>{{! bill.bill_description }}</td>
+                     <td>{{= bill.bill_amount/100 }}$</td>
+                     <td>&nbsp;</td>
+                 </tr>
+            {{~}}
+        </tbody>
+    </table>
 </div>

@@ -80,8 +80,11 @@
 }).call(this);
 
 (function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
   (function(exports, isServer) {
-    var helpers;
+    var helpers, _ref, _ref1;
 
     if (isServer) {
       this.Backbone = require('backbone');
@@ -89,7 +92,29 @@
     helpers = {
       oneDay: 1000 * 60 * 60 * 24
     };
-    exports.Session = this.Backbone.Model.extend({
+    exports.User = (function(_super) {
+      __extends(User, _super);
+
+      function User() {
+        _ref = User.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      User.prototype.idAttribute = "github_username";
+
+      User.prototype.urlRoot = "/session/profile";
+
+      return User;
+
+    })(this.Backbone.Model);
+    exports.Session = (function(_super) {
+      __extends(Session, _super);
+
+      function Session() {
+        _ref1 = Session.__super__.constructor.apply(this, arguments);
+        return _ref1;
+      }
+
       /*
        @param {String}   github_id
        @param {Boolean}  has_stripe
@@ -105,12 +130,18 @@
        @param {Boolean}  is_authenticated
       */
 
-      idAttribute: "_id",
-      url: "/session",
-      initialize: function() {
+
+      Session.prototype.url = "/session";
+
+      Session.prototype.initialize = function() {
         return this.load();
-      },
-      parse: function(response, options) {
+      };
+
+      Session.prototype.isSuperUser = function() {
+        return this.get("group_id") === 'admin';
+      };
+
+      Session.prototype.parse = function(response, options) {
         var github_avatar_url, github_display_name;
 
         if (response.is_authenticated) {
@@ -130,12 +161,14 @@
           });
         }
         return response;
-      },
-      unload: function() {
+      };
+
+      Session.prototype.unload = function() {
         delete this.user;
         return $.removeCookie("returning_customer");
-      },
-      load: function() {
+      };
+
+      Session.prototype.load = function() {
         var cookie;
 
         cookie = $.cookie("returning_customer");
@@ -143,8 +176,11 @@
           this.user = cookie.user;
         }
         return this.fetch();
-      }
-    });
+      };
+
+      return Session;
+
+    })(exports.User);
     exports.Bill = this.Backbone.Model.extend({
       idAttribute: "_id",
       urlRoot: "/profile/view_bills"
@@ -377,6 +413,22 @@
       return requestPager;
 
     })(this.Backbone.Paginator.requestPager);
+    exports.UsersWithStripe = this.Backbone.Collection.extend({
+      model: models.User,
+      url: "/session/users_with_stripe",
+      parse: function(response) {
+        var err, success, users;
+
+        success = response.success, err = response.err, users = response.users;
+        if (success !== true) {
+          return [];
+        }
+        return users;
+      },
+      initialize: function() {
+        return this.fetch();
+      }
+    });
     exports.Language = requestPager.extend({
       comparator: function(language) {
         return language.get("name");
@@ -1050,7 +1102,7 @@
       }
 
       Profile.prototype.events = {
-        'click a[class*=backbone]': "processAction",
+        'click a.backbone': "processAction",
         'click .setupPayment > button': "update_cc_events"
       };
 
@@ -2795,6 +2847,115 @@
     __slice = [].slice;
 
   (function(exports) {
+    var root, views, _ref, _ref1;
+
+    root = this;
+    views = this.hbt = _.extend({}, dt, Handlebars.partials);
+    exports.AdminBoard = (function(_super) {
+      __extends(AdminBoard, _super);
+
+      function AdminBoard() {
+        _ref = AdminBoard.__super__.constructor.apply(this, arguments);
+        return _ref;
+      }
+
+      AdminBoard.prototype.events = {
+        'click a.backbone': "route"
+      };
+
+      AdminBoard.prototype.route = function(e) {
+        /*
+          Action routing
+        */
+
+        var href;
+
+        try {
+          href = $(e.currentTarget).attr("href");
+          app.navigate(href, {
+            trigger: false
+          });
+          this.action(_.last(href.split("/")));
+        } catch (_error) {}
+        return false;
+      };
+
+      AdminBoard.prototype.empty = function() {
+        var opts;
+
+        opts = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+        this.informationBox.children().detach();
+        if (opts != null) {
+          return this.informationBox.append(opts);
+        }
+      };
+
+      AdminBoard.prototype.action = function(action) {
+        switch (action) {
+          case "users_with_stripe":
+            return this.empty(this.stripeUsers.$el);
+        }
+      };
+
+      AdminBoard.prototype.initialize = function() {
+        this.model = app.session;
+        this.listenTo(this.model, "sync", this.render);
+        this.stripeUsers = new exports.UsersWithStripe;
+        return this.render();
+      };
+
+      AdminBoard.prototype.render = function() {
+        var html;
+
+        this.context.user = this.model.toJSON();
+        html = views['admin/admin'](this.context);
+        this.$el.html(html);
+        this.informationBox = this.$(".informationBox");
+        if (this.options.action != null) {
+          this.action(this.options.action);
+        }
+        return this;
+      };
+
+      return AdminBoard;
+
+    })(View);
+    return exports.UsersWithStripe = (function(_super) {
+      __extends(UsersWithStripe, _super);
+
+      function UsersWithStripe() {
+        _ref1 = UsersWithStripe.__super__.constructor.apply(this, arguments);
+        return _ref1;
+      }
+
+      UsersWithStripe.prototype.initialize = function() {
+        this.collection = new collections.UsersWithStripe;
+        this.context = {};
+        return this.listenTo(this.collection, "sync", this.render);
+      };
+
+      UsersWithStripe.prototype.render = function() {
+        var html;
+
+        this.context.users = this.collection.toJSON();
+        html = views['admin/users_with_stripe'](this.context);
+        this.$el.html(html);
+        return this;
+      };
+
+      return UsersWithStripe;
+
+    })(this.Backbone.View);
+  }).call(this, window.views);
+
+}).call(this);
+
+(function() {
+  var __hasProp = {}.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    __slice = [].slice;
+
+  (function(exports) {
     /*
       Configuring plugins
     */
@@ -2821,8 +2982,8 @@
       partials: window.dt,
       admin_url: "admin",
       view_bills: "/profile/view_bills",
-      create_bills: "/admin/create_bills",
-      users_with_stripe: "/admin/users_with_stripe"
+      create_bills: "admin/create_bills",
+      users_with_stripe: "admin/users_with_stripe"
     };
     App = (function(_super) {
       __extends(App, _super);
@@ -3006,6 +3167,25 @@
         }
       };
 
+      App.prototype.admin = function() {
+        var action, opts;
+
+        opts = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+        this.reRoute();
+        if (!app.session.isSuperUser()) {
+          return app.navigate("/", {
+            trigger: true
+          });
+        }
+        if (opts != null) {
+          action = opts[0];
+        }
+        return this.view = new views.AdminBoard({
+          prevView: this.view,
+          action: action
+        });
+      };
+
       return App;
 
     })(Backbone.Router);
@@ -3013,8 +3193,8 @@
       var app, route_keys, route_paths,
         _this = this;
 
-      route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "" + conf.profile_url + "/:action/:profile", "!/" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action/:profile", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url, "dashboard/project/:id", "!/dashboard/project/:id", "dashboard/project/:project/task/:task", "!/dashboard/project/:project/task/:task"];
-      route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo", "dashboard", "dashboard", "project", "project", "task", "task"];
+      route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "" + conf.profile_url + "/:action/:profile", "!/" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action/:profile", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url, "dashboard/project/:id", "!/dashboard/project/:id", "dashboard/project/:project/task/:task", "!/dashboard/project/:project/task/:task", conf.admin_url, "!/" + conf.admin_url, "" + conf.admin_url + "/:action", "!/" + conf.admin_url + "/:action"];
+      route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo", "dashboard", "dashboard", "project", "project", "task", "task", "admin", "admin", "admin", "admin"];
       App.prototype.routes = _.object(route_keys, route_paths);
       console.log('[__app__] init done!');
       exports.app = app = new App();

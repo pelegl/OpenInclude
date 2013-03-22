@@ -47,14 +47,12 @@ class AdminController extends require('./basicController')
     console.log '[users_with_stripe] action'
     if @req.method is "GET" and @req.user?.is_superuser()
 
-        User.get_clientswithpayment (err, users) =>
+        User.getClientsWithStripe (err, users) =>
           return @res.json {success: false, err} if err
 
           unless err
-            Userarray =
-              users: users
             @context.title = 'Users with Stripe'
-            @context.informationBox = @_view 'admin/users_with_stripe', Userarray
+            @context.informationBox = @_view 'admin/users_with_stripe', {users}
             @index()
           else
            @res.send "no users"

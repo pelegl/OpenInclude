@@ -17,14 +17,24 @@ class SessionController extends BasicController
     else
       @res.json {is_authenticated: false}
   
+  users_with_stripe: ->
+    return @res.json {success: false}, 403 unless @req.user?.is_superuser()
+    # get users with payment method
+    User.getClientsWithStripe (err, users) =>
+      return @res.json {success: false, err} if err?
+      @res.json {success: true, users}
+
+
   profile: ->
-    User.findOne({github_username: @get[0]}, (result, user) =>
+    User.findOne {github_username: @get[0]}, (result, user) =>
         if result or user is null
-            @res.status(404)
-            @res.json({success: false})
+            @res.json {success: false}, 404
         else
-            @res.json(user.public_info())
-    )
+            @res.json user.information()
+
+  ###
+  TODO: remove?
+  ###
 
   list: ->
     query = User.find().select()

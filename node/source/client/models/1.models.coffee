@@ -5,7 +5,12 @@
    helpers = 
     oneDay: 1000*60*60*24
    
-   exports.Session = @Backbone.Model.extend
+   class exports.User extends @Backbone.Model
+     idAttribute: "github_username"
+     urlRoot: "/session/profile"
+
+
+   class exports.Session extends exports.User
      ###
       @param {String}   github_id
       @param {Boolean}  has_stripe
@@ -21,11 +26,13 @@
       @param {Boolean}  is_authenticated
      ###
 
-     idAttribute: "_id"
      url: "/session"
 
      initialize: ->
        @load()
+
+     isSuperUser: ->
+       return @get("group_id") is 'admin'
 
      parse: (response, options) ->
        if response.is_authenticated

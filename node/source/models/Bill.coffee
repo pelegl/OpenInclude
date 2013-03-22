@@ -15,9 +15,14 @@ _         = require 'underscore'
 definition =
   bill_id: String
   bill_amount: Number
-  bill_date: Date
+  bill_date:
+    type: Date
+    default: new Date
   bill_to_whome: { type: ObjectId, ref: 'User' }
   bill_description: String  # The Description
+  isPaid:
+    type: Boolean
+    default: false
   
   
 methods =
@@ -26,8 +31,7 @@ methods =
   
 statics =
 	get_bills:(userid, callback)->
-  		@find bill_to_whome:userid ,(err,bills) =>
-	 		  return callback(err,bills)
+  		@find {bill_to_whome:userid}, callback
 
 exports.definition  = definition
 exports.methods     = methods

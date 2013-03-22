@@ -122,7 +122,7 @@
   
   class exports.Profile extends View
     events:
-      'click a[class*=backbone]'     : "processAction"
+      'click a.backbone'             : "processAction"
       'click .setupPayment > button' : "update_cc_events"    
     
     update_cc_events: (e) ->    

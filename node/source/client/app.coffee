@@ -25,8 +25,8 @@
     partials            : window.dt
     admin_url           : "admin"
     view_bills 			    : "/profile/view_bills"
-    create_bills 			  : "/admin/create_bills"
-    users_with_stripe   : "/admin/users_with_stripe"
+    create_bills 			  : "admin/create_bills"
+    users_with_stripe   : "admin/users_with_stripe"
 
     
   class App extends Backbone.Router
@@ -124,6 +124,15 @@
       else
         app.navigate app.conf.signin_url, trigger: true
 
+    admin: (opts...) ->
+      @reRoute()
+      unless app.session.isSuperUser()
+        return app.navigate "/", {trigger: true}
+
+      action = opts[0] if opts?
+      @view = new views.AdminBoard prevView: @view, action: action
+
+
   $(document).ready ->
     route_keys = [
       ""
@@ -165,35 +174,70 @@
 
       "dashboard/project/:project/task/:task"
       "!/dashboard/project/:project/task/:task"
+
+      # Admin panel
+
+      conf.admin_url
+      "!/#{conf.admin_url}"
+
+      "#{conf.admin_url}/:action"
+      "!/#{conf.admin_url}/:action"
+
     ]
     
     route_paths = [
       "index"
       "index"
+
+      # discover
       "discover"
       "discover"
+
+      # sign-in
       "login"
       "login"
+
+      # profile routes
       "profile"
       "profile"
       "profile"
       "profile"
       "profile"
       "profile"
+
+      # how-to page
       "how-to"
       "how-to"
+
+      # language list
       "language_list"
       "language_list"
+
+      # repo list
       "repo_list"
       "repo_list"
+
+      # repo
       "repo"
       "repo"
+
+      # dashboard
       "dashboard"
       "dashboard"
+
+      # project
       "project"
       "project"
+
+      # task routes
       "task"
       "task"
+
+      # admin routes
+      "admin"
+      "admin"
+      "admin"
+      "admin"
     ]
           
     App.prototype.routes = _.object route_keys, route_paths
