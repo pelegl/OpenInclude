@@ -14,7 +14,7 @@
                 {{?}}
                 <div class='control-group'>
                     <div class='controls' for='ideas'>
-                        <textarea id='ideas' name="ideas" rows="5" resize='none' placeholder="Write your comment here..."></textarea>
+                        <textarea id='ideas' name="ideas" rows="5" resize='none' placeholder="Ideas..."></textarea>
                     </div>
                 </div>
             </form>
