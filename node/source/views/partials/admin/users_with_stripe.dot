@@ -11,13 +11,13 @@
             {{~it.users :user}}
             <tr>
                 <td>
-                    <a href='https://github.com/{{= user.github_username }}' target="_blank" >
+                    <a href='/profile/view/{{= user.github_username }}' target="_blank" >
                         <img src="http://www.gravatar.com/avatar/{{= user.github_avatar_url }}?s=40" class='avatar'  />
                         {{! user.github_username }}
                     </a>
                 </td>
                 <td>
-                    <a href='issue_bill/{{= user.github_id }}' class='btn btn-success btn-mini'>Issue Bill</a>
+                    <a href='/admin/issue_bill/{{= user.github_username }}' class='btn btn-success btn-mini backbone'>Issue Bill</a>
                 </td>
             </tr>
             {{~}}

@@ -9,7 +9,6 @@
      idAttribute: "github_username"
      urlRoot: "/session/profile"
 
-
    class exports.Session extends exports.User
      ###
       @param {String}   github_id
@@ -68,10 +67,6 @@
    exports.Tos        = @Backbone.Model.extend {}
    
    exports.CreditCard = @Backbone.Model.extend {}
-   
-   exports.User       = @Backbone.Model.extend
-     idAttribute: "_id"
-     url: "/session/profile"
 
    exports.Project    = @Backbone.Model.extend
      idAttribute: "_id"

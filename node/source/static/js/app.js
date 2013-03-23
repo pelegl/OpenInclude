@@ -187,10 +187,6 @@
     });
     exports.Tos = this.Backbone.Model.extend({});
     exports.CreditCard = this.Backbone.Model.extend({});
-    exports.User = this.Backbone.Model.extend({
-      idAttribute: "_id",
-      url: "/session/profile"
-    });
     exports.Project = this.Backbone.Model.extend({
       idAttribute: "_id",
       url: "/project"
@@ -2847,7 +2843,7 @@
     __slice = [].slice;
 
   (function(exports) {
-    var root, views, _ref, _ref1;
+    var root, views, _ref, _ref1, _ref2;
 
     root = this;
     views = this.hbt = _.extend({}, dt, Handlebars.partials);
@@ -2868,14 +2864,15 @@
           Action routing
         */
 
-        var href;
+        var href, segments;
 
         try {
           href = $(e.currentTarget).attr("href");
           app.navigate(href, {
             trigger: false
           });
-          this.action(_.last(href.split("/")));
+          segments = href.split("/");
+          this.action(segments[2], segments.slice(3));
         } catch (_error) {}
         return false;
       };
@@ -2890,11 +2887,21 @@
         }
       };
 
-      AdminBoard.prototype.action = function(action) {
+      AdminBoard.prototype.action = function(action, get) {
+        var issueBill, userId;
+
         switch (action) {
           case "users_with_stripe":
-            return this.empty(this.stripeUsers.$el);
+            this.empty(this.stripeUsers.$el);
+            break;
+          case "issue_bill":
+            userId = get[0];
+            issueBill = new exports.IssueBill({
+              model: this.stripeUsers.collection.get(userId)
+            });
+            this.empty(issueBill.$el);
         }
+        return this.delegateEvents();
       };
 
       AdminBoard.prototype.initialize = function() {
@@ -2920,12 +2927,36 @@
       return AdminBoard;
 
     })(View);
+    exports.IssueBill = (function(_super) {
+      __extends(IssueBill, _super);
+
+      function IssueBill() {
+        _ref1 = IssueBill.__super__.constructor.apply(this, arguments);
+        return _ref1;
+      }
+
+      IssueBill.prototype.initialize = function() {
+        return this.render();
+      };
+
+      IssueBill.prototype.render = function() {
+        var html;
+
+        this.context.user = this.model.toJSON();
+        html = views['admin/bill'](this.context);
+        this.$el.html(html);
+        return this;
+      };
+
+      return IssueBill;
+
+    })(this.Backbone.View);
     return exports.UsersWithStripe = (function(_super) {
       __extends(UsersWithStripe, _super);
 
       function UsersWithStripe() {
-        _ref1 = UsersWithStripe.__super__.constructor.apply(this, arguments);
-        return _ref1;
+        _ref2 = UsersWithStripe.__super__.constructor.apply(this, arguments);
+        return _ref2;
       }
 
       UsersWithStripe.prototype.initialize = function() {

@@ -13,7 +13,8 @@
       try
         href = $(e.currentTarget).attr("href")
         app.navigate href, {trigger: false}
-        @action _.last href.split("/")
+        segments = href.split("/")
+        @action segments[2], segments[3..]
 
       false
 
@@ -23,11 +24,17 @@
         @informationBox.append opts
 
 
-    action: (action)->
+    action: (action, get)->
       switch action
         when "users_with_stripe"
           @empty @stripeUsers.$el
+        when "issue_bill"
+          [userId] = get
+          issueBill = new exports.IssueBill
+            model: @stripeUsers.collection.get(userId)
+          @empty issueBill.$el
 
+      @delegateEvents()
 
     initialize: ->
       @model = app.session
@@ -37,7 +44,6 @@
       @stripeUsers = new exports.UsersWithStripe
 
       @render()
-
 
     render: ->
       @context.user = @model.toJSON()
@@ -49,6 +55,18 @@
 
       @action @options.action if @options.action?
 
+      @
+
+
+  class exports.IssueBill extends @Backbone.View
+
+    initialize: ->
+      @render()
+
+    render: ->
+      @context.user = @model.toJSON()
+      html = views['admin/bill'] @context
+      @$el.html html
       @
 
 
