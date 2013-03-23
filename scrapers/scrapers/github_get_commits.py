@@ -24,10 +24,15 @@ class GithubCommits():
         self.branches_url = self.branches_temp % { 'user': user, 'repo': repo }
         self.commits_url = self.commits_temp % { 'user': user, 'repo': repo }
 
-    @retry_on_exceptions(types=[simplejson.scanner.JSONDecodeError], tries=5, delay=5)
+    @retry_on_exceptions(types=[simplejson.decoder.JSONDecodeError], tries=5, delay=5)
     def get_request(self, url, **kwargs):
         r = requests.get(url, headers = self.git_hdr, **kwargs)
-        return r.json()
+        rj = r.json()
+        if 'message' in rj:
+            print 'Warning api message: %s' % rj['message']
+            return []
+        else:
+            return rj
 
     def get_branches(self):
         self.update_time = datetime.now()
