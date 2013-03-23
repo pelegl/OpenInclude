@@ -46,6 +46,9 @@ class Node(NodeBase):
         id = question._data.pop('question_id')
         output_collection.update({'_id': id},
                                  {'$set': question._data, '$addToSet': {'module_id': task_params['module_id']}}, True)
+        output_collection_stat = self.db[task_params['output_collection']+'_stat']
+        output_collection_stat.insert({'question_id': id, 'module_id': task_params['module_id'], 'search_type': task_params['search_type'], 'time': totimestamp(datetime.utcnow())})
+
 
     # if params contains page number, loads only this page
     # else loads all available results
