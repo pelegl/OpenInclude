@@ -77,6 +77,7 @@ class GithubCommits():
             last_date = commit['committer'].pop('date')
             if c['committer'] != None:
                 commit['committer_id'] = c['committer']['id']
+                commit['committer_login'] = c['committer']['login']
             collect.save(commit)
             # collect.update({'_id': c['sha']}, commit, True)
         #     commits_for_db.append(commit)
@@ -103,8 +104,8 @@ class GithubCommits():
                 last_date = self.save_commits(commits_collection, commits, b['id'])
                 count += len(commits)
                 print len(commits), last_date
-                if count > 200:
-                    break
+                # if count > 200:
+                #     break
                 commits = self.get_commits(branch_name)
             b['count'] = count
             print branch_name, count
@@ -113,9 +114,15 @@ class GithubCommits():
         mongoConn.close()
 
 def main():
-    github = GithubCommits('twitter', 'bootstrap')
-    branches = github.get_branches()
-    github.save_to_db()
+    mongoConn = pymongo.MongoClient(config.DB_HOST, 27017)
+    db = mongoConn[config.DB_NAME]
+    modules_collection = db['modules']
+    modules_count = 100
+    for module in modules_collection.find().limit(modules_count):
+        print module['owner'], module['module_name'], module['_id']
+        github = GithubCommits(module['owner'], module['module_name'], module['_id'])
+        github.get_branches()
+        github.save_to_db()
     #
     # all_count = 0
     # for b in branches:
