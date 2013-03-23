@@ -37,18 +37,20 @@ exports.esClient = esClient = new esc serverOptions
 ###
   Github service
 ###
-#github = require 'octonode'
+github = require 'octonode'
 
-GITHUB_CLIENT_ID = require("./github").id || '2361006ea086ad268742'
-GITHUB_CLIENT_SECRET = require("./github").secret || '8983c759727c4195ae2b34916d9ed313eeafa332'
+git_sets = [
+  ['2361006ea086ad268742', '8983c759727c4195ae2b34916d9ed313eeafa332']
+  [require("./github").id, require("./github").secret]
+]
 
-#exports.git = github.client
-#  id: GITHUB_CLIENT_ID
-#  secret: GITHUB_CLIENT_SECRET
+[GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET] = if process.env.github_local? then git_sets[1] else git_sets[0]
 
-#exports.git_second = github.client
-#  id: "fbc1f03fd6ef162b3463" 
-#  secret: "bead2882abb9409df91f4ba7fecc450c6e989d4b"
+exports.git = github.client "client", GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
+
+exports.git = github.client
+  id: GITHUB_CLIENT_ID
+  secret: GITHUB_CLIENT_SECRET
 
 ###
   Some static helpers
