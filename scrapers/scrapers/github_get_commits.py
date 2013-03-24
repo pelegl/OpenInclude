@@ -1,5 +1,6 @@
 # import urllib2
 from datetime import datetime
+from time import sleep
 from pip.vcs import git
 import pymongo
 from retry import retry_on_exceptions
@@ -30,7 +31,17 @@ class GithubCommits():
     @retry_on_exceptions(types=[simplejson.decoder.JSONDecodeError], tries=5, delay=5)
     def get_request(self, url, **kwargs):
         r = requests.get(url, headers = self.git_hdr, **kwargs)
+        limit_remaining = r.headers['x-ratelimit-remaining']
         rj = r.json()
+        if limit_remaining < 1000:
+            print 'Warning limit remaining %d requets' % limit_remaining
+        if limit_remaining < 1000:
+            sleep(1)
+        elif limit_remaining < 100:
+            sleep(10)
+        elif limit_remaining < 10:
+            sleep(120)
+
         if 'message' in rj:
             print 'Warning api message: %s' % rj['message']
             return []
@@ -152,19 +163,17 @@ class GithubCommits():
         db = mongoConn[config.DB_NAME]
         branches = db['module_git_branches']
         commits_collection = db['module_git_commits']
-        info_collection = db['modules_info']
 
         # db.drop_collection('module_git_branches')
         # db.drop_collection('module_git_commits')
 
-        self.save_info_to_db(info_collection)
-        mongoConn.close()
-        return
         self.save_branches(branches)
 
         self.all_count = 0
         for b in self.branches:
             branch_name = b['name']
+            if branch_name != 'master':
+                continue
             count = 0
             commits = self.get_commits(branch_name, True)
             while len(commits) != 0:
@@ -196,23 +205,25 @@ class GithubCommits():
         collection.insert(db_info)
 
 def main():
-    github = GithubCommits()
-    github.save_modules_to_db()
+    # github = GithubCommits()
+    # github.save_modules_to_db()
 
 
-    # mongoConn = pymongo.MongoClient(config.DB_HOST, 27017)
-    # db = mongoConn[config.DB_NAME]
-    # modules_collection = db['modules']
+    mongoConn = pymongo.MongoClient(config.DB_HOST, 27017)
+    db = mongoConn[config.DB_NAME]
+    modules_collection = db['modules']
+    info_collection = db['modules_info']
+
     # modules_count = 100
-    # for module in modules_collection.find().limit(modules_count):
-    #     print module['owner'], module['module_name'], module['_id']
-    #     github = GithubCommits(module['owner'], module['module_name'], module['_id'])
-    #     # github.get_branches()
-    #     github.save_to_db()
-    #
+    for module in modules_collection.find():#.limit(modules_count):
+        print module['owner'], module['module_name'], module['_id']
+        github = GithubCommits(module['owner'], module['module_name'], module['_id'])
+        github.save_info_to_db(info_collection)
 
-
-
+    for module in modules_collection.find():#.limit(modules_count):
+        print module['owner'], module['module_name'], module['_id']
+        github = GithubCommits(module['owner'], module['module_name'], module['_id'])
+        github.save_to_db()
 
     # all_count = 0
     # for b in branches:
