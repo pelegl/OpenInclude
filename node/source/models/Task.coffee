@@ -18,6 +18,9 @@ definition =
     status: String
     label: String
     due: Date
+    logged:
+      type: Number
+      default: 0
     duration: Number
     price: Number
     

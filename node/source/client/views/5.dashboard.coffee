@@ -31,8 +31,10 @@
       width = $(element).width()
       height = $(element).height()
 
-      @$el.css 'left', offset.left + width / 2
-      @$el.css 'top', offset.top + height / 2
+      @$el.css 'left', offset.left
+      @$el.css 'top', offset.top + height
+      @$el.css 'width', width
+      @$el.css 'height', '150px'
 
       if not @context.listener
         @context.listener = element
@@ -165,6 +167,7 @@
 
     success: (model, response, options) ->
       if super model, response, options
+        projectId = response.id
         projects.fetch()
 
     initialize: (context) ->
@@ -214,6 +217,61 @@
       super context
 
   class Task extends View
+    events:
+      'click #task-check-in': "checkIn"
+      'click #task-check-out': "checkOut"
+      'click #task-finish': "finish"
+
+    checkIn: (event) ->
+      event.preventDefault()
+      event.stopPropagation()
+
+      $(event.target).attr("id", "task-check-out")
+      $(event.target).html("Check out")
+
+      @currentTime = moment()
+      @stop = false
+      $.get(
+        "/task/time/start/#{taskId}/#{@currentTime.unix()}"
+        (result, text, xhr) =>
+          if result.success
+            setTimeout(_.bind(@timer, @), 1000)
+          else
+            alert result.error
+      )
+
+    checkOut: (event) ->
+      event.preventDefault()
+      event.stopPropagation()
+
+      $(event.target).attr("id", "task-check-in")
+      $(event.target).html("Check in")
+
+      @stop = true
+      $.get(
+        "/task/time/end/#{taskId}/#{moment().unix()}"
+        (result, text, xhr) ->
+          unless result.success
+            alert result.error
+      )
+
+    finish: (event) ->
+      @
+
+    timer: ->
+      unless @timerEl
+        @timerEl = $("#timer")
+
+      diff = moment().diff(@currentTime, "seconds")
+      hours = Math.floor(diff / 3600)
+      minutes = Math.floor(diff / 60) - hours * 3600
+      seconds = Math.floor(diff) - minutes * 60 - hours * 3600
+
+      @timerEl.html "#{hours}:#{minutes}:#{seconds}"
+
+      unless @stop
+        setTimeout(_.bind(@timer, @), 1000)
+
     initialize: (context) ->
       @context = context
       super context
@@ -315,17 +373,24 @@
 
     showSubProjectForm: (e) ->
       e.preventDefault()
+      if @createProject?
+        @createProject.undelegateEvents()
       @createProject = new exports.CreateProjectForm @context
       @createProject.show()
 
     showProjectForm: (e) ->
       e.preventDefault()
       @context.project = null
+      if @createProject?
+        @createProject.undelegateEvents()
       @createProject = new exports.CreateProjectForm @context
       @createProject.show()
 
     showTaskForm: (e) ->
       e.preventDefault()
+      if @createTask?
+        @createTask.undelegateEvents()
+      @createTask = new exports.CreateTaskForm @context
       @createTask.show()
 
     showTaskCommentForm: (e) ->
@@ -396,12 +461,24 @@
 
       @render()
 
+    setParent: (parent, child) ->
+      $.get(
+        "/project/parent/#{parent}/#{child}"
+        (response, status, xhr) ->
+          projects.fetch()
+      )
+
     render: ->
       html = views['dashboard/dashboard'](@context)
       @$el.html html
       @$el.attr 'view-id', 'dashboard'
 
-      @createTask = new exports.CreateTaskForm
+      $(".project-list li").droppable(
+        drop: (event, ui) =>
+          @setParent(event.target.attributes['rel'].value, ui.draggable.attr("rel"))
+      ).draggable(
+        containment: "parent"
+      )
 
       @
 

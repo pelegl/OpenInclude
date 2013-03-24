@@ -2108,8 +2108,10 @@
         offset = $(element).offset();
         width = $(element).width();
         height = $(element).height();
-        this.$el.css('left', offset.left + width / 2);
-        this.$el.css('top', offset.top + height / 2);
+        this.$el.css('left', offset.left);
+        this.$el.css('top', offset.top + height);
+        this.$el.css('width', width);
+        this.$el.css('height', '150px');
         if (!this.context.listener) {
           return this.context.listener = element;
         }
@@ -2288,6 +2290,7 @@
 
       CreateProjectForm.prototype.success = function(model, response, options) {
         if (CreateProjectForm.__super__.success.call(this, model, response, options)) {
+          projectId = response.id;
           return projects.fetch();
         }
       };
@@ -2386,6 +2389,61 @@
       function Task() {
         return Task.__super__.constructor.apply(this, arguments);
       }
+
+      Task.prototype.events = {
+        'click #task-check-in': "checkIn",
+        'click #task-check-out': "checkOut",
+        'click #task-finish': "finish"
+      };
+
+      Task.prototype.checkIn = function(event) {
+        var _this = this;
+        event.preventDefault();
+        event.stopPropagation();
+        $(event.target).attr("id", "task-check-out");
+        $(event.target).html("Check out");
+        this.currentTime = moment();
+        this.stop = false;
+        return $.get("/task/time/start/" + taskId + "/" + (this.currentTime.unix()), function(result, text, xhr) {
+          if (result.success) {
+            return setTimeout(_.bind(_this.timer, _this), 1000);
+          } else {
+            return alert(result.error);
+          }
+        });
+      };
+
+      Task.prototype.checkOut = function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        $(event.target).attr("id", "task-check-in");
+        $(event.target).html("Check in");
+        this.stop = true;
+        return $.get("/task/time/end/" + taskId + "/" + (moment().unix()), function(result, text, xhr) {
+          if (!result.success) {
+            return alert(result.error);
+          }
+        });
+      };
+
+      Task.prototype.finish = function(event) {
+        return this;
+      };
+
+      Task.prototype.timer = function() {
+        var diff, hours, minutes, seconds;
+        if (!this.timerEl) {
+          this.timerEl = $("#timer");
+        }
+        diff = moment().diff(this.currentTime, "seconds");
+        hours = Math.floor(diff / 3600);
+        minutes = Math.floor(diff / 60) - hours * 3600;
+        seconds = Math.floor(diff) - minutes * 60 - hours * 3600;
+        this.timerEl.html("" + hours + ":" + minutes + ":" + seconds);
+        if (!this.stop) {
+          return setTimeout(_.bind(this.timer, this), 1000);
+        }
+      };
 
       Task.prototype.initialize = function(context) {
         this.context = context;
@@ -2514,6 +2572,9 @@
 
       Dashboard.prototype.showSubProjectForm = function(e) {
         e.preventDefault();
+        if (this.createProject != null) {
+          this.createProject.undelegateEvents();
+        }
         this.createProject = new exports.CreateProjectForm(this.context);
         return this.createProject.show();
       };
@@ -2521,12 +2582,19 @@
       Dashboard.prototype.showProjectForm = function(e) {
         e.preventDefault();
         this.context.project = null;
+        if (this.createProject != null) {
+          this.createProject.undelegateEvents();
+        }
         this.createProject = new exports.CreateProjectForm(this.context);
         return this.createProject.show();
       };
 
       Dashboard.prototype.showTaskForm = function(e) {
         e.preventDefault();
+        if (this.createTask != null) {
+          this.createTask.undelegateEvents();
+        }
+        this.createTask = new exports.CreateTaskForm(this.context);
         return this.createTask.show();
       };
 
@@ -2614,12 +2682,25 @@
         return this.render();
       };
 
+      Dashboard.prototype.setParent = function(parent, child) {
+        return $.get("/project/parent/" + parent + "/" + child, function(response, status, xhr) {
+          return projects.fetch();
+        });
+      };
+
       Dashboard.prototype.render = function() {
-        var html;
+        var html,
+          _this = this;
         html = views['dashboard/dashboard'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'dashboard');
-        this.createTask = new exports.CreateTaskForm;
+        $(".project-list li").droppable({
+          drop: function(event, ui) {
+            return _this.setParent(event.target.attributes['rel'].value, ui.draggable.attr("rel"));
+          }
+        }).draggable({
+          containment: "parent"
+        });
         return this;
       };
 

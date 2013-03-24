@@ -60,6 +60,7 @@ exports.set = (app)->
   ###
   app.get "/project", app.Controllers.project.list
   app.get "/project/suggest/:part?", app.Controllers.project.suggest
+  app.get "/project/parent/:parent/:child", app.Controllers.project.parent
 
   app.post "/project", app.Controllers.project.create
   app.put "/project/:id", app.Controllers.project.update
@@ -68,6 +69,9 @@ exports.set = (app)->
   ###
   Task
   ###
+  app.get "/task/time/start/:id/:start", app.Controllers.task.start
+  app.get "/task/time/end/:id/:end", app.Controllers.task.end
+
   app.get "/task/:project", app.Controllers.task.list
   app.post "/task/:project", app.Controllers.task.create
   app.put "/task/:id", app.Controllers.task.update
