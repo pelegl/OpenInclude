@@ -13,16 +13,19 @@ import config
 class GithubCommits():
     branches_temp = 'https://api.github.com/repos/%(user)s/%(repo)s/branches'
     commits_temp = 'https://api.github.com/repos/%(user)s/%(repo)s/commits'
+    repo_info_temp = 'https://api.github.com/repos/%(user)s/%(repo)s'
+    search_url = 'https://api.github.com/legacy/repos/search/:'#language=' # JavaScript?start_page=1&sort=stars&order=desc'
 
     # headers for the request
     git_hdr = {'User-Agent': config.GITHUB_API_USER_AGENT, 'Authorization': config.GITHUB_API_AUTH_TOKEN }
 
-    def __init__(self, user, repo, module_id = 0):
+    def __init__(self, user='', repo='', module_id = 0):
         self.user = user
         self.repo = repo
         self.module_id = module_id
         self.branches_url = self.branches_temp % { 'user': user, 'repo': repo }
         self.commits_url = self.commits_temp % { 'user': user, 'repo': repo }
+        self.repo_info_url = self.repo_info_temp % { 'user': user, 'repo': repo }
 
     @retry_on_exceptions(types=[simplejson.decoder.JSONDecodeError], tries=5, delay=5)
     def get_request(self, url, **kwargs):
@@ -33,6 +36,47 @@ class GithubCommits():
             return []
         else:
             return rj
+
+    def get_modules(self, collection, lang, min_stars = 100):
+        page = 1
+        payload = {'sort': 'stars', 'order': 'desc'}
+        url = self.search_url+lang
+        while True:
+            payload['start_page'] = page
+            modules_list = self.get_request(url, params=payload)
+            if u'repositories' in modules_list:
+                modules_list = modules_list['repositories']
+            else:
+                break
+            print 'Lang: %s, page: %d, count: %d,' % (lang, page, len(modules_list)),
+            if len(modules_list) == 0:
+                break
+            last_watchers = modules_list[-1]['watchers']
+            print 'count stars for last: %d' % last_watchers,
+            if last_watchers < min_stars:
+                last_n = -1
+                for i in range(0, len(modules_list)):
+                    if modules_list[i]['watchers'] >= min_stars:
+                        last_n = i
+                    else:
+                        break
+                if last_n < 0:
+                    print 'no modules added'
+                    break
+                modules_list = modules_list[0:last_n + 1]
+            for m in modules_list:
+                m['_id'] = m['owner'] + '/' + m['name']
+                collection.save(m)
+            # collection.insert(modules_list)
+            print 'modules added: %d' % len(modules_list)
+            if last_watchers < min_stars:# or page >= 10: # "Only the first 1000 search results are available"
+                break
+            page += 1
+
+    def get_all_modules(self, langs, modules):
+        for lang in langs.find():
+            # print lang['name']
+            self.get_modules(modules, lang['name'])
 
     def get_branches(self):
         self.update_time = datetime.now()
@@ -89,15 +133,33 @@ class GithubCommits():
         # collect.save(commits_for_db)
         return last_date
 
+    def save_modules_to_db(self):
+        mongoConn = pymongo.MongoClient(config.DB_HOST, 27017)
+        db = mongoConn[config.DB_NAME]
+        coll_name = 'modules_2'
+        modules = db[coll_name]
+        langs = db['language_names']
+
+        db.drop_collection(coll_name)
+        # db.drop_collection('module_git_commits')
+
+        self.get_all_modules(langs, modules)
+        mongoConn.close()
+
+
     def save_to_db(self):
         mongoConn = pymongo.MongoClient(config.DB_HOST, 27017)
         db = mongoConn[config.DB_NAME]
         branches = db['module_git_branches']
         commits_collection = db['module_git_commits']
+        info_collection = db['modules_info']
 
-        db.drop_collection('module_git_branches')
-        db.drop_collection('module_git_commits')
+        # db.drop_collection('module_git_branches')
+        # db.drop_collection('module_git_commits')
 
+        self.save_info_to_db(info_collection)
+        mongoConn.close()
+        return
         self.save_branches(branches)
 
         self.all_count = 0
@@ -118,17 +180,40 @@ class GithubCommits():
         print  self.all_count
         mongoConn.close()
 
+    def get_info(self):
+        self.info = self.get_request(self.repo_info_url)
+        return self.info
+
+    def save_info_to_db(self, collection):
+        self.get_info()
+        db_info = dict()
+        for f in self.info:
+            if f.find('_count') >= 0 or f in ['full_name', 'updated_at', 'pushed_at']:
+                db_info[f] = self.info[f]
+
+        db_info['time'] = datetime.now()
+        db_info['module_id'] = self.module_id
+        collection.insert(db_info)
+
 def main():
-    mongoConn = pymongo.MongoClient(config.DB_HOST, 27017)
-    db = mongoConn[config.DB_NAME]
-    modules_collection = db['modules']
-    modules_count = 100
-    for module in modules_collection.find().limit(modules_count):
-        print module['owner'], module['module_name'], module['_id']
-        github = GithubCommits(module['owner'], module['module_name'], module['_id'])
-        github.get_branches()
-        github.save_to_db()
+    github = GithubCommits()
+    github.save_modules_to_db()
+
+
+    # mongoConn = pymongo.MongoClient(config.DB_HOST, 27017)
+    # db = mongoConn[config.DB_NAME]
+    # modules_collection = db['modules']
+    # modules_count = 100
+    # for module in modules_collection.find().limit(modules_count):
+    #     print module['owner'], module['module_name'], module['_id']
+    #     github = GithubCommits(module['owner'], module['module_name'], module['_id'])
+    #     # github.get_branches()
+    #     github.save_to_db()
     #
+
+
+
+
     # all_count = 0
     # for b in branches:
     #     branch_name = b['name']
