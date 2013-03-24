@@ -11,6 +11,9 @@ __author__ = 'Alexey'
 
 import config
 
+class RetryException(Exception):
+    pass
+
 class GithubCommits():
     branches_temp = 'https://api.github.com/repos/%(user)s/%(repo)s/branches'
     commits_temp = 'https://api.github.com/repos/%(user)s/%(repo)s/commits'
@@ -28,19 +31,26 @@ class GithubCommits():
         self.commits_url = self.commits_temp % { 'user': user, 'repo': repo }
         self.repo_info_url = self.repo_info_temp % { 'user': user, 'repo': repo }
 
-    @retry_on_exceptions(types=[simplejson.decoder.JSONDecodeError], tries=5, delay=5)
+
+    @retry_on_exceptions(types=[simplejson.decoder.JSONDecodeError, RetryException], tries=5, delay=5)
     def get_request(self, url, **kwargs):
         r = requests.get(url, headers = self.git_hdr, **kwargs)
-        limit_remaining = r.headers['x-ratelimit-remaining']
+        limit_remaining = int(r.headers['x-ratelimit-remaining'])
         rj = r.json()
+
         if limit_remaining < 1000:
             print 'Warning limit remaining %d requets' % limit_remaining
-        if limit_remaining < 1000:
-            sleep(1)
+
+        if limit_remaining == 0:
+            sleep(600)
+            raise RetryException()
+
+        if limit_remaining < 10:
+            sleep(120)
         elif limit_remaining < 100:
             sleep(10)
-        elif limit_remaining < 10:
-            sleep(120)
+        elif limit_remaining < 1000:
+            sleep(1)
 
         if 'message' in rj:
             print 'Warning api message: %s' % rj['message']
