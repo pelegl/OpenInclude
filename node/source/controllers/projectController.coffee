@@ -84,10 +84,17 @@ module.exports =
                 )
 
                 project.resources = _.union([], project.resources, ids)
+                project.resources = _.uniq(project.resources, (a, b) ->
+                  return a.id == b.id
+                )
+
                 project.read = _.union([], project.read, ids)
+                project.read = _.uniq(project.read, (a, b) ->
+                  return a.id == b.id
+                )
 
                 project.save((result, project) ->
-                  res.json success: true
+                  res.json success: true, id: project.get('_id')
                 )
               )
 
@@ -144,6 +151,16 @@ module.exports =
     )
 
   delete: (req, res) ->
+    Project.findById(req.params.id, (result, project) ->
+      if result
+        res.json {success: false}, 404
+      else
+        project.getChildren(true, (result, projects) ->
+          _.each(projects, (project) ->
+            project.remove()
+          )
+        )
+    )
     Project.remove({_id: req.params.id}, (result) ->
       if result
         res.json({success: false, error: result})
@@ -169,4 +186,18 @@ module.exports =
       )
 
       res.json data
+    )
+
+  parent: (req, res) ->
+    Project.findById(req.params.child, (result, project) ->
+      if result
+        res.json success: false, error: result
+      else
+        project.parent = req.params.parent
+        project.save((result, project) ->
+          if result
+            res.json success: false, error: result
+          else
+            res.json success: true
+        )
     )

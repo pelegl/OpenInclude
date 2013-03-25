@@ -2302,7 +2302,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var InlineForm, Task, TypeAhead, Users, project, projectId, projects, root, task, taskEl, taskId, tasks, views, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
+    var InlineForm, Search, Task, TypeAhead, Users, project, projectId, projects, root, task, taskEl, taskId, tasks, views, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
 
     root = this;
     views = this.hbt = _.extend({}, dt, Handlebars.partials);
@@ -2357,8 +2357,8 @@
         offset = $(element).offset();
         width = $(element).width();
         height = $(element).height();
-        this.$el.css('left', offset.left + width / 2);
-        this.$el.css('top', offset.top + height / 2);
+        this.$el.css('left', offset.left);
+        this.$el.css('top', offset.top + height);
         if (!this.context.listener) {
           return this.context.listener = element;
         }
@@ -2375,22 +2375,22 @@
 
       TypeAhead.prototype.showUser = function() {
         this.base = "/session/list";
-        this.suggestions.url = "/session/list";
-        return this.suggestions.fetch();
+        return this.suggestions.url = "/session/list";
       };
 
       TypeAhead.prototype.showProject = function() {
         this.base = "project/suggest";
-        this.suggestions.url = "/project/suggest";
-        return this.suggestions.fetch();
+        return this.suggestions.url = "/project/suggest";
       };
 
       TypeAhead.prototype.showTask = function(part) {};
 
       TypeAhead.prototype.updateQuery = function(part) {
-        this.suggestions.url = "" + this.base + "/" + part;
-        console.log(this.suggestions.url);
-        return this.suggestions.fetch();
+        if (part.length > 2) {
+          this.suggestions.url = "" + this.base + "/" + part;
+          console.log(this.suggestions.url);
+          return this.suggestions.fetch();
+        }
       };
 
       TypeAhead.prototype.hide = function() {
@@ -2459,8 +2459,7 @@
             return this.tah.showProject();
           case ' ':
             this.buf = '';
-            this.tah.hide();
-            return true;
+            return this.tah.hide();
           default:
             if (code === 8) {
               this.buf = this.buf.substring(0, this.buf.length - 1);
@@ -2469,9 +2468,7 @@
             if (event.charCode === 0) {
               return true;
             }
-            if (this.tah.available) {
-              this.buf += char;
-            }
+            this.buf += char;
             if (this.buf.length > 0) {
               return this.tah.updateQuery(this.buf);
             }
@@ -2541,6 +2538,7 @@
 
       CreateProjectForm.prototype.success = function(model, response, options) {
         if (CreateProjectForm.__super__.success.call(this, model, response, options)) {
+          projectId = response.id;
           return projects.fetch();
         }
       };
@@ -2640,6 +2638,63 @@
         return _ref7;
       }
 
+      Task.prototype.events = {
+        'click #task-check-in': "checkIn",
+        'click #task-check-out': "checkOut",
+        'click #task-finish': "finish"
+      };
+
+      Task.prototype.checkIn = function(event) {
+        var _this = this;
+
+        event.preventDefault();
+        event.stopPropagation();
+        $(event.target).attr("id", "task-check-out");
+        $(event.target).html("Check out");
+        this.currentTime = moment();
+        this.stop = false;
+        return $.get("/task/time/start/" + taskId + "/" + (this.currentTime.unix()), function(result, text, xhr) {
+          if (result.success) {
+            return setTimeout(_.bind(_this.timer, _this), 1000);
+          } else {
+            return alert(result.error);
+          }
+        });
+      };
+
+      Task.prototype.checkOut = function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        $(event.target).attr("id", "task-check-in");
+        $(event.target).html("Check in");
+        this.stop = true;
+        return $.get("/task/time/end/" + taskId + "/" + (moment().unix()), function(result, text, xhr) {
+          if (!result.success) {
+            return alert(result.error);
+          }
+        });
+      };
+
+      Task.prototype.finish = function(event) {
+        return this;
+      };
+
+      Task.prototype.timer = function() {
+        var diff, hours, minutes, seconds;
+
+        if (!this.timerEl) {
+          this.timerEl = $("#timer");
+        }
+        diff = moment().diff(this.currentTime, "seconds");
+        hours = Math.floor(diff / 3600);
+        minutes = Math.floor(diff / 60) - hours * 3600;
+        seconds = Math.floor(diff) - minutes * 60 - hours * 3600;
+        this.timerEl.html("" + hours + ":" + minutes + ":" + seconds);
+        if (!this.stop) {
+          return setTimeout(_.bind(this.timer, this), 1000);
+        }
+      };
+
       Task.prototype.initialize = function(context) {
         this.context = context;
         Task.__super__.initialize.call(this, context);
@@ -2658,12 +2713,88 @@
       return Task;
 
     })(View);
+    Search = (function(_super) {
+      __extends(Search, _super);
+
+      function Search() {
+        _ref8 = Search.__super__.constructor.apply(this, arguments);
+        return _ref8;
+      }
+
+      Search.prototype.events = {
+        'submit form': "submit",
+        'click button[type=submit]': "preventPropagation"
+      };
+
+      Search.prototype.preventPropagation = function(event) {
+        return event.stopPropagation();
+      };
+
+      Search.prototype.submit = function(event) {
+        var data;
+
+        event.preventDefault();
+        event.stopPropagation();
+        data = Backbone.Syphon.serialize(event.currentTarget);
+        this.tasks = new collections.Tasks;
+        this.listenTo(this.tasks, "reset", this.renderResult);
+        if (!data.from) {
+          data.from = "none";
+        }
+        if (!data.to) {
+          data.to = "none";
+        }
+        this.tasks.url = "/task/search/" + data.search + "/" + data.from + "/" + data.to;
+        return this.tasks.fetch();
+      };
+
+      Search.prototype.initialize = function(context) {
+        this.context = context;
+        Search.__super__.initialize.call(this, context);
+        return this.render();
+      };
+
+      Search.prototype.renderResult = function(collection) {
+        var _tasks;
+
+        _tasks = [];
+        collection.each(function(item) {
+          return _tasks.push(item.toJSON());
+        });
+        this.context.tasks = _tasks;
+        return this.render();
+      };
+
+      Search.prototype.render = function() {
+        var from, html, to;
+
+        html = views['dashboard/search'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'dashboard-search');
+        from = this.$el.find("input[name=from]");
+        to = this.$el.find("input[name=to]");
+        from.datepicker({
+          onClose: function(selectedDate) {
+            return to.datepicker("option", "minDate", selectedDate);
+          }
+        });
+        to.datepicker({
+          onClose: function(selectedDate) {
+            return from.datepicker("option", "maxDate", selectedDate);
+          }
+        });
+        return this;
+      };
+
+      return Search;
+
+    })(View);
     return exports.Dashboard = (function(_super) {
       __extends(Dashboard, _super);
 
       function Dashboard() {
-        _ref8 = Dashboard.__super__.constructor.apply(this, arguments);
-        return _ref8;
+        _ref9 = Dashboard.__super__.constructor.apply(this, arguments);
+        return _ref9;
       }
 
       Dashboard.prototype.events = {
@@ -2682,7 +2813,7 @@
       };
 
       Dashboard.prototype.parsePermissions = function(user, project) {
-        var _i, _j, _k, _len, _len1, _len2, _ref10, _ref11, _ref9, _results;
+        var _i, _j, _k, _len, _len1, _len2, _ref10, _ref11, _ref12, _results;
 
         this.context.canRead = false;
         this.context.canWrite = false;
@@ -2691,26 +2822,26 @@
         if (user._id === project.client.id) {
           this.context.isOwner = true;
         }
-        _ref9 = project.read;
-        for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
-          user = _ref9[_i];
+        _ref10 = project.read;
+        for (_i = 0, _len = _ref10.length; _i < _len; _i++) {
+          user = _ref10[_i];
           if (user.id === this.context.user._id) {
             this.context.canRead = true;
             break;
           }
         }
-        _ref10 = project.write;
-        for (_j = 0, _len1 = _ref10.length; _j < _len1; _j++) {
-          user = _ref10[_j];
+        _ref11 = project.write;
+        for (_j = 0, _len1 = _ref11.length; _j < _len1; _j++) {
+          user = _ref11[_j];
           if (user.id === this.context.user._id) {
             this.context.canWrite = true;
             break;
           }
         }
-        _ref11 = project.grant;
+        _ref12 = project.grant;
         _results = [];
-        for (_k = 0, _len2 = _ref11.length; _k < _len2; _k++) {
-          user = _ref11[_k];
+        for (_k = 0, _len2 = _ref12.length; _k < _len2; _k++) {
+          user = _ref12[_k];
           if (user.id === this.context.user._id) {
             this.context.canGrant = true;
             break;
@@ -2771,6 +2902,9 @@
 
       Dashboard.prototype.showSubProjectForm = function(e) {
         e.preventDefault();
+        if (this.createProject != null) {
+          this.createProject.undelegateEvents();
+        }
         this.createProject = new exports.CreateProjectForm(this.context);
         return this.createProject.show();
       };
@@ -2778,12 +2912,19 @@
       Dashboard.prototype.showProjectForm = function(e) {
         e.preventDefault();
         this.context.project = null;
+        if (this.createProject != null) {
+          this.createProject.undelegateEvents();
+        }
         this.createProject = new exports.CreateProjectForm(this.context);
         return this.createProject.show();
       };
 
       Dashboard.prototype.showTaskForm = function(e) {
         e.preventDefault();
+        if (this.createTask != null) {
+          this.createTask.undelegateEvents();
+        }
+        this.createTask = new exports.CreateTaskForm(this.context);
         return this.createTask.show();
       };
 
@@ -2821,14 +2962,14 @@
         this.context.title = "Dashboard";
         this.context.user = app.session.toJSON();
         this.context.canEdit = function(user, project) {
-          var _i, _len, _ref9, _user;
+          var _i, _len, _ref10, _user;
 
           if (user._id === project.client.id) {
             return true;
           }
-          _ref9 = project.write;
-          for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
-            _user = _ref9[_i];
+          _ref10 = project.write;
+          for (_i = 0, _len = _ref10.length; _i < _len; _i++) {
+            _user = _ref10[_i];
             if (_user.id === user._id) {
               return true;
             }
@@ -2875,13 +3016,31 @@
         return this.render();
       };
 
+      Dashboard.prototype.setParent = function(parent, child) {
+        return $.get("/project/parent/" + parent + "/" + child, function(response, status, xhr) {
+          return projects.fetch();
+        });
+      };
+
       Dashboard.prototype.render = function() {
-        var html;
+        var html,
+          _this = this;
 
         html = views['dashboard/dashboard'](this.context);
         this.$el.html(html);
         this.$el.attr('view-id', 'dashboard');
-        this.createTask = new exports.CreateTaskForm;
+        $(".project-list li").droppable({
+          drop: function(event, ui) {
+            return _this.setParent(event.target.attributes['rel'].value, ui.draggable.attr("rel"));
+          }
+        }).draggable({
+          containment: "parent"
+        });
+        if (!(projectId || taskId)) {
+          this.searchView = new Search(_.extend(this.context, {
+            el: "#main-area"
+          }));
+        }
         return this;
       };
 

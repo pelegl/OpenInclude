@@ -30,7 +30,7 @@
                 </div>
                 <div class='span9 dashboard-right'>
                     <div class="row-fluid">
-                        <div id="main-area" class='span9 main-area'>
+                        <div id="main-area" class='main-area'>
                             {{? it.project}}
                             <h3 id="project-name">
                                 {{=it.project.name}}
@@ -88,9 +88,6 @@
                                   class="btn btn-success btn-small">Create</a></p>
                             {{?}}
                             {{?}}
-                        </div>
-                        <div class='span3 supplementary-area'>
-                            <h3>filters, etc</h3>
                         </div>
                     </div>
                 </div>

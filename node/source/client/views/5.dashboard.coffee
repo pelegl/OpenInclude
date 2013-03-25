@@ -31,8 +31,8 @@
       width = $(element).width()
       height = $(element).height()
 
-      @$el.css 'left', offset.left + width / 2
-      @$el.css 'top', offset.top + height / 2
+      @$el.css 'left', offset.left
+      @$el.css 'top', offset.top + height
 
       if not @context.listener
         @context.listener = element
@@ -46,20 +46,21 @@
     showUser: () ->
       @base = "/session/list"
       @suggestions.url = "/session/list"
-      @suggestions.fetch()
+      #@suggestions.fetch()
 
     showProject: () ->
       @base = "project/suggest"
       @suggestions.url = "/project/suggest"
-      @suggestions.fetch()
+      #@suggestions.fetch()
 
     showTask: (part) ->
       return
 
     updateQuery: (part) ->
-      @suggestions.url = "#{@base}/#{part}"
-      console.log @suggestions.url
-      @suggestions.fetch()
+      if part.length > 2
+        @suggestions.url = "#{@base}/#{part}"
+        console.log @suggestions.url
+        @suggestions.fetch()
 
     hide: ->
       @$el.hide()
@@ -109,7 +110,6 @@
         when ' '
           @buf = ''
           @tah.hide()
-          true
         else
           if code is 8
             # backspace
@@ -118,8 +118,8 @@
 
           if event.charCode is 0
             return true
-          if @tah.available
-            @buf += char
+          #if @tah.available
+          @buf += char
           if @buf.length > 0
             @tah.updateQuery @buf
 
@@ -165,6 +165,7 @@
 
     success: (model, response, options) ->
       if super model, response, options
+        projectId = response.id
         projects.fetch()
 
     initialize: (context) ->
@@ -214,6 +215,61 @@
       super context
 
   class Task extends View
+    events:
+      'click #task-check-in': "checkIn"
+      'click #task-check-out': "checkOut"
+      'click #task-finish': "finish"
+
+    checkIn: (event) ->
+      event.preventDefault()
+      event.stopPropagation()
+
+      $(event.target).attr("id", "task-check-out")
+      $(event.target).html("Check out")
+
+      @currentTime = moment()
+      @stop = false
+      $.get(
+        "/task/time/start/#{taskId}/#{@currentTime.unix()}"
+        (result, text, xhr) =>
+          if result.success
+            setTimeout(_.bind(@timer, @), 1000)
+          else
+            alert result.error
+      )
+
+    checkOut: (event) ->
+      event.preventDefault()
+      event.stopPropagation()
+
+      $(event.target).attr("id", "task-check-in")
+      $(event.target).html("Check in")
+
+      @stop = true
+      $.get(
+        "/task/time/end/#{taskId}/#{moment().unix()}"
+        (result, text, xhr) ->
+          unless result.success
+            alert result.error
+      )
+
+    finish: (event) ->
+      @
+
+    timer: ->
+      unless @timerEl
+        @timerEl = $("#timer")
+
+      diff = moment().diff(@currentTime, "seconds")
+      hours = Math.floor(diff / 3600)
+      minutes = Math.floor(diff / 60) - hours * 3600
+      seconds = Math.floor(diff) - minutes * 60 - hours * 3600
+
+      @timerEl.html "#{hours}:#{minutes}:#{seconds}"
+
+      unless @stop
+        setTimeout(_.bind(@timer, @), 1000)
+
     initialize: (context) ->
       @context = context
       super context
@@ -223,6 +279,62 @@
       html = views['dashboard/task'](@context)
       @$el.html html
       @$el.attr 'view-id', 'dashboard-task'
+      @
+
+  class Search extends View
+    events:
+      'submit form': "submit"
+      'click button[type=submit]': "preventPropagation"
+
+    preventPropagation: (event) ->
+      event.stopPropagation()
+
+    submit: (event) ->
+      event.preventDefault()
+      event.stopPropagation()
+
+      data = Backbone.Syphon.serialize event.currentTarget
+      @tasks = new collections.Tasks
+      @listenTo @tasks, "reset", @renderResult
+
+      unless data.from
+        data.from = "none"
+      unless data.to
+        data.to = "none"
+
+      @tasks.url = "/task/search/#{data.search}/#{data.from}/#{data.to}"
+      @tasks.fetch()
+
+    initialize: (context) ->
+      @context = context
+      super context
+      @render()
+
+    renderResult: (collection) ->
+      _tasks = []
+      collection.each((item) ->
+        _tasks.push item.toJSON())
+      @context.tasks = _tasks
+      @render()
+
+    render: ->
+      html = views['dashboard/search'](@context)
+      @$el.html html
+      @$el.attr 'view-id', 'dashboard-search'
+
+      from = @$el.find("input[name=from]")
+      to = @$el.find("input[name=to]")
+
+      from.datepicker(
+        onClose: (selectedDate) ->
+          to.datepicker("option", "minDate", selectedDate)
+      )
+
+      to.datepicker(
+        onClose: (selectedDate) ->
+          from.datepicker("option", "maxDate", selectedDate)
+      )
+
       @
 
   class exports.Dashboard extends View
@@ -315,17 +427,24 @@
 
     showSubProjectForm: (e) ->
       e.preventDefault()
+      if @createProject?
+        @createProject.undelegateEvents()
       @createProject = new exports.CreateProjectForm @context
       @createProject.show()
 
     showProjectForm: (e) ->
       e.preventDefault()
       @context.project = null
+      if @createProject?
+        @createProject.undelegateEvents()
       @createProject = new exports.CreateProjectForm @context
       @createProject.show()
 
     showTaskForm: (e) ->
       e.preventDefault()
+      if @createTask?
+        @createTask.undelegateEvents()
+      @createTask = new exports.CreateTaskForm @context
       @createTask.show()
 
     showTaskCommentForm: (e) ->
@@ -396,12 +515,27 @@
 
       @render()
 
+    setParent: (parent, child) ->
+      $.get(
+        "/project/parent/#{parent}/#{child}"
+        (response, status, xhr) ->
+          projects.fetch()
+      )
+
     render: ->
       html = views['dashboard/dashboard'](@context)
       @$el.html html
       @$el.attr 'view-id', 'dashboard'
 
-      @createTask = new exports.CreateTaskForm
+      $(".project-list li").droppable(
+        drop: (event, ui) =>
+          @setParent(event.target.attributes['rel'].value, ui.draggable.attr("rel"))
+      ).draggable(
+        containment: "parent"
+      )
+
+      unless projectId or taskId
+        @searchView = new Search _.extend(@context, el: "#main-area")
 
       @
 
