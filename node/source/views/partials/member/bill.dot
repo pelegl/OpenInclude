@@ -1,11 +1,13 @@
 <div class="bill">
     <h4>Bill #{{= it.bill._id}} details</h4>
     <hr>
-    <p><b>Description:</b> {{! it.bill.bill_description}}</p>
-    <p><b>Issued:</b> {{= moment(it.bill.bill_date).format("LLL") }}</p>
-    <p><b>Amount:</b> {{! it.bill.bill_amount/100 }}$</p>
+    <p><b>Description:</b> {{! it.bill.description}}</p>
+    <p><b>Issued:</b> {{= moment( it.bill._id.getTimestamp() ).format("LLL") }}</p>
+    <p><b>Amount:</b> {{! it.bill.amount }}$</p>
+    {{? it.bill.user == it.user._id }}
     <div class='controls'>
         <button class='btn btn-success btn-mini authorizePayment'>Authorize Payment</button>
         <button class='btn btn-danger btn-mini declinePayment'>Decline Payment</button>
     </div>
+    {{?}}
 </div>

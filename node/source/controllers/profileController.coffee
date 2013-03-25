@@ -95,11 +95,12 @@ class ProfileController extends require('./basicController')
               @context.body = @_view "member/profile", @context
               @res.render "base", @context
 
-  view_bills: ->
-    if @req.method is "GET"
-      [id] = @get if @get?
-      if id
-        Bill.findOne {_id: id, bill_to_whome: @req.user._id}, (err, bill) =>
+  bills: ->
+    if @req.method is "GET" and @req.user
+
+      if @get?.length is 1
+        [id] = @get
+        Bill.findOne {_id: id, user: @req.user._id}, (err, bill) =>
           # err
           return @res.send 'Not Found', 404 if err
           # xhr
@@ -108,6 +109,14 @@ class ProfileController extends require('./basicController')
           @context.bill = bill
           @context.informationBox = @_view 'member/bill', @context
           @index()
+
+      else if @get?.length is 2 and @req.user.is_superuser()
+        github_username = @get[1]
+        User.getUserByName github_username, (err, user) =>
+          return @res.json {success: false, err}, 400 if err?
+          Bill.get_bills user._id, (err, bills) =>
+            return @res.json {success: false, err}, 400 if err?
+            @res.json bills
 
       else
         Bill.get_bills @req.user._id, (err, bills) =>
@@ -120,9 +129,25 @@ class ProfileController extends require('./basicController')
           @context.informationBox = @_view 'member/bills', bills
           @index()
 
+    else if @req.method is "POST" and @req.user?.is_superuser()
+      # POST verb - create a bill
+      {bill} = @req.body
+      bill.amount = bill.amount.replace(/\$/,"") if bill.amount?
+
+      Bill.create bill, (err, result)=>
+        # direct access - no js
+        unless @req.xhr
+          console.error err if err?
+          return @res.redirect "back"
+        # xhr
+        return @res.json {success: false, err}, 400 if err?
+        @res.json
+          success: true
+          bill: result
+
     else
-      @res.send "Incorrect verb", 403
- 
+      @res.send 'Not Permitted', 403
+
 # Здесь отдаем функцию - каждый раз когда вызывается наш контроллер - создается новый экземпляр - это мы вставим в рутер
 module.exports = (req,res)->
   new ProfileController req, res

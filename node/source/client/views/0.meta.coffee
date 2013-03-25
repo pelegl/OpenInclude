@@ -160,6 +160,51 @@
 
       )
 
+  class exports.Bill extends @Backbone.View
+    className: "bill"
+
+    initialize:  ->
+      _.bindAll this, "initialize"
+
+      {billId} = @options
+      bill     = @model || @collection.get billId
+      if bill
+        @model = bill
+        @listenTo @model, "sync", @render
+        @render()
+      else
+        @collection.once "sync",  @initialize
+
+    render: ->
+      # html
+      html = views['member/bill']
+        bill: @model.toJSON()
+        user: app.session.toJSON()
+
+      help.exchange this, html
+
+      @
+
+
+  class exports.Bills extends @Backbone.View
+    className: "bills"
+
+    initialize: ->
+      @collection = new collections.Bills
+
+      @listenTo @collection, "sync", @render
+
+      @collection.fetch()
+
+    render: ->
+      # html
+      html  = views['member/bills']
+        bills:      @collection.toJSON()
+        view_bills: app.conf.bills
+      # publish data
+      help.exchange this, html
+
+      @
 
 #-----------------------------------------------------------------------------------------------------------------------#
 ).call(this, window.views = {})

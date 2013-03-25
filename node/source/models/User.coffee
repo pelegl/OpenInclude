@@ -69,10 +69,10 @@ methods =
   	
 statics =
   get_user: (userId, callback)->
-    console.log userId
-    @findOne {github_id: userId}, (err,user)->
-    	console.log user
-    	return callback(err,user)
+    @findOne {github_id: userId}, callback
+
+  getUserByName: (username, callback)->
+    @findOne {github_username: username}, callback
 
   getClientsWithStripe: (callback) ->
     @find {"payment_methods.service" : "Stripe"}, "github_id github_display_name github_username github_avatar_url github_email", callback

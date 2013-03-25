@@ -28,51 +28,6 @@
       @$el.attr 'view-id', 'registration'
       @
 
-  class exports.Bill extends @Backbone.View
-    className: "bill"
-
-    initialize:  ->
-      _.bindAll this, "initialize"
-
-
-      {billId} = @options
-      bill     = @collection.get billId
-      if bill
-        @model = bill
-        @render()
-      else
-        @collection.once "sync", @initialize
-
-    render: ->
-      bill = @model.toJSON()
-      html = views['member/bill'] {bill}
-
-      help.exchange this, html
-
-      @
-
-
-  class exports.Bills extends @Backbone.View
-    className: "bills"
-
-    initialize: ->
-      @collection = new collections.Bills
-
-      @listenTo @collection, "sync", @render
-
-      @collection.fetch()
-
-    render: ->
-      # bills
-      {view_bills} = app.conf
-      bills = @collection.toJSON()
-      html  = views['member/bills'] {bills, view_bills}
-
-      help.exchange this, html
-
-      @
-
-
   class exports.CC extends @Backbone.View    
     className: "dropdown-menu"
     
@@ -81,7 +36,6 @@
       'submit form' : "updateCardData"
     
     stopPropagation: (e) ->
-      console.log "prop"
       e.stopPropagation()
     
     updateCardData: (e) ->
@@ -151,7 +105,7 @@
       dev           = @clearHref @context.developer_agreement
       merc          = @clearHref @context.merchant_agreement
       trello		    = @clearHref @context.trello_auth_url
-      bills         = @clearHref @context.view_bills
+      bills         = @clearHref @context.bills
 
 
       if action is dev and app.session.get("employee") is false
@@ -184,15 +138,12 @@
           ###
             navigate to view bills
           ###
-
-          console.log @get
-
           unless @get?.length > 0
-            navigateTo = @context.view_bills
+            navigateTo = @context.bills
             # show bills
             @empty @bills.$el
           else
-            navigateTo = "#{@context.view_bills}/#{@get.join("/")}"
+            navigateTo = "#{@context.bills}/#{@get.join("/")}"
             # show bill
             [billId] = @get
             if billId?
@@ -238,7 +189,6 @@
     
     render: ->
       console.log "Rendering profile view"
-      console.log "action: ", @options.action, @get
 
       @context.user = @model.toJSON()
       html = views['member/profile'](@context)

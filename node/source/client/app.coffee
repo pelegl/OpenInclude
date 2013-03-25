@@ -24,8 +24,7 @@
     create_project_url  : "dashboard/project/create"
     partials            : window.dt
     admin_url           : "admin"
-    view_bills 			    : "/profile/view_bills"
-    create_bills 			  : "admin/create_bills"
+    bills 			        : "/profile/bills"
     users_with_stripe   : "admin/users_with_stripe"
 
     
@@ -130,7 +129,8 @@
         return app.navigate "/", {trigger: true}
 
       action = opts[0] if opts?
-      @view = new views.AdminBoard prevView: @view, action: action
+      get    = opts[1..] if opts?.length > 1
+      @view = new views.AdminBoard prevView: @view, action: action, get: get
 
 
   $(document).ready ->
@@ -180,8 +180,8 @@
       conf.admin_url
       "!/#{conf.admin_url}"
 
-      "#{conf.admin_url}/:action"
-      "!/#{conf.admin_url}/:action"
+      "#{conf.admin_url}/:action(/:subaction)"
+      "!/#{conf.admin_url}/:action(/:subaction)"
 
     ]
     

@@ -24,37 +24,13 @@ Configuration of the variables
 app  = express()
 root = __dirname
 
-dot = require 'dot'
-fs = require 'fs'
-renderFile = (filename, options, fn) ->
-    if typeof options == "function"
-        fn = options
-        options = {}
-    fn = ( -> ) if typeof fn != "function"
-    
-    if app.Layouts and app.Layouts.hasOwnProperty(@name)
-        try
-            fn null, app.Layouts[@name](options, null, {partials: app.Partials})
-        catch err
-            fn err
-    else
-        layout = dot.compile(fs.readFileSync(filename, 'utf8'), {partials: app.Partials})
-        if not app.Layouts
-            app.Layouts = {}
-            
-        app.Layouts[@name] = layout
-        
-        try
-            fn null, app.Layouts[@name](options, null, {partials: app.Partials})
-        catch err
-            fn err
 
 startApp = ->
   app.configure ->
     #app.engine 'hbs', hbs
     app.set 'env'         , process.env.NODE_ENV || 'dev'
     #app.set 'view engine' , 'hbs'
-    app.engine "dot", renderFile
+    app.engine "dot", conf.dotJs
     app.set "view engine", "dot"
     app.set 'views'       , "#{root}/views/layouts"
     app.use '/static'     , express.static "#{root}/static"

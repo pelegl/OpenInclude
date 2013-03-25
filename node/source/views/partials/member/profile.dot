@@ -16,7 +16,7 @@
                           <div class='status'>
                             {{? it.user.merchant }}
                               {{? it.user.has_stripe }}
-                                <a href='{{= it.view_bills}}' class='btn btn-success btn-mini backbone'>View Bills</a>
+                                <a href='{{= it.bills }}' class='btn btn-success btn-mini backbone'>View Bills</a>
                               {{??}}
                                 <button class='btn btn-info btn-mini setupPayment'>setup payment method</button>
                               {{?}}

@@ -9,6 +9,9 @@
     String.prototype.capitalize = function() {
       return this.charAt(0).toUpperCase() + this.slice(1);
     };
+    String.prototype.getTimestamp = function() {
+      return new Date(parseInt(this.slice(0, 8), 16) * 1000);
+    };
     exports.exchange = function(view, html) {
       var prevEl;
 
@@ -182,8 +185,46 @@
 
     })(exports.User);
     exports.Bill = this.Backbone.Model.extend({
+      /*
+       user
+       amount
+       description
+      */
+
       idAttribute: "_id",
-      urlRoot: "/profile/view_bills"
+      urlRoot: "/profile/bills",
+      validate: function(attrs, options) {
+        var errors;
+
+        errors = [];
+        if (!attrs.bill) {
+          errors.push("Internal error - error 001");
+        } else {
+          if (!attrs.bill.user) {
+            errors.push("Missing user information - error 002");
+          }
+          if (!attrs.bill.amount) {
+            errors.push({
+              name: "amount",
+              msg: "Please, specify amount"
+            });
+          } else if (!/^[0-9]+(\.[0-9]+)?\$?$/.test(attrs.bill.amount)) {
+            errors.push({
+              name: "amount",
+              msg: "Amount should only contain digits and a dot"
+            });
+          }
+          if (!attrs.bill.description) {
+            errors.push({
+              name: "description",
+              msg: "Please, specify bill description"
+            });
+          }
+        }
+        if (errors.length > 0) {
+          return errors;
+        }
+      }
     });
     exports.Tos = this.Backbone.Model.extend({});
     exports.CreditCard = this.Backbone.Model.extend({});
@@ -544,7 +585,25 @@
     });
     exports.Bills = this.Backbone.Collection.extend({
       model: models.Bill,
-      url: "/profile/view_bills"
+      urlRoot: "/profile/bills",
+      initialize: function(models, options) {
+        if (models == null) {
+          models = [];
+        }
+        if (options == null) {
+          options = {};
+        }
+        return this.options = options;
+      },
+      url: function() {
+        if (!this.options.user) {
+          return "" + this.urlRoot;
+        }
+        return "" + this.urlRoot + "/for/" + (this.options.user.get('github_username'));
+      },
+      comparator: function(bill) {
+        return -bill.get("_id").getTimestamp();
+      }
     });
     exports.GithubEvents = this.Backbone.Collection.extend({
       model: models.GithubEvent,
@@ -631,7 +690,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var View, col, root, views, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
+    var View, col, root, views, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7;
 
     root = this;
     views = this.hbt = _.extend({}, dt, Handlebars.partials);
@@ -846,7 +905,7 @@
       return Index;
 
     })(View);
-    return exports.ShareIdeas = (function(_super) {
+    exports.ShareIdeas = (function(_super) {
       __extends(ShareIdeas, _super);
 
       function ShareIdeas() {
@@ -899,6 +958,75 @@
       return ShareIdeas;
 
     })(this.Backbone.View);
+    exports.Bill = (function(_super) {
+      __extends(Bill, _super);
+
+      function Bill() {
+        _ref6 = Bill.__super__.constructor.apply(this, arguments);
+        return _ref6;
+      }
+
+      Bill.prototype.className = "bill";
+
+      Bill.prototype.initialize = function() {
+        var bill, billId;
+
+        _.bindAll(this, "initialize");
+        billId = this.options.billId;
+        bill = this.model || this.collection.get(billId);
+        if (bill) {
+          this.model = bill;
+          this.listenTo(this.model, "sync", this.render);
+          return this.render();
+        } else {
+          return this.collection.once("sync", this.initialize);
+        }
+      };
+
+      Bill.prototype.render = function() {
+        var html;
+
+        html = views['member/bill']({
+          bill: this.model.toJSON(),
+          user: app.session.toJSON()
+        });
+        help.exchange(this, html);
+        return this;
+      };
+
+      return Bill;
+
+    })(this.Backbone.View);
+    return exports.Bills = (function(_super) {
+      __extends(Bills, _super);
+
+      function Bills() {
+        _ref7 = Bills.__super__.constructor.apply(this, arguments);
+        return _ref7;
+      }
+
+      Bills.prototype.className = "bills";
+
+      Bills.prototype.initialize = function() {
+        this.collection = new collections.Bills;
+        this.listenTo(this.collection, "sync", this.render);
+        return this.collection.fetch();
+      };
+
+      Bills.prototype.render = function() {
+        var html;
+
+        html = views['member/bills']({
+          bills: this.collection.toJSON(),
+          view_bills: app.conf.bills
+        });
+        help.exchange(this, html);
+        return this;
+      };
+
+      return Bills;
+
+    })(this.Backbone.View);
   }).call(this, window.views = {});
 
 }).call(this);
@@ -909,7 +1037,7 @@
     __slice = [].slice;
 
   (function(exports) {
-    var agreement_text, root, views, _ref, _ref1, _ref2, _ref3, _ref4;
+    var agreement_text, root, views, _ref, _ref1, _ref2;
 
     agreement_text = "On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains. ";
     root = this;
@@ -949,82 +1077,12 @@
       return SignIn;
 
     })(View);
-    exports.Bill = (function(_super) {
-      __extends(Bill, _super);
-
-      function Bill() {
-        _ref1 = Bill.__super__.constructor.apply(this, arguments);
-        return _ref1;
-      }
-
-      Bill.prototype.className = "bill";
-
-      Bill.prototype.initialize = function() {
-        var bill, billId;
-
-        _.bindAll(this, "initialize");
-        billId = this.options.billId;
-        bill = this.collection.get(billId);
-        if (bill) {
-          this.model = bill;
-          return this.render();
-        } else {
-          return this.collection.once("sync", this.initialize);
-        }
-      };
-
-      Bill.prototype.render = function() {
-        var bill, html;
-
-        bill = this.model.toJSON();
-        html = views['member/bill']({
-          bill: bill
-        });
-        help.exchange(this, html);
-        return this;
-      };
-
-      return Bill;
-
-    })(this.Backbone.View);
-    exports.Bills = (function(_super) {
-      __extends(Bills, _super);
-
-      function Bills() {
-        _ref2 = Bills.__super__.constructor.apply(this, arguments);
-        return _ref2;
-      }
-
-      Bills.prototype.className = "bills";
-
-      Bills.prototype.initialize = function() {
-        this.collection = new collections.Bills;
-        this.listenTo(this.collection, "sync", this.render);
-        return this.collection.fetch();
-      };
-
-      Bills.prototype.render = function() {
-        var bills, html, view_bills;
-
-        view_bills = app.conf.view_bills;
-        bills = this.collection.toJSON();
-        html = views['member/bills']({
-          bills: bills,
-          view_bills: view_bills
-        });
-        help.exchange(this, html);
-        return this;
-      };
-
-      return Bills;
-
-    })(this.Backbone.View);
     exports.CC = (function(_super) {
       __extends(CC, _super);
 
       function CC() {
-        _ref3 = CC.__super__.constructor.apply(this, arguments);
-        return _ref3;
+        _ref1 = CC.__super__.constructor.apply(this, arguments);
+        return _ref1;
       }
 
       CC.prototype.className = "dropdown-menu";
@@ -1035,7 +1093,6 @@
       };
 
       CC.prototype.stopPropagation = function(e) {
-        console.log("prop");
         return e.stopPropagation();
       };
 
@@ -1093,8 +1150,8 @@
       __extends(Profile, _super);
 
       function Profile() {
-        _ref4 = Profile.__super__.constructor.apply(this, arguments);
-        return _ref4;
+        _ref2 = Profile.__super__.constructor.apply(this, arguments);
+        return _ref2;
       }
 
       Profile.prototype.events = {
@@ -1112,11 +1169,11 @@
       };
 
       Profile.prototype.processAction = function(e) {
-        var $this, action, href, _ref5;
+        var $this, action, href, _ref3;
 
         $this = $(e.currentTarget);
         href = this.clearHref($this.attr("href"));
-        _ref5 = _.without(href.split("/"), ""), action = _ref5[0], this.get = 2 <= _ref5.length ? __slice.call(_ref5, 1) : [];
+        _ref3 = _.without(href.split("/"), ""), action = _ref3[0], this.get = 2 <= _ref3.length ? __slice.call(_ref3, 1) : [];
         this.setAction("/" + action);
         return false;
       };
@@ -1132,12 +1189,12 @@
       };
 
       Profile.prototype.setAction = function(action) {
-        var billId, billView, bills, dev, merc, navigateTo, notFound, trello, _ref5;
+        var billId, billView, bills, dev, merc, navigateTo, notFound, trello, _ref3;
 
         dev = this.clearHref(this.context.developer_agreement);
         merc = this.clearHref(this.context.merchant_agreement);
         trello = this.clearHref(this.context.trello_auth_url);
-        bills = this.clearHref(this.context.view_bills);
+        bills = this.clearHref(this.context.bills);
         if (action === dev && app.session.get("employee") === false) {
           /*
             show developer license agreement
@@ -1173,12 +1230,11 @@
             navigate to view bills
           */
 
-          console.log(this.get);
-          if (!(((_ref5 = this.get) != null ? _ref5.length : void 0) > 0)) {
-            navigateTo = this.context.view_bills;
+          if (!(((_ref3 = this.get) != null ? _ref3.length : void 0) > 0)) {
+            navigateTo = this.context.bills;
             this.empty(this.bills.$el);
           } else {
-            navigateTo = "" + this.context.view_bills + "/" + (this.get.join("/"));
+            navigateTo = "" + this.context.bills + "/" + (this.get.join("/"));
             billId = this.get[0];
             if (billId != null) {
               billView = new exports.Bill({
@@ -1230,7 +1286,6 @@
         var html;
 
         console.log("Rendering profile view");
-        console.log("action: ", this.options.action, this.get);
         this.context.user = this.model.toJSON();
         html = views['member/profile'](this.context);
         this.$el.html(html);
@@ -2888,23 +2943,47 @@
       };
 
       AdminBoard.prototype.action = function(action, get) {
-        var issueBill, userId;
+        var bill, billId, billView, e, model, username;
 
         switch (action) {
           case "users_with_stripe":
             this.empty(this.stripeUsers.$el);
             break;
           case "issue_bill":
-            userId = get[0];
-            issueBill = new exports.IssueBill({
-              model: this.stripeUsers.collection.get(userId)
+            username = get[0];
+            model = this.stripeUsers.collection.get(username);
+            this.issueBill = new exports.IssueBill({
+              model: model,
+              collection: this.stripeUsers.collection,
+              username: username
             });
-            this.empty(issueBill.$el);
+            this.empty(this.issueBill.$el);
+            break;
+          case "bills":
+            billId = get[0];
+            try {
+              bill = this.issuedBills.get(billId);
+              if (!bill) {
+                throw "no bill";
+              }
+            } catch (_error) {
+              e = _error;
+              bill = new models.Bill({
+                _id: billId
+              });
+              bill.fetch();
+            } finally {
+              billView = new exports.Bill({
+                model: bill
+              });
+              this.empty(billView.$el);
+            }
         }
         return this.delegateEvents();
       };
 
       AdminBoard.prototype.initialize = function() {
+        console.log("[__Admin View__] init");
         this.model = app.session;
         this.listenTo(this.model, "sync", this.render);
         this.stripeUsers = new exports.UsersWithStripe;
@@ -2918,9 +2997,7 @@
         html = views['admin/admin'](this.context);
         this.$el.html(html);
         this.informationBox = this.$(".informationBox");
-        if (this.options.action != null) {
-          this.action(this.options.action);
-        }
+        this.action.call(this, this.options.action, this.options.get);
         return this;
       };
 
@@ -2935,16 +3012,131 @@
         return _ref1;
       }
 
+      IssueBill.prototype.events = {
+        "submit form": "onSubmit"
+      };
+
+      IssueBill.prototype.onSubmit = function(e) {
+        var data;
+
+        e.preventDefault();
+        data = Backbone.Syphon.serialize(e.currentTarget);
+        this.bill.set(data);
+        this.bill.save(null, {
+          success: this.billIssued,
+          error: this.billError
+        });
+        this.$("[type=submit]").addClass("disabled").text("Processing...");
+        return false;
+      };
+
+      IssueBill.prototype.billIssued = function(model, response, options) {
+        this.$("[type=submit]").removeClass("disabled").text("Issue Bill");
+        this.bill.set(response.bill);
+        this.issuedBills.add(this.bill);
+        return this.prepareForm();
+      };
+
+      IssueBill.prototype.billError = function(model, xhr, options) {
+        return console.log("Error", xhr);
+      };
+
+      IssueBill.prototype.validationErrors = function(model, errors) {
+        var stringError,
+          _this = this;
+
+        stringError = [];
+        _.each(errors, function(error) {
+          var $input;
+
+          if (typeof error === 'object') {
+            $input = _this.$("[name='bill[" + error.name + "]']");
+            $input.closest(".control-group").addClass("error");
+            $input.nextAll().remove();
+            return $input.after($("<span class='help-inline' />").text(error.msg));
+          } else {
+            return stringError.push(error);
+          }
+        });
+        return this.globalError.text(stringError.join("; "));
+      };
+
+      IssueBill.prototype.clearErrors = function() {
+        this.globalError.empty();
+        return this.$(".control-group.error").removeClass("error").find(".help-inline").remove();
+      };
+
+      IssueBill.prototype.prepareForm = function() {
+        var form;
+
+        if (this.bill != null) {
+          this.stopListening(this.bill);
+        }
+        this.bill = new models.Bill({
+          bill: {
+            user: this.model.get("_id")
+          }
+        });
+        this.listenTo(this.bill, "invalid", this.validationErrors);
+        this.listenTo(this.bill, "change", this.clearErrors);
+        form = this.$("form");
+        if (form.length > 0) {
+          Backbone.Syphon.deserialize(form[0], this.bill.toJSON());
+          return $("#billAmount", form).focus();
+        }
+      };
+
       IssueBill.prototype.initialize = function() {
+        var _this = this;
+
+        console.log("[__IssueBill View__] init");
+        this.context = {
+          bills_action: app.conf.bills,
+          bills: []
+        };
+        _.bindAll(this, "billIssued");
+        if (this.model != null) {
+          return this.listIssuedBills();
+        }
+        return this.collection.once("sync", function() {
+          _this.model = _this.collection.get(_this.options.username);
+          return _this.listIssuedBills();
+        });
+      };
+
+      IssueBill.prototype.listIssuedBills = function() {
+        /*
+          List bills for the specified user
+        */
+        this.issuedBills = new collections.Bills([], {
+          user: this.model
+        });
+        this.issuedBills.fetch();
+        this.listenTo(this.issuedBills, "sync", this.renderBills);
+        this.listenTo(this.issuedBills, "add", this.renderBills);
+        this.prepareForm();
         return this.render();
+      };
+
+      IssueBill.prototype.renderBills = function() {
+        var html;
+
+        html = views['bills/table']({
+          bills: this.issuedBills.toJSON(),
+          view_bills: "/admin/bills"
+        });
+        return this.$(".bills").html(html);
       };
 
       IssueBill.prototype.render = function() {
         var html;
 
-        this.context.user = this.model.toJSON();
+        if (this.model != null) {
+          this.context.user = this.model.toJSON();
+        }
         html = views['admin/bill'](this.context);
         this.$el.html(html);
+        this.globalError = this.$("legend .error");
         return this;
       };
 
@@ -3012,8 +3204,7 @@
       create_project_url: "dashboard/project/create",
       partials: window.dt,
       admin_url: "admin",
-      view_bills: "/profile/view_bills",
-      create_bills: "admin/create_bills",
+      bills: "/profile/bills",
       users_with_stripe: "admin/users_with_stripe"
     };
     App = (function(_super) {
@@ -3199,7 +3390,7 @@
       };
 
       App.prototype.admin = function() {
-        var action, opts;
+        var action, get, opts;
 
         opts = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
         this.reRoute();
@@ -3211,9 +3402,13 @@
         if (opts != null) {
           action = opts[0];
         }
+        if ((opts != null ? opts.length : void 0) > 1) {
+          get = opts.slice(1);
+        }
         return this.view = new views.AdminBoard({
           prevView: this.view,
-          action: action
+          action: action,
+          get: get
         });
       };
 
@@ -3224,7 +3419,7 @@
       var app, route_keys, route_paths,
         _this = this;
 
-      route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "" + conf.profile_url + "/:action/:profile", "!/" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action/:profile", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url, "dashboard/project/:id", "!/dashboard/project/:id", "dashboard/project/:project/task/:task", "!/dashboard/project/:project/task/:task", conf.admin_url, "!/" + conf.admin_url, "" + conf.admin_url + "/:action", "!/" + conf.admin_url + "/:action"];
+      route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "" + conf.profile_url + "/:action/:profile", "!/" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action/:profile", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url, "dashboard/project/:id", "!/dashboard/project/:id", "dashboard/project/:project/task/:task", "!/dashboard/project/:project/task/:task", conf.admin_url, "!/" + conf.admin_url, "" + conf.admin_url + "/:action(/:subaction)", "!/" + conf.admin_url + "/:action(/:subaction)"];
       route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo", "dashboard", "dashboard", "project", "project", "task", "task", "admin", "admin", "admin", "admin"];
       App.prototype.routes = _.object(route_keys, route_paths);
       console.log('[__app__] init done!');

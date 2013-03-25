@@ -11,37 +11,24 @@ class AdminController extends require('./basicController')
   issue_bill: ->
     console.log '[issue_bill] action'
     if @req.method is "GET" and @req.user?.is_superuser()
-        [userid] = @get
-        return @res.send "Incorrect action" unless userid
+        [username] = @get
+        return @res.send "Incorrect action" unless username
 
-        User.get_user userid,(error, user) =>
-          if ! error and user.has_stripe
-            @context.user = user
-            @context.title = 'Admin - Issue Bill'
+        User.getUserByName username, (err, user) =>
+          return @res.send "Error occured", 500 if err?
+          return @res.send "User doesnt have stripe account", 404 unless user.has_stripe
+
+          @context.user  = user
+          @context.title = 'Admin - Issue Bill'
+
+          Bill.get_bills user._id, (err, bills)=>
+            return @res.send "Error occured", 500 if err?
+            @context.bills = bills
             @context.informationBox = @_view 'admin/bill', @context
             @index()
+
     else
       @res.send "Not Permitted",401
-  
-  create_bills: ->
-    console.log '[create_bill] action'
-    if @req.method is "POST" and @req.user?.is_superuser()
-
-      {amount, description, userid} = @req.body.bill
-
-      billObj =
-        bill_amount: amount
-        bill_to_whome: userid
-        bill_description: description
-
-      Bill.create billObj, (err, result)=>
-        # TODO: fix return results
-        res.json
-          success: if !err then true else false
-          result: result
-
-    else
-      @res.send 'Not Permitted',401
       	
   users_with_stripe: ->
     console.log '[users_with_stripe] action'

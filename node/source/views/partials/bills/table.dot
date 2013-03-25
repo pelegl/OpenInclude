@@ -1,0 +1,26 @@
+<table class='table table-bordered table-striped'>
+    <thead>
+    <tr>
+        <th>Bill id</th>
+        <th>Issue date</th>
+        <th>Description</th>
+        <th>Amount</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{~it.bills :bill}}
+    <tr>
+        <td>
+            <a href="{{= it.view_bills }}/{{= bill._id }}" class='backbone'>
+                {{= bill._id.toString().substr(0,10) }}...
+            </a>
+        </td>
+        <td>{{= moment( bill._id.getTimestamp() ).format("LL") }}</td>
+        <td>{{! bill.description }}</td>
+        <td>{{= bill.amount }}$</td>
+        <td>&nbsp;</td>
+    </tr>
+    {{~}}
+    </tbody>
+</table>

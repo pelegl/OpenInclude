@@ -420,22 +420,6 @@ footer {
   color: #666;
   padding: 1px 0;
 }
-.container.profile .informationBox .bill {
-  padding: 20px;
-  background: #ffffff;
-  box-sizing: border-box;
-  -moz-box-sizing: border-box;
-}
-.container.profile .informationBox .bill p > b {
-  display: inline-block;
-  width: 100px;
-}
-.container.profile .informationBox .bill .controls {
-  text-align: right;
-}
-.container.profile .informationBox .bill .controls > .btn {
-  margin-left: 10px;
-}
 .container.profile .personalInformation {
   max-width: 220px;
 }
@@ -681,4 +665,29 @@ footer {
 .userList td img {
   display: inline-block;
   margin-right: 10px;
+}
+.admin .customer {
+  padding: 20px 0 10px;
+}
+.admin .customer > img {
+  margin-right: 10px;
+}
+.admin .customer .name {
+  display: inline-block;
+}
+.bill {
+  padding: 20px;
+  background: #ffffff;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+.bill p > b {
+  display: inline-block;
+  width: 100px;
+}
+.bill .controls {
+  text-align: right;
+}
+.bill .controls > .btn {
+  margin-left: 10px;
 }

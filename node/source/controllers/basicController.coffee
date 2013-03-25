@@ -2,7 +2,7 @@ _   = require 'underscore'
 hb  = require 'handlebars'
 dot = require 'dot'
 
-{STATIC_URL, urls} = require '../conf'
+{STATIC_URL, urls, dotJsContext} = require '../conf'
 
 class BasicController
   constructor: (@req, @res)->
@@ -37,8 +37,14 @@ class BasicController
 
   _view : (name, context)=>
     if @app.Views['dot'].hasOwnProperty(name)
-        dot.compile(@app.Views['dot'][name], {partials: @app.Partials})(context, null, {partials: @app.Partials})
+        try
+          _.extend context, dotJsContext
+          html = dot.compile(@app.Views['dot'][name], {partials: @app.Partials})(context, null, {partials: @app.Partials})
+        catch e
+          return e
     else
-        hb.compile(@app.Views['hbs'][name])(context)
+        html = hb.compile(@app.Views['hbs'][name])(context)
+
+    html
 
 module.exports = BasicController

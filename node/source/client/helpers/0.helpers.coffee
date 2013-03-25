@@ -6,6 +6,9 @@
   String.prototype.capitalize = ->
     return @charAt(0).toUpperCase() + @slice(1)
 
+  String.prototype.getTimestamp = ->
+    return new Date(parseInt(this.slice(0,8), 16)*1000)
+
 
   exports.exchange = (view, html)->
     prevEl = view.$el

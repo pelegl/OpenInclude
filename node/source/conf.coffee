@@ -18,6 +18,40 @@ else
   exports.db = db = mongoose.createConnection process.env.mongo
 
 ###
+  Dot.JS handlings
+###
+dot    = require 'dot'
+fs     = require 'fs'
+
+exports.dotJsContext =
+  moment : require 'moment'
+
+Layouts   = {}
+partials  = {}
+exports.dotJs = (filename, options, fn) ->
+  if typeof options == "function"
+    fn = options
+    options = {}
+  fn = ( -> ) if typeof fn != "function"
+
+  _.extend options, exports.dotJsContext
+
+  if Layouts and Layouts.hasOwnProperty(@name)
+    try
+      fn null, Layouts[@name](options, null, {partials})
+    catch err
+      fn err
+  else
+    layout = dot.compile fs.readFileSync(filename, 'utf8'), {partials}
+
+    Layouts[@name] = layout
+
+    try
+      fn null, Layouts[@name]( options, null, {partials} )
+    catch err
+      fn err
+
+###
   String capitalize
 ###
 String.prototype.capitalize = ->
@@ -69,8 +103,7 @@ exports.modules_url     = modules_url     = "/modules"
 exports.dashboard_url   = dashboard_url   = "/dashboard"
 
 exports.admin_url       = admin_url       = '/admin'
-exports.view_bills      = view_bills 			= "#{profile_url}/view_bills"
-exports.create_bills    = create_bills 			= "#{admin_url}/create_bills"
+exports.bills           = bills 			= "#{profile_url}/bills"
 exports.users_with_stripe = users_with_stripe = "#{admin_url}/users_with_stripe"
 
 exports.merchant_agreement        = merchant_agreement  = "#{profile_url}/merchant_agreement"
@@ -92,8 +125,7 @@ exports.urls =
   developer_agreement:  "#{profile_url}/developer_agreement"
   update_credit_card:   "#{profile_url}/update_credit_card"
   admin_url:            "/admin"
-  view_bills:           "#{profile_url}/view_bills"
-  create_bills:         "#{admin_url}/create_bills"
+  bills:                "#{profile_url}/bills"
   users_with_stripe:    "#{admin_url}/users_with_stripe"
 
 ###
@@ -116,7 +148,6 @@ exports.setControllers = (cb)->
 ###
 
 views = {}
-partials = {}
 exports.registerPartials = registerPartials = (dir, callback, dirViews)->
   format = ["hbs", 'dot']            
   dirViews = "#{dir}/" unless dirViews    
