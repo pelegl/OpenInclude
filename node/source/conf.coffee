@@ -76,9 +76,13 @@ github = require 'octonode'
 git_sets = [
   ['2361006ea086ad268742', '8983c759727c4195ae2b34916d9ed313eeafa332']
   [require("./github").id, require("./github").secret]
+  ['e1d30427cc103a08bca1', '806c3b76a6d6c0661f5e8aec8e269bb8015cfbbd']
 ]
 
-[GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET] = if process.env.github_local? then git_sets[1] else git_sets[0]
+if process.env.staging?
+  [GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET] = git_sets[2]
+else
+  [GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET] = if process.env.github_local? then git_sets[1] else git_sets[0]
 
 exports.git = github.client "client", GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
 
