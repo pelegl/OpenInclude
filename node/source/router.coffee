@@ -71,6 +71,7 @@ exports.set = (app)->
   ###
   app.get "/task/time/start/:id/:start", app.Controllers.task.start
   app.get "/task/time/end/:id/:end", app.Controllers.task.end
+  app.get "/task/search/:search/:from/:to", app.Controllers.task.search
 
   app.get "/task/:project", app.Controllers.task.list
   app.post "/task/:project", app.Controllers.task.create

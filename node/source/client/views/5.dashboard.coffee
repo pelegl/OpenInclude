@@ -33,8 +33,6 @@
 
       @$el.css 'left', offset.left
       @$el.css 'top', offset.top + height
-      @$el.css 'width', width
-      @$el.css 'height', '150px'
 
       if not @context.listener
         @context.listener = element
@@ -48,20 +46,21 @@
     showUser: () ->
       @base = "/session/list"
       @suggestions.url = "/session/list"
-      @suggestions.fetch()
+      #@suggestions.fetch()
 
     showProject: () ->
       @base = "project/suggest"
       @suggestions.url = "/project/suggest"
-      @suggestions.fetch()
+      #@suggestions.fetch()
 
     showTask: (part) ->
       return
 
     updateQuery: (part) ->
-      @suggestions.url = "#{@base}/#{part}"
-      console.log @suggestions.url
-      @suggestions.fetch()
+      if part.length > 2
+        @suggestions.url = "#{@base}/#{part}"
+        console.log @suggestions.url
+        @suggestions.fetch()
 
     hide: ->
       @$el.hide()
@@ -111,7 +110,6 @@
         when ' '
           @buf = ''
           @tah.hide()
-          true
         else
           if code is 8
             # backspace
@@ -120,8 +118,8 @@
 
           if event.charCode is 0
             return true
-          if @tah.available
-            @buf += char
+          #if @tah.available
+          @buf += char
           if @buf.length > 0
             @tah.updateQuery @buf
 
@@ -281,6 +279,62 @@
       html = views['dashboard/task'](@context)
       @$el.html html
       @$el.attr 'view-id', 'dashboard-task'
+      @
+
+  class Search extends View
+    events:
+      'submit form': "submit"
+      'click button[type=submit]': "preventPropagation"
+
+    preventPropagation: (event) ->
+      event.stopPropagation()
+
+    submit: (event) ->
+      event.preventDefault()
+      event.stopPropagation()
+
+      data = Backbone.Syphon.serialize event.currentTarget
+      @tasks = new collections.Tasks
+      @listenTo @tasks, "reset", @renderResult
+
+      unless data.from
+        data.from = "none"
+      unless data.to
+        data.to = "none"
+
+      @tasks.url = "/task/search/#{data.search}/#{data.from}/#{data.to}"
+      @tasks.fetch()
+
+    initialize: (context) ->
+      @context = context
+      super context
+      @render()
+
+    renderResult: (collection) ->
+      _tasks = []
+      collection.each((item) ->
+        _tasks.push item.toJSON())
+      @context.tasks = _tasks
+      @render()
+
+    render: ->
+      html = views['dashboard/search'](@context)
+      @$el.html html
+      @$el.attr 'view-id', 'dashboard-search'
+
+      from = @$el.find("input[name=from]")
+      to = @$el.find("input[name=to]")
+
+      from.datepicker(
+        onClose: (selectedDate) ->
+          to.datepicker("option", "minDate", selectedDate)
+      )
+
+      to.datepicker(
+        onClose: (selectedDate) ->
+          from.datepicker("option", "maxDate", selectedDate)
+      )
+
       @
 
   class exports.Dashboard extends View
@@ -479,6 +533,9 @@
       ).draggable(
         containment: "parent"
       )
+
+      unless projectId or taskId
+        @searchView = new Search _.extend(@context, el: "#main-area")
 
       @
 

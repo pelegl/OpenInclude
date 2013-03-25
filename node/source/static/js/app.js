@@ -2055,7 +2055,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
   (function(exports) {
-    var InlineForm, Task, TypeAhead, Users, project, projectId, projects, root, task, taskEl, taskId, tasks, views;
+    var InlineForm, Search, Task, TypeAhead, Users, project, projectId, projects, root, task, taskEl, taskId, tasks, views;
     root = this;
     views = this.hbt = _.extend({}, dt, Handlebars.partials);
     projects = new collections.Projects;
@@ -2110,8 +2110,6 @@
         height = $(element).height();
         this.$el.css('left', offset.left);
         this.$el.css('top', offset.top + height);
-        this.$el.css('width', width);
-        this.$el.css('height', '150px');
         if (!this.context.listener) {
           return this.context.listener = element;
         }
@@ -2127,22 +2125,22 @@
 
       TypeAhead.prototype.showUser = function() {
         this.base = "/session/list";
-        this.suggestions.url = "/session/list";
-        return this.suggestions.fetch();
+        return this.suggestions.url = "/session/list";
       };
 
       TypeAhead.prototype.showProject = function() {
         this.base = "project/suggest";
-        this.suggestions.url = "/project/suggest";
-        return this.suggestions.fetch();
+        return this.suggestions.url = "/project/suggest";
       };
 
       TypeAhead.prototype.showTask = function(part) {};
 
       TypeAhead.prototype.updateQuery = function(part) {
-        this.suggestions.url = "" + this.base + "/" + part;
-        console.log(this.suggestions.url);
-        return this.suggestions.fetch();
+        if (part.length > 2) {
+          this.suggestions.url = "" + this.base + "/" + part;
+          console.log(this.suggestions.url);
+          return this.suggestions.fetch();
+        }
       };
 
       TypeAhead.prototype.hide = function() {
@@ -2209,8 +2207,7 @@
             return this.tah.showProject();
           case ' ':
             this.buf = '';
-            this.tah.hide();
-            return true;
+            return this.tah.hide();
           default:
             if (code === 8) {
               this.buf = this.buf.substring(0, this.buf.length - 1);
@@ -2219,9 +2216,7 @@
             if (event.charCode === 0) {
               return true;
             }
-            if (this.tah.available) {
-              this.buf += char;
-            }
+            this.buf += char;
             if (this.buf.length > 0) {
               return this.tah.updateQuery(this.buf);
             }
@@ -2460,6 +2455,79 @@
       };
 
       return Task;
+
+    })(View);
+    Search = (function(_super) {
+
+      __extends(Search, _super);
+
+      function Search() {
+        return Search.__super__.constructor.apply(this, arguments);
+      }
+
+      Search.prototype.events = {
+        'submit form': "submit",
+        'click button[type=submit]': "preventPropagation"
+      };
+
+      Search.prototype.preventPropagation = function(event) {
+        return event.stopPropagation();
+      };
+
+      Search.prototype.submit = function(event) {
+        var data;
+        event.preventDefault();
+        event.stopPropagation();
+        data = Backbone.Syphon.serialize(event.currentTarget);
+        this.tasks = new collections.Tasks;
+        this.listenTo(this.tasks, "reset", this.renderResult);
+        if (!data.from) {
+          data.from = "none";
+        }
+        if (!data.to) {
+          data.to = "none";
+        }
+        this.tasks.url = "/task/search/" + data.search + "/" + data.from + "/" + data.to;
+        return this.tasks.fetch();
+      };
+
+      Search.prototype.initialize = function(context) {
+        this.context = context;
+        Search.__super__.initialize.call(this, context);
+        return this.render();
+      };
+
+      Search.prototype.renderResult = function(collection) {
+        var _tasks;
+        _tasks = [];
+        collection.each(function(item) {
+          return _tasks.push(item.toJSON());
+        });
+        this.context.tasks = _tasks;
+        return this.render();
+      };
+
+      Search.prototype.render = function() {
+        var from, html, to;
+        html = views['dashboard/search'](this.context);
+        this.$el.html(html);
+        this.$el.attr('view-id', 'dashboard-search');
+        from = this.$el.find("input[name=from]");
+        to = this.$el.find("input[name=to]");
+        from.datepicker({
+          onClose: function(selectedDate) {
+            return to.datepicker("option", "minDate", selectedDate);
+          }
+        });
+        to.datepicker({
+          onClose: function(selectedDate) {
+            return from.datepicker("option", "maxDate", selectedDate);
+          }
+        });
+        return this;
+      };
+
+      return Search;
 
     })(View);
     return exports.Dashboard = (function(_super) {
@@ -2701,6 +2769,11 @@
         }).draggable({
           containment: "parent"
         });
+        if (!(projectId || taskId)) {
+          this.searchView = new Search(_.extend(this.context, {
+            el: "#main-area"
+          }));
+        }
         return this;
       };
 
