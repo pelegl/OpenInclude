@@ -12,44 +12,47 @@ class PaypalController extends require('./basicController')
     @res.redirect "/"
 
   returnurl: ->
-    host = "https://api-3t.sandbox.paypal.com/nvp"
     token = @req.query['token']
-    message =  "USER=#{PAYPAL_CONF.user}&PWD=#{PAYPAL_CONF.password}&SIGNATURE=#{PAYPAL_CONF.signature}&METHOD=GetAuthDetails&VERSION=88&token=#{token}"
-    console.log message
-    options = 
-      hostname : 'api-3t.sandbox.paypal.com',
-      path :'/nvp',
-      method : 'POST'
-      headers:
-        'Content-Length': message.length
-
-    req = https.request options, (res) =>
-      console.log "statusCode: ", res.statusCode	
-      console.log "headers: ", res.headers	
-      data = "";
-      res.on 'data', (d) ->
-        data += d 
-      res.on 'end',(d) =>
-        console.log "data: ", data
-        data = @parseString(data)      
-        if data.ACK is 'Success'
-          #Add paypal details to user account
-          paymentObj =
-            service: "PayPal"
-            id:data.PAYERID
-            paypal_email:data.EMAIL
-          @req.user.payment_methods.push paymentObj
-          @req.user.save (err)=>
-            unless err
-              @res.json data
-        else
-        	@res.json
+    unless token is null
+      message =  "USER=#{PAYPAL_CONF.user}&PWD=#{PAYPAL_CONF.password}&SIGNATURE=#{PAYPAL_CONF.signature}&METHOD=GetAuthDetails&VERSION=88&token=#{token}"
+      console.log message
+      options = 
+        hostname : 'api-3t.sandbox.paypal.com',
+        path :'/nvp',
+        method : 'POST'
+        headers:
+          'Content-Length': message.length
+  
+      req = https.request options, (res) =>
+        console.log "statusCode: ", res.statusCode	
+        console.log "headers: ", res.headers	
+        data = "";
+        res.on 'data', (d) ->
+          data += d 
+        res.on 'end',(d) =>
+          console.log "data: ", data
+          data = @parseString(data)      
+          if data.ACK is 'Success'
+            #Add paypal details to user account
+            paymentObj =
+              service: "PayPal"
+              id:data.PAYERID
+              paypal_email:data.EMAIL
+            @req.user.payment_methods.push paymentObj
+            @req.user.save (err)=>
+              unless err
+                @res.json data
+          else
+            @res.json
         	  error:'Paypal error'   
         
-    req.write(message)
-    req.end()
-    req.on "error", (err) ->
-      console.error err
+      req.write(message)
+      req.end()
+      req.on "error", (err) ->
+        @res.json
+          error:err
+    else
+      @res.redirect "/"
       
   cancel: ->
     @res.redirect "/"
