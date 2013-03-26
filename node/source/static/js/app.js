@@ -2100,6 +2100,7 @@
         }
         this.context = context;
         this.suggestions = new Users;
+        this.cursor = {};
         return this.listenTo(this.suggestions, "reset", this.render);
       };
 
@@ -2116,30 +2117,36 @@
       };
 
       TypeAhead.prototype.select = function(event) {
-        var value;
+        var newValue, oldValue, value;
         value = $(event.target).attr("rel");
-        value = $(this.context.listener).val() + value + " ";
-        $(this.context.listener).val(value);
+        oldValue = $(this.context.listener).val();
+        newValue = oldValue.substring(0, this.cursor.start + 1) + value + oldValue.substring(this.cursor.end + 1);
+        $(this.context.listener).val(newValue);
         return this.hide();
       };
 
-      TypeAhead.prototype.showUser = function() {
+      TypeAhead.prototype.showUser = function(cursor) {
         this.base = "/session/list";
-        return this.suggestions.url = "/session/list";
+        this.suggestions.url = "/session/list";
+        this.available = true;
+        return this.cursor.start = cursor;
       };
 
-      TypeAhead.prototype.showProject = function() {
-        this.base = "project/suggest";
-        return this.suggestions.url = "/project/suggest";
+      TypeAhead.prototype.showProject = function(cursor) {
+        this.base = "/project/suggest";
+        this.suggestions.url = "/project/suggest";
+        this.available = true;
+        return this.cursor.start = cursor;
       };
 
       TypeAhead.prototype.showTask = function(part) {};
 
-      TypeAhead.prototype.updateQuery = function(part) {
+      TypeAhead.prototype.updateQuery = function(part, cursor) {
         if (part.length > 2) {
           this.suggestions.url = "" + this.base + "/" + part;
           console.log(this.suggestions.url);
-          return this.suggestions.fetch();
+          this.suggestions.fetch();
+          return this.cursor.end = cursor;
         }
       };
 
@@ -2154,7 +2161,6 @@
         html = views['dashboard/typeahead'](this.context);
         this.$el.html(html);
         this.$el.show();
-        this.available = true;
         return this;
       };
 
@@ -2187,6 +2193,7 @@
         this.context = _.extend({}, context, app.conf);
         InlineForm.__super__.initialize.call(this, context);
         this.tah = new TypeAhead(this.context);
+        this.buf = "";
         return this.render();
       };
 
@@ -2198,16 +2205,17 @@
         switch (char) {
           case '@':
             this.buf = '';
-            return this.tah.showUser();
+            return this.tah.showUser(event.target.selectionStart);
           case '#':
             this.buf = '';
-            return this.tah.showTask();
+            return this.tah.showTask(event.target.selectionStart);
           case '+':
             this.buf = '';
-            return this.tah.showProject();
+            return this.tah.showProject(event.target.selectionStart);
           case ' ':
             this.buf = '';
-            return this.tah.hide();
+            this.tah.hide();
+            return true;
           default:
             if (code === 8) {
               this.buf = this.buf.substring(0, this.buf.length - 1);
@@ -2216,9 +2224,11 @@
             if (event.charCode === 0) {
               return true;
             }
-            this.buf += char;
+            if (this.tah.available) {
+              this.buf += char;
+            }
             if (this.buf.length > 0) {
-              return this.tah.updateQuery(this.buf);
+              return this.tah.updateQuery(this.buf, event.target.selectionEnd);
             }
         }
       };
@@ -2481,11 +2491,18 @@
         data = Backbone.Syphon.serialize(event.currentTarget);
         this.tasks = new collections.Tasks;
         this.listenTo(this.tasks, "reset", this.renderResult);
+        if (!data.search) {
+          data.search = "-";
+        }
         if (!data.from) {
           data.from = "none";
+        } else {
+          data.from = moment(data.from).unix();
         }
         if (!data.to) {
           data.to = "none";
+        } else {
+          data.to = moment(data.to).unix();
         }
         this.tasks.url = "/task/search/" + data.search + "/" + data.from + "/" + data.to;
         return this.tasks.fetch();
@@ -2605,8 +2622,9 @@
           trigger: false
         });
         this.context.task = task.toJSON();
-        this.context.el = "#main-area";
-        return this.taskView = new Task(this.context);
+        return this.taskView = new Task(_.extend(this.context, {
+          el: "#main-area"
+        }));
       };
 
       Dashboard.prototype.editProject = function(e) {

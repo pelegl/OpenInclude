@@ -1,5 +1,5 @@
 <form method='post' action='' class='inline-popover'>
-    <input type="text" name="search" class="input-block-level" required placeholder="Search for..."/>
+    <input type="text" name="search" class="input-block-level" placeholder="Search for..."/>
 
     <input type="text" name="from" class="input-block-level" placeholder="Deadline after"/>
     <input type="text" name="to" class="input-block-level" placeholder="Deadline before"/>
