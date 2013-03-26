@@ -24,10 +24,10 @@
     create_project_url  : "dashboard/project/create"
     partials            : window.dt
     admin_url           : "admin"
-    view_bills 			    : "/profile/view_bills"
-    create_bills 			  : "admin/create_bills"
+    view_bills 			: "/profile/view_bills"
+    create_bills 		: "admin/create_bills"
     users_with_stripe   : "admin/users_with_stripe"
-
+    paypal_authenticate : "/paypal/paypal_authenticate"
     
   class App extends Backbone.Router
     conf: conf
@@ -57,14 +57,15 @@
       @view = new views.Index prevView:@view
 
     profile: (action, opts...) ->
-      @reRoute() 
+      @reRoute()
       if app.session.get("is_authenticated") is true
+        console.log app.session
         if action is 'view'
           @view = new views.Profile { prevView: @view, model: app.session, action: "/#{action}", profile: opts[0] }
         else
           @view = new views.Profile { prevView: @view, model: app.session, action: "/#{action}", opts }
       else
-        app.navigate '/profile/login', {trigger: true}       
+        app.navigate '/profile/login', {trigger: true}
     
     'how-to': ->
       @reRoute()      

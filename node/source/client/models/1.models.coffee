@@ -13,6 +13,7 @@
      ###
       @param {String}   github_id
       @param {Boolean}  has_stripe
+      @param {Boolean}  has_paypal
       @param {Array}    payment_methods
       @param {Boolean}  merchant
       @param {Boolean}  employee
@@ -39,9 +40,9 @@
           set cookie for consiquent sign in attempts
          ###
 
-         {github_display_name, github_avatar_url} = response
-         @user = {github_display_name, github_avatar_url}
-
+         {github_display_name, github_avatar_url,has_stripe,has_paypal} = response
+         @user = {github_display_name, github_avatar_url,has_stripe,has_paypal}
+         console.log @user
          $.cookie "returning_customer", {@user}, { expires: 30 }
 
 

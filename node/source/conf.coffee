@@ -43,6 +43,10 @@ git_sets = [
   ['2361006ea086ad268742', '8983c759727c4195ae2b34916d9ed313eeafa332']
   [require("./github").id, require("./github").secret]
 ]
+#git_sets = [
+#  ['4fe07368d108592678ad', 'd058f2945d3ef9ced8b03f24dd12a5aae0f9e12e']
+#  [require("./github").id, require("./github").secret]
+#]
 
 [GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET] = if process.env.github_local? then git_sets[1] else git_sets[0]
 
@@ -51,11 +55,27 @@ exports.git = github.client "client", GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET
 exports.git = github.client
   id: GITHUB_CLIENT_ID
   secret: GITHUB_CLIENT_SECRET
+###
+ Paypal  Sandbox account details
+###
+PAYPAL_USER="mahasoq_business_api1.toobler.com"
+PAYPAL_PASSWORD="1363755650"
+PAYPAL_SIGNATURE="ATkmd0rgKGMGKsBTlxitQ84qivhFAyKUmMoFHdzWJTBEcWJIHI5EBhnF"
+PAYPAL_CANCELURL="http://ec2-54-225-224-68.compute-1.amazonaws.com:9100/paypal/cancel"
+PAYPAL_RETURNURL="http://ec2-54-225-224-68.compute-1.amazonaws.com:9100/paypal/returnurl"
+PAYPAL_LOGOUTURL="http://ec2-54-225-224-68.compute-1.amazonaws.com:9100/paypal/logouturl"
 
+exports.PAYPAL_CONF = 
+  user:PAYPAL_USER
+  password:PAYPAL_PASSWORD
+  signature:PAYPAL_SIGNATURE
+  cancelurl:PAYPAL_CANCELURL
+  returnurl:PAYPAL_RETURNURL
+  logouturl:PAYPAL_LOGOUTURL
 ###
   Some static helpers
 ###
-SERVER_URL = exports.SERVER_URL = "#{process.env.HOST || "http://ec2-54-225-224-68.compute-1.amazonaws.com"}:#{process.env.PORT || 8900}"
+SERVER_URL = exports.SERVER_URL = "#{process.env.HOST || "http://ec2-54-225-224-68.compute-1.amazonaws.com"}:#{process.env.PORT || 9100}"
 STATIC_URL = exports.STATIC_URL = "/static/"
 
 exports.logout_url      = logout_url      =  "/auth/logout"
@@ -67,6 +87,7 @@ exports.discover_url    = discover_url    = "/discover"
 exports.how_to_url      = how_to_url      = "/how-to"
 exports.modules_url     = modules_url     = "/modules"
 exports.dashboard_url   = dashboard_url   = "/dashboard"
+exports.paypal_url      = paypal_url      = "/paypal"
 
 exports.admin_url       = admin_url       = '/admin'
 exports.view_bills      = view_bills 			= "#{profile_url}/view_bills"
@@ -76,6 +97,8 @@ exports.users_with_stripe = users_with_stripe = "#{admin_url}/users_with_stripe"
 exports.merchant_agreement        = merchant_agreement  = "#{profile_url}/merchant_agreement"
 exports.developer_agreement       = developer_agreement = "#{profile_url}/developer_agreement"
 exports.update_credit_card        = update_credit_card  = "#{profile_url}/update_credit_card"
+
+exports.paypal_authenticate       = paypal_authenticate  = "#{paypal_url}/paypal_authenticate"
 
 # Transitioning to exports.urls = {}
 exports.urls =
@@ -95,6 +118,7 @@ exports.urls =
   view_bills:           "#{profile_url}/view_bills"
   create_bills:         "#{admin_url}/create_bills"
   users_with_stripe:    "#{admin_url}/users_with_stripe"
+  paypal_authenticate:  "#{paypal_url}/paypal_authenticate"
 
 ###
   Export controllers to the app

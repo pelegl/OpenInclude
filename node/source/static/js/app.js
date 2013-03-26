@@ -118,6 +118,7 @@
       /*
        @param {String}   github_id
        @param {Boolean}  has_stripe
+       @param {Boolean}  has_paypal
        @param {Array}    payment_methods
        @param {Boolean}  merchant
        @param {Boolean}  employee
@@ -142,18 +143,21 @@
       };
 
       Session.prototype.parse = function(response, options) {
-        var github_avatar_url, github_display_name;
+        var github_avatar_url, github_display_name, has_paypal, has_stripe;
 
         if (response.is_authenticated) {
           /*
            set cookie for consiquent sign in attempts
           */
 
-          github_display_name = response.github_display_name, github_avatar_url = response.github_avatar_url;
+          github_display_name = response.github_display_name, github_avatar_url = response.github_avatar_url, has_stripe = response.has_stripe, has_paypal = response.has_paypal;
           this.user = {
             github_display_name: github_display_name,
-            github_avatar_url: github_avatar_url
+            github_avatar_url: github_avatar_url,
+            has_stripe: has_stripe,
+            has_paypal: has_paypal
           };
+          console.log(this.user);
           $.cookie("returning_customer", {
             user: this.user
           }, {
@@ -1132,12 +1136,13 @@
       };
 
       Profile.prototype.setAction = function(action) {
-        var billId, billView, bills, dev, merc, navigateTo, notFound, trello, _ref5;
+        var billId, billView, bills, dev, merc, navigateTo, notFound, paypal, trello, _ref5;
 
         dev = this.clearHref(this.context.developer_agreement);
         merc = this.clearHref(this.context.merchant_agreement);
         trello = this.clearHref(this.context.trello_auth_url);
         bills = this.clearHref(this.context.view_bills);
+        paypal = this.clearHref(this.context.paypal_authenticate);
         if (action === dev && app.session.get("employee") === false) {
           /*
             show developer license agreement
@@ -1207,6 +1212,7 @@
       };
 
       Profile.prototype.initialize = function(options) {
+        console.log("testing");
         console.log('[__profileView__] Init');
         this.get = options.opts || [];
         if (options.profile) {
@@ -3014,7 +3020,8 @@
       admin_url: "admin",
       view_bills: "/profile/view_bills",
       create_bills: "admin/create_bills",
-      users_with_stripe: "admin/users_with_stripe"
+      users_with_stripe: "admin/users_with_stripe",
+      paypal_authenticate: "/paypal/paypal_authenticate"
     };
     App = (function(_super) {
       __extends(App, _super);
@@ -3079,6 +3086,7 @@
         action = arguments[0], opts = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
         this.reRoute();
         if (app.session.get("is_authenticated") === true) {
+          console.log(app.session);
           if (action === 'view') {
             return this.view = new views.Profile({
               prevView: this.view,

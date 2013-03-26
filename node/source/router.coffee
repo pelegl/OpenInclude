@@ -38,6 +38,11 @@ exports.set = (app)->
   ###
 #  app.get '/payment', app.Controllers.payment
   app.get '/payment/*', app.Controllers.payment
+  
+  ###
+  Paypal
+  ###
+  app.get '/paypal/*', app.Controllers.paypal
   ###
   Profile interaction
   ###

@@ -14,7 +14,8 @@ class ProfileController extends require('./basicController')
     @context.title = 'User Profile'
     @context.private = true
     @context.body = @_view 'member/profile', @context  #рендерим {{{body}}} в контекст
-
+    @context.user.has_paypal = @req.user.has_paypal
+    @context.user.has_stripe = @req.user.has_stripe
     @res.render 'base', @context # рендерим layout/base.hbs с контекстом @context
  
   login: ->    

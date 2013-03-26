@@ -120,7 +120,7 @@
       @
 
   
-  class exports.Profile extends View
+  class exports.Profile extends View  	
     events:
       'click a.backbone'             : "processAction"
       'click .setupPayment > button' : "update_cc_events"    
@@ -150,14 +150,15 @@
 
       dev           = @clearHref @context.developer_agreement
       merc          = @clearHref @context.merchant_agreement
-      trello		    = @clearHref @context.trello_auth_url
+      trello		= @clearHref @context.trello_auth_url
       bills         = @clearHref @context.view_bills
+      paypal        = @clearHref @context.paypal_authenticate
 
 
       if action is dev and app.session.get("employee") is false
           ###
             show developer license agreement
-          ###
+          ###         
           app.navigate @context.developer_agreement, {trigger: false}          
           @agreement.$el.show()
           @agreement.setData agreement_text, @context.developer_agreement                    
@@ -174,6 +175,12 @@
           
           @listenTo @agreement.model, "sync", @setupPayment
 
+#      else if action is paypal
+#      	  ###
+#      	  	navigate to Trello authorization
+#		      ###
+#      	  app.navigate @context.paypal_authenticate, {trigger: true}
+      	  
       else if action is trello
       	  ###
       	  	navigate to Trello authorization
@@ -211,7 +218,8 @@
           @informationBox.children().detach()
           app.navigate @context.profile_url, {trigger: false}
              
-    initialize: (options) ->      
+    initialize: (options) ->   
+      console.log "testing"   
       console.log '[__profileView__] Init'
       # get variables - we may use them for actions later on
       @get = options.opts || []

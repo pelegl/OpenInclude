@@ -16,6 +16,8 @@ PaymentMethod =
     enum: ["Stripe", "PayPal"]
   id:
     type: String
+  paypal_email:
+  	type: String
 
 definition =
   github_id: Number
@@ -53,10 +55,10 @@ definition =
 
 methods =
   information: ->
-    return {@github_id, @github_display_name, @github_username, @github_avatar_url, @_id, @github_email}
+    return {@github_id, @github_display_name, @github_username, @github_avatar_url, @_id, @github_email,@has_stripe,@has_paypal}
 
   public_info: ->
-    return {@github_id, @group_id, @has_stripe, @payment_methods, @merchant, @employee, @github_display_name, @github_email, @github_username, @github_avatar_url, @trello_id, @_id, is_authenticated: true}
+    return {@github_id, @group_id, @has_stripe, @payment_methods, @merchant, @employee, @github_display_name, @github_email, @github_username, @github_avatar_url, @trello_id, @_id, is_authenticated: true,@has_stripe,@has_paypal}
 
   get_payment_method: (service, callback) ->
     async.detect @payment_methods, (method, async_detect)=>
@@ -83,7 +85,11 @@ virtuals =
       method = _.find @payment_methods, (method)=>
         return method.service is 'Stripe'
       return if method? then true else false
-          
+  get : 
+    has_paypal: ->
+      method = _.find @payment_methods, (method)=>
+        return method.service is 'PayPal'
+      return if method? then true else false
   set: {}
 
 

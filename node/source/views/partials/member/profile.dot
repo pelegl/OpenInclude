@@ -28,12 +28,16 @@
                         </div>
                       </div>
                       <div class='type'>
-                        <div>
+                        <div>                        
                           <div class='status'>
                             {{? it.user.employee }}
-                              <i class='icon-ok'></i>
+                              {{? it.user.has_paypal}}
+                                <i class='icon-ok'></i>
+                              {{??}}
+                                <a href='{{= it.paypal_authenticate}}' class='btn btn-info btn-mini'>Add Paypal</a>
+                              {{?}}
                             {{??}}
-                              <a href='{{= it.developer_agreement }}' class='btn btn-success btn-mini backbone'>Sign Up</a>
+                                <a href='{{= it.developer_agreement }}' class='btn btn-success btn-mini backbone'>Sign Up</a>
                             {{?}}
                           </div>
                           <p>Developer</p>
