@@ -1,3 +1,4 @@
+requests
 stackpy
 mongodb
 pymongo
