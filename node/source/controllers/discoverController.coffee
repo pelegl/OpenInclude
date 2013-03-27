@@ -130,13 +130,13 @@ class DiscoverController extends require('./basicController')
           multi_match:
             query: @context.discover_search_query || ""
             use_dis_max: true
-            fields: ["description", "module_name^2", "owner^2", "language^1.25"]
+            fields: ["description", "module_name^2", "owner^2", "language"]
         filters: [
           {filter:{numeric_range: {watchers: {from: 2500, to: 5000} }}, boost: 1.25 }
           {filter:{numeric_range: {watchers: {from: 5000, to: 7500} }}, boost: 1.5 }
-          {filter:{numeric_range: {watchers: {from: 7500, to: 10000} }}, boost: 2 }
-          {filter:{numeric_range: {watchers: {from: 10000, to: 20000} }}, boost: 2.5 }
-          {filter:{numeric_range: {watchers: {from: 20000} }}, boost: 3 }
+          {filter:{numeric_range: {watchers: {from: 7500, to: 10000} }}, boost: 1.75 }
+          {filter:{numeric_range: {watchers: {from: 10000, to: 20000} }}, boost: 2 }
+          {filter:{numeric_range: {watchers: {from: 20000} }}, boost: 2.25 }
         ]
 
     options =

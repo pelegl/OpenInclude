@@ -13,7 +13,7 @@ models.Discovery = Backbone.Model.extend
     lastCommit = new Date(self.pushed_at).getTime()
     currentDate = new Date().getTime()
     difference_ms = currentDate - lastCommit # dates difference
-    datesDifference = Math.round(difference_ms/helpers.oneDay)
+    datesDifference = Math.round(difference_ms/help.oneDay)
 
     lastCommitBucket = (difference)=>
       if difference > 180

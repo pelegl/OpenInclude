@@ -12,6 +12,7 @@
   String.prototype.getTimestamp = ->
     return new Date(parseInt(this.slice(0,8), 16)*1000)
 
+  exports.oneDay = 1000*60*60*24
 
   exports.exchange = (view, html)->
     prevEl = view.$el

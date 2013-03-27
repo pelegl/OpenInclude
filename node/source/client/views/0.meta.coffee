@@ -11,7 +11,19 @@
       @
 
   class exports.MetaView extends @Backbone.View
-    events: {}
+    events:
+      'submit .navbar-search' : 'searchSubmit'
+
+    searchSubmit: (e)->
+      e.preventDefault()
+      q = @$("[name=q]").val()
+      location = window.location.pathname
+      pathname = $(e.currentTarget).attr "action"
+      trigger = if location is pathname then false else true
+      app.navigate "#{pathname}?q=#{q}", {trigger}
+      app.view.fetchSearchData q unless trigger
+
+      false
     
     initialize: ->
       @Languages = new col.Language

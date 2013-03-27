@@ -138,8 +138,8 @@
       ""
       "!/"
       # Discover URL
-      conf.discover_url
-      "!/#{conf.discover_url}"
+      "#{conf.discover_url}(?:params)"
+      "!/#{conf.discover_url}(?:params)"
       
       # Sign In
       conf.signin_url

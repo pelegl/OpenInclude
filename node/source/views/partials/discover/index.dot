@@ -1,7 +1,6 @@
 <div class='container discover'>
 	<div class='row'>
-		<div class='span8'>				
-			{{#def.partials['discover/search']}}
+		<div class='span8'>
 		    {{#def.partials['discover/chart']}}
 		</div>
 		<div class='span4'>

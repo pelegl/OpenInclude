@@ -13,6 +13,7 @@
   String.prototype.getTimestamp = function() {
     return new Date(parseInt(this.slice(0, 8), 16) * 1000);
   };
+  exports.oneDay = 1000 * 60 * 60 * 24;
   exports.exchange = function(view, html) {
     var prevEl;
 
@@ -225,7 +226,7 @@ models.Discovery = Backbone.Model.extend({
     lastCommit = new Date(self.pushed_at).getTime();
     currentDate = new Date().getTime();
     difference_ms = currentDate - lastCommit;
-    datesDifference = Math.round(difference_ms / helpers.oneDay);
+    datesDifference = Math.round(difference_ms / help.oneDay);
     lastCommitBucket = function(difference) {
       if (difference > 180) {
         return 3.5;
@@ -368,11 +369,11 @@ models.Repo = Backbone.Model.extend({
   }
 });
 
-var requestPager, _ref,
+var _ref,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-requestPager = (function(_super) {
+collections.requestPager = (function(_super) {
   __extends(requestPager, _super);
 
   function requestPager() {
@@ -525,7 +526,12 @@ collections.StackOverflowQuestions = Backbone.Collection.extend({
   }
 });
 
-collections.Language = requestPager.extend({
+collections.Users = Backbone.Collection.extend({
+  model: models.User,
+  url: "/session/list"
+});
+
+collections.Language = collections.requestPager.extend({
   comparator: function(language) {
     return language.get("name");
   },
@@ -540,7 +546,7 @@ collections.Language = requestPager.extend({
   }
 });
 
-collections.Modules = requestPager.extend({
+collections.Modules = collections.requestPager.extend({
   initialize: function(models, options) {
     return this.language = options.language || "";
   },
@@ -729,7 +735,26 @@ var __hasProp = {}.hasOwnProperty,
       return _ref1;
     }
 
-    MetaView.prototype.events = {};
+    MetaView.prototype.events = {
+      'submit .navbar-search': 'searchSubmit'
+    };
+
+    MetaView.prototype.searchSubmit = function(e) {
+      var location, pathname, q, trigger;
+
+      e.preventDefault();
+      q = this.$("[name=q]").val();
+      location = window.location.pathname;
+      pathname = $(e.currentTarget).attr("action");
+      trigger = location === pathname ? false : true;
+      app.navigate("" + pathname + "?q=" + q, {
+        trigger: trigger
+      });
+      if (!trigger) {
+        app.view.fetchSearchData(q);
+      }
+      return false;
+    };
 
     MetaView.prototype.initialize = function() {
       this.Languages = new col.Language;
@@ -1568,7 +1593,7 @@ var __hasProp = {}.hasOwnProperty,
       this.width = this.$el.width() - this.margin.right - this.margin.left;
       this.height = this.width * 9 / 16;
       this.xScale = d3.scale.linear().domain([0, 4]).range([0, this.width]);
-      this.yScale = d3.scale.linear().domain([0, 1.1]).range([this.height, 0]);
+      this.yScale = d3.scale.linear().domain([0, 1]).range([this.height, 0]);
       this.colorScale = d3.scale.category20c();
       _.bindAll(this, "renderChart", "position", "order");
       this.popupView = new exports.DiscoverChartPopup({
@@ -2305,7 +2330,7 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 (function(exports) {
-  var InlineForm, Search, Task, TypeAhead, Users, project, projectId, projects, root, task, taskEl, taskId, tasks, views, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+  var InlineForm, Search, Task, TypeAhead, project, projectId, projects, root, task, taskEl, taskId, tasks, views, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8;
 
   root = this;
   views = this.hbt = _.extend({}, dt, Handlebars.partials);
@@ -2316,27 +2341,12 @@ var __hasProp = {}.hasOwnProperty,
   taskId = "";
   task = null;
   taskEl = null;
-  Users = (function(_super) {
-    __extends(Users, _super);
-
-    function Users() {
-      _ref = Users.__super__.constructor.apply(this, arguments);
-      return _ref;
-    }
-
-    Users.prototype.model = models.User;
-
-    Users.prototype.url = "/session/list";
-
-    return Users;
-
-  })(this.Backbone.Collection);
   TypeAhead = (function(_super) {
     __extends(TypeAhead, _super);
 
     function TypeAhead() {
-      _ref1 = TypeAhead.__super__.constructor.apply(this, arguments);
-      return _ref1;
+      _ref = TypeAhead.__super__.constructor.apply(this, arguments);
+      return _ref;
     }
 
     TypeAhead.prototype.el = "#typeahead";
@@ -2350,7 +2360,7 @@ var __hasProp = {}.hasOwnProperty,
         context = {};
       }
       this.context = context;
-      this.suggestions = new Users;
+      this.suggestions = new collections.Users;
       return this.listenTo(this.suggestions, "reset", this.render);
     };
 
@@ -2419,8 +2429,8 @@ var __hasProp = {}.hasOwnProperty,
     __extends(InlineForm, _super);
 
     function InlineForm() {
-      _ref2 = InlineForm.__super__.constructor.apply(this, arguments);
-      return _ref2;
+      _ref1 = InlineForm.__super__.constructor.apply(this, arguments);
+      return _ref1;
     }
 
     InlineForm.prototype.events = {
@@ -2531,8 +2541,8 @@ var __hasProp = {}.hasOwnProperty,
     __extends(CreateProjectForm, _super);
 
     function CreateProjectForm() {
-      _ref3 = CreateProjectForm.__super__.constructor.apply(this, arguments);
-      return _ref3;
+      _ref2 = CreateProjectForm.__super__.constructor.apply(this, arguments);
+      return _ref2;
     }
 
     CreateProjectForm.prototype.el = "#create-project-inline";
@@ -2558,8 +2568,8 @@ var __hasProp = {}.hasOwnProperty,
     __extends(EditProjectForm, _super);
 
     function EditProjectForm() {
-      _ref4 = EditProjectForm.__super__.constructor.apply(this, arguments);
-      return _ref4;
+      _ref3 = EditProjectForm.__super__.constructor.apply(this, arguments);
+      return _ref3;
     }
 
     EditProjectForm.prototype.el = ".main-area";
@@ -2585,8 +2595,8 @@ var __hasProp = {}.hasOwnProperty,
     __extends(CreateTaskForm, _super);
 
     function CreateTaskForm() {
-      _ref5 = CreateTaskForm.__super__.constructor.apply(this, arguments);
-      return _ref5;
+      _ref4 = CreateTaskForm.__super__.constructor.apply(this, arguments);
+      return _ref4;
     }
 
     CreateTaskForm.prototype.el = "#create-task-inline";
@@ -2612,8 +2622,8 @@ var __hasProp = {}.hasOwnProperty,
     __extends(CreateTaskCommentForm, _super);
 
     function CreateTaskCommentForm() {
-      _ref6 = CreateTaskCommentForm.__super__.constructor.apply(this, arguments);
-      return _ref6;
+      _ref5 = CreateTaskCommentForm.__super__.constructor.apply(this, arguments);
+      return _ref5;
     }
 
     CreateTaskCommentForm.prototype.view = "dashboard/create_task_comment";
@@ -2637,8 +2647,8 @@ var __hasProp = {}.hasOwnProperty,
     __extends(Task, _super);
 
     function Task() {
-      _ref7 = Task.__super__.constructor.apply(this, arguments);
-      return _ref7;
+      _ref6 = Task.__super__.constructor.apply(this, arguments);
+      return _ref6;
     }
 
     Task.prototype.events = {
@@ -2720,8 +2730,8 @@ var __hasProp = {}.hasOwnProperty,
     __extends(Search, _super);
 
     function Search() {
-      _ref8 = Search.__super__.constructor.apply(this, arguments);
-      return _ref8;
+      _ref7 = Search.__super__.constructor.apply(this, arguments);
+      return _ref7;
     }
 
     Search.prototype.events = {
@@ -2796,8 +2806,8 @@ var __hasProp = {}.hasOwnProperty,
     __extends(Dashboard, _super);
 
     function Dashboard() {
-      _ref9 = Dashboard.__super__.constructor.apply(this, arguments);
-      return _ref9;
+      _ref8 = Dashboard.__super__.constructor.apply(this, arguments);
+      return _ref8;
     }
 
     Dashboard.prototype.events = {
@@ -2816,7 +2826,7 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     Dashboard.prototype.parsePermissions = function(user, project) {
-      var _i, _j, _k, _len, _len1, _len2, _ref10, _ref11, _ref12, _results;
+      var _i, _j, _k, _len, _len1, _len2, _ref10, _ref11, _ref9, _results;
 
       this.context.canRead = false;
       this.context.canWrite = false;
@@ -2825,26 +2835,26 @@ var __hasProp = {}.hasOwnProperty,
       if (user._id === project.client.id) {
         this.context.isOwner = true;
       }
-      _ref10 = project.read;
-      for (_i = 0, _len = _ref10.length; _i < _len; _i++) {
-        user = _ref10[_i];
+      _ref9 = project.read;
+      for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
+        user = _ref9[_i];
         if (user.id === this.context.user._id) {
           this.context.canRead = true;
           break;
         }
       }
-      _ref11 = project.write;
-      for (_j = 0, _len1 = _ref11.length; _j < _len1; _j++) {
-        user = _ref11[_j];
+      _ref10 = project.write;
+      for (_j = 0, _len1 = _ref10.length; _j < _len1; _j++) {
+        user = _ref10[_j];
         if (user.id === this.context.user._id) {
           this.context.canWrite = true;
           break;
         }
       }
-      _ref12 = project.grant;
+      _ref11 = project.grant;
       _results = [];
-      for (_k = 0, _len2 = _ref12.length; _k < _len2; _k++) {
-        user = _ref12[_k];
+      for (_k = 0, _len2 = _ref11.length; _k < _len2; _k++) {
+        user = _ref11[_k];
         if (user.id === this.context.user._id) {
           this.context.canGrant = true;
           break;
@@ -2965,35 +2975,29 @@ var __hasProp = {}.hasOwnProperty,
       this.context.title = "Dashboard";
       this.context.user = app.session.toJSON();
       this.context.canEdit = function(user, project) {
-        var _i, _len, _ref10, _user;
+        var _i, _len, _ref9, _user;
 
         if (user._id === project.client.id) {
           return true;
         }
-        _ref10 = project.write;
-        for (_i = 0, _len = _ref10.length; _i < _len; _i++) {
-          _user = _ref10[_i];
+        _ref9 = project.write;
+        for (_i = 0, _len = _ref9.length; _i < _len; _i++) {
+          _user = _ref9[_i];
           if (_user.id === user._id) {
             return true;
           }
         }
         return false;
       };
-      this.listenTo(projects, "reset", this.updateProjectList, this);
-      this.listenTo(tasks, "reset", this.updateTaskList, this);
+      this.listenTo(projects, "sync", this.updateProjectList, this);
+      this.listenTo(tasks, "sync", this.updateTaskList, this);
       projectId = params.project;
       taskId = params.task;
       return projects.fetch();
     };
 
     Dashboard.prototype.updateProjectList = function(collection) {
-      var _projects;
-
-      _projects = [];
-      collection.each(function(item) {
-        return _projects.push(item.toJSON());
-      });
-      this.context.projects = _projects;
+      this.context.projects = collection.toJSON();
       if (projectId) {
         if (taskId) {
           tasks.url = "/task/" + projectId;
@@ -3006,13 +3010,7 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     Dashboard.prototype.updateTaskList = function(collection) {
-      var _tasks;
-
-      _tasks = [];
-      collection.each(function(item) {
-        return _tasks.push(item.toJSON());
-      });
-      this.context.tasks = _tasks;
+      this.context.tasks = collection.toJSON();
       if (taskId) {
         return this.openTask(taskId);
       }
@@ -3575,7 +3573,7 @@ var __hasProp = {}.hasOwnProperty,
     var app, route_keys, route_paths,
       _this = this;
 
-    route_keys = ["", "!/", conf.discover_url, "!/" + conf.discover_url, conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "" + conf.profile_url + "/:action/:profile", "!/" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action/:profile", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url, "dashboard/project/:id", "!/dashboard/project/:id", "dashboard/project/:project/task/:task", "!/dashboard/project/:project/task/:task", conf.admin_url, "!/" + conf.admin_url, "" + conf.admin_url + "/:action(/:subaction)", "!/" + conf.admin_url + "/:action(/:subaction)"];
+    route_keys = ["", "!/", "" + conf.discover_url + "(?:params)", "!/" + conf.discover_url + "(?:params)", conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "" + conf.profile_url + "/:action/:profile", "!/" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action/:profile", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url, "dashboard/project/:id", "!/dashboard/project/:id", "dashboard/project/:project/task/:task", "!/dashboard/project/:project/task/:task", conf.admin_url, "!/" + conf.admin_url, "" + conf.admin_url + "/:action(/:subaction)", "!/" + conf.admin_url + "/:action(/:subaction)"];
     route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo", "dashboard", "dashboard", "project", "project", "task", "task", "admin", "admin", "admin", "admin"];
     App.prototype.routes = _.object(route_keys, route_paths);
     console.log('[__app__] init done!');

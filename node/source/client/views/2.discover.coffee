@@ -181,7 +181,7 @@
       @height     = @width*9/16
       
       @xScale     = d3.scale.linear().domain([0,4]).range([0, @width])
-      @yScale     = d3.scale.linear().domain([0,1.1]).range([@height, 0])
+      @yScale     = d3.scale.linear().domain([0,1]).range([@height, 0])
       
       @colorScale = d3.scale.category20c()
       

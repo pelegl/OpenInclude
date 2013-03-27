@@ -2,17 +2,14 @@
   root = @
   views = @hbt = _.extend({}, dt, Handlebars.partials)
 
-  projects = new collections.Projects
-  tasks = new collections.Tasks
+  projects  = new collections.Projects
+  tasks     = new collections.Tasks
   projectId = ""
-  project = null
-  taskId = ""
-  task = null
-  taskEl = null
+  project   = null
+  taskId    = ""
+  task      = null
+  taskEl    = null
 
-  class Users extends @Backbone.Collection
-    model : models.User
-    url : "/session/list"
 
   class TypeAhead extends @Backbone.View
     el : "#typeahead"
@@ -22,7 +19,7 @@
 
     initialize: (context = {}) ->
       @context = context
-      @suggestions = new Users
+      @suggestions = new collections.Users
 
       @listenTo @suggestions, "reset", @render
 
@@ -483,8 +480,8 @@
           if _user.id is user._id then return true
         false
 
-      @listenTo projects, "reset", @updateProjectList, @
-      @listenTo tasks, "reset", @updateTaskList, @
+      @listenTo projects, "sync", @updateProjectList, @
+      @listenTo tasks,    "sync", @updateTaskList, @
 
       projectId = params.project
       taskId = params.task
@@ -492,10 +489,7 @@
       projects.fetch()
 
     updateProjectList: (collection) ->
-      _projects = []
-      collection.each((item) ->
-        _projects.push item.toJSON())
-      @context.projects = _projects
+      @context.projects = collection.toJSON()
       if projectId
         if taskId
           tasks.url = "/task/#{projectId}"
@@ -506,10 +500,7 @@
       @render()
 
     updateTaskList: (collection) ->
-      _tasks = []
-      collection.each((item) ->
-        _tasks.push item.toJSON())
-      @context.tasks = _tasks
+      @context.tasks = collection.toJSON()
       if taskId
         return @openTask taskId
 
