@@ -180,7 +180,7 @@
       ###
       radius: ->        
         {watchers} = @get('_source')
-        return 10+watchers*5
+        return watchers
       
       ###
         Color of the bubble

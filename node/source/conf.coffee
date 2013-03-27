@@ -106,8 +106,8 @@ exports.how_to_url      = how_to_url      = "/how-to"
 exports.modules_url     = modules_url     = "/modules"
 exports.dashboard_url   = dashboard_url   = "/dashboard"
 
-exports.admin_url       = admin_url       = '/admin'
-exports.bills           = bills 			= "#{profile_url}/bills"
+exports.admin_url         = admin_url         = '/admin'
+exports.bills             = bills 			      = "#{profile_url}/bills"
 exports.users_with_stripe = users_with_stripe = "#{admin_url}/users_with_stripe"
 
 exports.merchant_agreement        = merchant_agreement  = "#{profile_url}/merchant_agreement"

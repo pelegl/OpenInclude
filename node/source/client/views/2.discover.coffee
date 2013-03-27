@@ -13,7 +13,6 @@
                                    .append("<span class='name' />")
       @moduleDescription = $("<p />").addClass("moduleDescription")
       @moduleStars = $("<div />").addClass("moduleStars")
-      #@notification = $("<p class='muted reminder' >").text "click to compare"      
       
       @render()
           
@@ -59,6 +58,7 @@
     events:
       "change input[type=checkbox]" : "filterResults"
       "click [data-reset]" : "resetFilter"
+      "click [data-clear]" : "clearFilter"
     
     initialize: ->
       _.bindAll this, "render"
@@ -73,6 +73,13 @@
 
       @render()
     
+    clearFilter: (e)->
+      @$(".filterBox").find("input[type=checkbox]").prop "checked", false
+      @collection.filters = {}
+      @collection.trigger "filter"
+      false
+
+
     resetFilter: (e)->
 
       filters = {}
@@ -82,7 +89,7 @@
 
       @collection.filters = filters
       @collection.trigger "filter"
-      return false
+      false
     
     filterResults: (e)->
       $this = $(e.currentTarget)
@@ -223,7 +230,7 @@
         data = @collection.filter (module)=>          
           return $.inArray(module.get("_source").language, languages) isnt -1
       else
-        data = @collection.models
+        data = []
                   
       @dot = @dots.selectAll(".dot")
                     .data(data)                  
@@ -242,8 +249,7 @@
       @dot.exit().transition()
           .attr("r", 0)
           .remove()            
-      
-      @dot.append("title").text((d)=> d.get("_source").module_name)
+
       @dot.sort(@order)
                              
       @
@@ -316,14 +322,15 @@
       ###
         initializing chart
       ###
-      @chartData      = new root.collections.Discovery
-      @comparisonData = new root.collections.DiscoveryComparison
+      @chartData      = new collections.Discovery
+      @comparisonData = new collections.DiscoveryComparison
       @filter         = new exports.DiscoverFilter { el: @$(".filter"), collection: @chartData }
       @chart          = new exports.DiscoverChart { el: @$("#searchChart"), collection: @chartData }
       @comparison     = new exports.DiscoverComparison { el: @$("#moduleComparison"), collection: @comparisonData }
-      
-            
-      if qs.q? then @fetchSearchData qs.q        
+
+      if qs.q? then @fetchSearchData qs.q
+
+      @listenTo @chartData, "reset", @populateComparison
     
     searchSubmit: (e)->
       e.preventDefault()
@@ -335,8 +342,11 @@
     fetchSearchData: (query) ->
       @chart.collection.fetch query
 
-    render:->  
-      html = views['discover/index'](@context)      
+    populateComparison: ->
+      @comparisonData.reset @chartData.getBestMatch()
+
+    render:->
+      html = views['discover/index'](@context)
       @$el.html html
       @$el.attr 'view-id', 'discover'
       @

@@ -325,7 +325,7 @@
         var watchers;
 
         watchers = this.get('_source').watchers;
-        return 10 + watchers * 5;
+        return watchers;
       },
       /*
         Color of the bubble
@@ -527,6 +527,11 @@
           });
         });
         return list;
+      },
+      getBestMatch: function() {
+        return this.findWhere({
+          _score: this.maxScore
+        });
       },
       filters: {},
       fetch: function() {
@@ -1391,7 +1396,8 @@
 
       DiscoverFilter.prototype.events = {
         "change input[type=checkbox]": "filterResults",
-        "click [data-reset]": "resetFilter"
+        "click [data-reset]": "resetFilter",
+        "click [data-clear]": "clearFilter"
       };
 
       DiscoverFilter.prototype.initialize = function() {
@@ -1407,6 +1413,13 @@
         this.listenTo(this.collection, "reset", this.render);
         this.listenTo(this.collection, "reset", this.resetFilter);
         return this.render();
+      };
+
+      DiscoverFilter.prototype.clearFilter = function(e) {
+        this.$(".filterBox").find("input[type=checkbox]").prop("checked", false);
+        this.collection.filters = {};
+        this.collection.trigger("filter");
+        return false;
       };
 
       DiscoverFilter.prototype.resetFilter = function(e) {
@@ -1630,7 +1643,7 @@
             return $.inArray(module.get("_source").language, languages) !== -1;
           });
         } else {
-          data = this.collection.models;
+          data = [];
         }
         this.dot = this.dots.selectAll(".dot").data(data);
         this.dot.enter().append("circle").attr("class", "dot").on("mouseover", this.popup('show', this.$el)).on("mouseout", this.popup('hide')).on("click", this.addToComparison);
@@ -1638,9 +1651,6 @@
           return moduleModel.color();
         }).call(this.position);
         this.dot.exit().transition().attr("r", 0).remove();
-        this.dot.append("title").text(function(d) {
-          return d.get("_source").module_name;
-        });
         this.dot.sort(this.order);
         return this;
       };
@@ -1695,8 +1705,8 @@
           initializing chart
         */
 
-        this.chartData = new root.collections.Discovery;
-        this.comparisonData = new root.collections.DiscoveryComparison;
+        this.chartData = new collections.Discovery;
+        this.comparisonData = new collections.DiscoveryComparison;
         this.filter = new exports.DiscoverFilter({
           el: this.$(".filter"),
           collection: this.chartData
@@ -1710,8 +1720,9 @@
           collection: this.comparisonData
         });
         if (qs.q != null) {
-          return this.fetchSearchData(qs.q);
+          this.fetchSearchData(qs.q);
         }
+        return this.listenTo(this.chartData, "reset", this.populateComparison);
       };
 
       Discover.prototype.searchSubmit = function(e) {
@@ -1728,6 +1739,10 @@
 
       Discover.prototype.fetchSearchData = function(query) {
         return this.chart.collection.fetch(query);
+      };
+
+      Discover.prototype.populateComparison = function() {
+        return this.comparisonData.reset(this.chartData.getBestMatch());
       };
 
       Discover.prototype.render = function() {

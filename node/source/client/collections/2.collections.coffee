@@ -116,8 +116,10 @@
       _.each languageNames, (lang)=>
         list.push { name : lang, color: @groupedModules[lang][0].color }
       return list
-         
-    
+
+    getBestMatch: ->
+      return @findWhere {_score : @maxScore }
+
     filters: {}
            
     fetch: ->
@@ -128,7 +130,7 @@
       $.getJSON "#{collection.url}?q=#{query}" , (r)->
         collection.maxScore = r.maxScore                
         collection.groupedModules = _.groupBy r.searchData, (module)=>
-          return module._source.language               
+          return module._source.language
         collection.reset r.searchData
         
   

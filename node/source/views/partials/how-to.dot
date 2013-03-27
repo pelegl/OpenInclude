@@ -3,20 +3,14 @@
 		<div class='span12'>
 			<h2>Features</h2>
 			<p>
-        Open source modules presented and visualized for use in your project.
-        Whether you're building a mashups or MVP -- stand on the shoulders of giants.    
-        Reuse code from the public domain.  Browse and explore modules from github using Open Include's <a href='/discover'>discovery</a> tool.			  
+                Open source modules presented and visualized for use in your project. Whether you're building a mashups or MVP -- stand on the shoulders of giants. Reuse code from the public domain.  Browse and explore modules from github using Open Include's <a href='/discover'>discovery</a> tool.
 			</p>
 			<p>
-			  Open Include is, first, a resource for developers.  
-			  When on the lookout for a great idea, developers can connect with startups working with Open Include.  
-			  Collaborate to bring business vision to reality.
+			  Open Include is, first, a resource for developers. When on the lookout for a great idea, developers can connect with startups working with Open Include. Collaborate to bring business vision to reality.
 			</p>
 			<h2>Upcoming Features</h2>
 			<p>
-			  Open Include is expanding its suite of tools to better utilize the vast number of quality open source libraries. 
-			  Next in the pipeline is to provide VMs to be spun up on demand, containing pre-installed open source modules.
-			  Minimize time spent configuring locally, and cleansing your personal machine of remnants of libraries that never quite worked out.
+			  Open Include is expanding its suite of tools to better utilize the vast number of quality open source libraries. Next in the pipeline is to provide VMs to be spun up on demand, containing pre-installed open source modules. Minimize time spent configuring locally, and cleansing your personal machine of remnants of libraries that never quite worked out.
 			</p>
 		</div>
 	</div>

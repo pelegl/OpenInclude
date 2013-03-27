@@ -8,7 +8,7 @@
             <div class='welcome-back'>
                 <img src='http://www.gravatar.com/avatar/{{= it.user.github_avatar_url }}?s=80' />
                 <p class='name'>
-                    Howdy, {{! it.user.github_display_name }}!
+                    Hi, {{! it.user.github_display_name }}!
                     <span class='controls clearfix'>
                         <a href="{{= it.github_auth_url}}" class="btn btn-success">Sign in</a>
                         <a href="#" class="thats-not-me">That's not me</a>
