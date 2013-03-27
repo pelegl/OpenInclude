@@ -1,7 +1,7 @@
-# import urllib2
+import base64
 from datetime import datetime
+import json
 from time import sleep
-from pip.vcs import git
 import pymongo
 from retry import retry_on_exceptions
 import requests
@@ -14,6 +14,27 @@ import config
 class RetryException(Exception):
     pass
 
+def get_token(username, password):
+    params = {
+        # 'scopes': [],
+        'note': 'getting repos info and commits',
+        'client_id': config.GITHUB_API_CLIENT_ID,
+        'client_secret': config.GITHUB_API_CLIENT_SECRET
+    }
+    url = 'https://api.github.com/authorizations'
+    headers = { 'User-Agent': config.GITHUB_API_USER_AGENT }
+    # add the username and password info to the request
+    base64string = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
+    headers['Authorization'] = 'Basic %s' % base64string
+
+    r = requests.post(url, data=json.dumps(params), headers=headers)
+
+    res = r.json()
+    if 'token' in res:
+        token = res['token']
+        return token
+    return res
+
 class GithubCommits():
     branches_temp = 'https://api.github.com/repos/%(user)s/%(repo)s/branches'
     commits_temp = 'https://api.github.com/repos/%(user)s/%(repo)s/commits'
@@ -21,7 +42,17 @@ class GithubCommits():
     search_url = 'https://api.github.com/legacy/repos/search/:'#language=' # JavaScript?start_page=1&sort=stars&order=desc'
 
     # headers for the request
-    git_hdr = {'User-Agent': config.GITHUB_API_USER_AGENT, 'Authorization': config.GITHUB_API_AUTH_TOKEN }
+    git_hdr = { 'User-Agent': config.GITHUB_API_USER_AGENT }
+
+    def set_token(self, id):
+        self.curr_token_id = id
+        self.git_hdr['Authorization'] = 'token %s' % config.GITHUB_API_AUTH_TOKENS[id]
+
+    def next_token(self):
+        self.curr_token_id += 1
+        if self.curr_token_id >= len(config.GITHUB_API_AUTH_TOKENS):
+            self.curr_token_id = 0
+        self.git_hdr['Authorization'] = 'token %s' % config.GITHUB_API_AUTH_TOKENS[self.curr_token_id]
 
     def __init__(self, user='', repo='', module_id = 0):
         self.user = user
@@ -30,7 +61,9 @@ class GithubCommits():
         self.branches_url = self.branches_temp % { 'user': user, 'repo': repo }
         self.commits_url = self.commits_temp % { 'user': user, 'repo': repo }
         self.repo_info_url = self.repo_info_temp % { 'user': user, 'repo': repo }
+        self.set_token(1)
 
+    # 'last-modified' (54991632)
 
     @retry_on_exceptions(types=[simplejson.decoder.JSONDecodeError, RetryException], tries=5, delay=5)
     def get_request(self, url, **kwargs):
@@ -42,7 +75,8 @@ class GithubCommits():
             print 'Warning limit remaining %d requets' % limit_remaining
 
         if limit_remaining == 0:
-            sleep(600)
+            self.next_token()
+            # sleep(600)
             raise RetryException()
 
         if limit_remaining < 10:
@@ -177,6 +211,7 @@ class GithubCommits():
         # db.drop_collection('module_git_branches')
         # db.drop_collection('module_git_commits')
 
+        self.get_branches()
         self.save_branches(branches)
 
         self.all_count = 0
@@ -228,7 +263,8 @@ def main():
     for module in modules_collection.find():#.limit(modules_count):
         print module['owner'], module['module_name'], module['_id']
         github = GithubCommits(module['owner'], module['module_name'], module['_id'])
-        github.save_info_to_db(info_collection)
+        # github.save_info_to_db(info_collection)
+        github.get_info()
 
     for module in modules_collection.find():#.limit(modules_count):
         print module['owner'], module['module_name'], module['_id']
@@ -250,4 +286,5 @@ def main():
     # print all_count
 
 if __name__ == "__main__":
+    #print get_token(username, password)
     main()
