@@ -1,0 +1,1 @@
+models.Tos = Backbone.Model.extend {}

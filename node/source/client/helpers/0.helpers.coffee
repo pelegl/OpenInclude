@@ -1,7 +1,10 @@
 ((exports, isServer) ->
   if isServer
-    @Backbone = require 'backbone'        
+    @Backbone = require 'backbone'
+
   root = @
+  root.models      = {}
+  root.collections = {}
   
   String.prototype.capitalize = ->
     return @charAt(0).toUpperCase() + @slice(1)

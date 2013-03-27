@@ -30,7 +30,10 @@ module.exports = function(grunt) {
   		compile: {			
   			files : {
   				'source/static/js/app.js': ["source/client/helpers/*.coffee", "source/client/models/*.coffee", "source/client/collections/*.coffee", "source/client/views/*.coffee", "source/client/app.coffee"]	
-  			}			
+  			},
+            options: {
+                bare: true
+            }
   		}
   	},
   	cake : {
