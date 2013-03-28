@@ -8,9 +8,6 @@
   class exports.Series extends @Backbone.View
     initialize: (opts={}) ->
       _.bindAll @
-      
-      console.log opts
-      
       {@types, @title} = opts
       
       @margin = 

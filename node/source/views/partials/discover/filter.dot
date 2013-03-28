@@ -2,7 +2,7 @@
 {{~ it.filters :filter}}
 <div class='filterBox'>
     <h4>{{=filter.name}}
-        <a href='#' class='pull-right' data-reset='{{=filter.key}}'>reset filter</a>
+        <a href='#' class='pull-right' data-reset='{{=filter.key}}'>select all</a>
         <a href='#' class='pull-right' data-clear='{{=filter.key}}'>select none</a>
     </h4>
     <ul class='unstyled'>			

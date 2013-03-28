@@ -219,26 +219,59 @@ models.Discovery = Backbone.Model.extend({
 
   idAttribute: "_id",
   x: function() {
-    var currentDate, datesDifference, difference_ms, lastCommit, lastCommitBucket, self,
-      _this = this;
+    var currentDate, datesDifference, difference_ms, interpolate, lastCommit, max, maxDifference, min, minDifference, self;
 
     self = this.get('_source');
     lastCommit = new Date(self.pushed_at).getTime();
     currentDate = new Date().getTime();
     difference_ms = currentDate - lastCommit;
     datesDifference = Math.round(difference_ms / help.oneDay);
-    lastCommitBucket = function(difference) {
-      if (difference > 180) {
-        return 3.5;
-      } else if (difference <= 7) {
-        return 0.5;
-      } else if (difference <= 30) {
-        return 1.5;
+    /*
+      We interpolate data in the buckets, so that
+        0.25 to 1 is the 1st bucket,
+        1 to 1.75 is the second,
+        1.75 to 3 is the 3rd,
+        3 to 5 is the last one
+    */
+
+    interpolate = function(min, max, minDifference, maxDifference, value) {
+      var curPoint, diff, pnt;
+
+      diff = max - min;
+      pnt = diff / (maxDifference - minDifference);
+      curPoint = pnt * (value - minDifference) + min;
+      if (curPoint < max) {
+        return curPoint;
       } else {
-        return 2.5;
+        return max;
       }
     };
-    return lastCommitBucket(datesDifference);
+    if (datesDifference > 180) {
+      min = 3;
+      max = 5;
+      minDifference = 180;
+      maxDifference = 365;
+    } else if (datesDifference <= 7) {
+      min = 0.25;
+      max = 1;
+      minDifference = 0;
+      maxDifference = 7;
+    } else if (datesDifference <= 30) {
+      min = 1;
+      max = 1.75;
+      minDifference = 7;
+      maxDifference = 30;
+    } else {
+      min = 1.75;
+      max = 3;
+      minDifference = 30;
+      maxDifference = 180;
+    }
+    return interpolate(min, max, minDifference, maxDifference, datesDifference);
+    /*
+    return new Date(self.pushed_at)
+    */
+
   },
   /*
     Sets y based on relevance, min: 0, max: 1
@@ -1583,7 +1616,7 @@ var __hasProp = {}.hasOwnProperty,
       this.listenTo(this.collection, "reset", this.renderChart);
       this.listenTo(this.collection, "filter", this.renderChart);
       this.margin = {
-        top: 19.5,
+        top: 55,
         right: 19.5,
         bottom: 60,
         left: 50
@@ -1592,7 +1625,7 @@ var __hasProp = {}.hasOwnProperty,
       this.maxRadius = 50;
       this.width = this.$el.width() - this.margin.right - this.margin.left;
       this.height = this.width * 9 / 16;
-      this.xScale = d3.scale.linear().domain([0, 4]).range([0, this.width]);
+      this.xScale = d3.scale.linear().domain([0, 5.25]).range([0, this.width]);
       this.yScale = d3.scale.linear().domain([0, 1]).range([this.height, 0]);
       this.colorScale = d3.scale.category20c();
       _.bindAll(this, "renderChart", "position", "order");
@@ -1843,7 +1876,6 @@ var __hasProp = {}.hasOwnProperty,
         opts = {};
       }
       _.bindAll(this);
-      console.log(opts);
       this.types = opts.types, this.title = opts.title;
       this.margin = {
         top: 20,

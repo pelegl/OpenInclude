@@ -171,7 +171,7 @@
       @listenTo @collection, "filter", @renderChart
       
       @margin =
-        top:        19.5
+        top:        55
         right:      19.5
         bottom:     60
         left:       50
@@ -179,8 +179,8 @@
       @maxRadius  = 50
       @width      = @$el.width() - @margin.right - @margin.left
       @height     = @width*9/16
-      
-      @xScale     = d3.scale.linear().domain([0,4]).range([0, @width])
+
+      @xScale     = d3.scale.linear().domain([0,5.25]).range([0, @width])
       @yScale     = d3.scale.linear().domain([0,1]).range([@height, 0])
       
       @colorScale = d3.scale.category20c()
@@ -222,7 +222,7 @@
       
     renderChart: ->      
       @setRadiusScale()
-      
+
       languages = _.keys @collection.filters
             
       

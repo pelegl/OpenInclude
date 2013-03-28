@@ -34,7 +34,7 @@
           <form class="navbar-search pull-right form-search" method='get' action="/discover">
               <div class='input-append'>
                   <input type="text" class="search-query" name='q' placeholder="Discover...">
-                  <button class="btn" type="button"><i class='icon-search'></i></button>
+                  <button class="btn" type="submit"><i class='icon-search'></i></button>
               </div>
           </form>
 
