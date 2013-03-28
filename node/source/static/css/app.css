@@ -221,6 +221,9 @@ footer {
   shape-rendering: crispedges;
   stroke: #666666;
 }
+.discover .axis .tick line {
+  display: none;
+}
 .discover .x.label,
 .discover .y.label {
   font-size: 20px;

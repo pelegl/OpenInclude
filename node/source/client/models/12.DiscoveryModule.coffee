@@ -29,7 +29,7 @@ models.Discovery = Backbone.Model.extend
       curPoint = pnt*(value-minDifference)+min
       return if curPoint < max then curPoint else max
 
-    if datesDifference > 180      then min = 3;    max = 5;    minDifference = 180;  maxDifference = 365
+    if datesDifference > 180      then min = 3;    max = 5;    minDifference = 180;  maxDifference = 720
     else if datesDifference <= 7  then min = 0.25; max = 1;    minDifference = 0;    maxDifference = 7
     else if datesDifference <= 30 then min = 1;    max = 1.75; minDifference = 7;    maxDifference = 30
     else                               min = 1.75; max = 3;    minDifference = 30;   maxDifference = 180

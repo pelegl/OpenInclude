@@ -250,7 +250,7 @@ models.Discovery = Backbone.Model.extend({
       min = 3;
       max = 5;
       minDifference = 180;
-      maxDifference = 365;
+      maxDifference = 720;
     } else if (datesDifference <= 7) {
       min = 0.25;
       max = 1;
@@ -1628,7 +1628,7 @@ var __hasProp = {}.hasOwnProperty,
       this.xScale = d3.scale.linear().domain([0, 5.25]).range([0, this.width]);
       this.yScale = d3.scale.linear().domain([0, 1]).range([this.height, 0]);
       this.colorScale = d3.scale.category20c();
-      _.bindAll(this, "renderChart", "position", "order");
+      _.bindAll(this, "renderChart", "position", "order", "formatterX");
       this.popupView = new exports.DiscoverChartPopup({
         margin: this.margin,
         scope: this.$el
@@ -1640,16 +1640,25 @@ var __hasProp = {}.hasOwnProperty,
       return this.radiusScale = d3.scale.sqrt().domain([10, this.collection.maxRadius()]).range([5, this.maxRadius]);
     };
 
+    DiscoverChart.prototype.xTicks = [0.75, 1.75, 3, 4.5];
+
     DiscoverChart.prototype.formatterX = function(d, i) {
+      /*
+      We interpolate data in the buckets, so that
+        0.25 to 1 is the 1st bucket,
+        1 to 1.75 is the second,
+        1.75 to 3 is the 3rd,
+        3 to 5 is the last one
+      */
       switch (d) {
-        case 0.5:
-          return "<1 week ago";
-        case 1.5:
-          return "< 1 month ago";
-        case 2.5:
-          return "< 6 months ago";
-        case 3.5:
-          return "> 6 months ago";
+        case this.xTicks[0]:
+          return "1 week ago";
+        case this.xTicks[1]:
+          return "1 month ago";
+        case this.xTicks[2]:
+          return "6 months ago";
+        case this.xTicks[3]:
+          return "1+ year ago";
       }
     };
 
@@ -1713,7 +1722,7 @@ var __hasProp = {}.hasOwnProperty,
     DiscoverChart.prototype.render = function() {
       var _this = this;
 
-      this.xAxis = d3.svg.axis().orient("bottom").scale(this.xScale).tickValues([0.5, 1.5, 2.5, 3.5]).tickFormat(this.formatterX);
+      this.xAxis = d3.svg.axis().orient("bottom").scale(this.xScale).tickValues(this.xTicks).tickFormat(this.formatterX);
       this.yAxis = d3.svg.axis().scale(this.yScale).orient("left").tickValues([1]).tickFormat(function(d, i) {
         if (d === 1) {
           return "100%";

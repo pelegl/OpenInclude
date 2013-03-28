@@ -185,7 +185,7 @@
       
       @colorScale = d3.scale.category20c()
       
-      _.bindAll this, "renderChart", "position", "order"
+      _.bindAll this, "renderChart", "position", "order", "formatterX"
       
       @popupView = new exports.DiscoverChartPopup { margin: @margin, scope: @$el }      
             
@@ -193,13 +193,22 @@
             
     setRadiusScale: ()->
       @radiusScale = d3.scale.sqrt().domain([10, @collection.maxRadius()]).range([5, @maxRadius])
-    
+
+    xTicks : [0.75,1.75,3,4.5]
+
     formatterX : (d,i)->
+      ###
+      We interpolate data in the buckets, so that
+        0.25 to 1 is the 1st bucket,
+        1 to 1.75 is the second,
+        1.75 to 3 is the 3rd,
+        3 to 5 is the last one
+      ###
       switch d
-        when 0.5 then return "<1 week ago"
-        when 1.5 then return "< 1 month ago"
-        when 2.5 then return "< 6 months ago"
-        when 3.5 then return "> 6 months ago"
+        when @xTicks[0] then return "1 week ago"
+        when @xTicks[1] then return "1 month ago"
+        when @xTicks[2] then return "6 months ago"
+        when @xTicks[3] then return "1+ year ago"
       
     position: (dot)->
       dot
@@ -258,7 +267,7 @@
       @xAxis = d3.svg.axis()
                      .orient("bottom")
                      .scale(@xScale)
-                     .tickValues([0.5,1.5,2.5,3.5])
+                     .tickValues(@xTicks)
                      .tickFormat(@formatterX)
       
       @yAxis = d3.svg.axis()
