@@ -81,12 +81,23 @@ module.exports =
 
   search: (req, res) ->
     search = decodeURIComponent req.params.search
+    if search is "-"
+      search = ""
+
     searchReg = new RegExp(search, "i")
 
-    Task.find().or([
+    query = Task.find().or([
       {name: searchReg}
       {description: searchReg}
-    ]).exec(
+    ])
+
+    unless req.params.from is "none"
+      query.where("due").gte(moment(req.params.from, "X").toDate())
+
+    unless req.params.to is "none"
+      query.where("due").lte(moment(req.params.to, "X").toDate())
+
+    query.exec(
       (result, data) ->
         if result then return res.json success: false, error: result
         res.json data

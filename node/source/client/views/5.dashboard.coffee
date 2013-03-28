@@ -20,6 +20,7 @@
     initialize: (context = {}) ->
       @context = context
       @suggestions = new collections.Users
+      @cursor = {}
 
       @listenTo @suggestions, "reset", @render
 
@@ -36,28 +37,35 @@
 
     select: (event) ->
       value = $(event.target).attr("rel")
-      value = $(@context.listener).val() + value + " "
-      $(@context.listener).val(value)
+      oldValue = $(@context.listener).val()
+      newValue = oldValue.substring(0, @cursor.start + 1) + value + oldValue.substring(@cursor.end + 1)
+
+      $(@context.listener).val(newValue)
       @hide()
 
-    showUser: () ->
+    showUser: (cursor) ->
       @base = "/session/list"
       @suggestions.url = "/session/list"
+      @available = true
+      @cursor.start = cursor
       #@suggestions.fetch()
 
-    showProject: () ->
-      @base = "project/suggest"
+    showProject: (cursor) ->
+      @base = "/project/suggest"
       @suggestions.url = "/project/suggest"
+      @available = true
+      @cursor.start = cursor
       #@suggestions.fetch()
 
     showTask: (part) ->
       return
 
-    updateQuery: (part) ->
+    updateQuery: (part, cursor) ->
       if part.length > 2
         @suggestions.url = "#{@base}/#{part}"
         console.log @suggestions.url
         @suggestions.fetch()
+        @cursor.end = cursor
 
     hide: ->
       @$el.hide()
@@ -68,7 +76,6 @@
       html = views['dashboard/typeahead'](@context)
       @$el.html html
       @$el.show()
-      @available = true
       @
 
   class InlineForm extends @Backbone.View
@@ -86,6 +93,7 @@
       super context
 
       @tah = new TypeAhead @context
+      @buf = ""
       @render()
 
     typeahead: (event) ->
@@ -97,16 +105,17 @@
       switch char
         when '@'
           @buf = ''
-          @tah.showUser()
+          @tah.showUser(event.target.selectionStart)
         when '#'
           @buf = ''
-          @tah.showTask()
+          @tah.showTask(event.target.selectionStart)
         when '+'
           @buf = ''
-          @tah.showProject()
+          @tah.showProject(event.target.selectionStart)
         when ' '
           @buf = ''
           @tah.hide()
+          return true
         else
           if code is 8
             # backspace
@@ -115,10 +124,10 @@
 
           if event.charCode is 0
             return true
-          #if @tah.available
-          @buf += char
+          if @tah.available
+            @buf += char
           if @buf.length > 0
-            @tah.updateQuery @buf
+            @tah.updateQuery @buf, event.target.selectionEnd
 
     submit: (event) ->
       event.preventDefault()
@@ -294,10 +303,18 @@
       @tasks = new collections.Tasks
       @listenTo @tasks, "reset", @renderResult
 
+      unless data.search
+        data.search = "-"
+
       unless data.from
         data.from = "none"
+      else
+        data.from = moment(data.from).unix()
+
       unless data.to
         data.to = "none"
+      else
+        data.to = moment(data.to).unix()
 
       @tasks.url = "/task/search/#{data.search}/#{data.from}/#{data.to}"
       @tasks.fetch()
@@ -389,8 +406,7 @@
       app.navigate "/dashboard/project/#{projectId}/task/#{taskId}", trigger: false
 
       @context.task = task.toJSON()
-      @context.el = "#main-area"
-      @taskView = new Task @context
+      @taskView = new Task _.extend @context, el: "#main-area"
 
     editProject: (e) ->
       e.preventDefault()
