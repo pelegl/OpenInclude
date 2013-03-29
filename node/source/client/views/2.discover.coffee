@@ -30,11 +30,17 @@
       @
       
     setData: (datum, $this, scope) ->            
-      width = height = parseInt($this.attr("r"))*2
-      x = parseInt $this.attr "cx"
-      y = parseInt $this.attr "cy"
-      color = $this.css "fill"
-      data = datum.get("_source")      
+
+      dot   = $this.find(".dot")
+
+
+      width = height = parseInt(dot.attr("r"))*2
+      data  = $this.attr("transform").replace(/^.+\((.+),(.+)\)$/,"$1/$2").split("/")
+      [x,y] = _.map data, (value)=> return parseInt value
+
+
+      color = dot.css "fill"
+      data  = datum.source
       stars = data.watchers            
       lastContribution = humanize.relativeTime new Date(data.pushed_at).getTime()/1000
       
@@ -167,7 +173,7 @@
 
   class exports.DiscoverChart extends View
     initialize: ->
-      @listenTo @collection, "reset" , @renderChart
+      #@listenTo @collection, "reset" , @renderChart  - render gets called each reset because of filter, dont use that
       @listenTo @collection, "filter", @renderChart
       
       @margin =
@@ -185,7 +191,7 @@
       
       @colorScale = d3.scale.category20c()
       
-      _.bindAll this, "renderChart", "position", "order", "formatterX"
+      _.bindAll this, "renderChart", "order", "formatterX"
       
       @popupView = new exports.DiscoverChartPopup { margin: @margin, scope: @$el }      
             
@@ -209,15 +215,9 @@
         when @xTicks[1] then return "1 month ago"
         when @xTicks[2] then return "6 months ago"
         when @xTicks[3] then return "1+ year ago"
-      
-    position: (dot)->
-      dot
-         .attr("cx", (d)=> @xScale( d.x() ))
-         .attr("cy", (d)=> @yScale( d.y(@collection.maxScore) ))
-         .attr("r" , (d)=> @radiusScale( d.radius() ))
-               
+
     order: (a,b) ->  
-      return b.radius() - a.radius()
+      return b.radius - a.radius
     
     popup: (action, scope)->
       self = @
@@ -228,8 +228,30 @@
     
     addToComparison: (document, index)->
       app.view.comparisonData.add document
-      
-    renderChart: ->      
+
+    collide: (node) ->
+      r = node.radius + 16
+      nx1 = node.x - r
+      nx2 = node.x + r
+      ny1 = node.y - r
+      ny2 = node.y + r
+      return (quad, x1, y1, x2, y2) ->
+        if quad.point and quad.point.x isnt node.x and quad.point.y isnt node.y
+          x = node.x - quad.point.x
+          y = node.y - quad.point.y
+
+          l = Math.sqrt(x * x + y * y)
+          r = node.radius + quad.point.radius
+          if l < r
+            l = (l - r) / l * .5
+            node.x -= x *= l
+            node.y -= y *= l
+            quad.point.x += x
+            quad.point.y += y
+
+        return x1 > nx2 or x2 < nx1 or y1 > ny2 or y2 < ny1
+
+    renderChart: ->
       @setRadiusScale()
 
       languages = _.keys @collection.filters
@@ -240,29 +262,79 @@
           return $.inArray(module.get("_source").language, languages) isnt -1
       else
         data = []
+
+      data = data.map (doc)=>
+        return {
+          x: @xScale doc.x()
+          y: @yScale doc.y @collection.maxScore
+          radius: @radiusScale doc.radius()
+          color:  doc.color()
+          name:   doc.name()
+          source: doc.get("_source")
+          key:    doc.key()
+        }
+
+      ###
+        Collision changes
+      ###
+      preventCollision = (times)=>
+        q = d3.geom.quadtree(data)
+        i = 0
+        n = data.length
+
+        while ++i < n
+          q.visit @collide data[i]
+
+        preventCollision(times) if --times > 0
+
+      preventCollision(2)
+
+      @dot = @dots.selectAll(".node")
+                    .data(data, (d)-> return d.key)
                   
-      @dot = @dots.selectAll(".dot")
-                    .data(data)                  
-                  
-      @dot.enter().append("circle")
-                      .attr("class", "dot")                                           
-                      .on("mouseover", @popup('show', @$el))
-                      .on("mouseout", @popup('hide'))
-                      .on("click", @addToComparison)
-                      
-                      
+      g = @dot.enter().append("g")
+                    .attr("class", "node")
+                    .on("mouseover", @popup('show', @$el))
+                    .on("mouseout", @popup('hide'))
+                    .on("click", @addToComparison)
+
       @dot.transition()
-          .style("fill", (moduleModel)=> moduleModel.color() )
-          .call(@position)
-                  
-      @dot.exit().transition()
-          .attr("r", 0)
-          .remove()            
+            .attr("transform", (d)=> "translate(" + d.x + "," + d.y + ")" )
+
+      g.append("circle")
+            .attr("class", "dot")
+            .style("fill", (d)=> d.color )
+            .transition()
+              .attr("r" ,    (d)=> d.radius )
+
+      g.append("text")
+        .attr("text-anchor", "middle")
+        .attr("dy", ".3em")
+        .style("font-size", "2px")
+
 
       @dot.sort(@order)
-                             
-      @
-      
+
+      self = this
+      @dot.filter((d,i)=> return d.radius > 25)
+            .selectAll("text")
+              .text((d) => return d.name )
+            .transition()
+              .style("font-size", (d) ->
+                width = 2*d.radius - 8
+                currentWidth = @getComputedTextLength()
+                return width / currentWidth * 2 + "px"
+              )
+
+
+
+      @dot.exit()
+        .transition()
+        .style("opacity", 0)
+        .remove()
+
+
+
     render: ->
       @xAxis = d3.svg.axis()
                      .orient("bottom")

@@ -302,6 +302,13 @@ models.Discovery = Backbone.Model.extend({
     return "#" + this.get('color');
   },
   /*
+    name
+  */
+
+  name: function() {
+    return this.get("_source").module_name;
+  },
+  /*
     Key
   */
 
@@ -1414,13 +1421,17 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     DiscoverChartPopup.prototype.setData = function(datum, $this, scope) {
-      var activity, activityStars, color, data, height, lastContribution, stars, width, x, y;
+      var activity, activityStars, color, data, dot, height, lastContribution, stars, width, x, y, _ref1,
+        _this = this;
 
-      width = height = parseInt($this.attr("r")) * 2;
-      x = parseInt($this.attr("cx"));
-      y = parseInt($this.attr("cy"));
-      color = $this.css("fill");
-      data = datum.get("_source");
+      dot = $this.find(".dot");
+      width = height = parseInt(dot.attr("r")) * 2;
+      data = $this.attr("transform").replace(/^.+\((.+),(.+)\)$/, "$1/$2").split("/");
+      _ref1 = _.map(data, function(value) {
+        return parseInt(value);
+      }), x = _ref1[0], y = _ref1[1];
+      color = dot.css("fill");
+      data = datum.source;
       stars = data.watchers;
       lastContribution = humanize.relativeTime(new Date(data.pushed_at).getTime() / 1000);
       activity = $("<p class='activity' />").html("<i class='icon-star'></i>Last checking <strong>" + lastContribution + "</strong>");
@@ -1613,7 +1624,6 @@ var __hasProp = {}.hasOwnProperty,
     }
 
     DiscoverChart.prototype.initialize = function() {
-      this.listenTo(this.collection, "reset", this.renderChart);
       this.listenTo(this.collection, "filter", this.renderChart);
       this.margin = {
         top: 55,
@@ -1628,7 +1638,7 @@ var __hasProp = {}.hasOwnProperty,
       this.xScale = d3.scale.linear().domain([0, 5.25]).range([0, this.width]);
       this.yScale = d3.scale.linear().domain([0, 1]).range([this.height, 0]);
       this.colorScale = d3.scale.category20c();
-      _.bindAll(this, "renderChart", "position", "order", "formatterX");
+      _.bindAll(this, "renderChart", "order", "formatterX");
       this.popupView = new exports.DiscoverChartPopup({
         margin: this.margin,
         scope: this.$el
@@ -1662,20 +1672,8 @@ var __hasProp = {}.hasOwnProperty,
       }
     };
 
-    DiscoverChart.prototype.position = function(dot) {
-      var _this = this;
-
-      return dot.attr("cx", function(d) {
-        return _this.xScale(d.x());
-      }).attr("cy", function(d) {
-        return _this.yScale(d.y(_this.collection.maxScore));
-      }).attr("r", function(d) {
-        return _this.radiusScale(d.radius());
-      });
-    };
-
     DiscoverChart.prototype.order = function(a, b) {
-      return b.radius() - a.radius();
+      return b.radius - a.radius;
     };
 
     DiscoverChart.prototype.popup = function(action, scope) {
@@ -1696,8 +1694,36 @@ var __hasProp = {}.hasOwnProperty,
       return app.view.comparisonData.add(document);
     };
 
+    DiscoverChart.prototype.collide = function(node) {
+      var nx1, nx2, ny1, ny2, r;
+
+      r = node.radius + 16;
+      nx1 = node.x - r;
+      nx2 = node.x + r;
+      ny1 = node.y - r;
+      ny2 = node.y + r;
+      return function(quad, x1, y1, x2, y2) {
+        var l, x, y;
+
+        if (quad.point && quad.point.x !== node.x && quad.point.y !== node.y) {
+          x = node.x - quad.point.x;
+          y = node.y - quad.point.y;
+          l = Math.sqrt(x * x + y * y);
+          r = node.radius + quad.point.radius;
+          if (l < r) {
+            l = (l - r) / l * .5;
+            node.x -= x *= l;
+            node.y -= y *= l;
+            quad.point.x += x;
+            quad.point.y += y;
+          }
+        }
+        return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+      };
+    };
+
     DiscoverChart.prototype.renderChart = function() {
-      var data, languages,
+      var data, g, languages, preventCollision, self,
         _this = this;
 
       this.setRadiusScale();
@@ -1709,14 +1735,62 @@ var __hasProp = {}.hasOwnProperty,
       } else {
         data = [];
       }
-      this.dot = this.dots.selectAll(".dot").data(data);
-      this.dot.enter().append("circle").attr("class", "dot").on("mouseover", this.popup('show', this.$el)).on("mouseout", this.popup('hide')).on("click", this.addToComparison);
-      this.dot.transition().style("fill", function(moduleModel) {
-        return moduleModel.color();
-      }).call(this.position);
-      this.dot.exit().transition().attr("r", 0).remove();
+      data = data.map(function(doc) {
+        return {
+          x: _this.xScale(doc.x()),
+          y: _this.yScale(doc.y(_this.collection.maxScore)),
+          radius: _this.radiusScale(doc.radius()),
+          color: doc.color(),
+          name: doc.name(),
+          source: doc.get("_source"),
+          key: doc.key()
+        };
+      });
+      /*
+        Collision changes
+      */
+
+      preventCollision = function(times) {
+        var i, n, q;
+
+        q = d3.geom.quadtree(data);
+        i = 0;
+        n = data.length;
+        while (++i < n) {
+          q.visit(_this.collide(data[i]));
+        }
+        if (--times > 0) {
+          return preventCollision(times);
+        }
+      };
+      preventCollision(2);
+      this.dot = this.dots.selectAll(".node").data(data, function(d) {
+        return d.key;
+      });
+      g = this.dot.enter().append("g").attr("class", "node").on("mouseover", this.popup('show', this.$el)).on("mouseout", this.popup('hide')).on("click", this.addToComparison);
+      this.dot.transition().attr("transform", function(d) {
+        return "translate(" + d.x + "," + d.y + ")";
+      });
+      g.append("circle").attr("class", "dot").style("fill", function(d) {
+        return d.color;
+      }).transition().attr("r", function(d) {
+        return d.radius;
+      });
+      g.append("text").attr("text-anchor", "middle").attr("dy", ".3em").style("font-size", "2px");
       this.dot.sort(this.order);
-      return this;
+      self = this;
+      this.dot.filter(function(d, i) {
+        return d.radius > 25;
+      }).selectAll("text").text(function(d) {
+        return d.name;
+      }).transition().style("font-size", function(d) {
+        var currentWidth, width;
+
+        width = 2 * d.radius - 8;
+        currentWidth = this.getComputedTextLength();
+        return width / currentWidth * 2 + "px";
+      });
+      return this.dot.exit().transition().style("opacity", 0).remove();
     };
 
     DiscoverChart.prototype.render = function() {

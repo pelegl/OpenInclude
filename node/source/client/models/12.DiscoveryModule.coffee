@@ -62,6 +62,12 @@ models.Discovery = Backbone.Model.extend
     return "#" + @get('color')
 
   ###
+    name
+  ###
+  name: ->
+    return @get("_source").module_name
+
+  ###
     Key
   ###
   key: ->

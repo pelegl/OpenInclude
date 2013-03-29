@@ -130,7 +130,7 @@ class DiscoverController extends require('./basicController')
           multi_match:
             query: @context.discover_search_query || ""
             use_dis_max: true
-            fields: ["description", "module_name^2", "owner^2", "language"]
+            fields: ["description", "module_name^2", "owner^2"]
         filters: [
           {filter:{numeric_range: {watchers: {from: 2500, to: 5000} }}, boost: 1.25 }
           {filter:{numeric_range: {watchers: {from: 5000, to: 7500} }}, boost: 1.5 }
@@ -140,7 +140,7 @@ class DiscoverController extends require('./basicController')
         ]
 
     options =
-      size: 50
+      size: 25
     
     #TODO: add variable size and offset handling
             

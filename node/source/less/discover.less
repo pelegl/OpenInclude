@@ -39,17 +39,24 @@
       }
     } 
   }
-    
-  .dot {
-    opacity: 0.5;    
+
+  .node {
     cursor: pointer;
+
     &:hover {
-      opacity: 0.75;
-      stroke: @black;
-      stroke-width: 2px;
+      .dot {
+        opacity: 0.75;
+        stroke: @black;
+        stroke-width: 2px;
+      }
     }
-    position: relative;
+
+    .dot {
+      opacity: 0.5;
+      position: relative;
+    }
   }
+
   .axis {
     path, line {
       fill: none;
