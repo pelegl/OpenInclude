@@ -106,7 +106,7 @@ views.Dashboard = View.extend
   showTaskCommentForm: (e) ->
     e.preventDefault()
     e.stopPropagation()
-    createTaskComment = new views.CreateTaskCommentForm _.extend(@context, el: "#task-add-comment-#{@taskId}")
+    createTaskComment = new views.CreateTaskCommentForm _.extend(@context, el: "#task-add-comment-#{@taskId}", {@taskId})
     createTaskComment.show()
 
   switchProject: (e)->

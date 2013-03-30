@@ -2400,13 +2400,13 @@ views.CreateTaskCommentForm = (function(_super) {
 
   CreateTaskCommentForm.prototype.success = function(model, response, options) {
     if (CreateTaskCommentForm.__super__.success.call(this, model, response, options)) {
-      return tasks.fetch();
+      return app.meta.tasks.fetch();
     }
   };
 
   CreateTaskCommentForm.prototype.initialize = function(context) {
     this.model = new models.TaskComment;
-    this.model.url = "/task/comment/" + taskId;
+    this.model.url = "/task/comment/" + context.taskId;
     return CreateTaskCommentForm.__super__.initialize.call(this, context);
   };
 
@@ -2717,6 +2717,8 @@ views.Dashboard = View.extend({
     e.stopPropagation();
     createTaskComment = new views.CreateTaskCommentForm(_.extend(this.context, {
       el: "#task-add-comment-" + this.taskId
+    }, {
+      taskId: this.taskId
     }));
     return createTaskComment.show();
   },
