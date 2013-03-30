@@ -70,9 +70,8 @@
                                 {{~ it.tasks :task}}
                                 <li rel="{{=task._id}}">
                                     {{? task.person }}
-                                    {}
                                     {{?}}
-                                    <input type="checkbox" {{? task.completed }}checked{{?}}/>
+                                    <input type="checkbox" {{? task.completed }}checked{{?}} name='isCompleted' />
                                     <span class="task-label">{{= task.label }}</span>
                                     <span class="task-name">{{= task.name}}</span>
                                     <span class="task-comments">Comments</span>

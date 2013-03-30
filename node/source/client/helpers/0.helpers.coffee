@@ -5,7 +5,9 @@
   root = @
   root.models      = {}
   root.collections = {}
-  
+  root.views       = {}
+  root.tpl         = root.hbt = _.extend({}, dt)
+
   String.prototype.capitalize = ->
     return @charAt(0).toUpperCase() + @slice(1)
 
