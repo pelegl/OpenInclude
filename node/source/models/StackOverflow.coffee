@@ -1,7 +1,7 @@
 ObjectId = require('mongoose').Schema.Types.ObjectId
 
 definition =  
-  module_id : {type: ObjectId, ref: 'Module'}
+  module_id : [{type: ObjectId, ref: 'Module'}]
   body: String
   view_count: Number
   title: String
@@ -20,8 +20,6 @@ definition =
   accepted_answer_id: Number
 
 
-
-
 statics =
   # get questions
   get_questions_for_module: (module_id, stopTS, callback) ->
@@ -36,6 +34,6 @@ index = [
 
 exports.statics = statics
 exports.index = index
-exports.modelName  = "module_so_test" 
+exports.modelName  = "module_so_results"
 exports.definition = definition
 

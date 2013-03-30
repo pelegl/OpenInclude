@@ -9,8 +9,7 @@ views.Repo = View.extend
     ###
       context
     ###
-    @context =
-      modules_url : modules_url
+    @context =   {modules_url: "/#{app.conf.modules_url}"}
 
     ###
       events

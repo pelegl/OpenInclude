@@ -1919,7 +1919,7 @@ views.Repo = View.extend({
     */
 
     this.context = {
-      modules_url: modules_url
+      modules_url: "/" + app.conf.modules_url
     };
     /*
       events
