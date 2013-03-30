@@ -1421,26 +1421,19 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     DiscoverChartPopup.prototype.setData = function(datum, $this, scope) {
-      var activity, activityStars, color, data, dot, height, lastContribution, stars, width, x, y, _ref1,
-        _this = this;
+      var activity, activityStars, color, height, lastContribution, source, stars, width, x, y;
 
-      dot = $this.find(".dot");
-      width = height = parseInt(dot.attr("r")) * 2;
-      data = $this.attr("transform").replace(/^.+\((.+),(.+)\)$/, "$1/$2").split("/");
-      _ref1 = _.map(data, function(value) {
-        return parseInt(value);
-      }), x = _ref1[0], y = _ref1[1];
-      color = dot.css("fill");
-      data = datum.source;
-      stars = data.watchers;
-      lastContribution = humanize.relativeTime(new Date(data.pushed_at).getTime() / 1000);
+      width = height = datum.radius * 2;
+      x = datum.x, y = datum.y, color = datum.color, source = datum.source;
+      stars = source.watchers;
+      lastContribution = humanize.relativeTime(new Date(source.pushed_at).getTime() / 1000);
       activity = $("<p class='activity' />").html("<i class='icon-star'></i>Last checking <strong>" + lastContribution + "</strong>");
       activityStars = $("<p class='stars' />").html("<i class='icon-star'></i><strong>" + stars + " stars</strong> on GitHub");
-      this.moduleName.text("" + data.owner + "/" + data.module_name);
-      this.moduleLanguage.find(".name").text(data.language).end().find(".color").css({
+      this.moduleName.text("" + source.owner + "/" + source.module_name);
+      this.moduleLanguage.find(".name").text(source.language).end().find(".color").css({
         background: color
       });
-      this.moduleDescription.text(data.description);
+      this.moduleDescription.text(source.description);
       this.moduleStars.html("").append(activity, activityStars);
       this.show();
       return this.$el.css({
@@ -1583,8 +1576,6 @@ var __hasProp = {}.hasOwnProperty,
             name: "Language",
             key: "_source.language"
           }, {
-            name: "Active Contributors"
-          }, {
             name: "Last Commit",
             key: "_source.pushed_at"
           }, {
@@ -1638,7 +1629,7 @@ var __hasProp = {}.hasOwnProperty,
       this.xScale = d3.scale.linear().domain([0, 5.25]).range([0, this.width]);
       this.yScale = d3.scale.linear().domain([0, 1]).range([this.height, 0]);
       this.colorScale = d3.scale.category20c();
-      _.bindAll(this, "renderChart", "order", "formatterX");
+      _.bindAll(this, "renderChart", "order", "formatterX", "addToComparison");
       this.popupView = new exports.DiscoverChartPopup({
         margin: this.margin,
         scope: this.$el
@@ -1691,13 +1682,13 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     DiscoverChart.prototype.addToComparison = function(document, index) {
-      return app.view.comparisonData.add(document);
+      return app.view.comparisonData.add(this.collection.get(document.key));
     };
 
     DiscoverChart.prototype.collide = function(node) {
       var nx1, nx2, ny1, ny2, r;
 
-      r = node.radius + 16;
+      r = node.radius + 4;
       nx1 = node.x - r;
       nx2 = node.x + r;
       ny1 = node.y - r;
@@ -1723,7 +1714,7 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     DiscoverChart.prototype.renderChart = function() {
-      var data, g, languages, preventCollision, self,
+      var data, languages, preventCollision,
         _this = this;
 
       this.setRadiusScale();
@@ -1764,33 +1755,20 @@ var __hasProp = {}.hasOwnProperty,
         }
       };
       preventCollision(2);
-      this.dot = this.dots.selectAll(".node").data(data, function(d) {
+      this.dot = this.dots.selectAll(".dot").data(data, function(d) {
         return d.key;
       });
-      g = this.dot.enter().append("g").attr("class", "node").on("mouseover", this.popup('show', this.$el)).on("mouseout", this.popup('hide')).on("click", this.addToComparison);
-      this.dot.transition().attr("transform", function(d) {
-        return "translate(" + d.x + "," + d.y + ")";
-      });
-      g.append("circle").attr("class", "dot").style("fill", function(d) {
+      this.dot.enter().append("circle").attr("class", "dot").on("mouseover", this.popup('show', this.$el)).on("mouseout", this.popup('hide')).on("click", this.addToComparison).style("fill", function(d) {
         return d.color;
-      }).transition().attr("r", function(d) {
+      }).transition().attr("cx", function(d) {
+        return d.x;
+      }).attr("cy", function(d) {
+        return d.y;
+      }).attr("r", function(d) {
         return d.radius;
       });
-      g.append("text").attr("text-anchor", "middle").attr("dy", ".3em").style("font-size", "2px");
-      this.dot.sort(this.order);
-      self = this;
-      this.dot.filter(function(d, i) {
-        return d.radius > 25;
-      }).selectAll("text").text(function(d) {
-        return d.name;
-      }).transition().style("font-size", function(d) {
-        var currentWidth, width;
-
-        width = 2 * d.radius - 8;
-        currentWidth = this.getComputedTextLength();
-        return width / currentWidth * 2 + "px";
-      });
-      return this.dot.exit().transition().style("opacity", 0).remove();
+      this.dot.exit().transition().attr("r", 0).remove();
+      return this.dot.sort(this.order);
     };
 
     DiscoverChart.prototype.render = function() {

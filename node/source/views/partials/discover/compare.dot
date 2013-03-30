@@ -25,7 +25,6 @@
                   <span class='color' style='background: #{{=project.color}}'></span>
                   {{! project._source.language }}
                 </td>
-                <td>#</td>
                 <td>{{! project.lastCommitHuman }}</td>
                 <td>{{! project._source.watchers }}</td>
                 <td>{{! project.asked }}</td>

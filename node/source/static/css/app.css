@@ -205,17 +205,15 @@ footer {
   -moz-box-sizing: border-box;
   width: 65px;
 }
-.discover .node {
+.discover .dot {
+  opacity: 0.5;
+  position: relative;
   cursor: pointer;
 }
-.discover .node:hover .dot {
+.discover .dot:hover {
   opacity: 0.75;
   stroke: #000000;
   stroke-width: 2px;
-}
-.discover .node .dot {
-  opacity: 0.5;
-  position: relative;
 }
 .discover .axis path,
 .discover .axis line {

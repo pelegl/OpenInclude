@@ -31,27 +31,20 @@
       
     setData: (datum, $this, scope) ->            
 
-      dot   = $this.find(".dot")
+      width = height = datum.radius*2
+      {x,y,color,source} = datum
 
-
-      width = height = parseInt(dot.attr("r"))*2
-      data  = $this.attr("transform").replace(/^.+\((.+),(.+)\)$/,"$1/$2").split("/")
-      [x,y] = _.map data, (value)=> return parseInt value
-
-
-      color = dot.css "fill"
-      data  = datum.source
-      stars = data.watchers            
-      lastContribution = humanize.relativeTime new Date(data.pushed_at).getTime()/1000
+      stars = source.watchers
+      lastContribution = humanize.relativeTime new Date(source.pushed_at).getTime()/1000
       
       activity = $("<p class='activity' />").html("<i class='icon-star'></i>Last checking <strong>#{lastContribution}</strong>")
       activityStars = $("<p class='stars' />").html("<i class='icon-star'></i><strong>#{stars} stars</strong> on GitHub")
       
-      @moduleName.text "#{data.owner}/#{data.module_name}"          
+      @moduleName.text "#{source.owner}/#{source.module_name}"
       @moduleLanguage
-                     .find(".name").text(data.language).end()
+                     .find(".name").text(source.language).end()
                      .find(".color").css({background: color})    
-      @moduleDescription.text data.description
+      @moduleDescription.text source.description
       @moduleStars.html("").append activity, activityStars      
                               
       @show()
@@ -155,7 +148,6 @@
         headers : [
           {name: "Project Name", key: "_source.module_name"}
           {name: "Language", key: "_source.language"}
-          {name: "Active Contributors"}
           {name: "Last Commit", key: "_source.pushed_at"}
           {name: "Stars on GitHub", key: "_source.watchers"}
           {name: "Questions on StackOverflow", key: "asked"}
@@ -173,7 +165,6 @@
 
   class exports.DiscoverChart extends View
     initialize: ->
-      #@listenTo @collection, "reset" , @renderChart  - render gets called each reset because of filter, dont use that
       @listenTo @collection, "filter", @renderChart
       
       @margin =
@@ -191,7 +182,7 @@
       
       @colorScale = d3.scale.category20c()
       
-      _.bindAll this, "renderChart", "order", "formatterX"
+      _.bindAll this, "renderChart", "order", "formatterX", "addToComparison"
       
       @popupView = new exports.DiscoverChartPopup { margin: @margin, scope: @$el }      
             
@@ -227,10 +218,10 @@
           when 'show' then self.popupView.setData d, $(this), scope
     
     addToComparison: (document, index)->
-      app.view.comparisonData.add document
+      app.view.comparisonData.add @collection.get(document.key)
 
     collide: (node) ->
-      r = node.radius + 16
+      r = node.radius + 4
       nx1 = node.x - r
       nx2 = node.x + r
       ny1 = node.y - r
@@ -255,8 +246,7 @@
       @setRadiusScale()
 
       languages = _.keys @collection.filters
-            
-      
+
       if languages.length > 0
         data = @collection.filter (module)=>          
           return $.inArray(module.get("_source").language, languages) isnt -1
@@ -289,50 +279,26 @@
 
       preventCollision(2)
 
-      @dot = @dots.selectAll(".node")
+      @dot = @dots.selectAll(".dot")
                     .data(data, (d)-> return d.key)
                   
-      g = @dot.enter().append("g")
-                    .attr("class", "node")
+      @dot.enter().append("circle")
+                    .attr("class", "dot")
                     .on("mouseover", @popup('show', @$el))
                     .on("mouseout", @popup('hide'))
                     .on("click", @addToComparison)
-
-      @dot.transition()
-            .attr("transform", (d)=> "translate(" + d.x + "," + d.y + ")" )
-
-      g.append("circle")
-            .attr("class", "dot")
-            .style("fill", (d)=> d.color )
-            .transition()
-              .attr("r" ,    (d)=> d.radius )
-
-      g.append("text")
-        .attr("text-anchor", "middle")
-        .attr("dy", ".3em")
-        .style("font-size", "2px")
-
-
-      @dot.sort(@order)
-
-      self = this
-      @dot.filter((d,i)=> return d.radius > 25)
-            .selectAll("text")
-              .text((d) => return d.name )
-            .transition()
-              .style("font-size", (d) ->
-                width = 2*d.radius - 8
-                currentWidth = @getComputedTextLength()
-                return width / currentWidth * 2 + "px"
-              )
-
-
+                    .style("fill", (d)=> d.color )
+                    .transition()
+                      .attr("cx", (d)-> d.x)
+                      .attr("cy", (d)-> d.y)
+                      .attr("r", (d)-> d.radius)
 
       @dot.exit()
         .transition()
-        .style("opacity", 0)
+          .attr("r", 0)
         .remove()
 
+      @dot.sort(@order)
 
 
     render: ->
