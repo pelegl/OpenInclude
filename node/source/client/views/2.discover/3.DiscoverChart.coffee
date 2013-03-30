@@ -1,4 +1,4 @@
-views.DiscoverChart = View.extend
+class views.DiscoverChart extends View
   initialize: ->
     @listenTo @collection, "filter", @renderChart
 
@@ -9,6 +9,24 @@ views.DiscoverChart = View.extend
       left:       50
     @padding    = 30
     @maxRadius  = 50
+
+    _.bindAll this, "renderChart", "order", "formatterX", "addToComparison", "resizeContent"
+    $(window).on "resize", @resizeContent
+
+    @popupView = new views.DiscoverChartPopup { margin: @margin, scope: @$el }
+
+    @render()
+
+  remove: ->
+    $(window).off "resize", @resizeContent
+    super
+
+  resizeContent: ->
+    @$el.empty()
+    @render()
+    @renderChart() if @collection.models.length > 0
+
+  render: ->
     @width      = @$el.width() - @margin.right - @margin.left
     @height     = @width*9/16
 
@@ -17,13 +35,6 @@ views.DiscoverChart = View.extend
 
     @colorScale = d3.scale.category20c()
 
-    _.bindAll this, "renderChart", "order", "formatterX", "addToComparison"
-
-    @popupView = new views.DiscoverChartPopup { margin: @margin, scope: @$el }
-
-    @render()
-
-  render: ->
     @xAxis = d3.svg.axis()
       .orient("bottom")
       .scale(@xScale)
@@ -36,13 +47,11 @@ views.DiscoverChart = View.extend
       .tickValues([1])
       .tickFormat((d,i)-> return if d is 1 then "100%" else "")
 
-
     @svg = d3.select(@$el[0]).append("svg")
       .attr("width",  @width  + @margin.left + @margin.right)
       .attr("height", @height + @margin.top  + @margin.bottom)
       .append("g")
       .attr("transform", "translate( #{@margin.left} , #{@margin.top} )")
-
 
     @svg.append("g")
       .attr("class", "x axis")

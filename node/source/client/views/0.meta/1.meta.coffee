@@ -20,3 +20,5 @@ views.MetaView = Backbone.View.extend
     @Languages = new collections.Language
     @projects  = new collections.Projects
     @tasks     = new collections.Tasks
+
+    @menu      = new views.Menu el: @$(".navigationMenu")

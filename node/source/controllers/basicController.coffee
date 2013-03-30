@@ -32,10 +32,34 @@ class BasicController
     context = _.extend {}, urls, config
 
     if @context then _.extend @context, context else @context = context #extend our context - maybe we had already set it up in the child contstructor
+    @_buildMenu()
 
     @[@funcName]()
 
-  _view : (name, context)=>
+  _buildMenu: ->
+    @context._menu = [
+      {url: @context.discover_url, text: "discover"}
+      {url: @context.how_to_url,   text:"how to"}
+    ]
+    # admin
+    if @req.user?.group_id is 'admin'
+      @context._menu.push
+      {url: @context.admin_url, text:"admin"}
+    # rest
+    if @req.user?
+      @context._menu.push {url: @context.profile_url, text: "profile"},
+                          {url: @context.dashboard_url, text: "dashboard"},
+                          {url: @context.logout_url, text: "sign out"}
+    else
+      @context._menu.push {url: @context.signin_url, text: "sign in"}
+
+    if @req.path.length > 1
+      testUrl = new RegExp("^#{@req.path}.*$")
+      @context._menu.forEach (link)=>
+        link.isActive = true if testUrl.test link.url
+
+
+  _view : (name, context)->
     if @app.Views['dot'].hasOwnProperty(name)
         try
           _.extend context, dotJsContext

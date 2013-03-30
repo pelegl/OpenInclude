@@ -1,0 +1,1 @@
+models.Menu = Backbone.Model.extend {}

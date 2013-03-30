@@ -337,6 +337,8 @@ models.Discovery = Backbone.Model.extend({
   }
 });
 
+models.Menu = Backbone.Model.extend({});
+
 models.Bill = Backbone.Model.extend({
   /*
    user
@@ -573,6 +575,10 @@ collections.Users = Backbone.Collection.extend({
   url: "/session/list"
 });
 
+collections.Menu = Backbone.Collection.extend({
+  model: models.Menu
+});
+
 collections.Language = collections.requestPager.extend({
   comparator: function(language) {
     return language.get("name");
@@ -774,7 +780,10 @@ views.MetaView = Backbone.View.extend({
     console.log('[__metaView__] Init');
     this.Languages = new collections.Language;
     this.projects = new collections.Projects;
-    return this.tasks = new collections.Tasks;
+    this.tasks = new collections.Tasks;
+    return this.menu = new views.Menu({
+      el: this.$(".navigationMenu")
+    });
   }
 });
 
@@ -1000,6 +1009,53 @@ views.Bills = Backbone.View.extend({
       view_bills: app.conf.bills
     });
     help.exchange(this, html);
+    return this;
+  }
+});
+
+views.Menu = Backbone.View.extend({
+  className: "navigationMenu nav pull-right",
+  initialize: function() {
+    var data;
+
+    console.log("[__Menu View__] initialized");
+    data = $("[data-menu]").data("menu");
+    this.collection = new collections.Menu(data);
+    return this.listenTo(app, "route", this.navigate);
+  },
+  navigate: function() {
+    var parse, pathname, testUrl,
+      _this = this;
+
+    parse = help.qs.parse;
+    pathname = window.location.pathname;
+    testUrl = new RegExp("^" + pathname + ".*$");
+    if (pathname.length > 1) {
+      this.collection.forEach(function(link) {
+        var isActive;
+
+        isActive = testUrl.test(link.get("url"));
+        return link.set({
+          isActive: isActive
+        });
+      });
+    } else {
+      this.collection.forEach(function(link) {
+        return link.set({
+          isActive: false
+        });
+      });
+    }
+    return this.render();
+  },
+  render: function() {
+    var context, view;
+
+    context = {
+      _menu: this.collection.toJSON()
+    };
+    view = tpl['menu'](context);
+    this.$el.html(view);
     return this;
   }
 });
@@ -1406,8 +1462,19 @@ views.DiscoverComparison = Backbone.View.extend({
   }
 });
 
-views.DiscoverChart = View.extend({
-  initialize: function() {
+var _ref,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+views.DiscoverChart = (function(_super) {
+  __extends(DiscoverChart, _super);
+
+  function DiscoverChart() {
+    _ref = DiscoverChart.__super__.constructor.apply(this, arguments);
+    return _ref;
+  }
+
+  DiscoverChart.prototype.initialize = function() {
     this.listenTo(this.collection, "filter", this.renderChart);
     this.margin = {
       top: 55,
@@ -1417,19 +1484,34 @@ views.DiscoverChart = View.extend({
     };
     this.padding = 30;
     this.maxRadius = 50;
-    this.width = this.$el.width() - this.margin.right - this.margin.left;
-    this.height = this.width * 9 / 16;
-    this.xScale = d3.scale.linear().domain([0, 5.25]).range([0, this.width]);
-    this.yScale = d3.scale.linear().domain([0, 1]).range([this.height, 0]);
-    this.colorScale = d3.scale.category20c();
-    _.bindAll(this, "renderChart", "order", "formatterX", "addToComparison");
+    _.bindAll(this, "renderChart", "order", "formatterX", "addToComparison", "resizeContent");
+    $(window).on("resize", this.resizeContent);
     this.popupView = new views.DiscoverChartPopup({
       margin: this.margin,
       scope: this.$el
     });
     return this.render();
-  },
-  render: function() {
+  };
+
+  DiscoverChart.prototype.remove = function() {
+    $(window).off("resize", this.resizeContent);
+    return DiscoverChart.__super__.remove.apply(this, arguments);
+  };
+
+  DiscoverChart.prototype.resizeContent = function() {
+    this.$el.empty();
+    this.render();
+    if (this.collection.models.length > 0) {
+      return this.renderChart();
+    }
+  };
+
+  DiscoverChart.prototype.render = function() {
+    this.width = this.$el.width() - this.margin.right - this.margin.left;
+    this.height = this.width * 9 / 16;
+    this.xScale = d3.scale.linear().domain([0, 5.25]).range([0, this.width]);
+    this.yScale = d3.scale.linear().domain([0, 1]).range([this.height, 0]);
+    this.colorScale = d3.scale.category20c();
     this.xAxis = d3.svg.axis().orient("bottom").scale(this.xScale).tickValues(this.xTicks).tickFormat(this.formatterX);
     this.yAxis = d3.svg.axis().scale(this.yScale).orient("left").tickValues([1]).tickFormat(function(d, i) {
       if (d === 1) {
@@ -1445,16 +1527,20 @@ views.DiscoverChart = View.extend({
     this.svg.append("text").attr("class", "y label").attr("text-anchor", "middle").attr("y", 6).attr("x", -this.height / 2).attr("dy", "-1em").attr("transform", "rotate(-90)").text("Relevance");
     this.dots = this.svg.append("g").attr("class", "dots");
     return this;
-  },
+  };
+
   /*
     Helper functions
   */
 
-  setRadiusScale: function() {
+
+  DiscoverChart.prototype.setRadiusScale = function() {
     return this.radiusScale = d3.scale.sqrt().domain([10, this.collection.maxRadius()]).range([5, this.maxRadius]);
-  },
-  xTicks: [0.75, 1.75, 3, 4.5],
-  formatterX: function(d, i) {
+  };
+
+  DiscoverChart.prototype.xTicks = [0.75, 1.75, 3, 4.5];
+
+  DiscoverChart.prototype.formatterX = function(d, i) {
     /*
     We interpolate data in the buckets, so that
       0.25 to 1 is the 1st bucket,
@@ -1472,11 +1558,13 @@ views.DiscoverChart = View.extend({
       case this.xTicks[3]:
         return "1+ year ago";
     }
-  },
-  order: function(a, b) {
+  };
+
+  DiscoverChart.prototype.order = function(a, b) {
     return b.radius - a.radius;
-  },
-  popup: function(action, scope) {
+  };
+
+  DiscoverChart.prototype.popup = function(action, scope) {
     var self;
 
     self = this;
@@ -1488,11 +1576,13 @@ views.DiscoverChart = View.extend({
           return self.popupView.setData(d, $(this), scope);
       }
     };
-  },
-  addToComparison: function(document, index) {
+  };
+
+  DiscoverChart.prototype.addToComparison = function(document, index) {
     return app.view.comparisonData.add(this.collection.get(document.key));
-  },
-  collide: function(node) {
+  };
+
+  DiscoverChart.prototype.collide = function(node) {
     var nx1, nx2, ny1, ny2, r;
 
     r = node.radius + 4;
@@ -1518,12 +1608,14 @@ views.DiscoverChart = View.extend({
       }
       return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
     };
-  },
+  };
+
   /*
     Render chart
   */
 
-  renderChart: function() {
+
+  DiscoverChart.prototype.renderChart = function() {
     var data, languages, preventCollision,
       _this = this;
 
@@ -1579,8 +1671,11 @@ views.DiscoverChart = View.extend({
     });
     this.dot.exit().transition().attr("r", 0).remove();
     return this.dot.sort(this.order);
-  }
-});
+  };
+
+  return DiscoverChart;
+
+})(View);
 
 views.Discover = View.extend({
   events: {

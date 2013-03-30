@@ -29,6 +29,7 @@ class ModuleController extends require('./basicController')
       user:       @req.user
 
     @context = _.extend {}, urls, config
+    @_buildMenu()
 
     
     unless @language

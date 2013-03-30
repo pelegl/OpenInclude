@@ -6,7 +6,7 @@ class IndexController extends BasicController
     @offset = 1
     super
   
-  index: ->    
+  index: ->
     @context.body = @_view 'index', @context    
     @res.render 'base', @context
   
