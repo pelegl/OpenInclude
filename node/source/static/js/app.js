@@ -3222,7 +3222,7 @@ var __hasProp = {}.hasOwnProperty,
     Configuring plugins
   */
 
-  var App, conf, _ref;
+  var App, conf, routes, _ref;
 
   $.cookie.json = true;
   conf = {
@@ -3454,13 +3454,56 @@ var __hasProp = {}.hasOwnProperty,
     return App;
 
   })(Backbone.Router);
+  routes = [
+    {
+      key: "(!/)",
+      name: "index"
+    }, {
+      key: "(!/)" + conf.discover_url + "(?:params)",
+      name: "discover"
+    }, {
+      key: "(!/)" + conf.signin_url,
+      name: "login"
+    }, {
+      key: "(!/)" + conf.profile_url + "(/:action)(/:profile)",
+      name: "profile"
+    }, {
+      key: "(!/)" + conf.how_to_url,
+      name: "how-to"
+    }, {
+      key: "(!/)" + conf.modules_url,
+      name: "language_list"
+    }, {
+      key: "(!/)" + conf.modules_url + "/:language",
+      name: "repo_list"
+    }, {
+      key: "(!/)" + conf.modules_url + "/:language/:repo",
+      name: "repo"
+    }, {
+      key: "(!/)" + conf.dashboard_url,
+      name: "dashboard"
+    }, {
+      key: "(!/)" + conf.dashboard_url + "/project/:id",
+      name: "project"
+    }, {
+      key: "(!/)" + conf.dashboard_url + "/project/:project/task/:task",
+      name: "task"
+    }, {
+      key: "(!/)" + conf.admin_url + "(/:action)(/:subaction)",
+      name: "admin"
+    }
+  ];
   return $(document).ready(function() {
-    var app, route_keys, route_paths,
+    var app, route_keys, route_paths, router,
       _this = this;
 
+    router = {};
+    _.each(routes, function(route) {
+      return router[route.key] = route.name;
+    });
+    App.prototype.routes = router;
     route_keys = ["", "!/", "" + conf.discover_url + "(?:params)", "!/" + conf.discover_url + "(?:params)", conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "" + conf.profile_url + "/:action/:profile", "!/" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action/:profile", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url, "dashboard/project/:id", "!/dashboard/project/:id", "dashboard/project/:project/task/:task", "!/dashboard/project/:project/task/:task", conf.admin_url, "!/" + conf.admin_url, "" + conf.admin_url + "/:action(/:subaction)", "!/" + conf.admin_url + "/:action(/:subaction)"];
     route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo", "dashboard", "dashboard", "project", "project", "task", "task", "admin", "admin", "admin", "admin"];
-    App.prototype.routes = _.object(route_keys, route_paths);
     console.log('[__app__] init done!');
     exports.app = app = new App();
     app.meta = new views.MetaView({

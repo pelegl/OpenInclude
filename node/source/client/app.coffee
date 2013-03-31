@@ -5,7 +5,6 @@
 
   $.cookie.json = true
 
-
   conf = 
     STATIC_URL          : "/static/"
     in_stealth_mode     : false
@@ -132,115 +131,27 @@
       get    = opts[1..] if opts?.length > 1
       @view = new views.AdminBoard prevView: @view, action: action, get: get
 
+  routes = [
+    {key: "(!/)"                                                  , name: "index"}
+    {key: "(!/)#{conf.discover_url}(?:params)"                    , name: "discover"}
+    {key: "(!/)#{conf.signin_url}"                                , name: "login"}
+    {key: "(!/)#{conf.profile_url}(/:action)(/:profile)"          , name: "profile"}
+    {key: "(!/)#{conf.how_to_url}"                                , name: "how-to"}
+    {key: "(!/)#{conf.modules_url}"                               , name: "language_list"}
+    {key: "(!/)#{conf.modules_url}/:language"                     , name: "repo_list"}
+    {key: "(!/)#{conf.modules_url}/:language/:repo"               , name: "repo"}
+    {key: "(!/)#{conf.dashboard_url}"                             , name: "dashboard"}
+    {key: "(!/)#{conf.dashboard_url}/project/:id"                 , name: "project"}
+    {key: "(!/)#{conf.dashboard_url}/project/:project/task/:task" , name: "task"}
+    {key: "(!/)#{conf.admin_url}(/:action)(/:subaction)"          , name: "admin"}
+  ]
 
   $(document).ready ->
-    route_keys = [
-      ""
-      "!/"
-      # Discover URL
-      "#{conf.discover_url}(?:params)"
-      "!/#{conf.discover_url}(?:params)"
-      
-      # Sign In
-      conf.signin_url
-      "!/#{conf.signin_url}"
-      
-      # Profile URL
-      conf.profile_url
-      "!/#{conf.profile_url}"
-      
-      "#{conf.profile_url}/:action"
-      "#{conf.profile_url}/:action/:profile"
-      "!/#{conf.profile_url}/:action"
-      "!/#{conf.profile_url}/:action/:profile"
-            
-      # How-to
-      conf.how_to_url  
-      "!/#{conf.how_to_url}" 
-      
-      # Modules      
-      conf.modules_url
-      "!/#{conf.modules_url}"     
-      "#{conf.modules_url}/:language"
-      "!/#{conf.modules_url}/:language"
-      "#{conf.modules_url}/:language/:repo"
-      "!/#{conf.modules_url}/:language/:repo"
-      
-      conf.dashboard_url
-      "!/#{conf.dashboard_url}"
 
-      "dashboard/project/:id"
-      "!/dashboard/project/:id"
+    router = {}
+    _.each routes, (route)-> router[route.key] = route.name
+    App.prototype.routes = router
 
-      "dashboard/project/:project/task/:task"
-      "!/dashboard/project/:project/task/:task"
-
-      # Admin panel
-
-      conf.admin_url
-      "!/#{conf.admin_url}"
-
-      "#{conf.admin_url}/:action(/:subaction)"
-      "!/#{conf.admin_url}/:action(/:subaction)"
-
-    ]
-    
-    route_paths = [
-      "index"
-      "index"
-
-      # discover
-      "discover"
-      "discover"
-
-      # sign-in
-      "login"
-      "login"
-
-      # profile routes
-      "profile"
-      "profile"
-      "profile"
-      "profile"
-      "profile"
-      "profile"
-
-      # how-to page
-      "how-to"
-      "how-to"
-
-      # language list
-      "language_list"
-      "language_list"
-
-      # repo list
-      "repo_list"
-      "repo_list"
-
-      # repo
-      "repo"
-      "repo"
-
-      # dashboard
-      "dashboard"
-      "dashboard"
-
-      # project
-      "project"
-      "project"
-
-      # task routes
-      "task"
-      "task"
-
-      # admin routes
-      "admin"
-      "admin"
-      "admin"
-      "admin"
-    ]
-          
-    App.prototype.routes = _.object route_keys, route_paths
     
     console.log '[__app__] init done!'
     exports.app = app = new App()

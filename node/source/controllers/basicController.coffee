@@ -43,8 +43,7 @@ class BasicController
     ]
     # admin
     if @req.user?.group_id is 'admin'
-      @context._menu.push
-      {url: @context.admin_url, text:"admin"}
+      @context._menu.push {url: @context.admin_url, text:"admin"}
     # rest
     if @req.user?
       @context._menu.push {url: @context.profile_url, text: "profile"},
