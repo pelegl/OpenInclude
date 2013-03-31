@@ -477,11 +477,6 @@ footer {
   stroke: #000;
   shape-rendering: crispEdges;
 }
-.stackQAHistory .axis.x path,
-.commitHistory .axis.x path,
-.starsHistory .axis.x path {
-  display: none;
-}
 .stackQAHistory .line,
 .commitHistory .line,
 .starsHistory .line {

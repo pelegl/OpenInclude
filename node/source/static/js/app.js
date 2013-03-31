@@ -1905,7 +1905,7 @@ views.MultiSeries = (function(_super) {
     _.bindAll(this);
     this.margin = {
       top: 20,
-      right: 200,
+      right: 20,
       bottom: 30,
       left: 50
     };
@@ -1960,9 +1960,6 @@ views.MultiSeries = (function(_super) {
       min = -1;
       max = 1;
       this.yAxis.tickValues([0]).tickFormat(d3.format("f.0"));
-    } else if (max < 10) {
-      min = -4;
-      max *= 2;
     } else {
       min *= 0.9;
       max *= 1.1;
@@ -1988,7 +1985,7 @@ views.MultiSeries = (function(_super) {
       x = d.value != null ? _this.x(d.value.x()) : 0;
       y = d.value != null ? _this.y(d.value.y()) : 0;
       return "translate(" + x + "," + y + ")";
-    }).attr("x", 10).attr("dy", ".35em").text(function(d) {
+    }).attr("x", 10).attr("dy", "-1em").style("text-anchor", "end").text(function(d) {
       if (d.value != null) {
         return d.name;
       } else {

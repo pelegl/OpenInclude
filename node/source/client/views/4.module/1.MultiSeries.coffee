@@ -5,7 +5,7 @@ class views.MultiSeries extends Backbone.View
 
     @margin =
       top     : 20
-      right   : 200
+      right   : 20
       bottom  : 30
       left    : 50
 
@@ -58,9 +58,6 @@ class views.MultiSeries extends Backbone.View
       min = -1
       max = 1
       @yAxis.tickValues([0]).tickFormat d3.format("f.0")
-    else if max < 10
-      min = -4
-      max *= 2
     else
       min *= 0.9
       max *= 1.1
@@ -101,7 +98,8 @@ class views.MultiSeries extends Backbone.View
         y = if d.value? then @y(d.value.y()) else 0
         return "translate(#{x},#{y})" )
       .attr("x", 10)
-      .attr("dy", ".35em")
+      .attr("dy", "-1em")
+      .style("text-anchor", "end")
       .text( (d) => return if d.value? then d.name else "" )
 
     @
