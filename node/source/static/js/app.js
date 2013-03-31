@@ -193,7 +193,7 @@ models.StackOverflowQuestion = Backbone.Model.extend({
     return new Date(this.get("timestamp") * 1000);
   },
   x: function() {
-    return this.get("timestamp") * 1000;
+    return new Date(this.get("timestamp") * 1000);
   },
   y: function() {
     return this.get("amount");
@@ -1772,7 +1772,7 @@ views.Series = Backbone.View.extend({
     this.height = 300 - this.margin.top - this.margin.bottom;
     this.x = d3.time.scale().range([0, this.width]);
     this.y = d3.scale.linear().range([this.height, 0]);
-    this.xAxis = d3.svg.axis().scale(this.x).orient("bottom");
+    this.xAxis = d3.svg.axis().scale(this.x).orient("bottom").ticks(4);
     this.yAxis = d3.svg.axis().scale(this.y).orient("left");
     this.line = d3.svg.line().x(function(d) {
       return _this.x(d.x());
@@ -1802,6 +1802,7 @@ views.Series = Backbone.View.extend({
     this.x.domain(d3.extent(data, function(d) {
       return d.x();
     }));
+    this.x.nice(d3.time.day);
     this.y.domain(d3.extent(data, function(d) {
       return d.y;
     }));
@@ -1830,7 +1831,7 @@ views.MultiSeries = Backbone.View.extend({
     this.height = 500 - this.margin.top - this.margin.bottom;
     this.x = d3.time.scale().range([0, this.width]);
     this.y = d3.scale.linear().range([this.height, 0]);
-    this.xAxis = d3.svg.axis().scale(this.x).orient("bottom");
+    this.xAxis = d3.svg.axis().scale(this.x).orient("bottom").ticks(6);
     this.yAxis = d3.svg.axis().scale(this.y).orient("left");
     this.color = d3.scale.category10();
     this.line = d3.svg.line().x(function(d) {
@@ -1850,6 +1851,7 @@ views.MultiSeries = Backbone.View.extend({
     this.x.domain(d3.extent(this.collection.models, function(d) {
       return d.x();
     }));
+    this.x.nice(d3.time.month);
     min = d3.min(questions, function(c) {
       return d3.min(c.values, function(v) {
         return v.y();
@@ -1860,7 +1862,7 @@ views.MultiSeries = Backbone.View.extend({
         return v.y();
       });
     });
-    this.y.domain([0.5 * min, 1.1 * max]);
+    this.y.domain([0.9 * min, 1.1 * max]);
     this.svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + this.height + ")").call(this.xAxis);
     this.svg.append("g").attr("class", "y axis").call(this.yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style("text-anchor", "end").text("Questions");
     question = this.svg.selectAll(".question").data(questions).enter().append("g").attr("class", "question");

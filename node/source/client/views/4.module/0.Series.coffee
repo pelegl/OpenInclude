@@ -16,7 +16,7 @@ views.Series = Backbone.View.extend
     @y = d3.scale.linear().range [@height, 0]
 
 
-    @xAxis = d3.svg.axis().scale(@x).orient("bottom")
+    @xAxis = d3.svg.axis().scale(@x).orient("bottom").ticks(4)
     @yAxis = d3.svg.axis().scale(@y).orient("left")
 
 
@@ -46,6 +46,8 @@ views.Series = Backbone.View.extend
       d.y = ++prev
 
     @x.domain d3.extent data, (d)=> return d.x()
+    @x.nice d3.time.day
+
     @y.domain d3.extent data, (d)=> return d.y
 
     @svg.append("g")

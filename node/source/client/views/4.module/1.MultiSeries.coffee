@@ -15,7 +15,7 @@ views.MultiSeries = Backbone.View.extend
     @x = d3.time.scale().range [0, @width]
     @y = d3.scale.linear().range [@height, 0]
 
-    @xAxis = d3.svg.axis().scale(@x).orient("bottom")
+    @xAxis = d3.svg.axis().scale(@x).orient("bottom").ticks(6)
     @yAxis = d3.svg.axis().scale(@y).orient("left")
 
     @color = d3.scale.category10()
@@ -40,11 +40,13 @@ views.MultiSeries = Backbone.View.extend
     questions = @color.domain().map @collection.chartMap
 
     @x.domain d3.extent @collection.models, (d)=> return d.x()
+    @x.nice d3.time.month
+
 
     min = d3.min questions, (c)=> return d3.min c.values, (v)=> return v.y()
     max = d3.max questions, (c)=> return d3.max c.values, (v)=> return v.y()
 
-    @y.domain [0.5*min, 1.1*max]
+    @y.domain [0.9*min, 1.1*max]
 
 
     @svg.append("g")

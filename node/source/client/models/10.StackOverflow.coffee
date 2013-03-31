@@ -9,7 +9,7 @@ models.StackOverflowQuestion = Backbone.Model.extend
     return new Date @get("timestamp")*1000
 
   x: ->
-    return @get("timestamp")*1000
+    return new Date @get("timestamp")*1000
 
   y: ->
     return @get "amount"
