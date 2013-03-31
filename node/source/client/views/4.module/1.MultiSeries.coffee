@@ -5,7 +5,7 @@ class views.MultiSeries extends Backbone.View
 
     @margin =
       top     : 20
-      right   : 20
+      right   : 50
       bottom  : 30
       left    : 50
 

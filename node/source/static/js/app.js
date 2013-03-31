@@ -1905,7 +1905,7 @@ views.MultiSeries = (function(_super) {
     _.bindAll(this);
     this.margin = {
       top: 20,
-      right: 20,
+      right: 50,
       bottom: 30,
       left: 50
     };
