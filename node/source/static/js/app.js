@@ -513,44 +513,35 @@ collections.StackOverflowQuestions = Backbone.Collection.extend({
   chartMap: function(name) {
     return {
       name: name,
-      values: this.where({
-        key: name
-      })
+      values: this[name]
     };
   },
   parse: function(r) {
-    var items, maxTS, questions,
+    var ans, answered, answeredKey, answeredQs, ask, asked, askedKey, askedQs, items, questions, _ref,
       _this = this;
 
     this.statistics = r.statistics, questions = r.questions;
-    if (!(questions.length > 0)) {
-      return [];
-    }
     /*
       Add normalization
     */
 
     items = [];
-    _.each(this.statistics.keys, function(key) {
-      var list;
-
-      list = _.where(questions, {
-        key: key
-      });
-      return items.push(_.last(list));
+    asked = questions.asked, answered = questions.answered;
+    ask = this.statistics.total;
+    ans = this.statistics.answered;
+    _ref = this.statistics.keys, askedKey = _ref[0], answeredKey = _ref[1];
+    this[askedKey] = askedQs = _.map(asked, function(question) {
+      question.amount = ++ask;
+      question.key = askedKey;
+      return new _this.model(question);
     });
-    maxTS = _.max(items, function(item) {
-      return item.timestamp;
+    this[answeredKey] = answeredQs = _.map(answered, function(question) {
+      question.amount = ++ans;
+      question.key = answeredKey;
+      question._id += "_answered";
+      return new _this.model(question);
     });
-    _.each(items, function(item) {
-      var i;
-
-      i = _.extend({}, item);
-      i.timestamp = maxTS.timestamp;
-      i._id += "_copy";
-      return questions.push(i);
-    });
-    return questions;
+    return askedQs.concat(answeredQs);
   },
   keys: function() {
     return this.statistics.keys || [];

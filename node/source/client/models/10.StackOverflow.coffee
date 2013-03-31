@@ -1,6 +1,7 @@
 models.StackOverflowQuestion = Backbone.Model.extend
   idAttribute: "_id"
   urlRoot: "/modules"
+
   url: ->
     return "#{@urlRoot}/all/all/stackoverflow/json/#{@get('_id')}"
 

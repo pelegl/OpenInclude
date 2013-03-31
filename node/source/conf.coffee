@@ -6,8 +6,6 @@ mongoose    = require 'mongoose'
 _           = require 'underscore'
 
 
-require('coffee-trace')
-
 passport       = require 'passport'
 GithubStrategy = require('passport-github').Strategy
 TrelloStrategy = require('passport-trello').Strategy

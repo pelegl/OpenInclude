@@ -97,7 +97,7 @@ methods =
     
     #Questions before day X    
     Tasks.statistics = (statistics)=>
-      match = { $match: {module_id: @_id, last_activity_date: {$lt: stopTS}} }
+      match = { $match: {module_id: @_id, creation_date: {$lt: stopTS}} }
       project_one = { $project: {accepted_answer_id : {$ifNull: ["$accepted_answer_id", -1] } } }
       project_two =
         $project:
@@ -122,63 +122,63 @@ methods =
       # set workflow
       workflow = {}
       # Query for questions      
-      workflow.questions = (questions)=>
-        # get new questions
-        query  = {module_id: @_id, last_activity_date: {$gte: stopTS}}
-        fields = "question_id creation_date accepted_answer_id answers.is_accepted answers.last_activity_date"
-        StackOverflow.find query, fields, questions
-      
-      # Push answered questions
-      workflow.answered = ['questions', (return_questions, data)=>
-        output = []
-        async.each data.questions, (question, async_callback_each)=>
-          # add point to total series
-          output.push {_id: question.question_id, key: "Total questions asked", timestamp: question.creation_date }
-          # detect if this question has an answer
-          if question.accepted_answer_id?
-            # get answer
-            async.detect question.answers, (answer, call_detect)=>
-              call_detect answer.is_accepted is true
-            , (answer)=>
-              # add answer
-              output.push {_id: "#{question.question_id}_answered", key: "Total questions answered", timestamp: answer.last_activity_date, answer: true }
-              async_callback_each null
-          # return
-          else 
-            async_callback_each null
-        ,(err) =>
-          return_questions err, output           
-      ]  
-      
-      # Sort data      
-      workflow.sorted = ['answered', (questions, data)=>        
-        async.sortBy data.answered, (question, async_callback)=>
-          async_callback null, question.timestamp
-        ,questions
-      ]
-      
+      workflow.questionsAsked = (questions)=>
+
+        query =
+          $match:
+            module_id: @_id
+            creation_date:
+              $gte: stopTS
+
+        project =
+          $project:
+            timestamp: "$creation_date"
+
+        sort =
+          $sort:
+            creation_date : 1
+
+
+
+        StackOverflow.aggregate query, sort, project, questions
+
+      workflow.questionsAnswered = (questions)=>
+        match =
+          $match:
+            module_id: @_id
+            creation_date:
+              $gte: stopTS
+            accepted_answer_id:
+              $exists: true
+
+        project =
+          $project:
+            answers: 1
+
+        unwind =
+          $unwind: "$answers"
+
+        match_unwind =
+          $match:
+            "answers.is_accepted" : true
+
+        project_unwind =
+          $project:
+            timestamp: "$answers.creation_date"
+
+        sort =
+          $sort :
+            timestamp: 1
+
+        StackOverflow.aggregate match, project, unwind, match_unwind, project_unwind, sort, questions
+
       # Iterate over to add amount of questions
-      workflow.final = ['sorted', (questions, data)=>
-        # statistics
-        # -- total
-        # -- answered
-        statistics = _.extend {}, results.statistics
-        {sorted}   = data
-        async.eachSeries sorted, (question, async_call)=>
-          if question.answer is true            
-            question.amount = ++statistics.answered
-          else  
-            question.amount = ++statistics.total
-          
-          async_call null
-        , =>
-          questions null, sorted  
-      ]        
-      
+
+
       async.auto workflow, (err, data)=>
         return questions_callback err if err?
         # else we've succeeded        
-        questions_callback null, data.final
+        questions_callback null, {asked: data.questionsAsked, answered: data.questionsAnswered}
     ]
                     
     async.auto Tasks, callback        

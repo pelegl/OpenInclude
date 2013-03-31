@@ -3,33 +3,38 @@ collections.StackOverflowQuestions = Backbone.Collection.extend
 
   chartMap: (name)->
     return {
-    name: name,
-    values: @where {key: name}
+      name: name,
+      values: this[name]
     }
 
   parse: (r)->
     {@statistics, questions} = r
-
-    return [] unless questions.length > 0
-
     ###
       Add normalization
     ###
     items = []
-    _.each @statistics.keys, (key)=>
-      list = _.where questions, {key}
-      items.push _.last(list)
+    {asked, answered} = questions
 
-    maxTS = _.max items, (item)=>
-      return item.timestamp
+    # counters
+    ask = @statistics.total
+    ans = @statistics.answered
+    [askedKey, answeredKey] = @statistics.keys
 
-    _.each items, (item)=>
-      i = _.extend {}, item
-      i.timestamp = maxTS.timestamp
-      i._id += "_copy"
-      questions.push i
+    # mappings
+    @[askedKey] = askedQs = _.map asked, (question)=>
+      question.amount  = ++ask
+      question.key     = askedKey
+      return new @model question
 
-    questions
+    @[answeredKey] = answeredQs = _.map answered, (question)=>
+      question.amount  = ++ans
+      question.key     = answeredKey
+      question._id    += "_answered"
+      return new @model question
+
+    # caching
+
+    return askedQs.concat(answeredQs)
 
   keys: ->
     return @statistics.keys || []

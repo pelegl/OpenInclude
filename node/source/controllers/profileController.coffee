@@ -1,4 +1,3 @@
-require('coffee-trace')
 _            = require 'underscore'
 {get_models} = require '../conf'
 [User, Stripe, Bill]       = get_models ["User", "Stripe", "Bill"]

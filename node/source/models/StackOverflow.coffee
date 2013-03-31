@@ -16,7 +16,9 @@ definition =
   is_answered: Boolean
   last_edit_date  : Number
   owner: {}
-  question_id: Number  
+  _id:
+    type: Number
+    unique: true
   accepted_answer_id: Number
 
 
