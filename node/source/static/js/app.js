@@ -517,7 +517,7 @@ collections.StackOverflowQuestions = Backbone.Collection.extend({
     };
   },
   parse: function(r) {
-    var ans, answered, answeredKey, answeredQs, ask, asked, askedKey, askedQs, currentDate, data, items, questionStart, questionStop, questions, startDate, _ref,
+    var ans, answered, answeredKey, answeredQs, ask, asked, askedKey, askedQs, currentDate, items, normalizeSeries, questions, _ref,
       _this = this;
 
     this.statistics = r.statistics, questions = r.questions;
@@ -541,29 +541,57 @@ collections.StackOverflowQuestions = Backbone.Collection.extend({
       question._id += "_answered";
       return new _this.model(question);
     });
-    if (askedQs.length === 0) {
-      currentDate = new Date().getTime() / 1000;
-      startDate = new Date();
-      startDate.setFullYear(startDate.getFullYear() - 1);
-      startDate.setHours(0);
-      startDate.setMinutes(0);
-      startDate.setSeconds(0);
-      startDate.setDate(1);
-      startDate = startDate.getTime() / 1000;
-      data = {
-        amount: ask,
-        key: askedKey
-      };
-      questionStart = new this.model(_.extend({}, data, {
-        timestamp: startDate,
-        _id: "start"
-      }));
-      questionStop = new this.model(_.extend({}, data, {
-        timestamp: currentDate,
-        _id: "stop"
-      }));
-      askedQs.push(questionStart, questionStop);
-    }
+    currentDate = new Date().getTime() / 1000;
+    normalizeSeries = function(series, startDate) {
+      var data, first, last, questionStart, questionStop;
+
+      if (series.length === 0) {
+        startDate = new Date();
+        startDate.setFullYear(startDate.getFullYear() - 1);
+        startDate.setHours(0);
+        startDate.setMinutes(0);
+        startDate.setSeconds(0);
+        startDate.setDate(1);
+        startDate = startDate.getTime() / 1000;
+        data = {
+          amount: ask,
+          key: askedKey
+        };
+        questionStart = new _this.model(_.extend({}, data, {
+          timestamp: startDate,
+          _id: "start"
+        }));
+        questionStop = new _this.model(_.extend({}, data, {
+          timestamp: currentDate,
+          _id: "stop"
+        }));
+      } else {
+        first = _.first(series);
+        last = _.last(series);
+        questionStart = first.clone();
+        questionStart.set({
+          _id: "" + (questionStart.get('_id')) + "_start",
+          timestamp: startDate
+        });
+        questionStop = last.clone();
+        questionStop.set({
+          _id: "" + (questionStop.get('_id')) + "_stop",
+          timestamp: currentDate
+        });
+      }
+      series.unshift(questionStart);
+      series.push(questionStop);
+      return series;
+    };
+    _.each([askedQs, answeredQs], function(qSeries) {
+      var args;
+
+      args = [qSeries];
+      if (qSeries.length > 0) {
+        args.push(_.first(qSeries).get("timestamp"));
+      }
+      return normalizeSeries.apply(_this, args);
+    });
     return askedQs.concat(answeredQs);
   },
   keys: function() {
@@ -1933,7 +1961,7 @@ views.MultiSeries = (function(_super) {
       max = 1;
       this.yAxis.tickValues([0]).tickFormat(d3.format("f.0"));
     } else if (max < 10) {
-      min -= max;
+      min = -4;
       max *= 2;
     } else {
       min *= 0.9;
@@ -1975,6 +2003,14 @@ views.MultiSeries = (function(_super) {
 })(Backbone.View);
 
 views.Repo = View.extend({
+  events: {
+    'click [data-action=star]': "setBookmark"
+  },
+  setBookmark: function() {
+    var $this;
+
+    return $this = $(e.currentTarget);
+  },
   initialize: function(opts) {
     var preloadedData, repo, _ref;
 

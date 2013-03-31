@@ -489,6 +489,9 @@ footer {
   stroke: steelblue;
   stroke-width: 1.5px;
 }
+.module .toolbar {
+  margin-top: 20px;
+}
 .project-list li,
 .task-list li {
   margin-bottom: 2px;

@@ -1,7 +1,12 @@
 views.Repo = View.extend
+  events:
+    'click [data-action=star]' : "setBookmark"
+
+  setBookmark: ->
+    $this = $(e.currentTarget)
 
   initialize: (opts={})->
-    {@language, repo} = opts
+    {@language, repo}   = opts
     try [@owner, @repo] = decodeURI(repo).split "|"
 
     @model             = new models.Repo {@language, module_name: @repo, @owner}

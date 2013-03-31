@@ -59,7 +59,7 @@ class views.MultiSeries extends Backbone.View
       max = 1
       @yAxis.tickValues([0]).tickFormat d3.format("f.0")
     else if max < 10
-      min -= max
+      min = -4
       max *= 2
     else
       min *= 0.9

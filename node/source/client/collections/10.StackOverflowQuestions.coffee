@@ -32,28 +32,50 @@ collections.StackOverflowQuestions = Backbone.Collection.extend
       question._id    += "_answered"
       return new @model question
 
+    # normalize dates
+    currentDate = new Date().getTime()/1000
+
     # caching
-    if askedQs.length is 0
-      currentDate = new Date().getTime()/1000
-      # normalize start date -- so its nice
-      startDate   = new Date()
-      startDate.setFullYear(startDate.getFullYear()-1)
-      startDate.setHours(0)
-      startDate.setMinutes(0)
-      startDate.setSeconds(0)
-      startDate.setDate(1)
+    normalizeSeries = (series, startDate)=>
+      if series.length is 0
+        # normalize start date -- so its nice
+        startDate   = new Date()
+        startDate.setFullYear(startDate.getFullYear()-1)
+        startDate.setHours(0)
+        startDate.setMinutes(0)
+        startDate.setSeconds(0)
+        startDate.setDate(1)
+        #
+        startDate   = startDate.getTime()/1000
 
-      #
-      startDate   = startDate.getTime()/1000
+        data =
+          amount: ask
+          key:    askedKey
 
-      data =
-        amount: ask
-        key:    askedKey
+        questionStart = new @model _.extend {}, data, {timestamp: startDate,  _id: "start"}
+        questionStop  = new @model _.extend {}, data, {timestamp: currentDate, _id: "stop"}
 
-      questionStart = new @model _.extend {}, data, {timestamp: startDate, _id: "start"}
-      questionStop  = new @model _.extend {}, data, {timestamp: currentDate, _id: "stop"}
+      else
+        first     = _.first series
+        last      = _.last  series
+        # qStart
+        questionStart = first.clone()
+        questionStart.set {_id: "#{questionStart.get('_id')}_start", timestamp: startDate }
+        # qStop
+        questionStop = last.clone()
+        questionStop.set {_id: "#{questionStop.get('_id')}_stop", timestamp: currentDate }
 
-      askedQs.push questionStart, questionStop
+      series.unshift questionStart
+      series.push    questionStop
+
+      series
+
+
+    _.each [askedQs, answeredQs], (qSeries)=>
+      args = [qSeries]
+      args.push _.first(qSeries).get("timestamp") if qSeries.length > 0
+      normalizeSeries.apply this, args
+
 
     return askedQs.concat(answeredQs)
 
