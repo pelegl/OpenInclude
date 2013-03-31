@@ -10,4 +10,4 @@ collections.GithubEvents = Backbone.Collection.extend
     @owner    ||= ""
 
   url: ->
-    return "/modules/#{@language}/#{@owner}|#{@repo}/github_events/json"
+    return "/modules/#{encodeURIComponent(@language)}/#{@owner}|#{@repo}/github_events/json"

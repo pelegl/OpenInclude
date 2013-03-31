@@ -557,7 +557,7 @@ collections.StackOverflowQuestions = Backbone.Collection.extend({
     return this.owner || (this.owner = "");
   },
   url: function() {
-    return "/modules/" + this.language + "/" + this.owner + "|" + this.repo + "/stackoverflow/json";
+    return "/modules/" + (encodeURIComponent(this.language)) + "/" + this.owner + "|" + this.repo + "/stackoverflow/json";
   }
 });
 
@@ -594,7 +594,7 @@ collections.Modules = collections.requestPager.extend({
   },
   model: models.Repo,
   url: function() {
-    return "/modules/" + this.language;
+    return "/modules/" + (encodeURIComponent(this.language));
   },
   parse: function(response) {
     var modules;
@@ -735,7 +735,7 @@ collections.GithubEvents = Backbone.Collection.extend({
     return this.owner || (this.owner = "");
   },
   url: function() {
-    return "/modules/" + this.language + "/" + this.owner + "|" + this.repo + "/github_events/json";
+    return "/modules/" + (encodeURIComponent(this.language)) + "/" + this.owner + "|" + this.repo + "/github_events/json";
   }
 });
 
@@ -755,7 +755,7 @@ views.MetaView = Backbone.View.extend({
     var location, pathname, q, trigger;
 
     e.preventDefault();
-    q = this.$("[name=q]").val();
+    q = encodeURIComponent(this.$("[name=q]").val());
     location = window.location.pathname;
     pathname = $(e.currentTarget).attr("action");
     trigger = location === pathname ? false : true;

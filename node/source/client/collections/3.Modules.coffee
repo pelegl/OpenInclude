@@ -8,7 +8,7 @@ collections.Modules = collections.requestPager.extend
   model: models.Repo
 
   url: ->
-    return "/modules/#{@language}"
+    return "/modules/#{encodeURIComponent(@language)}"
 
   parse: (response)->
     @cache[@currentPage] = modules = response.modules

@@ -20,7 +20,7 @@
 		<tbody>
 			{{~ it.projects :project}}
             <tr>
-                <td><a href='/modules/{{=project._source.language}}/{{=project._source.owner}}|{{=project._source.module_name}}'>{{! project._source.module_name }}</a></td>
+                <td><a href='/modules/{{= encodeURIComponent(project._source.language)}}/{{=project._source.owner}}|{{=project._source.module_name}}'>{{! project._source.module_name }}</a></td>
                 <td>
                   <span class='color' style='background: #{{=project.color}}'></span>
                   {{! project._source.language }}

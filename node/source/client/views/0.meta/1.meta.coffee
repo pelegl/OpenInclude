@@ -5,7 +5,7 @@ views.MetaView = Backbone.View.extend
   searchSubmit: (e)->
     e.preventDefault()
 
-    q = @$("[name=q]").val()
+    q = encodeURIComponent @$("[name=q]").val()
     location = window.location.pathname
     pathname = $(e.currentTarget).attr "action"
     trigger = if location is pathname then false else true

@@ -15,7 +15,7 @@ class DiscoverController extends require('./basicController')
       discover_search_action : "/discover"
       
     {q} = @req.query
-    @context.discover_search_query = q if q?
+    @context.discover_search_query = decodeURIComponent q if q?
     
     super
   

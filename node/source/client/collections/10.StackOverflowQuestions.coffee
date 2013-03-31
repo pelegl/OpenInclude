@@ -50,4 +50,4 @@ collections.StackOverflowQuestions = Backbone.Collection.extend
     @owner    ||= ""
 
   url: ->
-    return "/modules/#{@language}/#{@owner}|#{@repo}/stackoverflow/json"
+    return "/modules/#{encodeURIComponent(@language)}/#{@owner}|#{@repo}/stackoverflow/json"
