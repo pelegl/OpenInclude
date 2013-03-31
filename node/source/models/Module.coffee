@@ -123,57 +123,10 @@ methods =
       workflow = {}
       # Query for questions      
       workflow.questionsAsked = (questions)=>
-
-        query =
-          $match:
-            module_id: @_id
-            creation_date:
-              $gte: stopTS
-
-        project =
-          $project:
-            timestamp: "$creation_date"
-
-        sort =
-          $sort:
-            creation_date : 1
-
-
-
-        StackOverflow.aggregate query, sort, project, questions
+        StackOverflow.questionsAskedDetailed @_id, stopTS, questions
 
       workflow.questionsAnswered = (questions)=>
-        match =
-          $match:
-            module_id: @_id
-            creation_date:
-              $gte: stopTS
-            accepted_answer_id:
-              $exists: true
-
-        project =
-          $project:
-            answers: 1
-
-        unwind =
-          $unwind: "$answers"
-
-        match_unwind =
-          $match:
-            "answers.is_accepted" : true
-
-        project_unwind =
-          $project:
-            timestamp: "$answers.creation_date"
-
-        sort =
-          $sort :
-            timestamp: 1
-
-        StackOverflow.aggregate match, project, unwind, match_unwind, project_unwind, sort, questions
-
-      # Iterate over to add amount of questions
-
+        StackOverflow.questionsAnswered @_id, stopTS, questions
 
       async.auto workflow, (err, data)=>
         return questions_callback err if err?

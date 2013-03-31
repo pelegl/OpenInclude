@@ -57,43 +57,21 @@ class DiscoverController extends require('./basicController')
             async_callback null
           , => callback null, result
       
-      # pull questions statistics    
-      workflow.questions = (callback) =>        
-        match = 
-          $match:
-            module_id:
-              $in: module_ids
-        project = 
-          $project:
-            _id : 0            
-            has_answer: 
-              $ifNull: ["$accepted_answer_id", 0]              
-            module_id: 1
-        project_2 = 
-          $project:
-            has_answer: 
-              $cond: [$ne: ["$has_answer", 0], 1, 0]
-            module_id: 1
-        unwind = 
-          $unwind : "$module_id"             
-        group = 
-          $group:
-            _id: "$module_id"
-            asked:
-              $sum: 1
-            answered:
-              $sum: "$has_answer"
-                                                                                           
-                
-        StackOverflow.aggregate match, project, project_2, group, (err, statistics)=>
+      # pull questions statistics
+      ###
+        Change question statistics
+      ###
+
+      workflow.questions = (callback) =>
+        StackOverflow.questionsStatistics module_ids, (err, statistics)=>
           return callback err if err?
+
           result = {}
           async.forEach statistics, (module, async_callback)=>
-            id = if Array.isArray module._id then module._id[0] else module._id
-            result[id] = module
+            result[module._id] = module
             async_callback null
-          , => callback null, result                      
-      
+          , => callback null, result
+
       workflow.map = ['color', 'questions', (callback, results)=>
          {color, questions} = results
          async.map output, (module, async_callback)=>           
