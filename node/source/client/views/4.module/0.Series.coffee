@@ -1,4 +1,5 @@
-views.Series = Backbone.View.extend
+class views.Series extends Backbone.View
+
   initialize: (opts={}) ->
     _.bindAll @
     {@types, @title} = opts
@@ -8,21 +9,31 @@ views.Series = Backbone.View.extend
       right   : 100
       bottom  : 30
       left    : 50
-    @width = @$el.width() - @margin.right - @margin.left
-    @height = 300 - @margin.top - @margin.bottom
-
-
-    @x = d3.time.scale().range [0, @width]
-    @y = d3.scale.linear().range [@height, 0]
-
-
-    @xAxis = d3.svg.axis().scale(@x).orient("bottom").ticks(4)
-    @yAxis = d3.svg.axis().scale(@y).orient("left")
-
 
     @line = d3.svg.line()
       .x( (d) => return @x d.x() )
       .y( (d) => return @y d.y )
+
+    $(window).on "resize", @resizeContent
+
+  remove: ->
+    $(window).off "resize", @resizeContent
+    super
+
+  resizeContent: ->
+    @$el.empty()
+    @render()
+
+  render: ->
+
+    @width = @$el.width() - @margin.right - @margin.left
+    @height = 300 - @margin.top - @margin.bottom
+
+    @x = d3.time.scale().range [0, @width]
+    @y = d3.scale.linear().range [@height, 0]
+
+    @xAxis = d3.svg.axis().scale(@x).orient("bottom").ticks(4)
+    @yAxis = d3.svg.axis().scale(@y).orient("left").ticks(4)
 
 
     className = @$el.attr "class"
@@ -33,10 +44,6 @@ views.Series = Backbone.View.extend
       .append("g")
       .attr("transform", "translate(" + @margin.left + "," + @margin.top + ")")
 
-  render: ->
-    ###
-    TODO: fix data
-    ###
 
     data = @collection.filter (item)=>
       return item.get("type") in @types
@@ -49,6 +56,7 @@ views.Series = Backbone.View.extend
     @x.nice d3.time.day
 
     @y.domain d3.extent data, (d)=> return d.y
+    @y.nice()
 
     @svg.append("g")
       .attr("class", "x axis")

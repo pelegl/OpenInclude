@@ -1,4 +1,4 @@
-views.MultiSeries = Backbone.View.extend
+class views.MultiSeries extends Backbone.View
 
   initialize: (opts={}) ->
     _.bindAll @
@@ -8,21 +8,33 @@ views.MultiSeries = Backbone.View.extend
       right   : 200
       bottom  : 30
       left    : 50
-    @width = @$el.width() - @margin.right - @margin.left
-    @height = 500 - @margin.top - @margin.bottom
-
-
-    @x = d3.time.scale().range [0, @width]
-    @y = d3.scale.linear().range [@height, 0]
-
-    @xAxis = d3.svg.axis().scale(@x).orient("bottom").ticks(6)
-    @yAxis = d3.svg.axis().scale(@y).orient("left")
 
     @color = d3.scale.category10()
 
     @line = d3.svg.line()
       .x( (d) => return @x d.x() )
       .y( (d) => return @y d.y() )
+
+    $(window).on "resize", @resizeContent
+
+  remove: ->
+    $(window).off "resize", @resizeContent
+    super
+
+  resizeContent: ->
+    @$el.empty()
+    @render()
+
+  render: ->
+
+    @width = @$el.width() - @margin.right - @margin.left
+    @height = 500 - @margin.top - @margin.bottom
+
+    @x = d3.time.scale().range [0, @width]
+    @y = d3.scale.linear().range [@height, 0]
+
+    @xAxis = d3.svg.axis().scale(@x).orient("bottom").ticks(6)
+    @yAxis = d3.svg.axis().scale(@y).orient("left").ticks(6)
 
     className = @$el.attr "class"
 
@@ -31,10 +43,6 @@ views.MultiSeries = Backbone.View.extend
       .attr("height", @height + @margin.top + @margin.bottom)
       .append("g")
       .attr("transform", "translate(" + @margin.left + "," + @margin.top + ")")
-
-
-
-  render: ->
 
     @color.domain @collection.keys()
     questions = @color.domain().map @collection.chartMap
@@ -46,7 +54,19 @@ views.MultiSeries = Backbone.View.extend
     min = d3.min questions, (c)=> return d3.min c.values, (v)=> return v.y()
     max = d3.max questions, (c)=> return d3.max c.values, (v)=> return v.y()
 
-    @y.domain [0.9*min, 1.1*max]
+    if min is 0 and max is 0
+      min = -1
+      max = 1
+      @yAxis.tickValues([0]).tickFormat d3.format("f.0")
+    else if max < 10
+      min -= max
+      max *= 2
+    else
+      min *= 0.9
+      max *= 1.1
+
+    @y.domain [min,max]
+    @y.nice()
 
 
     @svg.append("g")

@@ -33,6 +33,27 @@ collections.StackOverflowQuestions = Backbone.Collection.extend
       return new @model question
 
     # caching
+    if askedQs.length is 0
+      currentDate = new Date().getTime()/1000
+      # normalize start date -- so its nice
+      startDate   = new Date()
+      startDate.setFullYear(startDate.getFullYear()-1)
+      startDate.setHours(0)
+      startDate.setMinutes(0)
+      startDate.setSeconds(0)
+      startDate.setDate(1)
+
+      #
+      startDate   = startDate.getTime()/1000
+
+      data =
+        amount: ask
+        key:    askedKey
+
+      questionStart = new @model _.extend {}, data, {timestamp: startDate, _id: "start"}
+      questionStop  = new @model _.extend {}, data, {timestamp: currentDate, _id: "stop"}
+
+      askedQs.push questionStart, questionStop
 
     return askedQs.concat(answeredQs)
 

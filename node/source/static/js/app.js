@@ -517,7 +517,7 @@ collections.StackOverflowQuestions = Backbone.Collection.extend({
     };
   },
   parse: function(r) {
-    var ans, answered, answeredKey, answeredQs, ask, asked, askedKey, askedQs, items, questions, _ref,
+    var ans, answered, answeredKey, answeredQs, ask, asked, askedKey, askedQs, currentDate, data, items, questionStart, questionStop, questions, startDate, _ref,
       _this = this;
 
     this.statistics = r.statistics, questions = r.questions;
@@ -541,6 +541,29 @@ collections.StackOverflowQuestions = Backbone.Collection.extend({
       question._id += "_answered";
       return new _this.model(question);
     });
+    if (askedQs.length === 0) {
+      currentDate = new Date().getTime() / 1000;
+      startDate = new Date();
+      startDate.setFullYear(startDate.getFullYear() - 1);
+      startDate.setHours(0);
+      startDate.setMinutes(0);
+      startDate.setSeconds(0);
+      startDate.setDate(1);
+      startDate = startDate.getTime() / 1000;
+      data = {
+        amount: ask,
+        key: askedKey
+      };
+      questionStart = new this.model(_.extend({}, data, {
+        timestamp: startDate,
+        _id: "start"
+      }));
+      questionStop = new this.model(_.extend({}, data, {
+        timestamp: currentDate,
+        _id: "stop"
+      }));
+      askedQs.push(questionStart, questionStop);
+    }
     return askedQs.concat(answeredQs);
   },
   keys: function() {
@@ -1750,12 +1773,21 @@ views.HowTo = View.extend({
   }
 });
 
-var __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+var _ref,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
-views.Series = Backbone.View.extend({
-  initialize: function(opts) {
-    var className,
-      _this = this;
+views.Series = (function(_super) {
+  __extends(Series, _super);
+
+  function Series() {
+    _ref = Series.__super__.constructor.apply(this, arguments);
+    return _ref;
+  }
+
+  Series.prototype.initialize = function(opts) {
+    var _this = this;
 
     if (opts == null) {
       opts = {};
@@ -1768,32 +1800,40 @@ views.Series = Backbone.View.extend({
       bottom: 30,
       left: 50
     };
-    this.width = this.$el.width() - this.margin.right - this.margin.left;
-    this.height = 300 - this.margin.top - this.margin.bottom;
-    this.x = d3.time.scale().range([0, this.width]);
-    this.y = d3.scale.linear().range([this.height, 0]);
-    this.xAxis = d3.svg.axis().scale(this.x).orient("bottom").ticks(4);
-    this.yAxis = d3.svg.axis().scale(this.y).orient("left");
     this.line = d3.svg.line().x(function(d) {
       return _this.x(d.x());
     }).y(function(d) {
       return _this.y(d.y);
     });
-    className = this.$el.attr("class");
-    return this.svg = d3.select("." + className).append("svg").attr("width", this.width + this.margin.left + this.margin.right).attr("height", this.height + this.margin.top + this.margin.bottom).append("g").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-  },
-  render: function() {
-    /*
-    TODO: fix data
-    */
+    return $(window).on("resize", this.resizeContent);
+  };
 
-    var data, prev,
+  Series.prototype.remove = function() {
+    $(window).off("resize", this.resizeContent);
+    return Series.__super__.remove.apply(this, arguments);
+  };
+
+  Series.prototype.resizeContent = function() {
+    this.$el.empty();
+    return this.render();
+  };
+
+  Series.prototype.render = function() {
+    var className, data, prev,
       _this = this;
 
+    this.width = this.$el.width() - this.margin.right - this.margin.left;
+    this.height = 300 - this.margin.top - this.margin.bottom;
+    this.x = d3.time.scale().range([0, this.width]);
+    this.y = d3.scale.linear().range([this.height, 0]);
+    this.xAxis = d3.svg.axis().scale(this.x).orient("bottom").ticks(4);
+    this.yAxis = d3.svg.axis().scale(this.y).orient("left").ticks(4);
+    className = this.$el.attr("class");
+    this.svg = d3.select("." + className).append("svg").attr("width", this.width + this.margin.left + this.margin.right).attr("height", this.height + this.margin.top + this.margin.bottom).append("g").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
     data = this.collection.filter(function(item) {
-      var _ref;
+      var _ref1;
 
-      return _ref = item.get("type"), __indexOf.call(_this.types, _ref) >= 0;
+      return _ref1 = item.get("type"), __indexOf.call(_this.types, _ref1) >= 0;
     });
     prev = 0;
     data.forEach(function(d) {
@@ -1806,16 +1846,30 @@ views.Series = Backbone.View.extend({
     this.y.domain(d3.extent(data, function(d) {
       return d.y;
     }));
+    this.y.nice();
     this.svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + this.height + ")").call(this.xAxis);
     this.svg.append("g").attr("class", "y axis").call(this.yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style("text-anchor", "end").text(this.title);
     return this.svg.append("path").datum(data).attr("class", "line").attr("d", this.line);
-  }
-});
+  };
 
-views.MultiSeries = Backbone.View.extend({
-  initialize: function(opts) {
-    var className,
-      _this = this;
+  return Series;
+
+})(Backbone.View);
+
+var _ref,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+views.MultiSeries = (function(_super) {
+  __extends(MultiSeries, _super);
+
+  function MultiSeries() {
+    _ref = MultiSeries.__super__.constructor.apply(this, arguments);
+    return _ref;
+  }
+
+  MultiSeries.prototype.initialize = function(opts) {
+    var _this = this;
 
     if (opts == null) {
       opts = {};
@@ -1827,25 +1881,37 @@ views.MultiSeries = Backbone.View.extend({
       bottom: 30,
       left: 50
     };
-    this.width = this.$el.width() - this.margin.right - this.margin.left;
-    this.height = 500 - this.margin.top - this.margin.bottom;
-    this.x = d3.time.scale().range([0, this.width]);
-    this.y = d3.scale.linear().range([this.height, 0]);
-    this.xAxis = d3.svg.axis().scale(this.x).orient("bottom").ticks(6);
-    this.yAxis = d3.svg.axis().scale(this.y).orient("left");
     this.color = d3.scale.category10();
     this.line = d3.svg.line().x(function(d) {
       return _this.x(d.x());
     }).y(function(d) {
       return _this.y(d.y());
     });
-    className = this.$el.attr("class");
-    return this.svg = d3.select("." + className).append("svg").attr("width", this.width + this.margin.left + this.margin.right).attr("height", this.height + this.margin.top + this.margin.bottom).append("g").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
-  },
-  render: function() {
-    var max, min, question, questions,
+    return $(window).on("resize", this.resizeContent);
+  };
+
+  MultiSeries.prototype.remove = function() {
+    $(window).off("resize", this.resizeContent);
+    return MultiSeries.__super__.remove.apply(this, arguments);
+  };
+
+  MultiSeries.prototype.resizeContent = function() {
+    this.$el.empty();
+    return this.render();
+  };
+
+  MultiSeries.prototype.render = function() {
+    var className, max, min, question, questions,
       _this = this;
 
+    this.width = this.$el.width() - this.margin.right - this.margin.left;
+    this.height = 500 - this.margin.top - this.margin.bottom;
+    this.x = d3.time.scale().range([0, this.width]);
+    this.y = d3.scale.linear().range([this.height, 0]);
+    this.xAxis = d3.svg.axis().scale(this.x).orient("bottom").ticks(6);
+    this.yAxis = d3.svg.axis().scale(this.y).orient("left").ticks(6);
+    className = this.$el.attr("class");
+    this.svg = d3.select("." + className).append("svg").attr("width", this.width + this.margin.left + this.margin.right).attr("height", this.height + this.margin.top + this.margin.bottom).append("g").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
     this.color.domain(this.collection.keys());
     questions = this.color.domain().map(this.collection.chartMap);
     this.x.domain(d3.extent(this.collection.models, function(d) {
@@ -1862,7 +1928,19 @@ views.MultiSeries = Backbone.View.extend({
         return v.y();
       });
     });
-    this.y.domain([0.9 * min, 1.1 * max]);
+    if (min === 0 && max === 0) {
+      min = -1;
+      max = 1;
+      this.yAxis.tickValues([0]).tickFormat(d3.format("f.0"));
+    } else if (max < 10) {
+      min -= max;
+      max *= 2;
+    } else {
+      min *= 0.9;
+      max *= 1.1;
+    }
+    this.y.domain([min, max]);
+    this.y.nice();
     this.svg.append("g").attr("class", "x axis").attr("transform", "translate(0," + this.height + ")").call(this.xAxis);
     this.svg.append("g").attr("class", "y axis").call(this.yAxis).append("text").attr("transform", "rotate(-90)").attr("y", 6).attr("dy", ".71em").style("text-anchor", "end").text("Questions");
     question = this.svg.selectAll(".question").data(questions).enter().append("g").attr("class", "question");
@@ -1890,8 +1968,11 @@ views.MultiSeries = Backbone.View.extend({
       }
     });
     return this;
-  }
-});
+  };
+
+  return MultiSeries;
+
+})(Backbone.View);
 
 views.Repo = View.extend({
   initialize: function(opts) {
