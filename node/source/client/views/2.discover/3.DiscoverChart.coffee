@@ -22,8 +22,15 @@ class views.DiscoverChart extends View
     super
 
   resizeContent: ->
+    # detach popup
+    @popupView.$el.detach()
+    # clear element
     @$el.empty()
+    # render new one
     @render()
+    # attach element
+    @$el.append @popupView.$el
+    # render chart
     @renderChart() if @collection.models.length > 0
 
   render: ->

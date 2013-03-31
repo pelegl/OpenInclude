@@ -1490,8 +1490,10 @@ views.DiscoverChart = (function(_super) {
   };
 
   DiscoverChart.prototype.resizeContent = function() {
+    this.popupView.$el.detach();
     this.$el.empty();
     this.render();
+    this.$el.append(this.popupView.$el);
     if (this.collection.models.length > 0) {
       return this.renderChart();
     }
