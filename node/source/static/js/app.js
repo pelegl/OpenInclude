@@ -1038,17 +1038,17 @@ views.Menu = Backbone.View.extend({
     return this.listenTo(app, "route", this.navigate);
   },
   navigate: function() {
-    var parse, pathname, testUrl,
+    var parse, pathname,
       _this = this;
 
     parse = help.qs.parse;
     pathname = window.location.pathname;
-    testUrl = new RegExp("^" + pathname + ".*$");
     if (pathname.length > 1) {
       this.collection.forEach(function(link) {
-        var isActive;
+        var isActive, testUrl;
 
-        isActive = testUrl.test(link.get("url"));
+        testUrl = new RegExp("^" + (link.get('url')) + ".*$");
+        isActive = testUrl.test(pathname);
         return link.set({
           isActive: isActive
         });
@@ -3494,7 +3494,7 @@ var __hasProp = {}.hasOwnProperty,
     }
   ];
   return $(document).ready(function() {
-    var app, route_keys, route_paths, router,
+    var app, router,
       _this = this;
 
     router = {};
@@ -3502,8 +3502,6 @@ var __hasProp = {}.hasOwnProperty,
       return router[route.key] = route.name;
     });
     App.prototype.routes = router;
-    route_keys = ["", "!/", "" + conf.discover_url + "(?:params)", "!/" + conf.discover_url + "(?:params)", conf.signin_url, "!/" + conf.signin_url, conf.profile_url, "!/" + conf.profile_url, "" + conf.profile_url + "/:action", "" + conf.profile_url + "/:action/:profile", "!/" + conf.profile_url + "/:action", "!/" + conf.profile_url + "/:action/:profile", conf.how_to_url, "!/" + conf.how_to_url, conf.modules_url, "!/" + conf.modules_url, "" + conf.modules_url + "/:language", "!/" + conf.modules_url + "/:language", "" + conf.modules_url + "/:language/:repo", "!/" + conf.modules_url + "/:language/:repo", conf.dashboard_url, "!/" + conf.dashboard_url, "dashboard/project/:id", "!/dashboard/project/:id", "dashboard/project/:project/task/:task", "!/dashboard/project/:project/task/:task", conf.admin_url, "!/" + conf.admin_url, "" + conf.admin_url + "/:action(/:subaction)", "!/" + conf.admin_url + "/:action(/:subaction)"];
-    route_paths = ["index", "index", "discover", "discover", "login", "login", "profile", "profile", "profile", "profile", "profile", "profile", "how-to", "how-to", "language_list", "language_list", "repo_list", "repo_list", "repo", "repo", "dashboard", "dashboard", "project", "project", "task", "task", "admin", "admin", "admin", "admin"];
     console.log('[__app__] init done!');
     exports.app = app = new App();
     app.meta = new views.MetaView({

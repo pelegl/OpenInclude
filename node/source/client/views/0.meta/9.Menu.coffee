@@ -12,19 +12,17 @@ views.Menu = Backbone.View.extend
   navigate: ->
     {parse}    = help.qs
     {pathname} = window.location
-    # building test
-    testUrl = new RegExp("^#{pathname}.*$")
+
     # forEach ---
     if pathname.length > 1
       @collection.forEach (link)=>
-        isActive = testUrl.test link.get("url")
+        testUrl = new RegExp("^#{link.get('url')}.*$")
+        isActive = testUrl.test pathname
         link.set {isActive}
     else
       @collection.forEach (link) => link.set {isActive: false}
     # render ---
     @render()
-
-
 
   render: ->
     context =

@@ -175,8 +175,8 @@
             "!/"+e.currentTarget.getAttribute('href').slice(1)
           
           app.navigate uri, {trigger:true}
-          # e.preventDefault()
           return false
+
         else if href[0] is '?'
           path = window.location.pathname
           search = href
