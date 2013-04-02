@@ -1,6 +1,7 @@
 import os
 import errno
-import shutil
+import stat
+import traceback
 import pymongo
 import sys
 import config
@@ -80,7 +81,21 @@ def git_update(id):
         origin = repo.create_remote('origin', remote_path % id)
 
     origin.fetch(progress=LogRemoteProgress('Fetch'))                       # fetch, pull and push from and to the remote
-    origin.pull('refs/heads/master:refs/heads/origin', progress=LogRemoteProgress('Pull'))
+    # origin.pull('refs/heads/master:refs/heads/origin', progress=LogRemoteProgress('Pull'))
+
+def git_fetch(id):
+    path = get_path(id)
+    repo = git.Repo(path)
+    for remote in repo.remotes:
+        print remote.name
+        remote.fetch(progress=LogRemoteProgress('Fetch'))
+
+def git_pull(id):
+    path = get_path(id)
+    repo = git.Repo(path)
+    remote = repo.remotes.origin
+    # print remote.name
+    remote.pull(progress=LogRemoteProgress('Pull'))
 
 def git_clone(id):
     remote_path = 'git://github.com/%(user)s/%(repo)s.git'
@@ -90,6 +105,14 @@ def git_clone(id):
 def check_git_repo_exist(path):
     return os.path.exists(path + '/.git')
 
+def drop_dir(path):
+    for root, dirs, files in os.walk(path, topdown=False):
+        for name in files:
+            filename = os.path.join(root, name)
+            os.chmod(filename, stat.S_IWUSR)
+            os.remove(filename)
+        for name in dirs:
+            os.rmdir(os.path.join(root, name))
 
 def main():
     mongoConn = pymongo.MongoClient(config.DB_HOST, 27017)
@@ -106,16 +129,30 @@ def main():
         try:
             print '(%d/%d)' % (i, count), '%(user)s/%(repo)s' % id
             if check_git_repo_exist(get_path(id)):
-                git_update(id)
+                git_pull(id)
             else:
                 git_clone(id)
             sys.stdout.write("Done!\n")
             sys.stdout.flush()
         except git.exc.GitCommandError as ex:
-            print ex.command
+            if ex.status == 128:
+                sys.stdout.write("Repository not found.\n")
+                sys.stdout.flush()
+                drop_dir(get_path(id))
             err_modules.write('%(user)s/%(repo)s\n' % id)
+            err_modules.write(traceback.format_exc())
             err_modules.flush()
-            shutil.rmtree(get_path(id))
+        except Exception as ex:
+            try:
+                print 'try make clone repo again...\n'
+                drop_dir(get_path(id))#, ignore_errors=True)
+                git_clone(id)
+                sys.stdout.write("Done!\n")
+                sys.stdout.flush()
+            except Exception as ex:
+                    err_modules.write('%(user)s/%(repo)s\n' % id)
+                    err_modules.write(traceback.format_exc())
+                    err_modules.flush()
     err_modules.close()
 
 if __name__ == "__main__":

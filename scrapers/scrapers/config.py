@@ -1,6 +1,6 @@
 __author__ = 'Alexey'
 
-DB_HOST = 'ec2-54-225-224-68.compute-1.amazonaws.com'
+DB_HOST = 'ec2-50-16-22-207.compute-1.amazonaws.com'
 DB_NAME = 'openInclude'
 DB_MODULES_COLLECTION = 'modules'
 
@@ -15,4 +15,4 @@ GITHUB_API_AUTH_TOKENS = ['f6eaceff9c2767553646f24b85306b7a2e136492',
 GITHUB_API_CLIENT_ID = '56d000c71b063d2ab474'
 GITHUB_API_CLIENT_SECRET = '13b05edae1a5bbfa3714c333160e90cd7e3a97c3'
 
-GITHUB_REPOS_CLONE_PATH = 'D:/temp/github'
+GITHUB_REPOS_CLONE_PATH = '/repo/github'
