@@ -131,8 +131,8 @@ class DiscoverController extends require('./basicController')
           flt:
             like_text: @context.discover_search_query || ""
             fields: ["description", "module_name", "owner"]
-            min_similarity: 0.5
-            prefix_length: 2
+            min_similarity: 0.25
+            prefix_length: 3
             ignore_tf: true
 
     ###
