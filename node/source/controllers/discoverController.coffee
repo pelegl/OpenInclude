@@ -133,6 +133,7 @@ class DiscoverController extends require('./basicController')
             fields: ["description", "module_name", "owner"]
             min_similarity: 0.9
             prefix_length: 0
+            ignore_tf: true
 
     ###
         filters: [
