@@ -53,10 +53,12 @@ class BasicController
       @context._menu.push {url: @context.signin_url, text: "sign in"}
 
     if @req.path.length > 1
-      testUrl = new RegExp("^#{@req.path}.*$")
       @context._menu.forEach (link)=>
-        link.isActive = true if testUrl.test link.url
+        testUrl = new RegExp("^#{@_escapeRegExp(link.url)}.*$")
+        link.isActive = true if testUrl.test @req.path
 
+  _escapeRegExp: (str)->
+    return str.replace /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"
 
   _view : (name, context)->
     if @app.Views['dot'].hasOwnProperty(name)

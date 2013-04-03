@@ -6,6 +6,11 @@ async             = require 'async'
 
 toObjectId = require('mongoose').mongo.BSONPure.ObjectID.fromString
 
+language_stopwords = []
+Language.find (err, languages)->
+  throw err if err?
+  languages.forEach (language)->
+    language_stopwords.push language.name
 
 #### Class
 class DiscoverController extends require('./basicController') 
@@ -102,6 +107,10 @@ class DiscoverController extends require('./basicController')
   
 
   search: ->
+    ###
+      Multi-match query ---
+    ###
+    ###
     query =
       custom_filters_score:
         query:
@@ -116,12 +125,35 @@ class DiscoverController extends require('./basicController')
           {filter:{numeric_range: {watchers: {from: 10000, to: 20000} }}, boost: 2 }
           {filter:{numeric_range: {watchers: {from: 20000} }}, boost: 2.25 }
         ]
+    ###
+
+    query =
+      custom_filters_score:
+        query:
+          flt:
+            like_text: @context.discover_search_query || ""
+            fields: ["description", "module_name", "owner"]
+            min_similarity: 0.75
+            prefix_length: 3
+
+
+        filters: [
+          {filter:{numeric_range: {watchers: {from: 2500, to: 5000} }}, boost: 1.25 }
+          {filter:{numeric_range: {watchers: {from: 5000, to: 7500} }}, boost: 1.5 }
+          {filter:{numeric_range: {watchers: {from: 7500, to: 10000} }}, boost: 1.75 }
+          {filter:{numeric_range: {watchers: {from: 10000, to: 20000} }}, boost: 2 }
+          {filter:{numeric_range: {watchers: {from: 20000} }}, boost: 2.25 }
+        ]
+
+
 
     options =
       size: 25
     
     #TODO: add variable size and offset handling
-            
+
+    #console.log query
+
     savedData = []
     esClient.search('mongomodules', 'module', {query}, options)
     .on('data', (data) => savedData.push data)

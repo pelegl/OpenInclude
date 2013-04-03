@@ -91,7 +91,7 @@ exports.git = github.client
 ###
   Some static helpers
 ###
-SERVER_URL = exports.SERVER_URL = "#{process.env.HOST || "http://ec2-54-225-224-68.compute-1.amazonaws.com"}:#{process.env.PORT || 8900}"
+SERVER_URL = exports.SERVER_URL = "http://#{process.env.HOST || "ec2-54-225-224-68.compute-1.amazonaws.com"}:#{process.env.PORT || 8900}"
 STATIC_URL = exports.STATIC_URL = "/static/"
 
 exports.logout_url      = logout_url      =  "/auth/logout"
