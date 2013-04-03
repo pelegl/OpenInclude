@@ -6,7 +6,7 @@ async             = require 'async'
 
 toObjectId = require('mongoose').mongo.BSONPure.ObjectID.fromString
 
-language_stopwords = []
+language_stopwords = ["net", ".net"]
 Language.find (err, languages)->
   throw err if err?
   languages.forEach (language)->
