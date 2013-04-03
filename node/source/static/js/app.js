@@ -1434,7 +1434,32 @@ views.DiscoverFilter = Backbone.View.extend({
 
 views.DiscoverComparison = Backbone.View.extend({
   events: {
-    "click [data-sort]": "sortComparison"
+    "click [data-sort]": "sortComparison",
+    "mouseenter tbody tr": "fadeIn",
+    "mouseleave tbody tr": "fadeOut",
+    "click tbody tr .btn-danger": "remove"
+  },
+  fadeIn: function(e) {
+    return this.fade(true, e);
+  },
+  fadeOut: function(e) {
+    return this.fade(false, e);
+  },
+  fade: function(className, e) {
+    var $fade, $this, action;
+
+    $this = $(e.currentTarget);
+    $fade = $(".fade", $this);
+    action = className ? "addClass" : "removeClass";
+    return $fade[action]("in");
+  },
+  remove: function(e) {
+    var $this, id, model;
+
+    $this = $(e.currentTarget).closest("tr");
+    id = $this.data("id");
+    model = this.collection.get(id);
+    return this.collection.remove(model);
   },
   sortComparison: function(e) {
     var $this, direction, index, key,
@@ -1466,7 +1491,7 @@ views.DiscoverComparison = Backbone.View.extend({
     return false;
   },
   initialize: function() {
-    _.bindAll(this, "render");
+    _.bindAll(this);
     this.listenTo(this.collection, "all", this.render);
     this.context = {
       headers: [

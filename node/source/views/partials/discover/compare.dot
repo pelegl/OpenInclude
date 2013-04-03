@@ -3,23 +3,24 @@
 		<thead>
 			<tr>
 				{{~ it.headers :header}}
-            {{? !header.key }}
-            <th>{{=header.name}}</th>
-            {{??}}
-            <th><a href='#' data-sort='{{= header.key }}' {{? header.active}}class='active'{{?}}><span class='name'>{{! header.name }}</span>
-                {{? header.directionBottom}} 
-                <i class='icon-chevron-down'></i>
-                {{??}}
-                <i class='icon-chevron-up'></i>
-                {{?}}
-            </a></th>
-            {{?}}
+                    {{? !header.key }}
+                    <th>{{=header.name}}</th>
+                    {{??}}
+                    <th><a href='#' data-sort='{{= header.key }}' {{? header.active}}class='active'{{?}}><span class='name'>{{! header.name }}</span>
+                        {{? header.directionBottom}}
+                        <i class='icon-chevron-down'></i>
+                        {{??}}
+                        <i class='icon-chevron-up'></i>
+                        {{?}}
+                    </a></th>
+                    {{?}}
 				{{~}}
+                <th>&nbsp;</th>
 			</tr>
 		</thead>
 		<tbody>
 			{{~ it.projects :project}}
-            <tr>
+            <tr data-id="{{= project._id }}">
                 <td><a href='/modules/{{= encodeURIComponent(project._source.language)}}/{{=project._source.owner}}|{{=project._source.module_name}}'>{{! project._source.module_name }}</a></td>
                 <td>
                   <span class='color' style='background: #{{=project.color}}'></span>
@@ -33,7 +34,10 @@
                     {{= Math.round(project.answered/project.asked*100) }}%
                   {{??}}
                     -
-                  {{?}}                  						
+                  {{?}}
+                <td>
+                    <button type="button" class='fade btn btn-mini btn-danger'><i class='icon icon-remove'></i></button>
+                </td>
             </tr>
 			{{~}}
 		</tbody>
