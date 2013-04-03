@@ -134,7 +134,7 @@ class DiscoverController extends require('./basicController')
             min_similarity: 0.75
             prefix_length: 3
 
-
+    ###
         filters: [
           {filter:{numeric_range: {watchers: {from: 2500, to: 5000} }}, boost: 1.25 }
           {filter:{numeric_range: {watchers: {from: 5000, to: 7500} }}, boost: 1.5 }
@@ -142,7 +142,7 @@ class DiscoverController extends require('./basicController')
           {filter:{numeric_range: {watchers: {from: 10000, to: 20000} }}, boost: 2 }
           {filter:{numeric_range: {watchers: {from: 20000} }}, boost: 2.25 }
         ]
-
+    ###
 
     options =
       size: 25
