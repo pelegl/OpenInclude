@@ -128,12 +128,14 @@ class DiscoverController extends require('./basicController')
     query =
       custom_filters_score:
         query:
-          flt:
+          more_like_this:
             like_text: @context.discover_search_query || ""
             fields: ["description", "module_name", "owner"]
-            min_similarity: 0.25
-            prefix_length: 3
-            ignore_tf: true
+            min_term_freq: 1
+            max_query_terms: 25
+            stop_words: language_stopwords
+            min_doc_freq: 3
+            min_word_len: 2
 
     ###
         filters: [
