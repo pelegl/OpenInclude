@@ -6,7 +6,7 @@ async             = require 'async'
 
 toObjectId = require('mongoose').mongo.BSONPure.ObjectID.fromString
 
-language_stopwords = ["net", ".net"]
+language_stopwords = []
 Language.find (err, languages)->
   throw err if err?
   languages.forEach (language)->
@@ -128,14 +128,12 @@ class DiscoverController extends require('./basicController')
     query =
       custom_filters_score:
         query:
-          more_like_this:
+          flt:
             like_text: @context.discover_search_query || ""
             fields: ["description", "module_name", "owner"]
-            min_term_freq: 1
-            max_query_terms: 25
-            stop_words: language_stopwords
-            min_doc_freq: 3
-            min_word_len: 2
+            min_similarity: 0.3
+            prefix_length: 3
+            ignore_tf: true
 
     ###
         filters: [
