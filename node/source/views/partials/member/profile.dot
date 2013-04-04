@@ -61,7 +61,11 @@
                     </div>
 			    </div>			             
 			  </div>
-			  <div class='span8 informationBox'>{{= it.informationBox || "" }}</div>
+			  <div class='span8'>
+                  {{= it.informationBox || "" }}
+                  <div>{{#def.partials['member/runways']}}</div>
+              </div>
+
 			</div>
 		</div>
 	</div>

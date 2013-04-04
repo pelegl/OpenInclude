@@ -44,7 +44,7 @@ definition =
   # group_id - TODO: refactor
   group_id:
     type: String
-    enum: ["admin","developer","project manager","client"]
+    enum: ["admin", "reader", "writer"]
 
   payment_methods:
     type: [PaymentMethod]

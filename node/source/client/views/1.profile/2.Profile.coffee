@@ -1,7 +1,22 @@
 views.Profile = View.extend
+  agreement_text: "Do you agree?"
+
   events:
     'click a.backbone'             : "processAction"
     'click .setupPayment > button' : "update_cc_events"
+    'click #new-connection': "newConnection"
+
+  newConnection: (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+
+    form = new views.ConnectionForm @context
+    form.show()
+
+    @listenTo form, "success", @updateData
+
+  updateData: (e) ->
+    @connections.fetch()
 
   update_cc_events: (e) ->
     @cc.delegateEvents()
@@ -37,8 +52,11 @@ views.Profile = View.extend
         show developer license agreement
       ###
       app.navigate @context.developer_agreement, {trigger: false}
-      @agreement.$el.show()
-      @agreement.setData agreement_text, @context.developer_agreement
+      @empty @agreement.$el
+
+      @agreement.show()
+      @agreement.setData @agreement_text, @context.developer_agreement
+
     else if action is merc and app.session.get("merchant") is false
       ###
         show client license agreement
@@ -48,7 +66,7 @@ views.Profile = View.extend
       @empty @agreement.$el
 
       @agreement.show()
-      @agreement.setData agreement_text, @context.merchant_agreement
+      @agreement.setData @agreement_text, @context.merchant_agreement
 
       @listenTo @agreement.model, "sync", @setupPayment
 
@@ -108,6 +126,10 @@ views.Profile = View.extend
     @listenTo @model, "change", @render
     @model.fetch()
 
+    @connections = new collections.Connections
+    @listenTo @connections, "sync", @render
+    @connections.fetch()
+
     @render()
 
 
@@ -115,6 +137,9 @@ views.Profile = View.extend
     console.log "Rendering profile view"
 
     @context.user = @model.toJSON()
+    @context.connections = @connections.toJSON()
+    console.log @context.connections
+
     html = tpl['member/profile'](@context)
     @$el.html html
     @$el.attr 'view-id', 'profile'

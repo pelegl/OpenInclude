@@ -339,6 +339,11 @@ models.Discovery = Backbone.Model.extend({
 
 models.Menu = Backbone.Model.extend({});
 
+models.Connection = Backbone.Model.extend({
+  idAttribute: "_id",
+  url: '/api/connection'
+});
+
 models.Bill = Backbone.Model.extend({
   /*
    user
@@ -621,6 +626,11 @@ collections.Menu = Backbone.Collection.extend({
   model: models.Menu
 });
 
+collections.Connections = Backbone.Collection.extend({
+  model: models.Connection,
+  url: "/api/connection"
+});
+
 collections.Language = collections.requestPager.extend({
   comparator: function(language) {
     return language.get("name");
@@ -797,6 +807,136 @@ views.NotFound = Backbone.View.extend({
     return this;
   }
 });
+
+var InlineForm,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+InlineForm = (function(_super) {
+  __extends(InlineForm, _super);
+
+  InlineForm.prototype.events = {
+    'submit form': "submit",
+    'click button[type=submit]': "preventPropagation",
+    'click .close-inline': "hide",
+    'keypress textarea.typeahead': "typeahead"
+  };
+
+  InlineForm.prototype.preventPropagation = function(event) {
+    return event.stopPropagation();
+  };
+
+  function InlineForm(opts) {
+    var $el;
+
+    if (opts == null) {
+      opts = {};
+    }
+    if (this.el && ($el = $(this.el)).length > 0) {
+      opts.el = $el;
+    }
+    InlineForm.__super__.constructor.call(this, opts);
+  }
+
+  InlineForm.prototype.initialize = function(context) {
+    if (context == null) {
+      context = {};
+    }
+    this.context = _.extend({}, context, app.conf);
+    InlineForm.__super__.initialize.call(this, context);
+    _.extend(this, Backbone.Events);
+    this.tah = new views.TypeAhead(this.context);
+    this.buf = "";
+    return this.render();
+  };
+
+  InlineForm.prototype.typeahead = function(event) {
+    var char, code;
+
+    code = event.which || event.keyCode || event.charCode;
+    char = String.fromCharCode(code);
+    this.tah.position(event.target);
+    switch (char) {
+      case '@':
+        this.buf = '';
+        return this.tah.showUser(event.target.selectionStart);
+      case '#':
+        this.buf = '';
+        return this.tah.showTask(event.target.selectionStart);
+      case '+':
+        this.buf = '';
+        return this.tah.showProject(event.target.selectionStart);
+      case ' ':
+        this.buf = '';
+        this.tah.hide();
+        return true;
+      default:
+        if (code === 8) {
+          this.buf = this.buf.substring(0, this.buf.length - 1);
+          return true;
+        }
+        if (event.charCode === 0) {
+          return true;
+        }
+        if (this.tah.available) {
+          this.buf += char;
+        }
+        if (this.buf.length > 0) {
+          return this.tah.updateQuery(this.buf, event.target.selectionEnd);
+        }
+    }
+  };
+
+  InlineForm.prototype.submit = function(event) {
+    var data;
+
+    event.preventDefault();
+    event.stopPropagation();
+    data = Backbone.Syphon.serialize(event.currentTarget);
+    this.$("[type=submit]").addClass("disabled").text("Updating information...");
+    this.model.save(data, {
+      success: _.bind(this.success, this),
+      error: _.bind(this.success, this)
+    });
+    return false;
+  };
+
+  InlineForm.prototype.success = function(model, response, options) {
+    if (response.success === true) {
+      this.hide();
+      this.trigger("success");
+      return true;
+    } else {
+      console.log(response);
+      alert("An error occured");
+      this.trigger("fail");
+      return false;
+    }
+  };
+
+  InlineForm.prototype.show = function() {
+    this.$el.show();
+    return this.$("form input").focus();
+  };
+
+  InlineForm.prototype.hide = function(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    return this.$el.hide();
+  };
+
+  InlineForm.prototype.render = function() {
+    this.html = tpl[this.view](this.context);
+    this.$el.hide().empty();
+    this.$el.append(this.html);
+    return this;
+  };
+
+  return InlineForm;
+
+})(Backbone.View);
 
 views.MetaView = Backbone.View.extend({
   events: {
@@ -1182,9 +1322,23 @@ views.CC = Backbone.View.extend({
 var __slice = [].slice;
 
 views.Profile = View.extend({
+  agreement_text: "Do you agree?",
   events: {
     'click a.backbone': "processAction",
-    'click .setupPayment > button': "update_cc_events"
+    'click .setupPayment > button': "update_cc_events",
+    'click #new-connection': "newConnection"
+  },
+  newConnection: function(e) {
+    var form;
+
+    e.preventDefault();
+    e.stopPropagation();
+    form = new views.ConnectionForm(this.context);
+    form.show();
+    return this.listenTo(form, "success", this.updateData);
+  },
+  updateData: function(e) {
+    return this.connections.fetch();
   },
   update_cc_events: function(e) {
     this.cc.delegateEvents();
@@ -1226,8 +1380,9 @@ views.Profile = View.extend({
       app.navigate(this.context.developer_agreement, {
         trigger: false
       });
-      this.agreement.$el.show();
-      return this.agreement.setData(agreement_text, this.context.developer_agreement);
+      this.empty(this.agreement.$el);
+      this.agreement.show();
+      return this.agreement.setData(this.agreement_text, this.context.developer_agreement);
     } else if (action === merc && app.session.get("merchant") === false) {
       /*
         show client license agreement
@@ -1238,7 +1393,7 @@ views.Profile = View.extend({
       });
       this.empty(this.agreement.$el);
       this.agreement.show();
-      this.agreement.setData(agreement_text, this.context.merchant_agreement);
+      this.agreement.setData(this.agreement_text, this.context.merchant_agreement);
       return this.listenTo(this.agreement.model, "sync", this.setupPayment);
     } else if (action === trello) {
       /*
@@ -1301,6 +1456,9 @@ views.Profile = View.extend({
     }
     this.listenTo(this.model, "change", this.render);
     this.model.fetch();
+    this.connections = new collections.Connections;
+    this.listenTo(this.connections, "sync", this.render);
+    this.connections.fetch();
     return this.render();
   },
   render: function() {
@@ -1308,6 +1466,8 @@ views.Profile = View.extend({
 
     console.log("Rendering profile view");
     this.context.user = this.model.toJSON();
+    this.context.connections = this.connections.toJSON();
+    console.log(this.context.connections);
     html = tpl['member/profile'](this.context);
     this.$el.html(html);
     this.$el.attr('view-id', 'profile');
@@ -1322,6 +1482,49 @@ views.Profile = View.extend({
     return this;
   }
 });
+
+var _ref,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+views.ConnectionForm = (function(_super) {
+  __extends(ConnectionForm, _super);
+
+  function ConnectionForm() {
+    _ref = ConnectionForm.__super__.constructor.apply(this, arguments);
+    return _ref;
+  }
+
+  ConnectionForm.prototype.el = "#new-connection-inline";
+
+  ConnectionForm.prototype.view = "member/new_connection";
+
+  ConnectionForm.prototype.initialize = function(context) {
+    this.model = new models.Connection;
+    ConnectionForm.__super__.initialize.call(this, context);
+    this.$el.find("input[name=reader]").autocomplete({
+      source: "/session/list",
+      minLength: 2,
+      select: function(e, ui) {
+        $(this).val(ui.item.label);
+        $(this).parent().find("input[name=reader_id]").val(ui.item.value);
+        return false;
+      }
+    });
+    return this.$el.find("input[name=writer]").autocomplete({
+      source: "/session/list",
+      minLength: 2,
+      select: function(e, ui) {
+        $(this).val(ui.item.label);
+        $(this).parent().find("input[name=writer_id]").val(ui.item.value);
+        return false;
+      }
+    });
+  };
+
+  return ConnectionForm;
+
+})(InlineForm);
 
 views.DiscoverChartPopup = Backbone.View.extend({
   tagName: "div",
@@ -2387,133 +2590,6 @@ views.TypeAhead = Backbone.View.extend({
     return this;
   }
 });
-
-var InlineForm,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-InlineForm = (function(_super) {
-  __extends(InlineForm, _super);
-
-  InlineForm.prototype.events = {
-    'submit form': "submit",
-    'click button[type=submit]': "preventPropagation",
-    'click .close-inline': "hide",
-    'keypress textarea.typeahead': "typeahead"
-  };
-
-  InlineForm.prototype.preventPropagation = function(event) {
-    return event.stopPropagation();
-  };
-
-  function InlineForm(opts) {
-    var $el;
-
-    if (opts == null) {
-      opts = {};
-    }
-    if (this.el && ($el = $(this.el)).length > 0) {
-      opts.el = $el;
-    }
-    InlineForm.__super__.constructor.call(this, opts);
-  }
-
-  InlineForm.prototype.initialize = function(context) {
-    if (context == null) {
-      context = {};
-    }
-    this.context = _.extend({}, context, app.conf);
-    InlineForm.__super__.initialize.call(this, context);
-    this.tah = new views.TypeAhead(this.context);
-    this.buf = "";
-    return this.render();
-  };
-
-  InlineForm.prototype.typeahead = function(event) {
-    var char, code;
-
-    code = event.which || event.keyCode || event.charCode;
-    char = String.fromCharCode(code);
-    this.tah.position(event.target);
-    switch (char) {
-      case '@':
-        this.buf = '';
-        return this.tah.showUser(event.target.selectionStart);
-      case '#':
-        this.buf = '';
-        return this.tah.showTask(event.target.selectionStart);
-      case '+':
-        this.buf = '';
-        return this.tah.showProject(event.target.selectionStart);
-      case ' ':
-        this.buf = '';
-        this.tah.hide();
-        return true;
-      default:
-        if (code === 8) {
-          this.buf = this.buf.substring(0, this.buf.length - 1);
-          return true;
-        }
-        if (event.charCode === 0) {
-          return true;
-        }
-        if (this.tah.available) {
-          this.buf += char;
-        }
-        if (this.buf.length > 0) {
-          return this.tah.updateQuery(this.buf, event.target.selectionEnd);
-        }
-    }
-  };
-
-  InlineForm.prototype.submit = function(event) {
-    var data;
-
-    event.preventDefault();
-    event.stopPropagation();
-    data = Backbone.Syphon.serialize(event.currentTarget);
-    this.$("[type=submit]").addClass("disabled").text("Updating information...");
-    this.model.save(data, {
-      success: this.success,
-      error: this.success
-    });
-    return false;
-  };
-
-  InlineForm.prototype.success = function(model, response, options) {
-    if (response.success === true) {
-      this.hide;
-      return true;
-    } else {
-      console.log(response);
-      alert("An error occured");
-      return false;
-    }
-  };
-
-  InlineForm.prototype.show = function() {
-    this.$el.show();
-    return this.$("form input").focus();
-  };
-
-  InlineForm.prototype.hide = function(event) {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    return this.$el.hide();
-  };
-
-  InlineForm.prototype.render = function() {
-    this.html = tpl[this.view](this.context);
-    this.$el.hide().empty();
-    this.$el.append(this.html);
-    return this;
-  };
-
-  return InlineForm;
-
-})(Backbone.View);
 
 var _ref,
   __hasProp = {}.hasOwnProperty,

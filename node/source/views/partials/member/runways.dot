@@ -1,0 +1,80 @@
+<ul id="runways" class="nav nav-tabs">
+    <li><a href="#connections" data-toggle="tab">Connections</a></li>
+    <li class="dropdown">
+        <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Reader <b class="caret"></b></a>
+        <ul class="dropdown-menu" role="menu">
+            <li><a href="#reader-runway" data-toggle="tab">Runway</a></li>
+            <li><a href="#reader-finance" data-toggle="tab">Finance</a></li>
+        </ul>
+    </li>
+    <li class="dropdown">
+        <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Writer <b class="caret"></b></a>
+        <ul class="dropdown-menu" role="menu">
+            <li><a href="#writer-runway" data-toggle="tab">Runway</a></li>
+            <li><a href="#writer-finance" data-toggle="tab">Finance</a></li>
+        </ul>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane" id="connections">
+        <table class="table table-bordered table-condensed table-hover">
+            <tr>
+                <th>Reader</th>
+                <th>Hourly charged</th>
+                <th>Writer</th>
+                <th>Hourly paid</th>
+            </tr>
+            {{~ it.connections :connection }}
+            <tr>
+                <td><a href="/profile/view/{{= connection.reader.name }}">{{= connection.reader.name }}</a></td>
+                <td>{{= connection.charged }}</td>
+                <td><a href="/profile/view/{{= connection.writer.name }}">{{= connection.writer.name }}</a></td>
+                <td>{{= connection.charged - connection.charged * connection.fee / 100 }}</td>
+            </tr>
+            {{~}}
+        </table>
+        <div>
+            <div style="margin-bottom: 20px"><a href="#" id="new-connection" class="btn btn-small btn-success">New connection</a></div>
+            <div id="new-connection-inline"></div>
+        </div>
+    </div>
+    <div class="tab-pane" id="reader-runway">
+        <table class="table table-bordered table-condensed table-hover">
+            <tr>
+                <th>Writer</th>
+                <th>Hourly rate</th>
+                <th>Runway</th>
+                <th>Actions</th>
+            </tr>
+            {{~ it.runways :runway }}
+            <tr>
+                <td><a href="/profile/view/{{= runway.writer.name }}">{{= runway.writer.name }}</a></td>
+                <td>{{= runway.rate }}</td>
+                <td>{{= runway.data }}</td>
+                <td></td>
+            </tr>
+            {{~}}
+        </table>
+    </div>
+    <div class="tab-pane" id="reader-finance">3</div>
+    <div class="tab-pane" id="writer-runway">
+        <table class="table table-bordered table-condensed table-hover">
+            <tr>
+                <th>Reader</th>
+                <th>Hourly rate</th>
+                <th>Runway</th>
+                <th>Actions</th>
+            </tr>
+            {{~ it.runways :runway }}
+            <tr>
+                <td><a href="/profile/view/{{= runway.reader.name }}">{{= runway.reader.name }}</a></td>
+                <td>{{= runway.rate }}</td>
+                <td>{{= runway.data }}</td>
+                <td></td>
+            </tr>
+            {{~}}
+        </table>
+    </div>
+    <div class="tab-pane" id="writer-finance">5</div>
+</div>
