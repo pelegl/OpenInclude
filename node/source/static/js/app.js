@@ -1,6 +1,6 @@
+
 (function(exports, isServer) {
   var root;
-
   if (isServer) {
     this.Backbone = require('backbone');
   }
@@ -18,7 +18,6 @@
   exports.oneDay = 1000 * 60 * 60 * 24;
   exports.exchange = function(view, html) {
     var prevEl;
-
     prevEl = view.$el;
     view.setElement($(html));
     prevEl.replaceWith(view.$el);
@@ -27,7 +26,6 @@
   return exports.qs = {
     stringify: function(obj) {
       var key, string, v, value, _i, _len;
-
       string = [];
       for (key in obj) {
         value = obj[key];
@@ -50,7 +48,6 @@
     },
     parse: function(string) {
       var chunk, i, key, result, s, value, _i, _len, _ref;
-
       s = string.split('?', 2).slice(-1).pop();
       if (s.length <= 1) {
         return {};
@@ -63,7 +60,6 @@
         value = chunk.split('=', 2)[1];
         if (_.indexOf((function() {
           var _results;
-
           _results = [];
           for (i in result) {
             _results.push(i);
@@ -84,16 +80,15 @@
   };
 }).call(this, (typeof exports === "undefined" ? this["help"] = {} : exports), typeof exports !== "undefined");
 
-var _ref,
-  __hasProp = {}.hasOwnProperty,
+var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 models.User = (function(_super) {
+
   __extends(User, _super);
 
   function User() {
-    _ref = User.__super__.constructor.apply(this, arguments);
-    return _ref;
+    return User.__super__.constructor.apply(this, arguments);
   }
 
   User.prototype.idAttribute = "github_username";
@@ -104,16 +99,15 @@ models.User = (function(_super) {
 
 })(Backbone.Model);
 
-var _ref,
-  __hasProp = {}.hasOwnProperty,
+var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 models.Session = (function(_super) {
+
   __extends(Session, _super);
 
   function Session() {
-    _ref = Session.__super__.constructor.apply(this, arguments);
-    return _ref;
+    return Session.__super__.constructor.apply(this, arguments);
   }
 
   /*
@@ -144,7 +138,6 @@ models.Session = (function(_super) {
 
   Session.prototype.parse = function(response, options) {
     var github_avatar_url, github_display_name;
-
     if (response.is_authenticated) {
       /*
        set cookie for consiquent sign in attempts
@@ -171,7 +164,6 @@ models.Session = (function(_super) {
 
   Session.prototype.load = function() {
     var cookie;
-
     cookie = $.cookie("returning_customer");
     if (cookie != null) {
       this.user = cookie.user;
@@ -182,6 +174,7 @@ models.Session = (function(_super) {
   return Session;
 
 })(models.User);
+
 
 models.StackOverflowQuestion = Backbone.Model.extend({
   idAttribute: "_id",
@@ -200,6 +193,7 @@ models.StackOverflowQuestion = Backbone.Model.extend({
   }
 });
 
+
 models.GithubEvent = Backbone.Model.extend({
   idAttribute: "_id",
   urlRoot: "/modules",
@@ -210,6 +204,7 @@ models.GithubEvent = Backbone.Model.extend({
     return new Date(this.get("created_at"));
   }
 });
+
 
 models.Discovery = Backbone.Model.extend({
   /*
@@ -222,7 +217,6 @@ models.Discovery = Backbone.Model.extend({
   idAttribute: "_id",
   x: function() {
     var currentDate, datesDifference, difference_ms, interpolate, lastCommit, max, maxDifference, min, minDifference, self;
-
     self = this.get('_source');
     lastCommit = new Date(self.pushed_at).getTime();
     currentDate = new Date().getTime();
@@ -238,7 +232,6 @@ models.Discovery = Backbone.Model.extend({
 
     interpolate = function(min, max, minDifference, maxDifference, value) {
       var curPoint, diff, pnt;
-
       diff = max - min;
       pnt = diff / (maxDifference - minDifference);
       curPoint = pnt * (value - minDifference) + min;
@@ -281,7 +274,6 @@ models.Discovery = Backbone.Model.extend({
 
   y: function(maxScore) {
     var score;
-
     score = this.get('_score');
     return score / maxScore;
   },
@@ -291,7 +283,6 @@ models.Discovery = Backbone.Model.extend({
 
   radius: function() {
     var watchers;
-
     watchers = this.get('_source').watchers;
     return watchers;
   },
@@ -330,14 +321,21 @@ models.Discovery = Backbone.Model.extend({
 
   toJSON: function(options) {
     var attr;
-
     attr = _.clone(this.attributes);
     attr.lastCommitHuman = this.lastCommitHuman();
     return attr;
   }
 });
 
+
 models.Menu = Backbone.Model.extend({});
+
+
+models.Connection = Backbone.Model.extend({
+  idAttribute: "_id",
+  url: '/api/connection'
+});
+
 
 models.Bill = Backbone.Model.extend({
   /*
@@ -350,7 +348,6 @@ models.Bill = Backbone.Model.extend({
   urlRoot: "/profile/bills",
   validate: function(attrs, options) {
     var errors;
-
     errors = [];
     if (!attrs.bill) {
       errors.push("Internal error - error 001");
@@ -382,28 +379,35 @@ models.Bill = Backbone.Model.extend({
   }
 });
 
+
 models.Tos = Backbone.Model.extend({});
 
+
 models.CreditCard = Backbone.Model.extend({});
+
 
 models.Project = Backbone.Model.extend({
   idAttribute: "_id",
   url: "/project"
 });
 
+
 models.Task = Backbone.Model.extend({
   idAttribute: "_id",
   url: "/task"
 });
 
+
 models.TaskComment = Backbone.Model.extend({
   idAttribute: "_id"
 });
+
 
 models.Language = Backbone.Model.extend({
   idAttribute: "name",
   urlRoot: "/modules"
 });
+
 
 models.Repo = Backbone.Model.extend({
   idAttribute: "_id",
@@ -413,16 +417,15 @@ models.Repo = Backbone.Model.extend({
   }
 });
 
-var _ref,
-  __hasProp = {}.hasOwnProperty,
+var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 collections.requestPager = (function(_super) {
+
   __extends(requestPager, _super);
 
   function requestPager() {
-    _ref = requestPager.__super__.constructor.apply(this, arguments);
-    return _ref;
+    return requestPager.__super__.constructor.apply(this, arguments);
   }
 
   requestPager.prototype.toJSON = function(options) {
@@ -431,7 +434,6 @@ collections.requestPager = (function(_super) {
 
   requestPager.prototype.goTo = function(page, options) {
     var response;
-
     if (page !== void 0) {
       this.currentPage = parseInt(page, 10);
       if (this.cache[this.currentPage] != null) {
@@ -491,12 +493,12 @@ collections.requestPager = (function(_super) {
 
 })(Backbone.Paginator.requestPager);
 
+
 collections.UsersWithStripe = Backbone.Collection.extend({
   model: models.User,
   url: "/session/users_with_stripe",
   parse: function(response) {
     var err, success, users;
-
     success = response.success, err = response.err, users = response.users;
     if (success !== true) {
       return [];
@@ -507,6 +509,7 @@ collections.UsersWithStripe = Backbone.Collection.extend({
     return this.fetch();
   }
 });
+
 
 collections.StackOverflowQuestions = Backbone.Collection.extend({
   model: models.StackOverflowQuestion,
@@ -519,7 +522,6 @@ collections.StackOverflowQuestions = Backbone.Collection.extend({
   parse: function(r) {
     var ans, answered, answeredKey, answeredQs, ask, asked, askedKey, askedQs, currentDate, items, normalizeSeries, questions, _ref,
       _this = this;
-
     this.statistics = r.statistics, questions = r.questions;
     /*
       Add normalization
@@ -544,7 +546,6 @@ collections.StackOverflowQuestions = Backbone.Collection.extend({
     currentDate = new Date().getTime() / 1000;
     normalizeSeries = function(series, startDate) {
       var data, first, last, questionStart, questionStop;
-
       if (series.length === 0) {
         startDate = new Date();
         startDate.setFullYear(startDate.getFullYear() - 1);
@@ -585,7 +586,6 @@ collections.StackOverflowQuestions = Backbone.Collection.extend({
     };
     _.each([askedQs, answeredQs], function(qSeries) {
       var args;
-
       args = [qSeries];
       if (qSeries.length > 0) {
         args.push(_.first(qSeries).get("timestamp"));
@@ -612,14 +612,23 @@ collections.StackOverflowQuestions = Backbone.Collection.extend({
   }
 });
 
+
 collections.Users = Backbone.Collection.extend({
   model: models.User,
   url: "/session/list"
 });
 
+
 collections.Menu = Backbone.Collection.extend({
   model: models.Menu
 });
+
+
+collections.Connections = Backbone.Collection.extend({
+  model: models.Connection,
+  url: "/api/connection"
+});
+
 
 collections.Language = collections.requestPager.extend({
   comparator: function(language) {
@@ -629,12 +638,12 @@ collections.Language = collections.requestPager.extend({
   url: "/modules",
   parse: function(response) {
     var languages;
-
     this.cache[this.currentPage] = languages = response.languages;
     this.totalRecords = response.total_count;
     return languages;
   }
 });
+
 
 collections.Modules = collections.requestPager.extend({
   initialize: function(models, options) {
@@ -649,7 +658,6 @@ collections.Modules = collections.requestPager.extend({
   },
   parse: function(response) {
     var modules;
-
     this.cache[this.currentPage] = modules = response.modules;
     this.totalRecords = response.total_count;
     return modules;
@@ -661,14 +669,12 @@ var __slice = [].slice;
 collections.Discovery = Backbone.Collection.extend({
   parse: function(r) {
     var _ref;
-
     return (_ref = r.response) != null ? _ref : [];
   },
   model: models.Discovery,
   url: "/discover/search",
   maxRadius: function() {
     var _this = this;
-
     return d3.max(this.models, function(data) {
       return data.radius();
     });
@@ -676,7 +682,6 @@ collections.Discovery = Backbone.Collection.extend({
   languageList: function() {
     var languageNames, list,
       _this = this;
-
     languageNames = this.groupedModules ? _.keys(this.groupedModules) : [];
     list = [];
     _.each(languageNames, function(lang) {
@@ -695,13 +700,11 @@ collections.Discovery = Backbone.Collection.extend({
   filters: {},
   fetch: function() {
     var collection, opts, query, _ref;
-
     _ref = Array.prototype.slice.apply(arguments), query = _ref[0], opts = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
     query = query != null ? query : "";
     collection = this;
     return $.getJSON("" + collection.url + "?q=" + query, function(r) {
       var _this = this;
-
       collection.maxScore = r.maxScore;
       collection.groupedModules = _.groupBy(r.searchData, function(module) {
         return module._source.language;
@@ -711,15 +714,14 @@ collections.Discovery = Backbone.Collection.extend({
   }
 });
 
+
 collections.DiscoveryComparison = Backbone.Collection.extend({
   model: models.Discovery,
   sortBy: function(key, direction) {
     var _this = this;
-
     key = key != null ? key.split(".") : "_id";
     this.models = _.sortBy(this.models, function(module) {
       var asked, value;
-
       value = key.length === 2 ? module.get(key[0])[key[1]] : module.get(key[0]);
       if (key[1] === 'pushed_at') {
         return new Date(value);
@@ -741,15 +743,18 @@ collections.DiscoveryComparison = Backbone.Collection.extend({
   }
 });
 
+
 collections.Projects = Backbone.Collection.extend({
   model: models.Project,
   url: "/project"
 });
 
+
 collections.Tasks = Backbone.Collection.extend({
   model: models.Task,
   url: "/task"
 });
+
 
 collections.Bills = Backbone.Collection.extend({
   model: models.Bill,
@@ -774,6 +779,7 @@ collections.Bills = Backbone.Collection.extend({
   }
 });
 
+
 collections.GithubEvents = Backbone.Collection.extend({
   model: models.GithubEvent,
   initialize: function(options) {
@@ -790,6 +796,7 @@ collections.GithubEvents = Backbone.Collection.extend({
   }
 });
 
+
 views.NotFound = Backbone.View.extend({
   className: "error-404",
   render: function() {
@@ -798,13 +805,141 @@ views.NotFound = Backbone.View.extend({
   }
 });
 
+var InlineForm,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+InlineForm = (function(_super) {
+
+  __extends(InlineForm, _super);
+
+  InlineForm.prototype.events = {
+    'submit form': "submit",
+    'click button[type=submit]': "preventPropagation",
+    'click .close-inline': "hide",
+    'keypress textarea.typeahead': "typeahead"
+  };
+
+  InlineForm.prototype.preventPropagation = function(event) {
+    return event.stopPropagation();
+  };
+
+  function InlineForm(opts) {
+    var $el;
+    if (opts == null) {
+      opts = {};
+    }
+    if (this.el && ($el = $(this.el)).length > 0) {
+      opts.el = $el;
+    }
+    InlineForm.__super__.constructor.call(this, opts);
+  }
+
+  InlineForm.prototype.initialize = function(context) {
+    if (context == null) {
+      context = {};
+    }
+    this.context = _.extend({}, context, app.conf);
+    InlineForm.__super__.initialize.call(this, context);
+    _.extend(this, Backbone.Events);
+    this.tah = new views.TypeAhead(this.context);
+    this.buf = "";
+    return this.render();
+  };
+
+  InlineForm.prototype.typeahead = function(event) {
+    var char, code;
+    code = event.which || event.keyCode || event.charCode;
+    char = String.fromCharCode(code);
+    this.tah.position(event.target);
+    switch (char) {
+      case '@':
+        this.buf = '';
+        return this.tah.showUser(event.target.selectionStart);
+      case '#':
+        this.buf = '';
+        return this.tah.showTask(event.target.selectionStart);
+      case '+':
+        this.buf = '';
+        return this.tah.showProject(event.target.selectionStart);
+      case ' ':
+        this.buf = '';
+        this.tah.hide();
+        return true;
+      default:
+        if (code === 8) {
+          this.buf = this.buf.substring(0, this.buf.length - 1);
+          return true;
+        }
+        if (event.charCode === 0) {
+          return true;
+        }
+        if (this.tah.available) {
+          this.buf += char;
+        }
+        if (this.buf.length > 0) {
+          return this.tah.updateQuery(this.buf, event.target.selectionEnd);
+        }
+    }
+  };
+
+  InlineForm.prototype.submit = function(event) {
+    var data;
+    event.preventDefault();
+    event.stopPropagation();
+    data = Backbone.Syphon.serialize(event.currentTarget);
+    this.$("[type=submit]").addClass("disabled").text("Updating information...");
+    this.model.save(data, {
+      success: _.bind(this.success, this),
+      error: _.bind(this.success, this)
+    });
+    return false;
+  };
+
+  InlineForm.prototype.success = function(model, response, options) {
+    if (response.success === true) {
+      this.hide();
+      this.trigger("success");
+      return true;
+    } else {
+      console.log(response);
+      alert("An error occured");
+      this.trigger("fail");
+      return false;
+    }
+  };
+
+  InlineForm.prototype.show = function() {
+    this.$el.show();
+    return this.$("form input").focus();
+  };
+
+  InlineForm.prototype.hide = function(event) {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    return this.$el.hide();
+  };
+
+  InlineForm.prototype.render = function() {
+    this.html = tpl[this.view](this.context);
+    this.$el.hide().empty();
+    this.$el.append(this.html);
+    return this;
+  };
+
+  return InlineForm;
+
+})(Backbone.View);
+
+
 views.MetaView = Backbone.View.extend({
   events: {
     'submit .navbar-search': 'searchSubmit'
   },
   searchSubmit: function(e) {
     var location, pathname, q, trigger;
-
     e.preventDefault();
     q = encodeURIComponent(this.$("[name=q]").val());
     location = window.location.pathname;
@@ -829,12 +964,14 @@ views.MetaView = Backbone.View.extend({
   }
 });
 
+
 views.Loader = Backbone.View.extend({
   tagName: 'img',
   attributes: {
     src: "/static/images/loader.gif"
   }
 });
+
 
 views.Agreement = Backbone.View.extend({
   tagName: 'div',
@@ -850,7 +987,6 @@ views.Agreement = Backbone.View.extend({
   },
   processSubmit: function(e) {
     var isChecked;
-
     e.preventDefault();
     /*
       Perform async form process
@@ -873,7 +1009,6 @@ views.Agreement = Backbone.View.extend({
   },
   initialize: function() {
     var action, agreement, _ref;
-
     this.model = new models.Tos;
     if ($(".agreementContainer").length > 0) {
       this.setElement($(".agreementContainer"));
@@ -887,7 +1022,6 @@ views.Agreement = Backbone.View.extend({
   },
   renderData: function() {
     var output;
-
     output = tpl['member/agreement'](this.context);
     this.$el.html($(output).unwrap().html());
     return this.trigger("init");
@@ -908,7 +1042,6 @@ views.Agreement = Backbone.View.extend({
   },
   render: function() {
     var html;
-
     html = tpl['member/agreement'](this.context || {});
     this.$el = $(html);
     this.delegateEvents();
@@ -921,6 +1054,7 @@ var View,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 View = (function(_super) {
+
   __extends(View, _super);
 
   View.prototype.tagName = 'section';
@@ -951,6 +1085,7 @@ View = (function(_super) {
 
 })(this.Backbone.View);
 
+
 views.Index = View.extend({
   initialize: function() {
     console.log('[__indexView__] Init');
@@ -959,13 +1094,13 @@ views.Index = View.extend({
   },
   render: function() {
     var html;
-
     html = tpl['index'](this.context, null, this.context.partials);
     this.$el.html(html);
     this.$el.attr('view-id', 'index');
     return this;
   }
 });
+
 
 views.ShareIdeas = Backbone.View.extend({
   events: {
@@ -981,7 +1116,6 @@ views.ShareIdeas = Backbone.View.extend({
   },
   submit: function() {
     var $email, $ideas, $self;
-
     $email = $('#email');
     $ideas = $('#ideas');
     $self = $('.submit');
@@ -1008,11 +1142,11 @@ views.ShareIdeas = Backbone.View.extend({
   }
 });
 
+
 views.Bill = Backbone.View.extend({
   className: "bill",
   initialize: function() {
     var bill, billId;
-
     _.bindAll(this, "initialize");
     billId = this.options.billId;
     bill = this.model || this.collection.get(billId);
@@ -1026,7 +1160,6 @@ views.Bill = Backbone.View.extend({
   },
   render: function() {
     var html;
-
     html = tpl['member/bill']({
       bill: this.model.toJSON(),
       user: app.session.toJSON()
@@ -1035,6 +1168,7 @@ views.Bill = Backbone.View.extend({
     return this;
   }
 });
+
 
 views.Bills = Backbone.View.extend({
   className: "bills",
@@ -1045,7 +1179,6 @@ views.Bills = Backbone.View.extend({
   },
   render: function() {
     var html;
-
     html = tpl['member/bills']({
       bills: this.collection.toJSON(),
       view_bills: app.conf.bills
@@ -1055,11 +1188,11 @@ views.Bills = Backbone.View.extend({
   }
 });
 
+
 views.Menu = Backbone.View.extend({
   className: "navigationMenu nav pull-right",
   initialize: function() {
     var data;
-
     console.log("[__Menu View__] initialized");
     data = $("[data-menu]").data("menu");
     this.collection = new collections.Menu(data);
@@ -1068,13 +1201,11 @@ views.Menu = Backbone.View.extend({
   navigate: function() {
     var parse, pathname,
       _this = this;
-
     parse = help.qs.parse;
     pathname = window.location.pathname;
     if (pathname.length > 1) {
       this.collection.forEach(function(link) {
         var isActive, testUrl;
-
         testUrl = new RegExp("^" + (link.get('url')) + ".*$");
         isActive = testUrl.test(pathname);
         return link.set({
@@ -1092,7 +1223,6 @@ views.Menu = Backbone.View.extend({
   },
   render: function() {
     var context, view;
-
     context = {
       _menu: this.collection.toJSON()
     };
@@ -1101,6 +1231,7 @@ views.Menu = Backbone.View.extend({
     return this;
   }
 });
+
 
 views.SignIn = View.extend({
   events: {
@@ -1125,6 +1256,7 @@ views.SignIn = View.extend({
   }
 });
 
+
 views.CC = Backbone.View.extend({
   className: "dropdown-menu",
   events: {
@@ -1136,7 +1268,6 @@ views.CC = Backbone.View.extend({
   },
   updateCardData: function(e) {
     var data;
-
     e.preventDefault();
     data = Backbone.Syphon.serialize(e.currentTarget);
     this.$("[type=submit]").addClass("disabled").text("Updating information...");
@@ -1158,7 +1289,6 @@ views.CC = Backbone.View.extend({
   },
   initialize: function() {
     var $el;
-
     this.model = new models.CreditCard;
     this.model.url = app.conf.update_credit_card;
     _.bindAll(this, "processUpdate");
@@ -1172,7 +1302,6 @@ views.CC = Backbone.View.extend({
   },
   render: function() {
     var html;
-
     html = tpl['member/credit_card'](this.context);
     this.$el.html($(html).html());
     return this;
@@ -1182,9 +1311,22 @@ views.CC = Backbone.View.extend({
 var __slice = [].slice;
 
 views.Profile = View.extend({
+  agreement_text: "Do you agree?",
   events: {
     'click a.backbone': "processAction",
-    'click .setupPayment > button': "update_cc_events"
+    'click .setupPayment > button': "update_cc_events",
+    'click #new-connection': "newConnection"
+  },
+  newConnection: function(e) {
+    var form;
+    e.preventDefault();
+    e.stopPropagation();
+    form = new views.ConnectionForm(this.context);
+    form.show();
+    return this.listenTo(form, "success", this.updateData);
+  },
+  updateData: function(e) {
+    return this.connections.fetch();
   },
   update_cc_events: function(e) {
     this.cc.delegateEvents();
@@ -1195,7 +1337,6 @@ views.Profile = View.extend({
   },
   processAction: function(e) {
     var $this, action, href, _ref;
-
     $this = $(e.currentTarget);
     href = this.clearHref($this.attr("href"));
     _ref = _.without(href.split("/"), ""), action = _ref[0], this.get = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
@@ -1204,7 +1345,6 @@ views.Profile = View.extend({
   },
   empty: function() {
     var opts;
-
     opts = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
     this.informationBox.children().detach();
     if (opts != null) {
@@ -1213,7 +1353,6 @@ views.Profile = View.extend({
   },
   setAction: function(action) {
     var billId, billView, bills, dev, merc, navigateTo, notFound, trello, _ref;
-
     dev = this.clearHref(this.context.developer_agreement);
     merc = this.clearHref(this.context.merchant_agreement);
     trello = this.clearHref(this.context.trello_auth_url);
@@ -1226,8 +1365,9 @@ views.Profile = View.extend({
       app.navigate(this.context.developer_agreement, {
         trigger: false
       });
-      this.agreement.$el.show();
-      return this.agreement.setData(agreement_text, this.context.developer_agreement);
+      this.empty(this.agreement.$el);
+      this.agreement.show();
+      return this.agreement.setData(this.agreement_text, this.context.developer_agreement);
     } else if (action === merc && app.session.get("merchant") === false) {
       /*
         show client license agreement
@@ -1238,7 +1378,7 @@ views.Profile = View.extend({
       });
       this.empty(this.agreement.$el);
       this.agreement.show();
-      this.agreement.setData(agreement_text, this.context.merchant_agreement);
+      this.agreement.setData(this.agreement_text, this.context.merchant_agreement);
       return this.listenTo(this.agreement.model, "sync", this.setupPayment);
     } else if (action === trello) {
       /*
@@ -1301,13 +1441,17 @@ views.Profile = View.extend({
     }
     this.listenTo(this.model, "change", this.render);
     this.model.fetch();
+    this.connections = new collections.Connections;
+    this.listenTo(this.connections, "sync", this.render);
+    this.connections.fetch();
     return this.render();
   },
   render: function() {
     var html;
-
     console.log("Rendering profile view");
     this.context.user = this.model.toJSON();
+    this.context.connections = this.connections.toJSON();
+    console.log(this.context.connections);
     html = tpl['member/profile'](this.context);
     this.$el.html(html);
     this.$el.attr('view-id', 'profile');
@@ -1322,6 +1466,49 @@ views.Profile = View.extend({
     return this;
   }
 });
+
+var __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+views.ConnectionForm = (function(_super) {
+
+  __extends(ConnectionForm, _super);
+
+  function ConnectionForm() {
+    return ConnectionForm.__super__.constructor.apply(this, arguments);
+  }
+
+  ConnectionForm.prototype.el = "#new-connection-inline";
+
+  ConnectionForm.prototype.view = "member/new_connection";
+
+  ConnectionForm.prototype.initialize = function(context) {
+    this.model = new models.Connection;
+    ConnectionForm.__super__.initialize.call(this, context);
+    this.$el.find("input[name=reader]").autocomplete({
+      source: "/session/list",
+      minLength: 2,
+      select: function(e, ui) {
+        $(this).val(ui.item.label);
+        $(this).parent().find("input[name=reader_id]").val(ui.item.value);
+        return false;
+      }
+    });
+    return this.$el.find("input[name=writer]").autocomplete({
+      source: "/session/list",
+      minLength: 2,
+      select: function(e, ui) {
+        $(this).val(ui.item.label);
+        $(this).parent().find("input[name=writer_id]").val(ui.item.value);
+        return false;
+      }
+    });
+  };
+
+  return ConnectionForm;
+
+})(InlineForm);
+
 
 views.DiscoverChartPopup = Backbone.View.extend({
   tagName: "div",
@@ -1348,7 +1535,6 @@ views.DiscoverChartPopup = Backbone.View.extend({
   },
   setData: function(datum, $this, scope) {
     var activity, activityStars, color, height, lastContribution, source, stars, width, x, y;
-
     width = height = datum.radius * 2;
     x = datum.x, y = datum.y, color = datum.color, source = datum.source;
     stars = source.watchers;
@@ -1368,6 +1554,7 @@ views.DiscoverChartPopup = Backbone.View.extend({
     });
   }
 });
+
 
 views.DiscoverFilter = Backbone.View.extend({
   events: {
@@ -1397,11 +1584,9 @@ views.DiscoverFilter = Backbone.View.extend({
   },
   resetFilter: function(e) {
     var filters;
-
     filters = {};
     this.$(".filterBox").find("input[type=checkbox]").prop("checked", true).each(function() {
       var languageName;
-
       languageName = $(this).val();
       return filters[languageName] = true;
     });
@@ -1411,7 +1596,6 @@ views.DiscoverFilter = Backbone.View.extend({
   },
   filterResults: function(e) {
     var $this, languageName;
-
     $this = $(e.currentTarget);
     languageName = $this.val();
     if ($this.is(":checked")) {
@@ -1423,7 +1607,6 @@ views.DiscoverFilter = Backbone.View.extend({
   },
   render: function() {
     var html;
-
     this.context.filters[0].languages = this.collection.languageList();
     html = tpl['discover/filter'](this.context);
     this.$el.html(html);
@@ -1432,6 +1615,7 @@ views.DiscoverFilter = Backbone.View.extend({
   }
 });
 
+
 views.DiscoverComparison = Backbone.View.extend({
   events: {
     "click [data-sort]": "sortComparison"
@@ -1439,7 +1623,6 @@ views.DiscoverComparison = Backbone.View.extend({
   sortComparison: function(e) {
     var $this, direction, index, key,
       _this = this;
-
     $this = $(e.currentTarget);
     /*
       sort key
@@ -1495,7 +1678,6 @@ views.DiscoverComparison = Backbone.View.extend({
   },
   render: function() {
     var html;
-
     this.context.projects = this.collection.toJSON();
     html = tpl['discover/compare'](this.context);
     this.$el.html(html);
@@ -1504,16 +1686,15 @@ views.DiscoverComparison = Backbone.View.extend({
   }
 });
 
-var _ref,
-  __hasProp = {}.hasOwnProperty,
+var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 views.DiscoverChart = (function(_super) {
+
   __extends(DiscoverChart, _super);
 
   function DiscoverChart() {
-    _ref = DiscoverChart.__super__.constructor.apply(this, arguments);
-    return _ref;
+    return DiscoverChart.__super__.constructor.apply(this, arguments);
   }
 
   DiscoverChart.prototype.initialize = function() {
@@ -1610,7 +1791,6 @@ views.DiscoverChart = (function(_super) {
 
   DiscoverChart.prototype.popup = function(action, scope) {
     var self;
-
     self = this;
     return function(d, i) {
       switch (action) {
@@ -1628,7 +1808,6 @@ views.DiscoverChart = (function(_super) {
 
   DiscoverChart.prototype.collide = function(node) {
     var nx1, nx2, ny1, ny2, r;
-
     r = node.radius + 4;
     nx1 = node.x - r;
     nx2 = node.x + r;
@@ -1636,7 +1815,6 @@ views.DiscoverChart = (function(_super) {
     ny2 = node.y + r;
     return function(quad, x1, y1, x2, y2) {
       var l, x, y;
-
       if (quad.point && quad.point.x !== node.x && quad.point.y !== node.y) {
         x = node.x - quad.point.x;
         y = node.y - quad.point.y;
@@ -1662,7 +1840,6 @@ views.DiscoverChart = (function(_super) {
   DiscoverChart.prototype.renderChart = function() {
     var data, languages, preventCollision,
       _this = this;
-
     this.setRadiusScale();
     languages = _.keys(this.collection.filters);
     if (languages.length > 0) {
@@ -1689,7 +1866,6 @@ views.DiscoverChart = (function(_super) {
 
     preventCollision = function(times) {
       var i, n, q;
-
       q = d3.geom.quadtree(data);
       i = 0;
       n = data.length;
@@ -1721,13 +1897,13 @@ views.DiscoverChart = (function(_super) {
 
 })(View);
 
+
 views.Discover = View.extend({
   events: {
     'submit .search-form': 'searchSubmit'
   },
   initialize: function() {
     var qs;
-
     console.log('[__discoverView__] Init');
     _.bindAll(this, "fetchSearchData", "render", "searchSubmit");
     qs = help.qs.parse(location.search);
@@ -1761,7 +1937,6 @@ views.Discover = View.extend({
   },
   searchSubmit: function(e) {
     var pathname, q;
-
     e.preventDefault();
     q = this.$("[name=q]").val();
     pathname = window.location.pathname;
@@ -1778,13 +1953,13 @@ views.Discover = View.extend({
   },
   render: function() {
     var html;
-
     html = tpl['discover/index'](this.context);
     this.$el.html(html);
     this.$el.attr('view-id', 'discover');
     return this;
   }
 });
+
 
 views.HowTo = View.extend({
   initialize: function() {
@@ -1793,7 +1968,6 @@ views.HowTo = View.extend({
   },
   render: function() {
     var html;
-
     html = tpl['how-to'](this.context);
     this.$el.html(html);
     this.$el.attr('view-id', 'how-to');
@@ -1801,22 +1975,20 @@ views.HowTo = View.extend({
   }
 });
 
-var _ref,
-  __hasProp = {}.hasOwnProperty,
+var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 views.Series = (function(_super) {
+
   __extends(Series, _super);
 
   function Series() {
-    _ref = Series.__super__.constructor.apply(this, arguments);
-    return _ref;
+    return Series.__super__.constructor.apply(this, arguments);
   }
 
   Series.prototype.initialize = function(opts) {
     var _this = this;
-
     if (opts == null) {
       opts = {};
     }
@@ -1849,7 +2021,6 @@ views.Series = (function(_super) {
   Series.prototype.render = function() {
     var className, data, prev,
       _this = this;
-
     this.width = this.$el.width() - this.margin.right - this.margin.left;
     this.height = 300 - this.margin.top - this.margin.bottom;
     this.x = d3.time.scale().range([0, this.width]);
@@ -1859,9 +2030,8 @@ views.Series = (function(_super) {
     className = this.$el.attr("class");
     this.svg = d3.select("." + className).append("svg").attr("width", this.width + this.margin.left + this.margin.right).attr("height", this.height + this.margin.top + this.margin.bottom).append("g").attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
     data = this.collection.filter(function(item) {
-      var _ref1;
-
-      return _ref1 = item.get("type"), __indexOf.call(_this.types, _ref1) >= 0;
+      var _ref;
+      return _ref = item.get("type"), __indexOf.call(_this.types, _ref) >= 0;
     });
     prev = 0;
     data.forEach(function(d) {
@@ -1884,21 +2054,19 @@ views.Series = (function(_super) {
 
 })(Backbone.View);
 
-var _ref,
-  __hasProp = {}.hasOwnProperty,
+var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 views.MultiSeries = (function(_super) {
+
   __extends(MultiSeries, _super);
 
   function MultiSeries() {
-    _ref = MultiSeries.__super__.constructor.apply(this, arguments);
-    return _ref;
+    return MultiSeries.__super__.constructor.apply(this, arguments);
   }
 
   MultiSeries.prototype.initialize = function(opts) {
     var _this = this;
-
     if (opts == null) {
       opts = {};
     }
@@ -1931,7 +2099,6 @@ views.MultiSeries = (function(_super) {
   MultiSeries.prototype.render = function() {
     var className, max, min, question, questions,
       _this = this;
-
     this.width = this.$el.width() - this.margin.right - this.margin.left;
     this.height = 500 - this.margin.top - this.margin.bottom;
     this.x = d3.time.scale().range([0, this.width]);
@@ -1981,7 +2148,6 @@ views.MultiSeries = (function(_super) {
       };
     }).attr("transform", function(d) {
       var x, y;
-
       x = d.value != null ? _this.x(d.value.x()) : 0;
       y = d.value != null ? _this.y(d.value.y()) : 0;
       return "translate(" + x + "," + y + ")";
@@ -1999,18 +2165,17 @@ views.MultiSeries = (function(_super) {
 
 })(Backbone.View);
 
+
 views.Repo = View.extend({
   events: {
     'click [data-action=star]': "setBookmark"
   },
   setBookmark: function() {
     var $this;
-
     return $this = $(e.currentTarget);
   },
   initialize: function(opts) {
     var preloadedData, repo, _ref;
-
     if (opts == null) {
       opts = {};
     }
@@ -2076,7 +2241,6 @@ views.Repo = View.extend({
   },
   initSO: function() {
     var options, so;
-
     options = {
       language: this.language,
       owner: this.owner,
@@ -2090,7 +2254,6 @@ views.Repo = View.extend({
   },
   initGE: function() {
     var ge, options;
-
     options = {
       language: this.language,
       owner: this.owner,
@@ -2112,7 +2275,6 @@ views.Repo = View.extend({
   },
   render: function() {
     var html;
-
     this.context.module = this.model.toJSON();
     html = tpl['module/view'](this.context);
     this.$el.html(html);
@@ -2121,13 +2283,13 @@ views.Repo = View.extend({
   }
 });
 
+
 views.ModuleList = View.extend({
   events: {
     'click .pagination a': "changePage"
   },
   initialize: function(opts) {
     var data, limit, page, preloadedData, _ref;
-
     console.log('[__ModuleListView__] Init');
     this.language = opts.language;
     this.context = {
@@ -2157,7 +2319,6 @@ views.ModuleList = View.extend({
   },
   changePage: function(e) {
     var href, loader, page, view;
-
     href = $(e.currentTarget).attr("href");
     if (href) {
       page = href.replace(/.*page=([0-9]+).*/, "$1");
@@ -2176,7 +2337,6 @@ views.ModuleList = View.extend({
   },
   render: function() {
     var currentPage, html, i, totalPages, _i, _ref;
-
     this.context.modules = this.collection.toJSON();
     _ref = this.collection.info(), totalPages = _ref.totalPages, currentPage = _ref.currentPage;
     if (totalPages > 0) {
@@ -2204,13 +2364,13 @@ views.ModuleList = View.extend({
   }
 });
 
+
 views.Languages = View.extend({
   events: {
     'click .pagination a': "changePage"
   },
   initialize: function() {
     var data, limit, page, preloadedData, _ref;
-
     console.log('[__ModuleViewInit__] Init');
     /*
       Context
@@ -2242,7 +2402,6 @@ views.Languages = View.extend({
   },
   changePage: function(e) {
     var href, loader, page, view;
-
     href = $(e.currentTarget).attr("href");
     if (href) {
       page = href.replace(/.*page=([0-9]+).*/, "$1");
@@ -2261,7 +2420,6 @@ views.Languages = View.extend({
   },
   render: function() {
     var currentPage, html, i, totalPages, _i, _ref;
-
     this.context.languages = this.collection.toJSON();
     _ref = this.collection.info(), totalPages = _ref.totalPages, currentPage = _ref.currentPage;
     if (totalPages > 0) {
@@ -2289,6 +2447,7 @@ views.Languages = View.extend({
   }
 });
 
+
 views.TypeAhead = Backbone.View.extend({
   el: "#typeahead",
   events: {
@@ -2305,7 +2464,6 @@ views.TypeAhead = Backbone.View.extend({
   },
   position: function(element) {
     var height, offset, width;
-
     offset = $(element).offset();
     width = $(element).width();
     height = $(element).height();
@@ -2317,7 +2475,6 @@ views.TypeAhead = Backbone.View.extend({
   },
   select: function(e) {
     var newValue, oldValue, value;
-
     value = $(e.currentTarget).attr("rel");
     oldValue = this.context.listener.val();
     newValue = oldValue.substring(0, this.cursor.start + 1) + value + oldValue.substring(this.cursor.end + 1);
@@ -2354,7 +2511,6 @@ views.TypeAhead = Backbone.View.extend({
   },
   render: function() {
     var html;
-
     this.context.suggestions = this.suggestions.toJSON();
     html = tpl['dashboard/typeahead'](this.context);
     this.$el.html(html);
@@ -2363,143 +2519,15 @@ views.TypeAhead = Backbone.View.extend({
   }
 });
 
-var InlineForm,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-InlineForm = (function(_super) {
-  __extends(InlineForm, _super);
-
-  InlineForm.prototype.events = {
-    'submit form': "submit",
-    'click button[type=submit]': "preventPropagation",
-    'click .close-inline': "hide",
-    'keypress textarea.typeahead': "typeahead"
-  };
-
-  InlineForm.prototype.preventPropagation = function(event) {
-    return event.stopPropagation();
-  };
-
-  function InlineForm(opts) {
-    var $el;
-
-    if (opts == null) {
-      opts = {};
-    }
-    if (this.el && ($el = $(this.el)).length > 0) {
-      opts.el = $el;
-    }
-    InlineForm.__super__.constructor.call(this, opts);
-  }
-
-  InlineForm.prototype.initialize = function(context) {
-    if (context == null) {
-      context = {};
-    }
-    this.context = _.extend({}, context, app.conf);
-    InlineForm.__super__.initialize.call(this, context);
-    this.tah = new views.TypeAhead(this.context);
-    this.buf = "";
-    return this.render();
-  };
-
-  InlineForm.prototype.typeahead = function(event) {
-    var char, code;
-
-    code = event.which || event.keyCode || event.charCode;
-    char = String.fromCharCode(code);
-    this.tah.position(event.target);
-    switch (char) {
-      case '@':
-        this.buf = '';
-        return this.tah.showUser(event.target.selectionStart);
-      case '#':
-        this.buf = '';
-        return this.tah.showTask(event.target.selectionStart);
-      case '+':
-        this.buf = '';
-        return this.tah.showProject(event.target.selectionStart);
-      case ' ':
-        this.buf = '';
-        this.tah.hide();
-        return true;
-      default:
-        if (code === 8) {
-          this.buf = this.buf.substring(0, this.buf.length - 1);
-          return true;
-        }
-        if (event.charCode === 0) {
-          return true;
-        }
-        if (this.tah.available) {
-          this.buf += char;
-        }
-        if (this.buf.length > 0) {
-          return this.tah.updateQuery(this.buf, event.target.selectionEnd);
-        }
-    }
-  };
-
-  InlineForm.prototype.submit = function(event) {
-    var data;
-
-    event.preventDefault();
-    event.stopPropagation();
-    data = Backbone.Syphon.serialize(event.currentTarget);
-    this.$("[type=submit]").addClass("disabled").text("Updating information...");
-    this.model.save(data, {
-      success: this.success,
-      error: this.success
-    });
-    return false;
-  };
-
-  InlineForm.prototype.success = function(model, response, options) {
-    if (response.success === true) {
-      this.hide;
-      return true;
-    } else {
-      console.log(response);
-      alert("An error occured");
-      return false;
-    }
-  };
-
-  InlineForm.prototype.show = function() {
-    this.$el.show();
-    return this.$("form input").focus();
-  };
-
-  InlineForm.prototype.hide = function(event) {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    return this.$el.hide();
-  };
-
-  InlineForm.prototype.render = function() {
-    this.html = tpl[this.view](this.context);
-    this.$el.hide().empty();
-    this.$el.append(this.html);
-    return this;
-  };
-
-  return InlineForm;
-
-})(Backbone.View);
-
-var _ref,
-  __hasProp = {}.hasOwnProperty,
+var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 views.CreateProjectForm = (function(_super) {
+
   __extends(CreateProjectForm, _super);
 
   function CreateProjectForm() {
-    _ref = CreateProjectForm.__super__.constructor.apply(this, arguments);
-    return _ref;
+    return CreateProjectForm.__super__.constructor.apply(this, arguments);
   }
 
   CreateProjectForm.prototype.el = "#create-project-inline";
@@ -2508,7 +2536,6 @@ views.CreateProjectForm = (function(_super) {
 
   CreateProjectForm.prototype.success = function(model, response, options) {
     var projectId;
-
     if (CreateProjectForm.__super__.success.call(this, model, response, options)) {
       projectId = response.id;
       return projects.fetch();
@@ -2524,16 +2551,15 @@ views.CreateProjectForm = (function(_super) {
 
 })(InlineForm);
 
-var _ref,
-  __hasProp = {}.hasOwnProperty,
+var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 views.EditProjectForm = (function(_super) {
+
   __extends(EditProjectForm, _super);
 
   function EditProjectForm() {
-    _ref = EditProjectForm.__super__.constructor.apply(this, arguments);
-    return _ref;
+    return EditProjectForm.__super__.constructor.apply(this, arguments);
   }
 
   EditProjectForm.prototype.el = ".main-area";
@@ -2556,16 +2582,15 @@ views.EditProjectForm = (function(_super) {
 
 })(InlineForm);
 
-var _ref,
-  __hasProp = {}.hasOwnProperty,
+var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 views.CreateTaskForm = (function(_super) {
+
   __extends(CreateTaskForm, _super);
 
   function CreateTaskForm() {
-    _ref = CreateTaskForm.__super__.constructor.apply(this, arguments);
-    return _ref;
+    return CreateTaskForm.__super__.constructor.apply(this, arguments);
   }
 
   CreateTaskForm.prototype.el = "#create-task-inline";
@@ -2588,16 +2613,15 @@ views.CreateTaskForm = (function(_super) {
 
 })(InlineForm);
 
-var _ref,
-  __hasProp = {}.hasOwnProperty,
+var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 views.CreateTaskCommentForm = (function(_super) {
+
   __extends(CreateTaskCommentForm, _super);
 
   function CreateTaskCommentForm() {
-    _ref = CreateTaskCommentForm.__super__.constructor.apply(this, arguments);
-    return _ref;
+    return CreateTaskCommentForm.__super__.constructor.apply(this, arguments);
   }
 
   CreateTaskCommentForm.prototype.view = "dashboard/create_task_comment";
@@ -2618,16 +2642,15 @@ views.CreateTaskCommentForm = (function(_super) {
 
 })(InlineForm);
 
-var _ref,
-  __hasProp = {}.hasOwnProperty,
+var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 views.Task = (function(_super) {
+
   __extends(Task, _super);
 
   function Task() {
-    _ref = Task.__super__.constructor.apply(this, arguments);
-    return _ref;
+    return Task.__super__.constructor.apply(this, arguments);
   }
 
   Task.prototype.events = {
@@ -2638,7 +2661,6 @@ views.Task = (function(_super) {
 
   Task.prototype.checkIn = function(event) {
     var _this = this;
-
     event.preventDefault();
     event.stopPropagation();
     $(event.target).attr("id", "task-check-out");
@@ -2673,7 +2695,6 @@ views.Task = (function(_super) {
 
   Task.prototype.timer = function() {
     var diff, hours, minutes, seconds;
-
     if (!this.timerEl) {
       this.timerEl = $("#timer");
     }
@@ -2695,7 +2716,6 @@ views.Task = (function(_super) {
 
   Task.prototype.render = function() {
     var html;
-
     html = tpl['dashboard/task'](this.context);
     this.$el.html(html);
     this.$el.attr('view-id', 'dashboard-task');
@@ -2706,16 +2726,15 @@ views.Task = (function(_super) {
 
 })(View);
 
-var _ref,
-  __hasProp = {}.hasOwnProperty,
+var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 views.Search = (function(_super) {
+
   __extends(Search, _super);
 
   function Search() {
-    _ref = Search.__super__.constructor.apply(this, arguments);
-    return _ref;
+    return Search.__super__.constructor.apply(this, arguments);
   }
 
   Search.prototype.events = {
@@ -2729,7 +2748,6 @@ views.Search = (function(_super) {
 
   Search.prototype.submit = function(event) {
     var data;
-
     event.preventDefault();
     event.stopPropagation();
     data = Backbone.Syphon.serialize(event.currentTarget);
@@ -2760,7 +2778,6 @@ views.Search = (function(_super) {
 
   Search.prototype.renderResult = function(collection) {
     var _tasks;
-
     _tasks = [];
     collection.each(function(item) {
       return _tasks.push(item.toJSON());
@@ -2771,7 +2788,6 @@ views.Search = (function(_super) {
 
   Search.prototype.render = function() {
     var from, html, to;
-
     html = tpl['dashboard/search'](this.context);
     this.$el.html(html);
     this.$el.attr('view-id', 'dashboard-search');
@@ -2794,6 +2810,7 @@ views.Search = (function(_super) {
 
 })(View);
 
+
 views.Dashboard = View.extend({
   events: {
     'click .project-list li a': "editProject",
@@ -2810,7 +2827,6 @@ views.Dashboard = View.extend({
   },
   parsePermissions: function(user, project) {
     var _i, _j, _k, _len, _len1, _len2, _ref, _ref1, _ref2, _results;
-
     this.context.canRead = false;
     this.context.canWrite = false;
     this.context.canGrant = false;
@@ -2865,7 +2881,6 @@ views.Dashboard = View.extend({
   },
   editProject: function(e) {
     var editProjectForm;
-
     e.preventDefault();
     this.projectId = e.target.attributes['rel'].value;
     this.project = this.projects.get(this.projectId);
@@ -2878,7 +2893,6 @@ views.Dashboard = View.extend({
   },
   deleteProject: function(e) {
     var _this = this;
-
     e.preventDefault();
     this.project.url = "/project/" + this.projectId;
     return this.project.destroy({
@@ -2916,7 +2930,6 @@ views.Dashboard = View.extend({
   },
   showTaskCommentForm: function(e) {
     var createTaskComment;
-
     e.preventDefault();
     e.stopPropagation();
     createTaskComment = new views.CreateTaskCommentForm(_.extend(this.context, {
@@ -2949,7 +2962,6 @@ views.Dashboard = View.extend({
     this.context.user = app.session.toJSON();
     this.context.canEdit = function(user, project) {
       var _i, _len, _ref, _user;
-
       if (user._id === project.client.id) {
         return true;
       }
@@ -2992,7 +3004,6 @@ views.Dashboard = View.extend({
   },
   setParent: function(parent, child) {
     var _this = this;
-
     return $.get("/project/parent/" + parent + "/" + child, function(response, status, xhr) {
       return _this.projects.fetch();
     });
@@ -3000,7 +3011,6 @@ views.Dashboard = View.extend({
   render: function() {
     var html,
       _this = this;
-
     html = tpl['dashboard/dashboard'](this.context);
     this.$el.html(html);
     this.$el.attr('view-id', 'dashboard');
@@ -3032,7 +3042,6 @@ views.AdminBoard = View.extend({
     */
 
     var href, segments;
-
     try {
       href = $(e.currentTarget).attr("href");
       app.navigate(href, {
@@ -3045,7 +3054,6 @@ views.AdminBoard = View.extend({
   },
   empty: function() {
     var opts;
-
     opts = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
     this.informationBox.children().detach();
     if (opts != null) {
@@ -3053,8 +3061,7 @@ views.AdminBoard = View.extend({
     }
   },
   action: function(action, get) {
-    var bill, billId, billView, e, model, username;
-
+    var bill, billId, billView, model, username;
     switch (action) {
       case "users_with_stripe":
         this.empty(this.stripeUsers.$el);
@@ -3076,8 +3083,7 @@ views.AdminBoard = View.extend({
           if (!bill) {
             throw "no bill";
           }
-        } catch (_error) {
-          e = _error;
+        } catch (e) {
           bill = new models.Bill({
             _id: billId
           });
@@ -3100,7 +3106,6 @@ views.AdminBoard = View.extend({
   },
   render: function() {
     var html;
-
     this.context.user = this.model.toJSON();
     html = tpl['admin/admin'](this.context);
     this.$el.html(html);
@@ -3110,13 +3115,13 @@ views.AdminBoard = View.extend({
   }
 });
 
+
 views.IssueBill = Backbone.View.extend({
   events: {
     "submit form": "onSubmit"
   },
   onSubmit: function(e) {
     var data;
-
     e.preventDefault();
     data = Backbone.Syphon.serialize(e.currentTarget);
     this.bill.set(data);
@@ -3139,11 +3144,9 @@ views.IssueBill = Backbone.View.extend({
   validationErrors: function(model, errors) {
     var stringError,
       _this = this;
-
     stringError = [];
     _.each(errors, function(error) {
       var $input;
-
       if (typeof error === 'object') {
         $input = _this.$("[name='bill[" + error.name + "]']");
         $input.closest(".control-group").addClass("error");
@@ -3161,7 +3164,6 @@ views.IssueBill = Backbone.View.extend({
   },
   prepareForm: function() {
     var form;
-
     if (this.bill != null) {
       this.stopListening(this.bill);
     }
@@ -3180,7 +3182,6 @@ views.IssueBill = Backbone.View.extend({
   },
   initialize: function() {
     var _this = this;
-
     console.log("[__IssueBill View__] init");
     this.context = {
       bills_action: app.conf.bills,
@@ -3210,7 +3211,6 @@ views.IssueBill = Backbone.View.extend({
   },
   renderBills: function() {
     var html;
-
     html = tpl['bills/table']({
       bills: this.issuedBills.toJSON(),
       view_bills: "/admin/bills"
@@ -3219,7 +3219,6 @@ views.IssueBill = Backbone.View.extend({
   },
   render: function() {
     var html;
-
     if (this.model != null) {
       this.context.user = this.model.toJSON();
     }
@@ -3230,6 +3229,7 @@ views.IssueBill = Backbone.View.extend({
   }
 });
 
+
 views.UsersWithStripe = Backbone.View.extend({
   initialize: function() {
     this.collection = new collections.UsersWithStripe;
@@ -3238,7 +3238,6 @@ views.UsersWithStripe = Backbone.View.extend({
   },
   render: function() {
     var html;
-
     this.context.users = this.collection.toJSON();
     html = tpl['admin/users_with_stripe'](this.context);
     this.$el.html(html);
@@ -3255,8 +3254,7 @@ var __hasProp = {}.hasOwnProperty,
     Configuring plugins
   */
 
-  var App, conf, routes, _ref;
-
+  var App, conf, routes;
   $.cookie.json = true;
   conf = {
     STATIC_URL: "/static/",
@@ -3280,18 +3278,17 @@ var __hasProp = {}.hasOwnProperty,
     users_with_stripe: "admin/users_with_stripe"
   };
   App = (function(_super) {
+
     __extends(App, _super);
 
     function App() {
-      _ref = App.__super__.constructor.apply(this, arguments);
-      return _ref;
+      return App.__super__.constructor.apply(this, arguments);
     }
 
     App.prototype.conf = conf;
 
     App.prototype.init = function() {
       var hash;
-
       if (!Backbone.history._hasPushState) {
         hash = Backbone.history.getHash();
         this.navigate('', {
@@ -3338,7 +3335,6 @@ var __hasProp = {}.hasOwnProperty,
 
     App.prototype.profile = function() {
       var action, opts;
-
       action = arguments[0], opts = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       this.reRoute();
       if (app.session.get("is_authenticated") === true) {
@@ -3463,7 +3459,6 @@ var __hasProp = {}.hasOwnProperty,
 
     App.prototype.admin = function() {
       var action, get, opts;
-
       opts = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       this.reRoute();
       if (!app.session.isSuperUser()) {
@@ -3529,7 +3524,6 @@ var __hasProp = {}.hasOwnProperty,
   return $(document).ready(function() {
     var app, router,
       _this = this;
-
     router = {};
     _.each(routes, function(route) {
       return router[route.key] = route.name;
@@ -3551,7 +3545,6 @@ var __hasProp = {}.hasOwnProperty,
       app.init();
       return $(document).delegate("a", "click", function(e) {
         var href, path, search, uri;
-
         href = e.currentTarget.getAttribute('href');
         if (!href) {
           return true;

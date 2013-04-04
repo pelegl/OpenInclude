@@ -16,6 +16,8 @@ class InlineForm extends Backbone.View
     @context = _.extend {}, context, app.conf
     super context
 
+    _.extend @, Backbone.Events
+
     @tah = new views.TypeAhead @context
     @buf = ""
     @render()
@@ -59,17 +61,19 @@ class InlineForm extends Backbone.View
 
     data = Backbone.Syphon.serialize event.currentTarget
     @$("[type=submit]").addClass("disabled").text("Updating information...")
-    @model.save data, {success: @success, error: @success}
+    @model.save data, {success: _.bind(@success, @), error: _.bind(@success, @)}
 
     false
 
   success: (model, response, options) ->
     if response.success is true
-      @hide
+      @hide()
+      @trigger "success"
       return true
     else
       console.log(response)
       alert "An error occured"
+      @trigger "fail"
       return false
 
   show: ->

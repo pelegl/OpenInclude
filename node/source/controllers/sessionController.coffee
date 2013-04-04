@@ -32,20 +32,19 @@ class SessionController extends BasicController
         else
             @res.json user.information()
 
-  ###
-  TODO: remove?
-  ###
-
   list: ->
     query = User.find().select()
     if @get?
-      regexp = new RegExp("^#{@get[0]}")
+      regexp = new RegExp("^#{@get[0]}", "i")
+      query.where 'github_username', regexp
+    else if @req.query.term
+      regexp = new RegExp("^#{@req.query.term}", "i")
       query.where 'github_username', regexp
     query.exec((result, users) =>
       if result then return @res.json success: false
 
       data = _.map(users, (user) ->
-        return {title: user.get("github_username"), value: user.get("github_username")}
+        return {label: user.get("github_username"), value: user.get("_id")}
       )
 
       @res.json data

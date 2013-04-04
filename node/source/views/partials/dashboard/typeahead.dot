@@ -1,5 +1,5 @@
 <ul class="typeahead-container">
     {{~ it.suggestions :suggestion }}
-    <li class="suggestion" rel="{{= suggestion.value }}">{{= suggestion.title }}</li>
+    <li class="suggestion" rel="{{= suggestion.value }}">{{= suggestion.label }}</li>
     {{~}}
 </ul>

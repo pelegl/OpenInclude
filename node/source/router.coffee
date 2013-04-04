@@ -79,6 +79,11 @@ exports.set = (app)->
   app.delete "/task/:id", app.Controllers.task.delete
 
   app.post '/task/comment/:id', app.Controllers.task.comment
+
+
+  ## Runway ##
+  app.get "/api/connection", app.Controllers.runway.connections
+  app.post "/api/connection", app.Controllers.runway.create
   
   ###
   oAuth interaction
