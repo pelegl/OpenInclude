@@ -843,7 +843,6 @@ InlineForm = (function(_super) {
       context = {};
     }
     this.context = _.extend({}, context, app.conf);
-    InlineForm.__super__.initialize.call(this, context);
     _.extend(this, Backbone.Events);
     this.tah = new views.TypeAhead(this.context);
     this.buf = "";
@@ -928,9 +927,7 @@ InlineForm = (function(_super) {
   };
 
   InlineForm.prototype.render = function() {
-    this.html = tpl[this.view](this.context);
-    this.$el.hide().empty();
-    this.$el.append(this.html);
+    this.$el.hide().html(tpl[this.view](this.context));
     return this;
   };
 
@@ -1329,13 +1326,12 @@ views.Profile = View.extend({
     'click #new-connection': "newConnection"
   },
   newConnection: function(e) {
-    var form;
-
     e.preventDefault();
-    e.stopPropagation();
-    form = new views.ConnectionForm(this.context);
-    form.show();
-    return this.listenTo(form, "success", this.updateData);
+    if (this.connectionform == null) {
+      this.connectionform = new views.ConnectionForm(this.context);
+      this.listenTo(this.connectionform, "success", this.updateData);
+    }
+    return this.connectionform.show();
   },
   updateData: function(e) {
     return this.connections.fetch();
@@ -1500,24 +1496,72 @@ views.ConnectionForm = (function(_super) {
   ConnectionForm.prototype.view = "member/new_connection";
 
   ConnectionForm.prototype.initialize = function(context) {
+    var $reader, $writer;
+
     this.model = new models.Connection;
     ConnectionForm.__super__.initialize.call(this, context);
-    this.$el.find("input[name=reader]").autocomplete({
+    /*
+    @$el.find("input[name=reader]").autocomplete(
       source: "/session/list",
       minLength: 2,
-      select: function(e, ui) {
-        $(this).val(ui.item.label);
-        $(this).parent().find("input[name=reader_id]").val(ui.item.value);
-        return false;
-      }
-    });
-    return this.$el.find("input[name=writer]").autocomplete({
+      select: (e, ui) ->
+        $(@).val(ui.item.label)
+        $(@).parent().find("input[name=reader_id]").val(ui.item.value)
+        false
+    )
+    
+    @$el.find("input[name=writer]").autocomplete(
       source: "/session/list",
       minLength: 2,
-      select: function(e, ui) {
-        $(this).val(ui.item.label);
-        $(this).parent().find("input[name=writer_id]").val(ui.item.value);
-        return false;
+      select: (e, ui) ->
+        $(@).val(ui.item.label)
+        $(@).parent().find("input[name=writer_id]").val(ui.item.value)
+        false
+    )
+    */
+
+    $reader = this.$("input[name=reader]");
+    $writer = this.$("input[name=writer]");
+    return $reader.add($writer).typeahead({
+      source: function(query, process) {
+        var users,
+          _this = this;
+
+        this.map = {};
+        users = [];
+        if (this.xhr != null) {
+          this.xhr.abort();
+        }
+        return this.xhr = $.getJSON("/session/list", {
+          term: query
+        }, function(data) {
+          _.each(data, function(user) {
+            _this.map[user.label] = user;
+            return users.push(user.label);
+          });
+          return process(users);
+        });
+      },
+      minLength: 1,
+      updater: function(item) {
+        var selectedState;
+
+        selectedState = this.map[item].value;
+        return item;
+      },
+      matcher: function(item) {
+        if (item.toLowerCase().indexOf(this.query.trim().toLowerCase()) !== -1) {
+          return true;
+        }
+      },
+      sorter: function(items) {
+        return items.sort();
+      },
+      highlighter: function(item) {
+        var regex;
+
+        regex = new RegExp('(' + this.query + ')', 'gi');
+        return item.replace(regex, "<strong>$1</strong>");
       }
     });
   };

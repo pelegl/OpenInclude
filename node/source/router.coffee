@@ -1,15 +1,7 @@
 {STATIC_URL, modules_url, github_auth, get_models, is_authenticated, github_auth_url, trello_auth_url, trello_auth, logout, signin_url, is_not_authenticated, dashboard_url} = require './conf'
 
 exports.set = (app)->
-  ###
-    git webhook
-  ###
-  app.all '/git/webhook', (req, res)->
-    console.log req.body
-    
-    res.send "ok"
-  
-  
+
   ###
   Discover controller
   ###

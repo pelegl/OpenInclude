@@ -14,7 +14,6 @@ class InlineForm extends Backbone.View
 
   initialize: (context = {}) ->
     @context = _.extend {}, context, app.conf
-    super context
 
     _.extend @, Backbone.Events
 
@@ -87,7 +86,5 @@ class InlineForm extends Backbone.View
     @$el.hide()
 
   render: ->
-    @html = tpl[@view](@context)
-    @$el.hide().empty()
-    @$el.append(@html)
+    @$el.hide().html tpl[@view](@context)
     @
