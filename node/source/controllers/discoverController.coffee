@@ -126,14 +126,14 @@ class DiscoverController extends require('./basicController')
         ]
     ###
     query =
-      custom_filters_score:
-        query:
-          flt:
-            like_text: @context.discover_search_query || ""
-            fields: ["description", "module_name", "owner"]
-            min_similarity: 0.3
-            prefix_length: 3
-            ignore_tf: true
+      fuzzy_like_this:
+        like_text: @context.discover_search_query || ""
+        fields: ["description", "module_name", "owner"]
+        min_similarity: 0.5
+        prefix_length: 3
+        ignore_tf: true
+        min_word_len: 2
+
 
     ###
         filters: [
