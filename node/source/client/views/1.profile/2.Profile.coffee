@@ -7,6 +7,7 @@ views.Profile = View.extend
     'click #new-connection': "newConnection"
     'click #track-time': "trackTime"
     'click #writer-filter': 'filterWriter'
+    'click #alter-runway': 'alterRunway'
 
   newConnection: (e) ->
     e.preventDefault()
@@ -39,6 +40,18 @@ views.Profile = View.extend
     @context.to = @$("input[name=end_date_writer]").val() or "none"
     @context.active_tab = "writer-finance"
     @render()
+
+  alterRunway: (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+
+    suffix = e.currentTarget.attributes['rel'].value
+    limit = parseInt(e.currentTarget.attributes['data-limit'].value)
+    model = @connections.get(suffix)
+
+    @editForm = new views.AlterRunwayForm _.extend(@context, {limit: limit, model: model})
+    @listenTo @editForm, "success", @updateData
+    @editForm.show()
 
   updateData: (e) ->
     @connections.fetch()

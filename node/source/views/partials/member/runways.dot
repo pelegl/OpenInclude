@@ -57,41 +57,28 @@
                 <th>Actions</th>
             </tr>
             {{~ it.runways_reader :runway }}
+            {{
+                worked = 0;
+                for (r in runway.runways)
+                {
+                    worked += parseInt(runway.runways[r].worked);
+                }
+            }}
+
             <tr>
                 <td><a href="/profile/view/{{= runway.writer.name }}">{{= runway.writer.name }}</a></td>
                 <td>{{= runway.charged + runway.charged * runway.fee / 100 }}</td>
                 <td>{{= runway.data }}</td>
-                <td></td>
+                <td>
+                    <button id="alter-runway" rel="{{= runway._id }}" data-limit="{{= worked }}" class="btn btn-small btn-success">Alter</button>
+                    <div id="alter-runway-inline" style="margin-top: 15px; display: none"></div>
+                </td>
             </tr>
             {{~}}
         </table>
     </div>
     <div class="tab-pane" id="reader-finance">
-        <div class="runway-date">
-            <label>
-                From
-                <input type="text" name="start_date" class="datepicker" />
-            </label>
-            <label>
-                To
-                <input type="text" name="end_date" class="datepicker" />
-            </label>
-            <button class="btn btn-info">View</button>
-        </div>
-        <table class="table table-bordered table-condensed table-hover">
-            <tr>
-                <th>Date</th>
-                <th>Amount</th>
-            </tr>
-            {{~ it.runways :runway }}
-            <tr>
-                <td><a href="/profile/view/{{= runway.writer.name }}">{{= runway.writer.name }}</a></td>
-                <td>{{= runway.rate }}</td>
-                <td>{{= runway.data }}</td>
-                <td></td>
-            </tr>
-            {{~}}
-        </table>
+        TODO
     </div>
     {{?}}
     {{? it.user.groups.indexOf("writer") >= 0 }}
@@ -104,15 +91,14 @@
                 <th>Actions</th>
             </tr>
             {{~ it.runways_writer :runway }}
+            {{
+                worked = 0;
+                for (r in runway.runways)
+                {
+                    worked += parseInt(runway.runways[r].worked);
+                }
+            }}
             <tr>
-                {{
-                    worked = 0;
-                    for (r in runway.runways)
-                    {
-                        worked += parseInt(runway.runways[r].worked);
-                    }
-                }}
-
                 <td><a href="/profile/view/{{= runway.reader.name }}">{{= runway.reader.name }}</a></td>
                 <td>{{= runway.charged }}</td>
                 <td>{{= worked }} / {{= runway.data }}</td>

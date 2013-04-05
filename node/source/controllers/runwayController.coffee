@@ -39,6 +39,17 @@ module.exports =
         res.json({success: true})
     )
 
+  update_connection: (req, res) ->
+    id = req.body._id
+    delete req.body._id
+    delete req.body.__v
+    Connection.findByIdAndUpdate(id, req.body, (result, connection) ->
+      if result
+        res.json {success: false, error: result}
+      else
+        res.json {success: true}
+    )
+
   reader: (req, res) ->
     Connection.find({"reader.id": "" + req.user._id}).populate("runways").exec((result, data) ->
       if result

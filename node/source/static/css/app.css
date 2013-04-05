@@ -685,6 +685,14 @@ footer {
 .admin .customer .name {
   display: inline-block;
 }
+.runway-date label {
+  float: left;
+  margin-right: 15px;
+}
+.runway-date label input {
+  margin-left: 5px;
+  margin-top: 3px;
+}
 .bill {
   padding: 20px;
   background: #ffffff;

@@ -1,0 +1,8 @@
+<form method='post' action='' class='inline-popover'>
+    <input type="text" name="data" class="input-block-level" placeholder="New runway"/>
+
+    <div>
+        <a class="btn pull-left close-inline">Close</a>
+        <button type='submit' class="btn btn-primary pull-left" style='margin-left: 20px'>Confirm</button>
+    </div>
+</form>

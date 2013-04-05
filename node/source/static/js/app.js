@@ -1320,7 +1320,8 @@ views.Profile = View.extend({
     'click .setupPayment > button': "update_cc_events",
     'click #new-connection': "newConnection",
     'click #track-time': "trackTime",
-    'click #writer-filter': 'filterWriter'
+    'click #writer-filter': 'filterWriter',
+    'click #alter-runway': 'alterRunway'
   },
   newConnection: function(e) {
     e.preventDefault();
@@ -1353,6 +1354,20 @@ views.Profile = View.extend({
     this.context.to = this.$("input[name=end_date_writer]").val() || "none";
     this.context.active_tab = "writer-finance";
     return this.render();
+  },
+  alterRunway: function(e) {
+    var limit, model, suffix;
+    e.preventDefault();
+    e.stopPropagation();
+    suffix = e.currentTarget.attributes['rel'].value;
+    limit = parseInt(e.currentTarget.attributes['data-limit'].value);
+    model = this.connections.get(suffix);
+    this.editForm = new views.AlterRunwayForm(_.extend(this.context, {
+      limit: limit,
+      model: model
+    }));
+    this.listenTo(this.editForm, "success", this.updateData);
+    return this.editForm.show();
   },
   updateData: function(e) {
     this.connections.fetch();
@@ -1611,6 +1626,43 @@ views.TrackTimeForm = (function(_super) {
   };
 
   return TrackTimeForm;
+
+})(InlineForm);
+
+var __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+views.AlterRunwayForm = (function(_super) {
+
+  __extends(AlterRunwayForm, _super);
+
+  function AlterRunwayForm() {
+    return AlterRunwayForm.__super__.constructor.apply(this, arguments);
+  }
+
+  AlterRunwayForm.prototype.el = "#alter-runway-inline";
+
+  AlterRunwayForm.prototype.view = "member/alter_runway";
+
+  AlterRunwayForm.prototype.initialize = function(context) {
+    this.model = context.model;
+    return AlterRunwayForm.__super__.initialize.call(this, context);
+  };
+
+  AlterRunwayForm.prototype.submit = function(event) {
+    var data;
+    event.preventDefault();
+    event.stopPropagation();
+    data = Backbone.Syphon.serialize(event.currentTarget);
+    if (parseInt(data.data) < this.context.limit) {
+      alert("Please, enter amount higher than writer completed!");
+      return false;
+    } else {
+      return AlterRunwayForm.__super__.submit.call(this, event);
+    }
+  };
+
+  return AlterRunwayForm;
 
 })(InlineForm);
 

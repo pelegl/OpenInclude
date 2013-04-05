@@ -76,6 +76,7 @@ exports.set = (app)->
   ## Runway ##
   app.get "/api/connection", app.Controllers.runway.connections
   app.post "/api/connection", app.Controllers.runway.create_connection
+  app.put "/api/connection", app.Controllers.runway.update_connection
 
   app.get "/api/runway/reader", app.Controllers.runway.reader
   app.get "/api/runway/writer", app.Controllers.runway.writer
