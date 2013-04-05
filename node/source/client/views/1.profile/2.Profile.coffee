@@ -8,12 +8,13 @@ views.Profile = View.extend
 
   newConnection: (e) ->
     e.preventDefault()
-    e.stopPropagation()
 
-    form = new views.ConnectionForm @context
-    form.show()
+    unless @connectionform?
+      @connectionform = new views.ConnectionForm @context
+      @listenTo @connectionform, "success", @updateData
 
-    @listenTo form, "success", @updateData
+    @connectionform.show()
+
 
   updateData: (e) ->
     @connections.fetch()

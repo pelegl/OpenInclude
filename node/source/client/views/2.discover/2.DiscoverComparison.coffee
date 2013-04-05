@@ -1,6 +1,25 @@
 views.DiscoverComparison = Backbone.View.extend
   events:
     "click [data-sort]" : "sortComparison"
+    "mouseenter tbody tr" : "fadeIn"
+    "mouseleave tbody tr" : "fadeOut"
+    "click tbody tr .btn-danger": "remove"
+
+  fadeIn:  (e)-> @fade true, e
+  fadeOut: (e)-> @fade false, e
+
+  fade: (className, e)->
+    $this  = $(e.currentTarget)
+    $fade  = $(".fade", $this)
+    action = if className then "addClass" else "removeClass"
+    $fade[action]("in")
+
+  remove: (e)->
+    $this = $(e.currentTarget).closest("tr")
+    id    = $this.data("id")
+    model = @collection.get(id)
+    # remove
+    @collection.remove model
 
   sortComparison: (e)->
     $this = $(e.currentTarget)
@@ -30,7 +49,7 @@ views.DiscoverComparison = Backbone.View.extend
     false
 
   initialize: ->
-    _.bindAll this, "render"
+    _.bindAll this
     @listenTo @collection, "all", @render
 
     @context =

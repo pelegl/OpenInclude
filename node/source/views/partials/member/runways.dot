@@ -35,9 +35,9 @@
             {{~ it.connections :connection }}
             <tr>
                 <td><a href="/profile/view/{{= connection.reader.name }}">{{= connection.reader.name }}</a></td>
-                <td>{{= connection.charged }}</td>
+                <td>{{= connection.charged * (1 + connection.fee/100) }}</td>
                 <td><a href="/profile/view/{{= connection.writer.name }}">{{= connection.writer.name }}</a></td>
-                <td>{{= connection.charged - connection.charged * connection.fee / 100 }}</td>
+                <td>{{= connection.charged }}</td>
             </tr>
             {{~}}
         </table>
