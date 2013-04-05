@@ -35,7 +35,7 @@
             {{~ it.connections :connection }}
             <tr>
                 <td><a href="/profile/view/{{= connection.reader.name }}">{{= connection.reader.name }}</a></td>
-                <td>{{= connection.charged * (1 + connection.fee/100) }}</td>
+                <td>{{= connection.charged + connection.charged * connection.fee / 100 }}</td>
                 <td><a href="/profile/view/{{= connection.writer.name }}">{{= connection.writer.name }}</a></td>
                 <td>{{= connection.charged }}</td>
             </tr>
@@ -56,6 +56,33 @@
                 <th>Runway</th>
                 <th>Actions</th>
             </tr>
+            {{~ it.runways_reader :runway }}
+            <tr>
+                <td><a href="/profile/view/{{= runway.writer.name }}">{{= runway.writer.name }}</a></td>
+                <td>{{= runway.charged + runway.charged * runway.fee / 100 }}</td>
+                <td>{{= runway.data }}</td>
+                <td></td>
+            </tr>
+            {{~}}
+        </table>
+    </div>
+    <div class="tab-pane" id="reader-finance">
+        <div class="runway-date">
+            <label>
+                From
+                <input type="text" name="start_date" class="datepicker" />
+            </label>
+            <label>
+                To
+                <input type="text" name="end_date" class="datepicker" />
+            </label>
+            <button class="btn btn-info">View</button>
+        </div>
+        <table class="table table-bordered table-condensed table-hover">
+            <tr>
+                <th>Date</th>
+                <th>Amount</th>
+            </tr>
             {{~ it.runways :runway }}
             <tr>
                 <td><a href="/profile/view/{{= runway.writer.name }}">{{= runway.writer.name }}</a></td>
@@ -66,7 +93,6 @@
             {{~}}
         </table>
     </div>
-    <div class="tab-pane" id="reader-finance">3</div>
     {{?}}
     {{? it.user.groups.indexOf("writer") >= 0 }}
     <div class="tab-pane" id="writer-runway">
@@ -77,16 +103,76 @@
                 <th>Runway</th>
                 <th>Actions</th>
             </tr>
-            {{~ it.runways :runway }}
+            {{~ it.runways_writer :runway }}
             <tr>
+                {{
+                    worked = 0;
+                    for (r in runway.runways)
+                    {
+                        worked += parseInt(runway.runways[r].worked);
+                    }
+                }}
+
                 <td><a href="/profile/view/{{= runway.reader.name }}">{{= runway.reader.name }}</a></td>
-                <td>{{= runway.rate }}</td>
-                <td>{{= runway.data }}</td>
-                <td></td>
+                <td>{{= runway.charged }}</td>
+                <td>{{= worked }} / {{= runway.data }}</td>
+                <td>
+                    {{? worked >= runway.data }}
+                    Allowed time limit exceeded.
+                    {{??}}
+                    <button id="track-time" rel="{{= runway._id }}" data-limit="{{= runway.data - worked }}" class="btn btn-small btn-success">Track</button>
+                    {{?}}
+                    <div id="track-time-inline" style="margin-top: 15px; display: none"></div>
+                </td>
             </tr>
             {{~}}
         </table>
     </div>
-    <div class="tab-pane" id="writer-finance">5</div>
+    <div class="tab-pane{{? it.active_tab == 'writer-finance'}} active{{?}}" id="writer-finance">
+        <div class="runway-date">
+            <label>
+                From
+                <input type="text" name="start_date_writer" class="datepicker" value="{{= it.from == 'none' ? '': it.from }}" />
+            </label>
+            <label>
+                To
+                <input type="text" name="end_date_writer" class="datepicker" value="{{= it.to == 'none' ? '': it.to }}" />
+            </label>
+            <button id="writer-filter" class="btn btn-info">View</button>
+        </div>
+        <table class="table table-bordered table-condensed table-hover">
+            <tr>
+                <th>Client</th>
+                <th>Paid</th>
+                <th>Pending</th>
+            </tr>
+            {{~ it.runways_writer :finance }}
+            {{
+                paid = 0;
+                pending = 0;
+                for (r in finance.runways)
+                {
+                    data = finance.runways[r];
+                    m = moment(data.date);
+                    f = moment(it.from);
+                    t = moment(it.to);
+                    if (it.from != "none" && it.to != "none" && !((m.isAfter(f, 'day') || m.isSame(f, 'day')) && (m.isBefore(t, 'day')) || m.isSame(t, 'day'))) continue;
+                    if (data.paid) paid += data.charged; else pending += data.charged;
+                }
+            }}
+
+            <tr>
+                <td><a href="/profile/view/{{= finance.writer.name }}">{{= finance.writer.name }}</a></td>
+                <td>{{= paid }}</td>
+                <td>{{= pending }}</td>
+            </tr>
+            {{~}}
+        </table>
+    </div>
     {{?}}
 </div>
+<script>
+    $(function() {
+        $(".datepicker").datepicker();
+    });
+</script>

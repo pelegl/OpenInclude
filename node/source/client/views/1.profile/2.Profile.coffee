@@ -5,19 +5,45 @@ views.Profile = View.extend
     'click a.backbone'             : "processAction"
     'click .setupPayment > button' : "update_cc_events"
     'click #new-connection': "newConnection"
+    'click #track-time': "trackTime"
+    'click #writer-filter': 'filterWriter'
 
   newConnection: (e) ->
     e.preventDefault()
+    e.stopPropagation()
 
-    unless @connectionform?
-      @connectionform = new views.ConnectionForm @context
-      @listenTo @connectionform, "success", @updateData
-
+    # TODO: after @render form.show does not work
+    if @connectionform
+      @stopListening @connectionform
+      delete @connectionform
+    @connectionform = new views.ConnectionForm @context
+    @listenTo @connectionform, "success", @updateData
     @connectionform.show()
 
+  trackTime: (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+
+    suffix = e.currentTarget.attributes['rel'].value
+    limit = parseInt(e.currentTarget.attributes['data-limit'].value)
+
+    @trackForm = new views.TrackTimeForm _.extend(@context, {suffix: suffix, limit: limit})
+    @listenTo @trackForm, "success", @updateData
+    @trackForm.show()
+
+  filterWriter: (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+
+    @context.from = @$("input[name=start_date_writer]").val() or "none"
+    @context.to = @$("input[name=end_date_writer]").val() or "none"
+    @context.active_tab = "writer-finance"
+    @render()
 
   updateData: (e) ->
     @connections.fetch()
+    @runways_reader.fetch()
+    @runways_writer.fetch()
 
   update_cc_events: (e) ->
     @cc.delegateEvents()
@@ -123,6 +149,8 @@ views.Profile = View.extend
       @cc        = new views.CC
       @bills     = new views.Bills
 
+    @context.from = "none"
+    @context.to = "none"
 
     @listenTo @model, "change", @render
     @model.fetch()
@@ -131,7 +159,27 @@ views.Profile = View.extend
     @listenTo @connections, "sync", @render
     @connections.fetch()
 
-    @render()
+    @runways_reader = new collections.Connections
+    @runways_reader.url = "/api/runway/reader"
+    @listenTo @runways_reader, "sync", @render
+    @runways_reader.fetch()
+
+    @runways_writer = new collections.Connections
+    @runways_writer.url = "/api/runway/writer"
+    @listenTo @runways_writer, "sync", @render
+    @runways_writer.fetch()
+
+    #@finance_reader = new collections.Connections
+    #@finance_reader.url = "/api/finance/reader/none/none"
+    #@listenTo @finance_reader, "sync", @render
+    #@finance_reader.fetch()
+
+    #@finance_writer = new collections.Connections
+    #@finance_writer.url = "/api/finance/writer/none/none"
+    #@listenTo @finance_writer, "sync", @render
+    #@finance_writer.fetch()
+
+    #@render()
 
 
   render: ->
@@ -139,6 +187,8 @@ views.Profile = View.extend
 
     @context.user = @model.toJSON()
     @context.connections = @connections.toJSON()
+    @context.runways_reader = @runways_reader.toJSON()
+    @context.runways_writer = @runways_writer.toJSON()
 
     html = tpl['member/profile'](@context)
     @$el.html html

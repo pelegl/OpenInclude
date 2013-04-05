@@ -6,33 +6,16 @@ class views.ConnectionForm extends InlineForm
     @model = new models.Connection
     super context
 
-    ###
-    @$el.find("input[name=reader]").autocomplete(
-      source: "/session/list",
-      minLength: 2,
-      select: (e, ui) ->
-        $(@).val(ui.item.label)
-        $(@).parent().find("input[name=reader_id]").val(ui.item.value)
-        false
-    )
-
-    @$el.find("input[name=writer]").autocomplete(
-      source: "/session/list",
-      minLength: 2,
-      select: (e, ui) ->
-        $(@).val(ui.item.label)
-        $(@).parent().find("input[name=writer_id]").val(ui.item.value)
-        false
-    )
-    ###
-
     $reader = @$("input[name=reader]")
     $writer = @$("input[name=writer]")
+    $ids = {}
+    $ids['reader'] = @$("input[name=reader_id]")
+    $ids['writer'] = @$("input[name=writer_id]")
 
     $reader.add($writer).typeahead
       source: (query, process)->
         @map = {}
-        users   = []
+        users = []
         # get data
         @xhr.abort() if @xhr?
         @xhr = $.getJSON "/session/list", {term: query}, (data)=>
@@ -41,11 +24,10 @@ class views.ConnectionForm extends InlineForm
             users.push user.label
           process users
 
-
       minLength: 1
 
       updater: (item)->
-        selectedState = @map[item].value
+        $ids[$(@.$element).attr("name")].val(@map[item].value)
         return item
 
       matcher: (item)->
@@ -55,7 +37,5 @@ class views.ConnectionForm extends InlineForm
         return items.sort()
 
       highlighter: (item)->
-        regex = new RegExp( '(' + @query + ')', 'gi' )
-        return item.replace( regex, "<strong>$1</strong>" )
-
-
+        regex = new RegExp('(' + @query + ')', 'gi')
+        return item.replace(regex, "<strong>$1</strong>")

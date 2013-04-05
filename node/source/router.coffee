@@ -75,7 +75,15 @@ exports.set = (app)->
 
   ## Runway ##
   app.get "/api/connection", app.Controllers.runway.connections
-  app.post "/api/connection", app.Controllers.runway.create
+  app.post "/api/connection", app.Controllers.runway.create_connection
+
+  app.get "/api/runway/reader", app.Controllers.runway.reader
+  app.get "/api/runway/writer", app.Controllers.runway.writer
+
+  app.get "/api/finance/reader/:from/:to", app.Controllers.runway.search_reader
+  app.get "/api/finance/writer/:from/:to", app.Controllers.runway.search_writer
+
+  app.post "/api/runway/:connection", app.Controllers.runway.create
   
   ###
   oAuth interaction
