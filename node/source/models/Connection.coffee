@@ -10,14 +10,12 @@ _         = require 'underscore'
 ###
 
 definition =
-  connection:
-    type: ObjectId
-    ref: "Connection"
-  date: Date
-  worked: Number
+  reader: Object
+  writer: Object
   charged: Number
   fee: Number
-  memo: String
+  data: Number
+  runways:[{type: ObjectId, ref: "Runway"}]
 
 methods = {}
 

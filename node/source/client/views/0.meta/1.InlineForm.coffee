@@ -77,7 +77,7 @@ class InlineForm extends Backbone.View
 
   show: ->
     @$el.show()
-    @$("form input").focus()
+    @$("form input:first-child").focus()
 
   hide: (event) ->
     if event

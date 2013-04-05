@@ -30,7 +30,7 @@ class SessionController extends BasicController
         if result or user is null
             @res.json {success: false}, 404
         else
-            @res.json user.information()
+            @res.json user.public_info()
 
   list: ->
     query = User.find().select()

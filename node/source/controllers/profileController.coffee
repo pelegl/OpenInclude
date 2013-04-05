@@ -32,8 +32,12 @@ class ProfileController extends basic
     {signed} = @req.body
     if signed is 'signed'
       switch accountType
-        when 'merchant'  then @req.user.merchant = true
-        when 'developer' then @req.user.employee = true
+        when 'merchant'
+          @req.user.merchant = true
+          @req.user.groups.push "reader"
+        when 'developer'
+          @req.user.employee = true
+          @req.user.groups.push "writer"
 
       @req.user.save (err)=>
         unless err

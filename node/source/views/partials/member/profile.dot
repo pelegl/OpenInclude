@@ -14,7 +14,7 @@
                       <div class='type'>
                         <div>
                           <div class='status'>
-                            {{? it.user.merchant }}
+                            {{? it.user.merchant && it.user.groups.indexOf("reader") >= 0 }}
                               {{? it.user.has_stripe }}
                                 <a href='{{= it.bills }}' class='btn btn-success btn-mini backbone'>View Bills</a>
                               {{??}}
@@ -33,7 +33,7 @@
                       <div class='type'>
                         <div>
                           <div class='status'>
-                            {{? it.user.employee }}
+                            {{? it.user.employee && it.user.groups.indexOf("writer") >= 0 }}
                               <i class='icon-ok'></i>
                             {{??}}
                               <a href='{{= it.developer_agreement }}' class='btn btn-success btn-mini backbone'>Sign Up</a>

@@ -344,6 +344,11 @@ models.Connection = Backbone.Model.extend({
   url: '/api/connection'
 });
 
+models.Runway = Backbone.Model.extend({
+  idAttribute: "_id",
+  url: '/api/runway'
+});
+
 models.Bill = Backbone.Model.extend({
   /*
    user
@@ -915,7 +920,7 @@ InlineForm = (function(_super) {
 
   InlineForm.prototype.show = function() {
     this.$el.show();
-    return this.$("form input").focus();
+    return this.$("form input:first-child").focus();
   };
 
   InlineForm.prototype.hide = function(event) {
@@ -1323,18 +1328,63 @@ views.Profile = View.extend({
   events: {
     'click a.backbone': "processAction",
     'click .setupPayment > button': "update_cc_events",
-    'click #new-connection': "newConnection"
+    'click #new-connection': "newConnection",
+    'click #track-time': "trackTime",
+    'click #writer-filter': 'filterWriter',
+    'click #alter-runway': 'alterRunway'
   },
   newConnection: function(e) {
     e.preventDefault();
-    if (this.connectionform == null) {
-      this.connectionform = new views.ConnectionForm(this.context);
-      this.listenTo(this.connectionform, "success", this.updateData);
+    e.stopPropagation();
+    if (this.connectionform) {
+      this.stopListening(this.connectionform);
+      delete this.connectionform;
     }
+    this.connectionform = new views.ConnectionForm(this.context);
+    this.listenTo(this.connectionform, "success", this.updateData);
     return this.connectionform.show();
   },
+  trackTime: function(e) {
+    var limit, suffix;
+
+    e.preventDefault();
+    e.stopPropagation();
+    suffix = e.currentTarget.attributes['rel'].value;
+    limit = parseInt(e.currentTarget.attributes['data-limit'].value);
+    this.trackForm = new views.TrackTimeForm(_.extend(this.context, {
+      suffix: suffix,
+      limit: limit
+    }));
+    this.listenTo(this.trackForm, "success", this.updateData);
+    return this.trackForm.show();
+  },
+  filterWriter: function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.context.from = this.$("input[name=start_date_writer]").val() || "none";
+    this.context.to = this.$("input[name=end_date_writer]").val() || "none";
+    this.context.active_tab = "writer-finance";
+    return this.render();
+  },
+  alterRunway: function(e) {
+    var limit, model, suffix;
+
+    e.preventDefault();
+    e.stopPropagation();
+    suffix = e.currentTarget.attributes['rel'].value;
+    limit = parseInt(e.currentTarget.attributes['data-limit'].value);
+    model = this.connections.get(suffix);
+    this.editForm = new views.AlterRunwayForm(_.extend(this.context, {
+      limit: limit,
+      model: model
+    }));
+    this.listenTo(this.editForm, "success", this.updateData);
+    return this.editForm.show();
+  },
   updateData: function(e) {
-    return this.connections.fetch();
+    this.connections.fetch();
+    this.runways_reader.fetch();
+    return this.runways_writer.fetch();
   },
   update_cc_events: function(e) {
     this.cc.delegateEvents();
@@ -1450,12 +1500,21 @@ views.Profile = View.extend({
       this.cc = new views.CC;
       this.bills = new views.Bills;
     }
+    this.context.from = "none";
+    this.context.to = "none";
     this.listenTo(this.model, "change", this.render);
     this.model.fetch();
     this.connections = new collections.Connections;
     this.listenTo(this.connections, "sync", this.render);
     this.connections.fetch();
-    return this.render();
+    this.runways_reader = new collections.Connections;
+    this.runways_reader.url = "/api/runway/reader";
+    this.listenTo(this.runways_reader, "sync", this.render);
+    this.runways_reader.fetch();
+    this.runways_writer = new collections.Connections;
+    this.runways_writer.url = "/api/runway/writer";
+    this.listenTo(this.runways_writer, "sync", this.render);
+    return this.runways_writer.fetch();
   },
   render: function() {
     var html;
@@ -1463,7 +1522,8 @@ views.Profile = View.extend({
     console.log("Rendering profile view");
     this.context.user = this.model.toJSON();
     this.context.connections = this.connections.toJSON();
-    console.log(this.context.connections);
+    this.context.runways_reader = this.runways_reader.toJSON();
+    this.context.runways_writer = this.runways_writer.toJSON();
     html = tpl['member/profile'](this.context);
     this.$el.html(html);
     this.$el.attr('view-id', 'profile');
@@ -1496,32 +1556,15 @@ views.ConnectionForm = (function(_super) {
   ConnectionForm.prototype.view = "member/new_connection";
 
   ConnectionForm.prototype.initialize = function(context) {
-    var $reader, $writer;
+    var $ids, $reader, $writer;
 
     this.model = new models.Connection;
     ConnectionForm.__super__.initialize.call(this, context);
-    /*
-    @$el.find("input[name=reader]").autocomplete(
-      source: "/session/list",
-      minLength: 2,
-      select: (e, ui) ->
-        $(@).val(ui.item.label)
-        $(@).parent().find("input[name=reader_id]").val(ui.item.value)
-        false
-    )
-    
-    @$el.find("input[name=writer]").autocomplete(
-      source: "/session/list",
-      minLength: 2,
-      select: (e, ui) ->
-        $(@).val(ui.item.label)
-        $(@).parent().find("input[name=writer_id]").val(ui.item.value)
-        false
-    )
-    */
-
     $reader = this.$("input[name=reader]");
     $writer = this.$("input[name=writer]");
+    $ids = {};
+    $ids['reader'] = this.$("input[name=reader_id]");
+    $ids['writer'] = this.$("input[name=writer_id]");
     return $reader.add($writer).typeahead({
       source: function(query, process) {
         var users,
@@ -1544,9 +1587,7 @@ views.ConnectionForm = (function(_super) {
       },
       minLength: 1,
       updater: function(item) {
-        var selectedState;
-
-        selectedState = this.map[item].value;
+        $ids[$(this.$element).attr("name")].val(this.map[item].value);
         return item;
       },
       matcher: function(item) {
@@ -1567,6 +1608,85 @@ views.ConnectionForm = (function(_super) {
   };
 
   return ConnectionForm;
+
+})(InlineForm);
+
+var _ref,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+views.TrackTimeForm = (function(_super) {
+  __extends(TrackTimeForm, _super);
+
+  function TrackTimeForm() {
+    _ref = TrackTimeForm.__super__.constructor.apply(this, arguments);
+    return _ref;
+  }
+
+  TrackTimeForm.prototype.el = "#track-time-inline";
+
+  TrackTimeForm.prototype.view = "member/track_time";
+
+  TrackTimeForm.prototype.initialize = function(context) {
+    this.model = new models.Runway;
+    this.model.url += "/" + context.suffix;
+    return TrackTimeForm.__super__.initialize.call(this, context);
+  };
+
+  TrackTimeForm.prototype.submit = function(event) {
+    var data;
+
+    event.preventDefault();
+    event.stopPropagation();
+    data = Backbone.Syphon.serialize(event.currentTarget);
+    if (parseInt(data.worked) > this.context.limit) {
+      alert("Time limit exceeded!");
+      return false;
+    } else {
+      return TrackTimeForm.__super__.submit.call(this, event);
+    }
+  };
+
+  return TrackTimeForm;
+
+})(InlineForm);
+
+var _ref,
+  __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+views.AlterRunwayForm = (function(_super) {
+  __extends(AlterRunwayForm, _super);
+
+  function AlterRunwayForm() {
+    _ref = AlterRunwayForm.__super__.constructor.apply(this, arguments);
+    return _ref;
+  }
+
+  AlterRunwayForm.prototype.el = "#alter-runway-inline";
+
+  AlterRunwayForm.prototype.view = "member/alter_runway";
+
+  AlterRunwayForm.prototype.initialize = function(context) {
+    this.model = context.model;
+    return AlterRunwayForm.__super__.initialize.call(this, context);
+  };
+
+  AlterRunwayForm.prototype.submit = function(event) {
+    var data;
+
+    event.preventDefault();
+    event.stopPropagation();
+    data = Backbone.Syphon.serialize(event.currentTarget);
+    if (parseInt(data.data) < this.context.limit) {
+      alert("Please, enter amount higher than writer completed!");
+      return false;
+    } else {
+      return AlterRunwayForm.__super__.submit.call(this, event);
+    }
+  };
+
+  return AlterRunwayForm;
 
 })(InlineForm);
 
