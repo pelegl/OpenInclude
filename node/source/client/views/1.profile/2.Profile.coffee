@@ -138,7 +138,6 @@ views.Profile = View.extend
 
     @context.user = @model.toJSON()
     @context.connections = @connections.toJSON()
-    console.log @context.connections
 
     html = tpl['member/profile'](@context)
     @$el.html html

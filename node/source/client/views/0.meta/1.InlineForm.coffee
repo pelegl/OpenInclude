@@ -85,6 +85,7 @@ class InlineForm extends Backbone.View
       event.preventDefault()
       event.stopPropagation()
     @$el.hide()
+    @$el.empty()
 
   render: ->
     @html = tpl[@view](@context)

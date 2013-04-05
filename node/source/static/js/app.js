@@ -919,7 +919,8 @@ InlineForm = (function(_super) {
       event.preventDefault();
       event.stopPropagation();
     }
-    return this.$el.hide();
+    this.$el.hide();
+    return this.$el.empty();
   };
 
   InlineForm.prototype.render = function() {
@@ -1451,7 +1452,6 @@ views.Profile = View.extend({
     console.log("Rendering profile view");
     this.context.user = this.model.toJSON();
     this.context.connections = this.connections.toJSON();
-    console.log(this.context.connections);
     html = tpl['member/profile'](this.context);
     this.$el.html(html);
     this.$el.attr('view-id', 'profile');
