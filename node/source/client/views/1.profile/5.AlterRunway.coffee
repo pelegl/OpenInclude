@@ -11,8 +11,9 @@ class views.AlterRunwayForm extends InlineForm
     event.stopPropagation()
 
     data = Backbone.Syphon.serialize event.currentTarget
-    if parseInt(data.data) < @context.limit
-      alert "Please, enter amount higher than writer completed!"
+    if parseInt(data.data) + @context.current < @context.limit
+      alert "Runway must be higher than or equal to #{@context.limit}"
       return false
     else
-      super event
+      data.data = parseInt(data.data) + @context.current
+      super event, data

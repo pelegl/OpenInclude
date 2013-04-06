@@ -891,12 +891,15 @@ InlineForm = (function(_super) {
     }
   };
 
-  InlineForm.prototype.submit = function(event) {
-    var data;
-
+  InlineForm.prototype.submit = function(event, data) {
+    if (data == null) {
+      data = null;
+    }
     event.preventDefault();
     event.stopPropagation();
-    data = Backbone.Syphon.serialize(event.currentTarget);
+    if (!data) {
+      data = Backbone.Syphon.serialize(event.currentTarget);
+    }
     this.$("[type=submit]").addClass("disabled").text("Updating information...");
     this.model.save(data, {
       success: _.bind(this.success, this),
@@ -1353,7 +1356,8 @@ views.Profile = View.extend({
     limit = parseInt(e.currentTarget.attributes['data-limit'].value);
     this.trackForm = new views.TrackTimeForm(_.extend(this.context, {
       suffix: suffix,
-      limit: limit
+      limit: limit,
+      el: "#track-time-inline-" + suffix
     }));
     this.listenTo(this.trackForm, "success", this.updateData);
     return this.trackForm.show();
@@ -1367,16 +1371,19 @@ views.Profile = View.extend({
     return this.render();
   },
   alterRunway: function(e) {
-    var limit, model, suffix;
+    var current, limit, model, suffix;
 
     e.preventDefault();
     e.stopPropagation();
     suffix = e.currentTarget.attributes['rel'].value;
     limit = parseInt(e.currentTarget.attributes['data-limit'].value);
+    current = parseInt(e.currentTarget.attributes['data-current'].value);
     model = this.connections.get(suffix);
     this.editForm = new views.AlterRunwayForm(_.extend(this.context, {
       limit: limit,
-      model: model
+      model: model,
+      current: current,
+      el: "#alter-runway-inline-" + suffix
     }));
     this.listenTo(this.editForm, "success", this.updateData);
     return this.editForm.show();
@@ -1514,7 +1521,11 @@ views.Profile = View.extend({
     this.runways_writer = new collections.Connections;
     this.runways_writer.url = "/api/runway/writer";
     this.listenTo(this.runways_writer, "sync", this.render);
-    return this.runways_writer.fetch();
+    this.runways_writer.fetch();
+    this.finance_reader = new collections.Connections;
+    this.finance_reader.url = "/api/finance/reader";
+    this.listenTo(this.finance_reader, "sync", this.render);
+    return this.finance_reader.fetch();
   },
   render: function() {
     var html;
@@ -1524,6 +1535,7 @@ views.Profile = View.extend({
     this.context.connections = this.connections.toJSON();
     this.context.runways_reader = this.runways_reader.toJSON();
     this.context.runways_writer = this.runways_writer.toJSON();
+    this.context.finance_reader = this.finance_reader.toJSON();
     html = tpl['member/profile'](this.context);
     this.$el.html(html);
     this.$el.attr('view-id', 'profile');
@@ -1678,11 +1690,12 @@ views.AlterRunwayForm = (function(_super) {
     event.preventDefault();
     event.stopPropagation();
     data = Backbone.Syphon.serialize(event.currentTarget);
-    if (parseInt(data.data) < this.context.limit) {
-      alert("Please, enter amount higher than writer completed!");
+    if (parseInt(data.data) + this.context.current < this.context.limit) {
+      alert("Runway must be higher than or equal to " + this.context.limit);
       return false;
     } else {
-      return AlterRunwayForm.__super__.submit.call(this, event);
+      data.data = parseInt(data.data) + this.context.current;
+      return AlterRunwayForm.__super__.submit.call(this, event, data);
     }
   };
 

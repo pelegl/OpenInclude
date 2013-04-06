@@ -1,5 +1,6 @@
 get_models = require('../conf').get_models
 moment = require 'moment'
+_ = require 'underscore'
 
 [Runway, Connection] = get_models ["Runway", "Connection"]
 
@@ -43,6 +44,7 @@ module.exports =
     id = req.body._id
     delete req.body._id
     delete req.body.__v
+
     Connection.findByIdAndUpdate(id, req.body, (result, connection) ->
       if result
         res.json {success: false, error: result}
@@ -91,8 +93,17 @@ module.exports =
         )
     )
 
-  search_reader: (req, res) ->
-    search(req, res, 1)
+  finance_reader: (req, res) ->
+    Runway.find().populate("connection", null, {"reader.id": "" + req.user._id}).exec((result, runways) ->
+      if result
+        res.json({success: false, error: result})
+      else
+        res.json _.reduce(runways, (result, item) ->
+          unless item.connection is null
+            result.push(item)
+          return result
+        , [])
+    )
 
   search_writer: (req, res) ->
     search(req, res, 2)
