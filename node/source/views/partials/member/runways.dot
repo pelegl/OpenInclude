@@ -1,6 +1,12 @@
 <ul id="runways" class="nav nav-tabs">
     {{? it.user.groups.indexOf("admin") >= 0 }}
-    <li><a href="#connections" data-toggle="tab">Connections</a></li>
+    <li class="dropdown">
+        <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Admin <b class="caret"></b></a>
+        <ul class="dropdown-menu" role="menu">
+            <li><a href="#admin-connections" data-toggle="tab">Connections</a></li>
+            <li><a href="#admin-finance" data-toggle="tab">Finance</a></li>
+        </ul>
+    </li>
     {{?}}
     {{? it.user.groups.indexOf("reader") >= 0 }}
     <li class="dropdown">
@@ -24,8 +30,8 @@
 
 <div class="tab-content">
     {{? it.user.groups.indexOf("admin") >= 0 }}
-    <div class="tab-pane" id="connections">
-        <table class="table table-bordered table-condensed table-hover">
+    <div class="tab-pane" id="admin-connections">
+        <table class="table table-bordered table-hover" style="background-color: #ffffff">
             <tr>
                 <th>Reader</th>
                 <th>Hourly charged</th>
@@ -46,10 +52,13 @@
             <div id="new-connection-inline"></div>
         </div>
     </div>
+    <div class="tab-pane" id="admin-finance">
+        TODO
+    </div>
     {{?}}
     {{? it.user.groups.indexOf("reader") >= 0 }}
     <div class="tab-pane" id="reader-runway">
-        <table class="table table-bordered table-condensed table-hover">
+        <table class="table table-bordered table-hover" style="background-color: #ffffff">
             <tr>
                 <th>Writer</th>
                 <th>Hourly rate</th>
@@ -68,22 +77,42 @@
             <tr>
                 <td><a href="/profile/view/{{= runway.writer.name }}">{{= runway.writer.name }}</a></td>
                 <td>{{= runway.charged + runway.charged * runway.fee / 100 }}</td>
-                <td>{{= runway.data }}</td>
+                <td>{{= worked }} / {{= runway.data }}</td>
                 <td>
-                    <button id="alter-runway" rel="{{= runway._id }}" data-limit="{{= worked }}" class="btn btn-small btn-success">Alter</button>
-                    <div id="alter-runway-inline" style="margin-top: 15px; display: none"></div>
+                    <button id="alter-runway" rel="{{= runway._id }}" data-limit="{{= worked }}" data-current="{{= runway.data }}" class="btn btn-small btn-success">Alter</button>
+                    <div id="alter-runway-inline-{{= runway._id }}" style="margin-top: 15px; display: none"></div>
                 </td>
             </tr>
             {{~}}
         </table>
     </div>
     <div class="tab-pane" id="reader-finance">
-        TODO
+        <table class="table table-bordered table-hover" style="background-color: #ffffff">
+            <tr>
+                <th>Date</th>
+                <th></th>
+                <th>Amount</th>
+            </tr>
+        {{~ it.finance_reader :finance }}
+            {{
+                worked = 0;
+                for (r in runway.runways)
+                {
+                worked += parseInt(runway.runways[r].worked);
+                }
+            }}
+            <tr>
+                <td>{{= finance.date }}</td>
+                <td></td>
+                <td>Amount</td>
+            </tr>
+        {{~}}
+        </table>
     </div>
     {{?}}
     {{? it.user.groups.indexOf("writer") >= 0 }}
     <div class="tab-pane" id="writer-runway">
-        <table class="table table-bordered table-condensed table-hover">
+        <table class="table table-bordered table-hover" style="background-color: #ffffff">
             <tr>
                 <th>Reader</th>
                 <th>Hourly rate</th>
@@ -108,7 +137,7 @@
                     {{??}}
                     <button id="track-time" rel="{{= runway._id }}" data-limit="{{= runway.data - worked }}" class="btn btn-small btn-success">Track</button>
                     {{?}}
-                    <div id="track-time-inline" style="margin-top: 15px; display: none"></div>
+                    <div id="track-time-inline-{{= runway._id }}" style="margin-top: 15px; display: none"></div>
                 </td>
             </tr>
             {{~}}
@@ -126,7 +155,7 @@
             </label>
             <button id="writer-filter" class="btn btn-info">View</button>
         </div>
-        <table class="table table-bordered table-condensed table-hover">
+        <table class="table table-bordered table-hover" style="background-color: #ffffff">
             <tr>
                 <th>Client</th>
                 <th>Paid</th>

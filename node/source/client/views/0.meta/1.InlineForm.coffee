@@ -54,11 +54,12 @@ class InlineForm extends Backbone.View
         if @buf.length > 0
           @tah.updateQuery @buf, event.target.selectionEnd
 
-  submit: (event) ->
+  submit: (event, data = null) ->
     event.preventDefault()
     event.stopPropagation()
 
-    data = Backbone.Syphon.serialize event.currentTarget
+    unless data
+      data = Backbone.Syphon.serialize event.currentTarget
     @$("[type=submit]").addClass("disabled").text("Updating information...")
     @model.save data, {success: _.bind(@success, @), error: _.bind(@success, @)}
 

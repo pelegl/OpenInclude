@@ -28,7 +28,7 @@ views.Profile = View.extend
     suffix = e.currentTarget.attributes['rel'].value
     limit = parseInt(e.currentTarget.attributes['data-limit'].value)
 
-    @trackForm = new views.TrackTimeForm _.extend(@context, {suffix: suffix, limit: limit})
+    @trackForm = new views.TrackTimeForm _.extend(@context, {suffix: suffix, limit: limit, el: "#track-time-inline-#{suffix}"})
     @listenTo @trackForm, "success", @updateData
     @trackForm.show()
 
@@ -47,9 +47,11 @@ views.Profile = View.extend
 
     suffix = e.currentTarget.attributes['rel'].value
     limit = parseInt(e.currentTarget.attributes['data-limit'].value)
+    current = parseInt(e.currentTarget.attributes['data-current'].value)
+
     model = @connections.get(suffix)
 
-    @editForm = new views.AlterRunwayForm _.extend(@context, {limit: limit, model: model})
+    @editForm = new views.AlterRunwayForm _.extend(@context, {limit: limit, model: model, current: current, el: "#alter-runway-inline-#{suffix}"})
     @listenTo @editForm, "success", @updateData
     @editForm.show()
 
@@ -182,10 +184,10 @@ views.Profile = View.extend
     @listenTo @runways_writer, "sync", @render
     @runways_writer.fetch()
 
-    #@finance_reader = new collections.Connections
-    #@finance_reader.url = "/api/finance/reader/none/none"
-    #@listenTo @finance_reader, "sync", @render
-    #@finance_reader.fetch()
+    @finance_reader = new collections.Connections
+    @finance_reader.url = "/api/finance/reader"
+    @listenTo @finance_reader, "sync", @render
+    @finance_reader.fetch()
 
     #@finance_writer = new collections.Connections
     #@finance_writer.url = "/api/finance/writer/none/none"
@@ -202,6 +204,7 @@ views.Profile = View.extend
     @context.connections = @connections.toJSON()
     @context.runways_reader = @runways_reader.toJSON()
     @context.runways_writer = @runways_writer.toJSON()
+    @context.finance_reader = @finance_reader.toJSON()
 
     html = tpl['member/profile'](@context)
     @$el.html html
