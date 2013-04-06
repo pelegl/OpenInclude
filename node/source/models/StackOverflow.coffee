@@ -36,13 +36,21 @@ statics =
         module_id:
           $in: module_ids
 
+    project =
+      $project:
+        _id: 0
+        module_id: 1
+        accepted_answer_id: 1
+
     unwind =
       $unwind: "$module_id"
 
-    project =
+
+    project_two =
       $project:
         module_id: 1
         has_answer: {$cond:[{$ifNull: ["$accepted_answer_id", false]}, 1, 0]}
+
 
     group =
       $group:
@@ -51,7 +59,8 @@ statics =
         answered: {$sum: "$has_answer"}
 
 
-    @aggregate query, unwind, query, project, group, callback
+
+    @aggregate query, project, unwind, query, project_two, group, callback
 
 
   questionsAskedDetailed: (module_id, stopTS, callback)->

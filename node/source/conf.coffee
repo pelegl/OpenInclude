@@ -10,10 +10,15 @@ passport       = require 'passport'
 GithubStrategy = require('passport-github').Strategy
 TrelloStrategy = require('passport-trello').Strategy
 
+#mongoose.set 'debug', true
+poolSize = 20
+
 if !process.env.mongo
-  exports.db = db = mongoose.createConnection 'localhost', 'openInclude'
+  exports.db = db = mongoose.createConnection 'localhost', 'openInclude', { server: { poolSize }}
 else
-  exports.db = db = mongoose.createConnection process.env.mongo
+  exports.db = db = mongoose.createConnection process.env.mongo, { server: { poolSize }}
+
+
 
 ###
   Dot.JS handlings
@@ -322,8 +327,7 @@ load = (required) ->
         ###
         if module.index?
           _.each module.index, (index)=>
-            #console.log "Applying index", index
-            module.schema.index.apply module.schema, index          
+            module.schema.index.apply module.schema, index
         
         unless module.modelName
           module.model = db.model name, module.schema
@@ -340,3 +344,8 @@ load = (required) ->
   models
 
 exports.model = exports.get_models = load
+
+
+
+
+
