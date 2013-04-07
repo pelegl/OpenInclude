@@ -77,6 +77,16 @@
         @view = new views.SignIn prevView:@view
           
     discover: ->
+      ###
+        Check if we have a query on the transition
+      ###
+      {meta} = app
+      qs = help.qs.parse window.location.search
+      if not qs?.q? and (q = meta.getQuery()).length > 0
+        return app.navigate "#{window.location.pathname}?q=#{q}", {trigger: true}
+      else if qs?.q?.length > 0
+        meta.setQuery qs.q
+
       @reRoute()
       @view = new views.Discover prevView:@view
     
@@ -133,7 +143,7 @@
 
   routes = [
     {key: "(!/)"                                                  , name: "index"}
-    {key: "(!/)#{conf.discover_url}(?:params)"                    , name: "discover"}
+    {key: "(!/)#{conf.discover_url}(?:querystring)"               , name: "discover"}
     {key: "(!/)#{conf.signin_url}"                                , name: "login"}
     {key: "(!/)#{conf.profile_url}(/:action)(/:profile)"          , name: "profile"}
     {key: "(!/)#{conf.how_to_url}"                                , name: "how-to"}

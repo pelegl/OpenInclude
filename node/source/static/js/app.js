@@ -947,13 +947,15 @@ views.MetaView = Backbone.View.extend({
   events: {
     'submit .navbar-search': 'searchSubmit'
   },
-  searchSubmit: function(e) {
+  searchSubmit: function(e, action) {
     var location, pathname, q, trigger;
 
-    e.preventDefault();
+    if (e != null) {
+      e.preventDefault();
+    }
     q = encodeURIComponent(this.$("[name=q]").val());
     location = window.location.pathname;
-    pathname = $(e.currentTarget).attr("action");
+    pathname = action || $(e.currentTarget).attr("action");
     trigger = location === pathname ? false : true;
     app.navigate("" + pathname + "?q=" + q, {
       trigger: trigger
@@ -962,6 +964,12 @@ views.MetaView = Backbone.View.extend({
       app.view.fetchSearchData(q);
     }
     return false;
+  },
+  getQuery: function() {
+    return this.$(".search-query[name=q]").val();
+  },
+  setQuery: function(val) {
+    return this.$(".search-query[name=q]").val(decodeURIComponent(val));
   },
   initialize: function() {
     console.log('[__metaView__] Init');
@@ -1211,10 +1219,9 @@ views.Menu = Backbone.View.extend({
     return this.listenTo(app, "route", this.navigate);
   },
   navigate: function() {
-    var parse, pathname,
+    var pathname,
       _this = this;
 
-    parse = help.qs.parse;
     pathname = window.location.pathname;
     if (pathname.length > 1) {
       this.collection.forEach(function(link) {
@@ -3665,6 +3672,21 @@ var __hasProp = {}.hasOwnProperty,
     };
 
     App.prototype.discover = function() {
+      /*
+        Check if we have a query on the transition
+      */
+
+      var meta, q, qs, _ref1;
+
+      meta = app.meta;
+      qs = help.qs.parse(window.location.search);
+      if (((qs != null ? qs.q : void 0) == null) && (q = meta.getQuery()).length > 0) {
+        return app.navigate("" + window.location.pathname + "?q=" + q, {
+          trigger: true
+        });
+      } else if ((qs != null ? (_ref1 = qs.q) != null ? _ref1.length : void 0 : void 0) > 0) {
+        meta.setQuery(qs.q);
+      }
       this.reRoute();
       return this.view = new views.Discover({
         prevView: this.view
@@ -3771,7 +3793,7 @@ var __hasProp = {}.hasOwnProperty,
       key: "(!/)",
       name: "index"
     }, {
-      key: "(!/)" + conf.discover_url + "(?:params)",
+      key: "(!/)" + conf.discover_url + "(?:querystring)",
       name: "discover"
     }, {
       key: "(!/)" + conf.signin_url,
