@@ -6,8 +6,10 @@ views.Profile = View.extend
     'click .setupPayment > button' : "update_cc_events"
     'click #new-connection': "newConnection"
     'click #track-time': "trackTime"
-    'click #writer-filter': 'filterWriter'
     'click #alter-runway': 'alterRunway'
+
+    'click #writer-filter': 'filterWriter'
+    'click #admin-filter': 'filterAdmin'
 
   newConnection: (e) ->
     e.preventDefault()
@@ -40,6 +42,16 @@ views.Profile = View.extend
     @context.to = @$("#writer_to").text() or "none"
     @context.active_tab = "writer-finance"
     @context.writer_filter = @$("#writer_filter").text()
+    @render()
+
+  filterAdmin: (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+
+    @context.admin_from = @$("#admin_from").text() or "none"
+    @context.admin_to = @$("#admin_to").text() or "none"
+    @context.active_tab = "admin-finance"
+    @context.writer_filter = @$("#admin_filter").text()
     @render()
 
   alterRunway: (e) ->
