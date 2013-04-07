@@ -21,7 +21,7 @@ search = (req, res) ->
 
 module.exports =
   connections: (req, res) ->
-    Connection.find((result, data) ->
+    Connection.find().populate("runways").exec((result, data) ->
       if result
         res.json({success: false, error: result})
       else

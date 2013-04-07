@@ -52,8 +52,46 @@
             <div id="new-connection-inline"></div>
         </div>
     </div>
-    <div class="tab-pane" id="admin-finance">
-        TODO
+    <div class="tab-pane{{? it.active_tab == 'admin-finance'}} active{{?}}" id="admin-finance">
+        <div class="runway-date">
+            <div class="daterange pull-left">
+                <i class="icon-calendar icon-large"></i>
+                <span id="admin_filter" class="value">{{= it.admin_filter || "All time" }}</span>
+                <b class="caret"></b>
+                <span id="admin_from" class="from" style="display: none"></span>
+                <span id="admin_to" class="to" style="display: none"></span>
+            </div>
+            <button id="admin-filter" class="btn btn-info">View</button>
+        </div>
+        <table class="table table-bordered table-hover" style="background-color: #ffffff">
+            <tr>
+                <th>Writer</th>
+                <th>Charge</th>
+            </tr>
+            {{~ it.connections :connection }}
+            {{
+                charge = 0;
+                for (r in connection.runways)
+                {
+                    runway = connection.runways[r];
+
+                    m = moment(runway.date);
+                    f = moment(it.admin_from);
+                    t = moment(it.admin_to);
+                    if (it.admin_from != "none" && it.admin_to != "none" && !((m.isAfter(f, 'day') || m.isSame(f, 'day')) && (m.isBefore(t, 'day')) || m.isSame(t, 'day'))) continue;
+
+                    worked = parseInt(runway.worked);
+                    charge += worked * (runway.charged + runway.charged * runway.fee / 100);
+                }
+            }}
+            {{? charge > 0 }}
+            <tr>
+                <td><a href="/profile/view/{{= connection.writer.name }}">{{= connection.writer.name }}</a></td>
+                <td>${{= charge }}</td>
+            </tr>
+            {{?}}
+            {{~}}
+        </table>
     </div>
     {{?}}
     {{? it.user.groups.indexOf("reader") >= 0 }}
@@ -87,6 +125,16 @@
         </table>
     </div>
     <div class="tab-pane" id="reader-finance">
+        <div class="runway-date">
+            <div class="daterange pull-left">
+                <i class="icon-calendar icon-large"></i>
+                <span id="reader_filter" class="value">{{= it.reader_filter || "All time" }}</span>
+                <b class="caret"></b>
+                <span id="reader_from" class="from" style="display: none"></span>
+                <span id="reader_to" class="to" style="display: none"></span>
+            </div>
+            <button id="reader-filter" class="btn btn-info">View</button>
+        </div>
         <table class="table table-bordered table-hover" style="background-color: #ffffff">
             <tr>
                 <th>Date</th>
@@ -196,14 +244,14 @@
         $('.daterange').daterangepicker(
             {
                 ranges: {
-                    'All time': ['today', 'today'],
-                    'This week': ['last monday', 'today'],
-                    'Last week': [Date.parse('last monday').addWeeks(-1), 'last sunday'],
+                    'All time': ['tomorrow', 'today'],
+                    'This week': ['monday', 'today'],
+                    'Last week': [Date.parse('monday').addWeeks(-1), Date.parse('monday').addDays(-1)],
                     'Last month': [Date.parse('last month').addDays(-Date.parse('last month').getDate() + 1), Date.parse('today').addDays(-Date.parse('today').getDate())]
                 }
             },
             function(start, end) {
-                if (start.toString('yyyy-MM-dd') == end.toString('yyyy-MM-dd'))
+                if (start > end)
                 {
                     $('.daterange .value').html("All time");
                     $('.daterange .from').html("none");

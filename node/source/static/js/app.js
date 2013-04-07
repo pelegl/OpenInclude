@@ -1324,8 +1324,9 @@ views.Profile = View.extend({
     'click .setupPayment > button': "update_cc_events",
     'click #new-connection': "newConnection",
     'click #track-time': "trackTime",
+    'click #alter-runway': 'alterRunway',
     'click #writer-filter': 'filterWriter',
-    'click #alter-runway': 'alterRunway'
+    'click #admin-filter': 'filterAdmin'
   },
   newConnection: function(e) {
     e.preventDefault();
@@ -1359,6 +1360,15 @@ views.Profile = View.extend({
     this.context.to = this.$("#writer_to").text() || "none";
     this.context.active_tab = "writer-finance";
     this.context.writer_filter = this.$("#writer_filter").text();
+    return this.render();
+  },
+  filterAdmin: function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    this.context.admin_from = this.$("#admin_from").text() || "none";
+    this.context.admin_to = this.$("#admin_to").text() || "none";
+    this.context.active_tab = "admin-finance";
+    this.context.writer_filter = this.$("#admin_filter").text();
     return this.render();
   },
   alterRunway: function(e) {
