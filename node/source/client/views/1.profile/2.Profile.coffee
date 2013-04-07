@@ -36,9 +36,10 @@ views.Profile = View.extend
     e.preventDefault()
     e.stopPropagation()
 
-    @context.from = @$("input[name=start_date_writer]").val() or "none"
-    @context.to = @$("input[name=end_date_writer]").val() or "none"
+    @context.from = @$("#writer_from").text() or "none"
+    @context.to = @$("#writer_to").text() or "none"
     @context.active_tab = "writer-finance"
+    @context.writer_filter = @$("#writer_filter").text()
     @render()
 
   alterRunway: (e) ->
@@ -184,7 +185,7 @@ views.Profile = View.extend
     @listenTo @runways_writer, "sync", @render
     @runways_writer.fetch()
 
-    @finance_reader = new collections.Connections
+    @finance_reader = new models.Runway
     @finance_reader.url = "/api/finance/reader"
     @listenTo @finance_reader, "sync", @render
     @finance_reader.fetch()

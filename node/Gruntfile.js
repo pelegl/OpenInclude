@@ -22,7 +22,7 @@ module.exports = function(grunt) {
   	},
   	concat: {
   	  dist: {
-  	    src: ["source/static/css/bootstrap.min.css", "source/static/css/app.concat.css", "source/static/css/datepicker.css"],
+  	    src: ["source/static/css/bootstrap.min.css", "source/static/css/app.concat.css", "source/static/css/datepicker.css", "source/static/css/daterangepicker.css"],
   	    dest: "source/static/css/app.min.css"
   	  }
   	},

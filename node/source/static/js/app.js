@@ -1355,9 +1355,10 @@ views.Profile = View.extend({
   filterWriter: function(e) {
     e.preventDefault();
     e.stopPropagation();
-    this.context.from = this.$("input[name=start_date_writer]").val() || "none";
-    this.context.to = this.$("input[name=end_date_writer]").val() || "none";
+    this.context.from = this.$("#writer_from").text() || "none";
+    this.context.to = this.$("#writer_to").text() || "none";
     this.context.active_tab = "writer-finance";
+    this.context.writer_filter = this.$("#writer_filter").text();
     return this.render();
   },
   alterRunway: function(e) {
@@ -1508,7 +1509,7 @@ views.Profile = View.extend({
     this.runways_writer.url = "/api/runway/writer";
     this.listenTo(this.runways_writer, "sync", this.render);
     this.runways_writer.fetch();
-    this.finance_reader = new collections.Connections;
+    this.finance_reader = new models.Runway;
     this.finance_reader.url = "/api/finance/reader";
     this.listenTo(this.finance_reader, "sync", this.render);
     return this.finance_reader.fetch();

@@ -93,20 +93,26 @@
                 <th></th>
                 <th>Amount</th>
             </tr>
-        {{~ it.finance_reader :finance }}
-            {{
-                worked = 0;
-                for (r in runway.runways)
-                {
-                worked += parseInt(runway.runways[r].worked);
-                }
-            }}
+        {{ _.each(it.finance_reader, function(writer, date) { amount = 0; }}
             <tr>
-                <td>{{= finance.date }}</td>
-                <td></td>
-                <td>Amount</td>
+                <td>{{= date }}</td>
+                <td>
+                    <button class="btn btn-info btn-small" data-toggle="collapse" data-target="#data-{{= date }}">Show details</button>
+                    <div id="data-{{= date }}" class="collapse finance">
+                        {{ _.each(writer, function(finances, name) { }}
+                        {{= name }} →
+                        <ul class="finance-list">
+                            {{ _.each(finances, function(finance) { }}
+                                {{ bill = finance.worked * (finance.charged + finance.charged * finance.fee / 100); amount += bill; }}
+                                <li>{{= finance.memo }} = ${{= bill }}</li>
+                            {{ }); }}
+                        </ul>
+                        {{ }); }}
+                    </div>
+                </td>
+                <td>${{= amount }}</td>
             </tr>
-        {{~}}
+        {{ }); }}
         </table>
     </div>
     {{?}}
@@ -145,14 +151,13 @@
     </div>
     <div class="tab-pane{{? it.active_tab == 'writer-finance'}} active{{?}}" id="writer-finance">
         <div class="runway-date">
-            <label>
-                From
-                <input type="text" name="start_date_writer" class="datepicker" value="{{= it.from == 'none' ? '': it.from }}" />
-            </label>
-            <label>
-                To
-                <input type="text" name="end_date_writer" class="datepicker" value="{{= it.to == 'none' ? '': it.to }}" />
-            </label>
+            <div class="daterange pull-left">
+                <i class="icon-calendar icon-large"></i>
+                <span id="writer_filter" class="value">{{= it.writer_filter || "All time" }}</span>
+                <b class="caret"></b>
+                <span id="writer_from" class="from" style="display: none"></span>
+                <span id="writer_to" class="to" style="display: none"></span>
+            </div>
             <button id="writer-filter" class="btn btn-info">View</button>
         </div>
         <table class="table table-bordered table-hover" style="background-color: #ffffff">
@@ -186,8 +191,31 @@
     </div>
     {{?}}
 </div>
-<script>
-    $(function() {
-        $(".datepicker").datepicker();
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('.daterange').daterangepicker(
+            {
+                ranges: {
+                    'All time': ['today', 'today'],
+                    'This week': ['last monday', 'today'],
+                    'Last week': [Date.parse('last monday').addWeeks(-1), 'last sunday'],
+                    'Last month': [Date.parse('last month').addDays(-Date.parse('last month').getDate() + 1), Date.parse('today').addDays(-Date.parse('today').getDate())]
+                }
+            },
+            function(start, end) {
+                if (start.toString('yyyy-MM-dd') == end.toString('yyyy-MM-dd'))
+                {
+                    $('.daterange .value').html("All time");
+                    $('.daterange .from').html("none");
+                    $('.daterange .to').html("none");
+                }
+                else
+                {
+                    $('.daterange .value').html(start.toString('MMMM d, yyyy') + ' - ' + end.toString('MMMM d, yyyy'));
+                    $('.daterange .from').html(start.toString('yyyy-MM-dd'));
+                    $('.daterange .to').html(end.toString('yyyy-MM-dd'));
+                }
+            }
+        );
     });
 </script>
