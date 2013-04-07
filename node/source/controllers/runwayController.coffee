@@ -98,11 +98,23 @@ module.exports =
       if result
         res.json({success: false, error: result})
       else
-        res.json _.reduce(runways, (result, item) ->
+        data = _.reduce(runways, (result, item) ->
           unless item.connection is null
             result.push(item)
           return result
         , [])
+
+        data = _.reduce(data, (result, item) ->
+          date = moment(item.date).format("YYYY-MM-DD")
+          if not result.hasOwnProperty(date)
+            result[date] = {}
+          if not result[date].hasOwnProperty(item.connection.reader.name)
+            result[date][item.connection.reader.name] = []
+          result[date][item.connection.reader.name].push(item)
+          result
+        , {})
+
+        res.json data
     )
 
   search_writer: (req, res) ->

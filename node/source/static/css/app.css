@@ -685,6 +685,12 @@ footer {
 .admin .customer .name {
   display: inline-block;
 }
+.runway-date {
+  margin-bottom: 20px;
+}
+.runway-date .btn {
+  margin-top: 2px;
+}
 .runway-date label {
   float: left;
   margin-right: 15px;
@@ -692,6 +698,32 @@ footer {
 .runway-date label input {
   margin-left: 5px;
   margin-top: 3px;
+}
+.finance {
+  margin: 10px;
+}
+.finance-list {
+  list-style: none;
+  padding: 5px;
+}
+.finance-list li {
+  margin-left: 15px;
+}
+.daterange {
+  margin-right: 20px;
+  background: none repeat scroll 0 0 #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 -1px 0 rgba(0, 0, 0, 0.1) inset;
+  color: #333333;
+  cursor: pointer;
+  line-height: 18px;
+  padding: 8px;
+}
+.daterange span {
+  margin: 3px;
+}
+.daterange .caret {
+  margin-left: 2px;
+  margin-top: 8px;
 }
 .bill {
   padding: 20px;
