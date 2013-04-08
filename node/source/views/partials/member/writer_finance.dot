@@ -1,0 +1,39 @@
+<div class="runway-date">
+    <div class="daterange pull-left">
+        <i class="icon-calendar icon-large"></i>
+        <span id="writer_filter" class="value">{{= it.writer_filter || "All time" }}</span>
+        <b class="caret"></b>
+        <span id="writer_from" class="from" style="display: none"></span>
+        <span id="writer_to" class="to" style="display: none"></span>
+    </div>
+    <button id="writer-filter" class="btn btn-info">View</button>&nbsp;
+    <a id="writer-csv" class="btn btn-success">CSV</a>
+</div>
+<table class="table table-bordered table-hover" style="background-color: #ffffff">
+    <tr>
+        <th>Client</th>
+        <th>Paid</th>
+        <th>Pending</th>
+    </tr>
+    {{~ it.runways_writer :finance }}
+    {{
+        paid = 0;
+        pending = 0;
+        for (r in finance.runways)
+        {
+            data = finance.runways[r];
+            m = moment(data.date);
+            f = moment(it.from);
+            t = moment(it.to);
+            if (it.from != "none" && it.to != "none" && !((m.isAfter(f, 'day') || m.isSame(f, 'day')) && (m.isBefore(t, 'day')) || m.isSame(t, 'day'))) continue;
+            if (data.paid) paid += data.charged; else pending += data.charged;
+        }
+    }}
+
+    <tr>
+        <td><a href="/profile/view/{{= finance.writer.name }}">{{= finance.writer.name }}</a></td>
+        <td>{{= paid }}</td>
+        <td>{{= pending }}</td>
+    </tr>
+    {{~}}
+</table>

@@ -1,0 +1,37 @@
+<div class="runway-date">
+    <div class="daterange pull-left">
+        <i class="icon-calendar icon-large"></i>
+        <span id="reader_filter" class="value">{{= it.reader_filter || "All time" }}</span>
+        <b class="caret"></b>
+        <span id="reader_from" class="from" style="display: none"></span>
+        <span id="reader_to" class="to" style="display: none"></span>
+    </div>
+    <button id="reader-filter" class="btn btn-info">View</button>
+</div>
+<table class="table table-bordered table-hover" style="background-color: #ffffff">
+    <tr>
+        <th>Date</th>
+        <th></th>
+        <th>Amount</th>
+    </tr>
+    {{ _.each(it.finance_reader, function(writer, date) { amount = 0; }}
+    <tr>
+        <td>{{= date }}</td>
+        <td>
+            <button class="btn btn-info btn-small" data-toggle="collapse" data-target="#data-{{= date }}">Show details</button>
+            <div id="data-{{= date }}" class="collapse finance">
+                {{ _.each(writer, function(finances, name) { }}
+                {{= name }} →
+                <ul class="finance-list">
+                    {{ _.each(finances, function(finance) { }}
+                    {{ bill = finance.worked * (finance.charged + finance.charged * finance.fee / 100); amount += bill; }}
+                    <li>{{= finance.memo }} = ${{= bill }}</li>
+                    {{ }); }}
+                </ul>
+                {{ }); }}
+            </div>
+        </td>
+        <td>${{= amount }}</td>
+    </tr>
+    {{ }); }}
+</table>

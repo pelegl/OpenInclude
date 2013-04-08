@@ -1,0 +1,39 @@
+<div class="runway-date">
+    <div class="daterange pull-left">
+        <i class="icon-calendar icon-large"></i>
+        <span id="admin_filter" class="value">{{= it.admin_filter || "All time" }}</span>
+        <b class="caret"></b>
+        <span id="admin_from" class="from" style="display: none"></span>
+        <span id="admin_to" class="to" style="display: none"></span>
+    </div>
+    <button id="admin-filter" class="btn btn-info">View</button>
+</div>
+<table class="table table-bordered table-hover" style="background-color: #ffffff">
+    <tr>
+        <th>Writer</th>
+        <th>Charge</th>
+    </tr>
+    {{~ it.connections :connection }}
+    {{
+    charge = 0;
+    for (r in connection.runways)
+    {
+    runway = connection.runways[r];
+
+    m = moment(runway.date);
+    f = moment(it.admin_from);
+    t = moment(it.admin_to);
+    if (it.admin_from != "none" && it.admin_to != "none" && !((m.isAfter(f, 'day') || m.isSame(f, 'day')) && (m.isBefore(t, 'day')) || m.isSame(t, 'day'))) continue;
+
+    worked = parseInt(runway.worked);
+    charge += worked * (runway.charged + runway.charged * runway.fee / 100);
+    }
+    }}
+    {{? charge > 0 }}
+    <tr>
+        <td><a href="/profile/view/{{= connection.writer.name }}">{{= connection.writer.name }}</a></td>
+        <td>${{= charge }}</td>
+    </tr>
+    {{?}}
+    {{~}}
+</table>
