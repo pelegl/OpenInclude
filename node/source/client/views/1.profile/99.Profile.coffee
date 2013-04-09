@@ -8,9 +8,6 @@ views.Profile = View.extend
     'click #track-time': "trackTime"
     'click #alter-runway': 'alterRunway'
 
-    'click #writer-filter': 'filterWriter'
-    'click #admin-filter': 'filterAdmin'
-
   newConnection: (e) ->
     e.preventDefault()
     e.stopPropagation()
@@ -33,26 +30,6 @@ views.Profile = View.extend
     @trackForm = new views.TrackTimeForm _.extend(@context, {suffix: suffix, limit: limit, el: "#track-time-inline-#{suffix}"})
     @listenTo @trackForm, "success", @updateData
     @trackForm.show()
-
-  filterWriter: (e) ->
-    e.preventDefault()
-    e.stopPropagation()
-
-    @context.from = @$("#writer_from").text() or "none"
-    @context.to = @$("#writer_to").text() or "none"
-    @context.active_tab = "writer-finance"
-    @context.writer_filter = @$("#writer_filter").text()
-    @render()
-
-  filterAdmin: (e) ->
-    e.preventDefault()
-    e.stopPropagation()
-
-    @context.admin_from = @$("#admin_from").text() or "none"
-    @context.admin_to = @$("#admin_to").text() or "none"
-    @context.active_tab = "admin-finance"
-    @context.writer_filter = @$("#admin_filter").text()
-    @render()
 
   alterRunway: (e) ->
     e.preventDefault()
@@ -181,49 +158,28 @@ views.Profile = View.extend
     @context.to = "none"
 
     @listenTo @model, "change", @render
+    @listenTo @model, "sync", @render
     @model.fetch()
-
-    @connections = new collections.Connections
-    @listenTo @connections, "sync", @render
-    @connections.fetch()
-
-    @runways_reader = new collections.Connections
-    @runways_reader.url = "/api/runway/reader"
-    @listenTo @runways_reader, "sync", @render
-    @runways_reader.fetch()
-
-    @runways_writer = new collections.Connections
-    @runways_writer.url = "/api/runway/writer"
-    @listenTo @runways_writer, "sync", @render
-    @runways_writer.fetch()
-
-    @finance_reader = new models.Runway
-    @finance_reader.url = "/api/finance/reader"
-    @listenTo @finance_reader, "sync", @render
-    @finance_reader.fetch()
-
-    #@finance_writer = new collections.Connections
-    #@finance_writer.url = "/api/finance/writer/none/none"
-    #@listenTo @finance_writer, "sync", @render
-    #@finance_writer.fetch()
-
-    #@render()
-
 
   render: ->
     console.log "Rendering profile view"
 
     @context.user = @model.toJSON()
-    @context.connections = @connections.toJSON()
-    @context.runways_reader = @runways_reader.toJSON()
-    @context.runways_writer = @runways_writer.toJSON()
-    @context.finance_reader = @finance_reader.toJSON()
 
     html = tpl['member/profile'](@context)
     @$el.html html
     @$el.attr 'view-id', 'profile'
 
     @informationBox = @$ ".informationBox"
+
+    @adminConnections = new views.AdminConnections _.extend(@context, {el: @$("#admin-connections")})
+    @adminFinance = new views.AdminFinance _.extend(@context, {el: @$("#admin-finance")})
+
+    @readerRunway = new views.ReaderRunways _.extend(@context, {el: @$("#reader-runway")})
+    @readerFinance = new views.ReaderFinance _.extend(@context, {el: @$("#reader-finance")})
+
+    @writerRunway = new views.WriterRunways _.extend(@context, {el: @$("#writer-runway")})
+    @writerFinance = new views.WriterFinance _.extend(@context, {el: @$("#writer-finance")})
 
     # Append CC modal
     if @cc

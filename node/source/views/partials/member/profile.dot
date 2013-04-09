@@ -66,7 +66,51 @@
 			  </div>
 			  <div class='span8'>
 
-                  <div>{{#def.partials['member/runways']}}</div>
+                  <ul id="runways" class="nav nav-tabs">
+                      {{? it.user.groups.indexOf("admin") >= 0 }}
+                      <li class="dropdown">
+                          <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Admin <b class="caret"></b></a>
+                          <ul class="dropdown-menu" role="menu">
+                              <li><a href="#admin-connections" data-toggle="tab">Connections</a></li>
+                              <li><a href="#admin-finance" data-toggle="tab">Finance</a></li>
+                          </ul>
+                      </li>
+                      {{?}}
+                      {{? it.user.groups.indexOf("reader") >= 0 }}
+                      <li class="dropdown">
+                          <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Reader <b class="caret"></b></a>
+                          <ul class="dropdown-menu" role="menu">
+                              <li><a href="#reader-runway" data-toggle="tab">Runway</a></li>
+                              <li><a href="#reader-finance" data-toggle="tab">Finance</a></li>
+                          </ul>
+                      </li>
+                      {{?}}
+                      {{? it.user.groups.indexOf("writer") >= 0 }}
+                      <li class="dropdown">
+                          <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Writer <b class="caret"></b></a>
+                          <ul class="dropdown-menu" role="menu">
+                              <li><a href="#writer-runway" data-toggle="tab">Runway</a></li>
+                              <li><a href="#writer-finance" data-toggle="tab">Finance</a></li>
+                          </ul>
+                      </li>
+                      {{?}}
+                  </ul>
+
+                  <div class="tab-content">
+                      {{? it.user.groups.indexOf("admin") >= 0 }}
+                      <div class="tab-pane" id="admin-connections"></div>
+                      <div class="tab-pane{{? it.active_tab == 'admin-finance'}} active{{?}}" id="admin-finance"></div>
+                      {{?}}
+                      {{? it.user.groups.indexOf("reader") >= 0 }}
+                      <div class="tab-pane" id="reader-runway"></div>
+                      <div class="tab-pane" id="reader-finance"></div>
+                      {{?}}
+                      {{? it.user.groups.indexOf("writer") >= 0 }}
+                      <div class="tab-pane" id="writer-runway"></div>
+                      <div class="tab-pane{{? it.active_tab == 'writer-finance'}} active{{?}}" id="writer-finance"></div>
+                      {{?}}
+                  </div>
+
                   <div class='informationBox'>
                       {{= it.informationBox || "" }}
                   </div>
