@@ -975,9 +975,7 @@ views.MetaView = Backbone.View.extend({
 views.DateRangeObject = {
   ranges: {
     'All time': ['tomorrow', 'today'],
-    'This week': ['monday', 'today'],
-    'Last week': [Date.parse('monday').addWeeks(-1), Date.parse('monday').addDays(-1)],
-    'Last month': [Date.parse('last month').addDays(-Date.parse('last month').getDate() + 1), Date.parse('today').addDays(-Date.parse('today').getDate())]
+    'This week': ['monday', 'today']
   }
 };
 
@@ -1348,6 +1346,30 @@ views.WriterRunways = (function(_super) {
     return WriterRunways.__super__.constructor.apply(this, arguments);
   }
 
+  WriterRunways.prototype.events = {
+    'click #track-time': "trackTime"
+  };
+
+  WriterRunways.prototype.trackTime = function(e) {
+    var limit, suffix;
+    e.preventDefault();
+    e.stopPropagation();
+    suffix = e.currentTarget.attributes['rel'].value;
+    limit = parseInt(e.currentTarget.attributes['data-limit'].value);
+    this.trackForm = new views.TrackTimeForm(_.extend(this.context, {
+      suffix: suffix,
+      limit: limit,
+      el: "#track-time-inline-" + suffix
+    }));
+    this.listenTo(this.trackForm, "success", this.updateData);
+    return this.trackForm.show();
+  };
+
+  WriterRunways.prototype.updateData = function() {
+    this.context.active_tab = "writer-runway";
+    return this.runways_writer.fetch();
+  };
+
   WriterRunways.prototype.initialize = function(context) {
     this.context = context;
     WriterRunways.__super__.initialize.call(this, this.context);
@@ -1585,12 +1607,11 @@ views.AlterRunwayForm = (function(_super) {
     event.preventDefault();
     event.stopPropagation();
     data = Backbone.Syphon.serialize(event.currentTarget);
-    if (parseInt(data.data) + this.context.current < this.context.limit) {
+    if (parseInt(data.data) < this.context.limit) {
       alert("Runway must be higher than or equal to " + this.context.limit);
       return false;
     } else {
-      data.data = parseInt(data.data) + this.context.current;
-      return AlterRunwayForm.__super__.submit.call(this, event, data);
+      return AlterRunwayForm.__super__.submit.call(this, event);
     }
   };
 
@@ -1609,6 +1630,21 @@ views.AdminConnections = (function(_super) {
     return AdminConnections.__super__.constructor.apply(this, arguments);
   }
 
+  AdminConnections.prototype.events = {
+    'click #new-connection': "newConnection"
+  };
+
+  AdminConnections.prototype.newConnection = function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    return this.connectionform.show();
+  };
+
+  AdminConnections.prototype.updateData = function() {
+    this.context.active_tab = "admin-connections";
+    return this.connections.fetch();
+  };
+
   AdminConnections.prototype.initialize = function(context) {
     this.context = context;
     AdminConnections.__super__.initialize.call(this, this.context);
@@ -1622,6 +1658,12 @@ views.AdminConnections = (function(_super) {
     this.context.connections = this.connections.toJSON();
     html = tpl['member/admin_connections'](this.context);
     this.$el.html(html);
+    if (this.connectionform) {
+      this.stopListening(this.connectionform);
+      delete this.connectionform;
+    }
+    this.connectionform = new views.ConnectionForm(this.context);
+    this.listenTo(this.connectionform, "success", this.updateData);
     return this;
   };
 
@@ -1645,13 +1687,49 @@ views.AdminFinance = (function(_super) {
   };
 
   AdminFinance.prototype.filterAdmin = function(e) {
+    var a, bb, data,
+      _this = this;
     e.preventDefault();
     e.stopPropagation();
     this.context.admin_from = this.$("#admin_from").text() || "none";
     this.context.admin_to = this.$("#admin_to").text() || "none";
     this.context.active_tab = "admin-finance";
     this.context.admin_filter = this.$("#admin_filter").text();
-    return this.render();
+    this.render();
+    data = "\"Writer\";\"Reader\";\"Pending\"\n";
+    _.each(this.context.connections, function(finance) {
+      var charge;
+      charge = 0;
+      _.each(finance.runways, function(runway) {
+        var f, m, price, t, worked;
+        m = moment(runway.date);
+        f = moment(_this.context.from);
+        t = moment(_this.context.to);
+        if (_this.context.from !== "none" && _this.context.to !== "none" && !((m.isAfter(f, 'day') || m.isSame(f, 'day')) && (m.isBefore(t, 'day')) || m.isSame(t, 'day'))) {
+          return;
+        }
+        worked = parseInt(runway.worked);
+        price = worked * (runway.charged + runway.charged * runway.fee / 100);
+        return charge += price;
+      });
+      if (charge > 0) {
+        return data += "\"" + finance.writer.name + "\";\"" + finance.reader.name + "\";\"" + charge + "\"\n";
+      }
+    });
+    window.URL = window.webkitURL || window.URL;
+    a = document.getElementById("admin-csv");
+    if (a.href) {
+      window.URL.revokeObjectURL(a.href);
+    }
+    if (a.dataset == null) {
+      a.dataset = {};
+    }
+    bb = new Blob([data], {
+      type: "text/csv"
+    });
+    a.download = "Report for " + this.context.admin_filter + ".csv";
+    a.href = window.URL.createObjectURL(bb);
+    return a.dataset.downloadurl = ["text/csv", a.download, a.href].join(':');
   };
 
   AdminFinance.prototype.initialize = function(context) {
@@ -1685,6 +1763,33 @@ views.ReaderRunways = (function(_super) {
   function ReaderRunways() {
     return ReaderRunways.__super__.constructor.apply(this, arguments);
   }
+
+  ReaderRunways.prototype.events = {
+    'click #alter-runway': 'alterRunway'
+  };
+
+  ReaderRunways.prototype.alterRunway = function(e) {
+    var current, limit, model, suffix;
+    e.preventDefault();
+    e.stopPropagation();
+    suffix = e.currentTarget.attributes['rel'].value;
+    limit = parseInt(e.currentTarget.attributes['data-limit'].value);
+    current = parseInt(e.currentTarget.attributes['data-current'].value);
+    model = this.runways_reader.get(suffix);
+    this.editForm = new views.AlterRunwayForm(_.extend(this.context, {
+      limit: limit,
+      model: model,
+      current: current,
+      el: "#alter-runway-inline-" + suffix
+    }));
+    this.listenTo(this.editForm, "success", this.updateData);
+    return this.editForm.show();
+  };
+
+  ReaderRunways.prototype.updateData = function() {
+    this.context.active_tab = "reader-runway";
+    return this.runways_reader.fetch();
+  };
 
   ReaderRunways.prototype.initialize = function(context) {
     this.context = context;
@@ -1746,57 +1851,7 @@ views.Profile = View.extend({
   agreement_text: "Do you agree?",
   events: {
     'click a.backbone': "processAction",
-    'click .setupPayment > button': "update_cc_events",
-    'click #new-connection': "newConnection",
-    'click #track-time': "trackTime",
-    'click #alter-runway': 'alterRunway'
-  },
-  newConnection: function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (this.connectionform) {
-      this.stopListening(this.connectionform);
-      delete this.connectionform;
-    }
-    this.connectionform = new views.ConnectionForm(this.context);
-    this.listenTo(this.connectionform, "success", this.updateData);
-    return this.connectionform.show();
-  },
-  trackTime: function(e) {
-    var limit, suffix;
-    e.preventDefault();
-    e.stopPropagation();
-    suffix = e.currentTarget.attributes['rel'].value;
-    limit = parseInt(e.currentTarget.attributes['data-limit'].value);
-    this.trackForm = new views.TrackTimeForm(_.extend(this.context, {
-      suffix: suffix,
-      limit: limit,
-      el: "#track-time-inline-" + suffix
-    }));
-    this.listenTo(this.trackForm, "success", this.updateData);
-    return this.trackForm.show();
-  },
-  alterRunway: function(e) {
-    var current, limit, model, suffix;
-    e.preventDefault();
-    e.stopPropagation();
-    suffix = e.currentTarget.attributes['rel'].value;
-    limit = parseInt(e.currentTarget.attributes['data-limit'].value);
-    current = parseInt(e.currentTarget.attributes['data-current'].value);
-    model = this.connections.get(suffix);
-    this.editForm = new views.AlterRunwayForm(_.extend(this.context, {
-      limit: limit,
-      model: model,
-      current: current,
-      el: "#alter-runway-inline-" + suffix
-    }));
-    this.listenTo(this.editForm, "success", this.updateData);
-    return this.editForm.show();
-  },
-  updateData: function(e) {
-    this.connections.fetch();
-    this.runways_reader.fetch();
-    return this.runways_writer.fetch();
+    'click .setupPayment > button': "update_cc_events"
   },
   update_cc_events: function(e) {
     this.cc.delegateEvents();

@@ -2,7 +2,7 @@
 	<div class='row'>
 		<div class='span12'>					
 			<div class='row'>
-			  <div class='span4'>
+			  <div class='span3'>
 			    <div class='personalInformation'>
 			        <img src="http://www.gravatar.com/avatar/{{= it.user.github_avatar_url }}?s=210" class='avatar'  />
                     <h3>{{! it.user.github_display_name }}</h3>
@@ -61,55 +61,84 @@
                     </div>
 			    </div>			             
 			  </div>
-			  <div class='span8'>
+			  <div class='span9'>
 
-                  <ul id="runways" class="nav nav-tabs">
-                      {{? it.user.groups.indexOf("admin") >= 0 }}
-                      <li class="dropdown">
-                          <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Admin <b class="caret"></b></a>
-                          <ul class="dropdown-menu" role="menu">
-                              <li><a href="#admin-connections" data-toggle="tab">Connections</a></li>
-                              <li><a href="#admin-finance" data-toggle="tab">Finance</a></li>
-                          </ul>
-                      </li>
-                      {{?}}
-                      {{? it.user.groups.indexOf("reader") >= 0 }}
-                      <li class="dropdown">
-                          <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Reader <b class="caret"></b></a>
-                          <ul class="dropdown-menu" role="menu">
-                              <li><a href="#reader-runway" data-toggle="tab">Runway</a></li>
-                              <li><a href="#reader-finance" data-toggle="tab">Finance</a></li>
-                          </ul>
-                      </li>
-                      {{?}}
-                      {{? it.user.groups.indexOf("writer") >= 0 }}
-                      <li class="dropdown">
-                          <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Writer <b class="caret"></b></a>
-                          <ul class="dropdown-menu" role="menu">
-                              <li><a href="#writer-runway" data-toggle="tab">Runway</a></li>
-                              <li><a href="#writer-finance" data-toggle="tab">Finance</a></li>
-                          </ul>
-                      </li>
-                      {{?}}
-                  </ul>
+                  <div id="runway-tabs">
 
-                  <div class="tab-content">
-                      {{? it.user.groups.indexOf("admin") >= 0 }}
-                      <div class="tab-pane" id="admin-connections"></div>
-                      <div class="tab-pane{{? it.active_tab == 'admin-finance'}} active{{?}}" id="admin-finance"></div>
-                      {{?}}
-                      {{? it.user.groups.indexOf("reader") >= 0 }}
-                      <div class="tab-pane" id="reader-runway"></div>
-                      <div class="tab-pane" id="reader-finance"></div>
-                      {{?}}
-                      {{? it.user.groups.indexOf("writer") >= 0 }}
-                      <div class="tab-pane" id="writer-runway"></div>
-                      <div class="tab-pane{{? it.active_tab == 'writer-finance'}} active{{?}}" id="writer-finance"></div>
-                      {{?}}
+                      <ul id="runways" class="nav nav-tabs">
+                          {{? it.user.groups.indexOf("admin") >= 0 }}
+                          <li class="dropdown">
+                              <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Admin <b class="caret"></b></a>
+                              <ul class="dropdown-menu" role="menu">
+                                  <li><a href="#admin-connections" data-toggle="tab">Connections</a></li>
+                                  <li><a href="#admin-finance" data-toggle="tab">Finance</a></li>
+                              </ul>
+                          </li>
+                          {{?}}
+                          {{? it.user.groups.indexOf("reader") >= 0 }}
+                          <li class="dropdown">
+                              <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Reader <b class="caret"></b></a>
+                              <ul class="dropdown-menu" role="menu">
+                                  <li><a href="#reader-runway" data-toggle="tab">Runway</a></li>
+                                  <li><a href="#reader-finance" data-toggle="tab">Finance</a></li>
+                              </ul>
+                          </li>
+                          {{?}}
+                          {{? it.user.groups.indexOf("writer") >= 0 }}
+                          <li class="dropdown">
+                              <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Writer <b class="caret"></b></a>
+                              <ul class="dropdown-menu" role="menu">
+                                  <li><a href="#writer-runway" data-toggle="tab">Runway</a></li>
+                                  <li><a href="#writer-finance" data-toggle="tab">Finance</a></li>
+                              </ul>
+                          </li>
+                          {{?}}
+                      </ul>
+
+                      <div class="tab-content">
+                          {{? it.user.groups.indexOf("admin") >= 0 }}
+                          <div class="tab-pane{{? it.active_tab == 'admin-connections'}} active{{?}}" id="admin-connections"></div>
+                          <div class="tab-pane{{? it.active_tab == 'admin-finance'}} active{{?}}" id="admin-finance"></div>
+                          {{?}}
+                          {{? it.user.groups.indexOf("reader") >= 0 }}
+                          <div class="tab-pane{{? it.active_tab == 'reader-runway'}} active{{?}}" id="reader-runway"></div>
+                          <div class="tab-pane{{? it.active_tab == 'reader-finance'}} active{{?}}" id="reader-finance"></div>
+                          {{?}}
+                          {{? it.user.groups.indexOf("writer") >= 0 }}
+                          <div class="tab-pane{{? it.active_tab == 'writer-runway'}} active{{?}}" id="writer-runway"></div>
+                          <div class="tab-pane{{? it.active_tab == 'writer-finance'}} active{{?}}" id="writer-finance"></div>
+                          {{?}}
+                      </div>
+
                   </div>
 
-                  <div class='informationBox'>
-                      {{= it.informationBox || "" }}
+                  <div id="tos" class='row'>
+                      <div id="step-1">
+                          <div class="header">Terms of Service</div>
+                          <div class="content">Do you agree?</div>
+                          <div class="controls">
+                              <button class="btn btn-danger prev pull-left">I do not agree</button>
+                              <button class="btn btn-success next pull-right">I agree</button>
+                          </div>
+                      </div>
+
+                      <div id="step-2">
+                          <div class="header">Terms of Payment</div>
+                          <div class="content">Do you agree?</div>
+                          <div class="controls">
+                              <button class="btn btn-danger prev pull-left">I do not agree</button>
+                              <button class="btn btn-success next pull-right">I agree</button>
+                          </div>
+                      </div>
+
+                      <div id="step-3">
+                          <div class="header">Payment Information</div>
+                          <div class="content">Do you agree?</div>
+                          <div class="controls">
+                              <button class="btn btn-danger prev pull-left">Cancel</button>
+                              <button class="btn btn-success next pull-right">Confirm</button>
+                          </div>
+                      </div>
                   </div>
               </div>
 

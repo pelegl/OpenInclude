@@ -725,6 +725,16 @@ footer {
   margin-left: 2px;
   margin-top: 8px;
 }
+#tos .header {
+  font-size: 125%;
+  margin-bottom: 15px;
+}
+#tos .content {
+  padding: 8px;
+  border: 1px solid #DDDDD;
+  background-color: white;
+  margin-bottom: 15px;
+}
 .bill {
   padding: 20px;
   background: #ffffff;
