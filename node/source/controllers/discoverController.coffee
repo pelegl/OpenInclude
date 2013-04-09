@@ -156,7 +156,7 @@ class DiscoverController extends require('./basicController')
     ###
 
     options =
-      size: 25
+      size: 80
     
     #TODO: add variable size and offset han#dling
 
