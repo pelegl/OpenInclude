@@ -12,6 +12,38 @@ class views.AdminFinance extends View
     @context.admin_filter = @$("#admin_filter").text()
     @render()
 
+    data = "\"Writer\";\"Reader\";\"Pending\"\n"
+    _.each(@context.connections, (finance) =>
+      charge = 0
+      _.each(finance.runways, (runway) =>
+        m = moment(runway.date)
+        f = moment(@context.from)
+        t = moment(@context.to)
+        if @context.from != "none" && @context.to != "none" && !((m.isAfter(f, 'day') || m.isSame(f, 'day')) && (m.isBefore(t, 'day')) || m.isSame(t, 'day'))
+          return
+        worked = parseInt(runway.worked);
+        price = worked * (runway.charged + runway.charged * runway.fee / 100);
+        charge += price;
+      )
+
+      if charge > 0
+        data += "\"#{finance.writer.name}\";\"#{finance.reader.name}\";\"#{charge}\"\n"
+    )
+
+    window.URL = window.webkitURL || window.URL;
+    a = document.getElementById "admin-csv"
+
+    if a.href
+      window.URL.revokeObjectURL(a.href)
+    unless a.dataset?
+      a.dataset = {}
+
+    bb = new Blob([data], {type: "text/csv"});
+
+    a.download = "Report for #{@context.admin_filter}.csv"
+    a.href = window.URL.createObjectURL(bb)
+    a.dataset.downloadurl = ["text/csv", a.download, a.href].join(':')
+
   initialize: (context) ->
     @context = context
     super @context

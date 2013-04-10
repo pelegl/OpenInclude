@@ -4,51 +4,6 @@ views.Profile = View.extend
   events:
     'click a.backbone'             : "processAction"
     'click .setupPayment > button' : "update_cc_events"
-    'click #new-connection': "newConnection"
-    'click #track-time': "trackTime"
-    'click #alter-runway': 'alterRunway'
-
-  newConnection: (e) ->
-    e.preventDefault()
-    e.stopPropagation()
-
-    # TODO: after @render form.show does not work
-    if @connectionform
-      @stopListening @connectionform
-      delete @connectionform
-    @connectionform = new views.ConnectionForm @context
-    @listenTo @connectionform, "success", @updateData
-    @connectionform.show()
-
-  trackTime: (e) ->
-    e.preventDefault()
-    e.stopPropagation()
-
-    suffix = e.currentTarget.attributes['rel'].value
-    limit = parseInt(e.currentTarget.attributes['data-limit'].value)
-
-    @trackForm = new views.TrackTimeForm _.extend(@context, {suffix: suffix, limit: limit, el: "#track-time-inline-#{suffix}"})
-    @listenTo @trackForm, "success", @updateData
-    @trackForm.show()
-
-  alterRunway: (e) ->
-    e.preventDefault()
-    e.stopPropagation()
-
-    suffix = e.currentTarget.attributes['rel'].value
-    limit = parseInt(e.currentTarget.attributes['data-limit'].value)
-    current = parseInt(e.currentTarget.attributes['data-current'].value)
-
-    model = @connections.get(suffix)
-
-    @editForm = new views.AlterRunwayForm _.extend(@context, {limit: limit, model: model, current: current, el: "#alter-runway-inline-#{suffix}"})
-    @listenTo @editForm, "success", @updateData
-    @editForm.show()
-
-  updateData: (e) ->
-    @connections.fetch()
-    @runways_reader.fetch()
-    @runways_writer.fetch()
 
   update_cc_events: (e) ->
     @cc.delegateEvents()

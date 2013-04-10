@@ -42,12 +42,12 @@ class BasicController
       {url: @context.how_to_url,   text:"how to"}
     ]
     # admin
-    if @req.user?.group_id is 'admin'
-      @context._menu.push {url: @context.admin_url, text:"admin"}
+    #if @req.user?.group_id is 'admin'
+    #  @context._menu.push {url: @context.admin_url, text:"admin"}
     # rest
     if @req.user?
       @context._menu.push {url: @context.profile_url, text: "profile"},
-                          {url: @context.dashboard_url, text: "dashboard"},
+                          #{url: @context.dashboard_url, text: "dashboard"},
                           {url: @context.logout_url, text: "sign out"}
     else
       @context._menu.push {url: @context.signin_url, text: "sign in"}
