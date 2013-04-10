@@ -45,7 +45,7 @@ module.exports =
     delete req.body._id
     delete req.body.__v
 
-    Connection.findByIdAndUpdate(id, req.body, (result, connection) ->
+    Connection.findByIdAndUpdate(id, { data: req.body.data }, (result, connection) ->
       if result
         res.json {success: false, error: result}
       else

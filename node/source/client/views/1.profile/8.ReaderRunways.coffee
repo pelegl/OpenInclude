@@ -21,8 +21,7 @@ class views.ReaderRunways extends View
     @runways_reader.fetch()
 
   initialize: (context) ->
-    @context = context
-    super @context
+    super context
 
     @runways_reader = new collections.Connections
     @runways_reader.url = "/api/runway/reader"

@@ -73,6 +73,10 @@ class ProfileController extends basic
       {givenName, lastName, number, expiration, cvv} = @req.body.card
       [exp_month, exp_year] = expiration.split "/"
 
+      @req.user.merchant = true
+      @req.user.groups.push "reader"
+      @req.user.save()
+
       Stripe.addCustomer @req.user, "Stripe payment method for #{givenName} #{lastName}", number, exp_month, exp_year, cvv, "#{givenName} #{lastName}", (err, result)=>
         @res.json {
         success: if err? then false else true
@@ -82,6 +86,18 @@ class ProfileController extends basic
 
     else
       @res.send "Not permitted", 401
+
+  update_paypal: ->
+    if @req.body.paypal
+      @req.user.employee = true
+      @req.user.groups.push "writer"
+      @req.user.paypal = @req.body.paypal
+      @req.user.save((result, user) =>
+        unless result
+          @res.json {success: true}
+        else
+          @res.json {success: false, error: result}
+      )
 
   view: ->
     User.findOne {github_username: @get[0]}, (result, data) =>

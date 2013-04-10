@@ -45,15 +45,12 @@ class views.AdminFinance extends View
     a.dataset.downloadurl = ["text/csv", a.download, a.href].join(':')
 
   initialize: (context) ->
-    @context = context
-    super @context
+    super context
 
-    @connections = new collections.Connections
-    @listenTo @connections, "sync", @render
-    @connections.fetch()
+    @listenTo @collection, "sync", @render
 
   render: ->
-    @context.connections = @connections.toJSON()
+    @context.connections = @collection.toJSON()
     html = tpl['member/admin_finance'](@context)
     @$el.html html
     @$('.daterange').daterangepicker views.DateRangeObject, views.DateRangeFunction

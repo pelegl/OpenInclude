@@ -18,16 +18,12 @@ class views.WriterRunways extends View
     @runways_writer.fetch()
 
   initialize: (context) ->
-    @context = context
-    super @context
+    super context
 
-    @runways_writer = new collections.Connections
-    @runways_writer.url = "/api/runway/writer"
-    @listenTo @runways_writer, "sync", @render
-    @runways_writer.fetch()
+    @listenTo @collection, "sync", @render
 
   render: ->
-    @context.runways_writer = @runways_writer.toJSON()
+    @context.runways_writer = @collection.toJSON()
     html = tpl['member/writer_runway'](@context)
     @$el.html html
     @

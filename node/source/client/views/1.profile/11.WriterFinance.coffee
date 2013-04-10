@@ -48,16 +48,12 @@ class views.WriterFinance extends View
     a.dataset.downloadurl = ["text/csv", a.download, a.href].join(':')
 
   initialize: (context) ->
-    @context = context
-    super @context
+    super context
 
-    @finance_writer = new models.Runway
-    @finance_writer.url = "/api/runway/writer"
-    @listenTo @finance_writer, "sync", @render
-    @finance_writer.fetch()
+    @listenTo @collection, "sync", @render
 
   render: ->
-    @context.finance_writer = @finance_writer.toJSON()
+    @context.finance_writer = @collection.toJSON()
     html = tpl['member/writer_finance'](@context)
     @$el.html html
     @$('.daterange').daterangepicker views.DateRangeObject, views.DateRangeFunction

@@ -1371,17 +1371,13 @@ views.WriterRunways = (function(_super) {
   };
 
   WriterRunways.prototype.initialize = function(context) {
-    this.context = context;
-    WriterRunways.__super__.initialize.call(this, this.context);
-    this.runways_writer = new collections.Connections;
-    this.runways_writer.url = "/api/runway/writer";
-    this.listenTo(this.runways_writer, "sync", this.render);
-    return this.runways_writer.fetch();
+    WriterRunways.__super__.initialize.call(this, context);
+    return this.listenTo(this.collection, "sync", this.render);
   };
 
   WriterRunways.prototype.render = function() {
     var html;
-    this.context.runways_writer = this.runways_writer.toJSON();
+    this.context.runways_writer = this.collection.toJSON();
     html = tpl['member/writer_runway'](this.context);
     this.$el.html(html);
     return this;
@@ -1455,17 +1451,13 @@ views.WriterFinance = (function(_super) {
   };
 
   WriterFinance.prototype.initialize = function(context) {
-    this.context = context;
-    WriterFinance.__super__.initialize.call(this, this.context);
-    this.finance_writer = new models.Runway;
-    this.finance_writer.url = "/api/runway/writer";
-    this.listenTo(this.finance_writer, "sync", this.render);
-    return this.finance_writer.fetch();
+    WriterFinance.__super__.initialize.call(this, context);
+    return this.listenTo(this.collection, "sync", this.render);
   };
 
   WriterFinance.prototype.render = function() {
     var html;
-    this.context.finance_writer = this.finance_writer.toJSON();
+    this.context.finance_writer = this.collection.toJSON();
     html = tpl['member/writer_finance'](this.context);
     this.$el.html(html);
     this.$('.daterange').daterangepicker(views.DateRangeObject, views.DateRangeFunction);
@@ -1475,6 +1467,68 @@ views.WriterFinance = (function(_super) {
   return WriterFinance;
 
 })(View);
+
+var __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
+views.Wizard = (function(_super) {
+
+  __extends(Wizard, _super);
+
+  function Wizard() {
+    return Wizard.__super__.constructor.apply(this, arguments);
+  }
+
+  Wizard.prototype.el = "#tos";
+
+  Wizard.prototype.view = "member/wizard";
+
+  Wizard.prototype.events = {
+    'click .next': "nextStep",
+    'click .prev': "prevStep",
+    'click .close-inline': "hide",
+    'submit form': 'submit'
+  };
+
+  Wizard.prototype.nextStep = function(e) {
+    var step, stepDiv;
+    e.preventDefault();
+    e.stopPropagation();
+    step = e.currentTarget.attributes['rel'].value;
+    stepDiv = document.getElementById(step);
+    if (stepDiv) {
+      $(this.step).hide();
+      this.step = stepDiv;
+      return $(this.step).show();
+    }
+  };
+
+  Wizard.prototype.prevStep = function(e) {
+    e.preventDefault();
+    return e.stopPropagation();
+  };
+
+  Wizard.prototype.initialize = function(context) {
+    if (context.wizard_reader) {
+      this.model = new models.CreditCard;
+      this.model.url = app.conf.update_credit_card;
+    } else {
+      this.model = new models.CreditCard;
+      this.model.url = "/profile/update_paypal";
+    }
+    Wizard.__super__.initialize.call(this, context);
+    this.render();
+    return this.step = document.getElementById("step-1");
+  };
+
+  Wizard.prototype.destroy = function() {
+    this.stopListening();
+    return this.$el.empty();
+  };
+
+  return Wizard;
+
+})(InlineForm);
 
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1642,20 +1696,17 @@ views.AdminConnections = (function(_super) {
 
   AdminConnections.prototype.updateData = function() {
     this.context.active_tab = "admin-connections";
-    return this.connections.fetch();
+    return this.context.collection.fetch();
   };
 
   AdminConnections.prototype.initialize = function(context) {
-    this.context = context;
-    AdminConnections.__super__.initialize.call(this, this.context);
-    this.connections = new collections.Connections;
-    this.listenTo(this.connections, "sync", this.render);
-    return this.connections.fetch();
+    AdminConnections.__super__.initialize.call(this, context);
+    return this.listenTo(this.collection, "sync", this.render);
   };
 
   AdminConnections.prototype.render = function() {
     var html;
-    this.context.connections = this.connections.toJSON();
+    this.context.connections = this.collection.toJSON();
     html = tpl['member/admin_connections'](this.context);
     this.$el.html(html);
     if (this.connectionform) {
@@ -1733,16 +1784,13 @@ views.AdminFinance = (function(_super) {
   };
 
   AdminFinance.prototype.initialize = function(context) {
-    this.context = context;
-    AdminFinance.__super__.initialize.call(this, this.context);
-    this.connections = new collections.Connections;
-    this.listenTo(this.connections, "sync", this.render);
-    return this.connections.fetch();
+    AdminFinance.__super__.initialize.call(this, context);
+    return this.listenTo(this.collection, "sync", this.render);
   };
 
   AdminFinance.prototype.render = function() {
     var html;
-    this.context.connections = this.connections.toJSON();
+    this.context.connections = this.collection.toJSON();
     html = tpl['member/admin_finance'](this.context);
     this.$el.html(html);
     this.$('.daterange').daterangepicker(views.DateRangeObject, views.DateRangeFunction);
@@ -1792,8 +1840,7 @@ views.ReaderRunways = (function(_super) {
   };
 
   ReaderRunways.prototype.initialize = function(context) {
-    this.context = context;
-    ReaderRunways.__super__.initialize.call(this, this.context);
+    ReaderRunways.__super__.initialize.call(this, context);
     this.runways_reader = new collections.Connections;
     this.runways_reader.url = "/api/runway/reader";
     this.listenTo(this.runways_reader, "sync", this.render);
@@ -1824,8 +1871,7 @@ views.ReaderFinance = (function(_super) {
   }
 
   ReaderFinance.prototype.initialize = function(context) {
-    this.context = context;
-    ReaderFinance.__super__.initialize.call(this, this.context);
+    ReaderFinance.__super__.initialize.call(this, context);
     this.finance_reader = new models.Runway;
     this.finance_reader.url = "/api/finance/reader";
     this.listenTo(this.finance_reader, "sync", this.render);
@@ -1890,9 +1936,14 @@ views.Profile = View.extend({
       app.navigate(this.context.developer_agreement, {
         trigger: false
       });
-      this.empty(this.agreement.$el);
-      this.agreement.show();
-      return this.agreement.setData(this.agreement_text, this.context.developer_agreement);
+      if (this.wizard) {
+        this.wizard.destroy();
+        delete this.wizard;
+      }
+      this.wizard = new views.Wizard(_.extend(this.context, {
+        wizard_reader: false
+      }));
+      return this.wizard.show();
     } else if (action === merc && app.session.get("merchant") === false) {
       /*
         show client license agreement
@@ -1901,10 +1952,14 @@ views.Profile = View.extend({
       app.navigate(this.context.merchant_agreement, {
         trigger: false
       });
-      this.empty(this.agreement.$el);
-      this.agreement.show();
-      this.agreement.setData(this.agreement_text, this.context.merchant_agreement);
-      return this.listenTo(this.agreement.model, "sync", this.setupPayment);
+      if (this.wizard) {
+        this.wizard.destroy();
+        delete this.wizard;
+      }
+      this.wizard = new views.Wizard(_.extend(this.context, {
+        wizard_reader: true
+      }));
+      return this.wizard.show();
     } else if (action === trello) {
       /*
         navigate to Trello authorization
@@ -1978,24 +2033,37 @@ views.Profile = View.extend({
     this.$el.html(html);
     this.$el.attr('view-id', 'profile');
     this.informationBox = this.$(".informationBox");
+    if (!this.connections) {
+      this.connections = new collections.Connections;
+    }
     this.adminConnections = new views.AdminConnections(_.extend(this.context, {
-      el: this.$("#admin-connections")
+      el: this.$("#admin-connections"),
+      collection: this.connections
     }));
     this.adminFinance = new views.AdminFinance(_.extend(this.context, {
-      el: this.$("#admin-finance")
+      el: this.$("#admin-finance"),
+      collection: this.connections
     }));
+    this.connections.fetch();
     this.readerRunway = new views.ReaderRunways(_.extend(this.context, {
       el: this.$("#reader-runway")
     }));
     this.readerFinance = new views.ReaderFinance(_.extend(this.context, {
       el: this.$("#reader-finance")
     }));
+    if (!this.finance_writer) {
+      this.finance_writer = new collections.Connections;
+      this.finance_writer.url = "/api/runway/writer";
+    }
     this.writerRunway = new views.WriterRunways(_.extend(this.context, {
-      el: this.$("#writer-runway")
+      el: this.$("#writer-runway"),
+      collection: this.finance_writer
     }));
     this.writerFinance = new views.WriterFinance(_.extend(this.context, {
-      el: this.$("#writer-finance")
+      el: this.$("#writer-finance"),
+      collection: this.finance_writer
     }));
+    this.finance_writer.fetch();
     if (this.cc) {
       this.cc.setElement(this.$(".setupPayment .dropdown-menu"));
       this.cc.$el.prev().dropdown();

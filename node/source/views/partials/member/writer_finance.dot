@@ -15,7 +15,7 @@
         <th>Paid</th>
         <th>Pending</th>
     </tr>
-    {{~ it.runways_writer :finance }}
+    {{~ it.finance_writer :finance }}
     {{
         paid = 0;
         pending = 0;

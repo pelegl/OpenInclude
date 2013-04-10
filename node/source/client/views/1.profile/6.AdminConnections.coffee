@@ -10,18 +10,15 @@ class views.AdminConnections extends View
 
   updateData: ->
     @context.active_tab = "admin-connections"
-    @connections.fetch()
+    @context.collection.fetch()
 
   initialize: (context) ->
-    @context = context
-    super @context
+    super context
 
-    @connections = new collections.Connections
-    @listenTo @connections, "sync", @render
-    @connections.fetch()
+    @listenTo @collection, "sync", @render
 
   render: ->
-    @context.connections = @connections.toJSON()
+    @context.connections = @collection.toJSON()
     html = tpl['member/admin_connections'](@context)
     @$el.html html
 

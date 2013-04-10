@@ -1,0 +1,55 @@
+<div id="step-1">
+    <div class="header">Terms of Service</div>
+    <div class="content">Do you agree?</div>
+    <div class="controls">
+        <button class="btn btn-danger prev pull-left close-inline">I do not agree</button>
+        <button class="btn btn-success next pull-right" rel="step-2">I agree</button>
+    </div>
+</div>
+
+<div id="step-2" style="display: none">
+    <div class="header">Terms of Payment</div>
+    <div class="content">Do you agree?</div>
+    <div class="controls">
+        <button class="btn btn-danger prev pull-left" rel="step-1">I do not agree</button>
+        <button class="btn btn-success next pull-right" rel="step-3">I agree</button>
+    </div>
+</div>
+
+<div id="step-3" style="display: none">
+    <div class="header">Payment Information</div>
+    <div class="content">
+        {{? it.wizard_reader }}
+        <form role="menu" method='post' action='{{=it.update_credit_card}}'>
+            <div class='row-fluid'>
+                <div class='span12'>
+                    <div class='controls-row'>
+                        <input type='text' class='span6' name='card[givenName]' placeholder="Given name" required />
+                        <input type='text' class='span6' name='card[lastName]' placeholder="Last name" required />
+                    </div>
+                    <div class='controls-row'>
+                        <input type='text' id='ccNumber' class='span12' name='card[number]' required placeholder="Card Number" pattern="[0-9]{4}[ \-]?[0-9]{4}[ \-]?[0-9]{4}[ \-]?[0-9]{4}" />
+                    </div>
+                    <div class='controls-row'>
+                        <input type='text' id='ccExpiration' class='span6' name='card[expiration]' required placeholder="MM/YYYY" pattern="[0-9]{2}/[0-9]{4}" />
+                        <input type='text' id='ccCVV' class='span6'  name='card[cvv]' required pattern="[0-9]{3}" placeholder="CVV" />
+                    </div>
+                    <div class='controls-row'>
+                        <button type='submit' class="btn btn-primary pull-right">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        {{??}}
+        <form method="post" action="/profile/update_paypal">
+            <input type="text" name="paypal" placeholder="Paypal email" required />
+            <div class='controls-row'>
+                <button type='submit' class="btn btn-primary pull-right">Confirm</button>
+            </div>
+        </form>
+        {{?}}
+    </div>
+    <div class="controls">
+        <button class="btn btn-danger pull-left close-inline">Cancel</button>
+    </div>
+</div>
