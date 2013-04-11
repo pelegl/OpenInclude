@@ -1,3 +1,4 @@
+{{? it.bills.length }}
 <table class='table table-bordered table-striped'>
     <thead>
     <tr>
@@ -9,7 +10,8 @@
     </tr>
     </thead>
     <tbody>
-    {{~it.bills :bill}}
+
+    {{~ it.bills :bill}}
     <tr>
         <td>
             <a href="{{= it.view_bills }}/{{= bill._id }}" class='backbone'>
@@ -22,5 +24,9 @@
         <td>&nbsp;</td>
     </tr>
     {{~}}
+
     </tbody>
 </table>
+{{??}}
+No bills found
+{{?}}

@@ -7,10 +7,12 @@ views.DateRangeObject =
 
 views.DateRangeFunction = (start, end) ->
   if start > end
-    $('.daterange .value').html("All time");
-    $('.daterange .from').html("none");
-    $('.daterange .to').html("none");
+    @$('.daterange .value').html("All time");
+    @$('.daterange .from').html("none");
+    @$('.daterange .to').html("none");
   else
-    $('.daterange .value').html(start.toString('MMMM d, yyyy') + ' - ' + end.toString('MMMM d, yyyy'));
-    $('.daterange .from').html(start.toString('yyyy-MM-dd'));
-    $('.daterange .to').html(end.toString('yyyy-MM-dd'));
+    @$('.daterange .value').html(start.toString('MMMM d, yyyy') + ' - ' + end.toString('MMMM d, yyyy'));
+    @$('.daterange .from').html(start.toString('yyyy-MM-dd'));
+    @$('.daterange .to').html(end.toString('yyyy-MM-dd'));
+
+  @filter()

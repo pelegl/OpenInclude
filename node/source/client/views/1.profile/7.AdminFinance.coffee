@@ -1,10 +1,30 @@
 class views.AdminFinance extends View
   events:
-    'click #admin-filter': 'filterAdmin'
+    'click #admin-filter': 'filter'
+    'click #chaaaaaarge': 'onwardsMyMightyStallion'
 
-  filterAdmin: (e) ->
+  onwardsMyMightyStallion: (e) ->
     e.preventDefault()
     e.stopPropagation()
+
+    id = e.currentTarget.attributes['rel'].value
+
+    $.ajax(
+      url: '/api/payment/charge'
+      type: 'post'
+      data:
+        id: id
+      context: @
+      success: (data, status, xhr) ->
+        @collection.fetch()
+      error: (xhr, status, error) ->
+        alert xhr.responseText
+    )
+
+  filter: (e) ->
+    if e
+      e.preventDefault()
+      e.stopPropagation()
 
     @context.admin_from = @$("#admin_from").text() or "none"
     @context.admin_to = @$("#admin_to").text() or "none"
@@ -45,16 +65,15 @@ class views.AdminFinance extends View
     a.dataset.downloadurl = ["text/csv", a.download, a.href].join(':')
 
   initialize: (context) ->
-    @context = context
-    super @context
+    super context
 
-    @connections = new collections.Connections
-    @listenTo @connections, "sync", @render
-    @connections.fetch()
+    @listenTo @collection, "sync", @render
+    @context.admin_from = "none"
+    @context.admin_to = "none"
 
   render: ->
-    @context.connections = @connections.toJSON()
+    @context.connections = @collection.toJSON()
     html = tpl['member/admin_finance'](@context)
     @$el.html html
-    @$('.daterange').daterangepicker views.DateRangeObject, views.DateRangeFunction
+    @$('.daterange').daterangepicker views.DateRangeObject, _.bind(views.DateRangeFunction, @)
     @

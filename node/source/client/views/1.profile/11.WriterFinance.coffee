@@ -1,11 +1,12 @@
 class views.WriterFinance extends View
   events:
-    'click #writer-filter': 'filterWriter'
+    'click #writer-filter': 'filter'
     'click #writer-csv': 'getCSV'
 
-  filterWriter: (e) ->
-    e.preventDefault()
-    e.stopPropagation()
+  filter: (e) ->
+    if e
+      e.preventDefault()
+      e.stopPropagation()
 
     @context.from = @$("#writer_from").text() or "none"
     @context.to = @$("#writer_to").text() or "none"
@@ -48,17 +49,15 @@ class views.WriterFinance extends View
     a.dataset.downloadurl = ["text/csv", a.download, a.href].join(':')
 
   initialize: (context) ->
-    @context = context
-    super @context
+    super context
 
-    @finance_writer = new models.Runway
-    @finance_writer.url = "/api/runway/writer"
-    @listenTo @finance_writer, "sync", @render
-    @finance_writer.fetch()
+    @listenTo @collection, "sync", @render
+    @context.from = "none"
+    @context.to = "none"
 
   render: ->
-    @context.finance_writer = @finance_writer.toJSON()
+    @context.finance_writer = @collection.toJSON()
     html = tpl['member/writer_finance'](@context)
     @$el.html html
-    @$('.daterange').daterangepicker views.DateRangeObject, views.DateRangeFunction
+    @$('.daterange').daterangepicker views.DateRangeObject, _.bind(views.DateRangeFunction, @)
     @

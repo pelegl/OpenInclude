@@ -30,6 +30,7 @@ definition =
   trello_token_secret: String
   
   status: { type: ObjectId, ref: 'Module' }
+  paypal: String
   
   # determines whether the User has signed merchant agreement or not - allows him to hire people
   merchant: 

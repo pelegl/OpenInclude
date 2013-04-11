@@ -2,6 +2,13 @@ class views.ConnectionForm extends InlineForm
   el: "#new-connection-inline"
   view: "member/new_connection"
 
+  validate: (data) ->
+    if data.reader == data.writer
+      @validation = "Reader can not be same as writer"
+      return false
+
+    true
+
   initialize: (context) ->
     @model = new models.Connection
     super context

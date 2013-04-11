@@ -3,6 +3,8 @@ agreement_text = require("../util").strings.agreement
 basic = require './basicController'
 get_models = require('../conf').get_models
 
+_ = require "underscore"
+
 [User, Stripe, Bill] = get_models ["User", "Stripe", "Bill"]
 
 class ProfileController extends basic
@@ -73,6 +75,10 @@ class ProfileController extends basic
       {givenName, lastName, number, expiration, cvv} = @req.body.card
       [exp_month, exp_year] = expiration.split "/"
 
+      @req.user.merchant = true
+      @req.user.groups.push "reader"
+      @req.user.save()
+
       Stripe.addCustomer @req.user, "Stripe payment method for #{givenName} #{lastName}", number, exp_month, exp_year, cvv, "#{givenName} #{lastName}", (err, result)=>
         @res.json {
         success: if err? then false else true
@@ -82,6 +88,18 @@ class ProfileController extends basic
 
     else
       @res.send "Not permitted", 401
+
+  update_paypal: ->
+    if @req.body.paypal
+      @req.user.employee = true
+      @req.user.groups.push "writer"
+      @req.user.paypal = @req.body.paypal
+      @req.user.save((result, user) =>
+        unless result
+          @res.json {success: true}
+        else
+          @res.json {success: false, error: result}
+      )
 
   view: ->
     User.findOne {github_username: @get[0]}, (result, data) =>
@@ -149,6 +167,19 @@ class ProfileController extends basic
 
     else
       @res.send 'Not Permitted', 403
+
+  bills2: ->
+    req = @req
+    res = @res
+    Bill.find().populate("from_user to_user").exec((result, bills) ->
+      bills = _.reduce(bills, (result, item) ->
+        if item.from_user._id = req.user._id
+          result.push(item)
+        result
+      , [])
+
+      res.json bills
+    )
 
 # Здесь отдаем функцию - каждый раз когда вызывается наш контроллер - создается новый экземпляр - это мы вставим в рутер
 module.exports = (req, res)->

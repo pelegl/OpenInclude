@@ -18,6 +18,7 @@ definition =
   charged: Number
   fee: Number
   memo: String
+  paid: Boolean
 
 methods = {}
 

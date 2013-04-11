@@ -1,4 +1,4 @@
-views.Bills = Backbone.View.extend
+views.BillsDeprecated = Backbone.View.extend
   className: "bills"
 
   initialize: ->

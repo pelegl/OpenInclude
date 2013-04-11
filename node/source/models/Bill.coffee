@@ -13,13 +13,16 @@ _         = require 'underscore'
 ###
 
 definition =
+  charge_id: String
   amount: Number #in dollars
-  user: { type: ObjectId, ref: 'User' }
+  from_user: { type: ObjectId, ref: 'User' }
+  to_user: { type: ObjectId, ref: 'User' }
   description: String  # The Description
   isPaid:
     type: Boolean
     default: false
   stripe: {type: ObjectId, ref: 'Stripe'}
+  date: Date
 
 statics =
 	get_bills:(userid, callback)->

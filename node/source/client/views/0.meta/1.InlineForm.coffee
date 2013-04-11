@@ -60,10 +60,18 @@ class InlineForm extends Backbone.View
 
     unless data
       data = Backbone.Syphon.serialize event.currentTarget
+
+    unless @validate(data)
+      alert @validation
+      return
+
     @$("[type=submit]").addClass("disabled").text("Updating information...")
     @model.save data, {success: _.bind(@success, @), error: _.bind(@success, @)}
 
     false
+
+  validate: (data) ->
+    true
 
   success: (model, response, options) ->
     if response.success is true

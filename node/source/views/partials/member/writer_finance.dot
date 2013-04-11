@@ -6,16 +6,15 @@
         <span id="writer_from" class="from" style="display: none"></span>
         <span id="writer_to" class="to" style="display: none"></span>
     </div>
-    <button id="writer-filter" class="btn btn-info">View</button>&nbsp;
     <a id="writer-csv" class="btn btn-success">CSV</a>
 </div>
 <table class="table table-bordered table-hover" style="background-color: #ffffff">
     <tr>
-        <th>Client</th>
+        <th>Reader</th>
         <th>Paid</th>
         <th>Pending</th>
     </tr>
-    {{~ it.runways_writer :finance }}
+    {{~ it.finance_writer :finance }}
     {{
         paid = 0;
         pending = 0;
@@ -31,7 +30,7 @@
     }}
 
     <tr>
-        <td><a href="/profile/view/{{= finance.writer.name }}">{{= finance.writer.name }}</a></td>
+        <td><a href="/profile/view/{{= finance.reader.name }}">{{= finance.reader.name }}</a></td>
         <td>{{= paid }}</td>
         <td>{{= pending }}</td>
     </tr>

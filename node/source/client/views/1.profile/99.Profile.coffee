@@ -39,10 +39,17 @@ views.Profile = View.extend
         show developer license agreement
       ###
       app.navigate @context.developer_agreement, {trigger: false}
-      @empty @agreement.$el
 
-      @agreement.show()
-      @agreement.setData @agreement_text, @context.developer_agreement
+      if @wizard
+        @wizard.destroy()
+        delete @wizard
+      @wizard = new views.Wizard _.extend @context, {wizard_reader: false}
+      @wizard.show()
+
+      #@empty @agreement.$el
+
+      #@agreement.show()
+      #@agreement.setData @agreement_text, @context.developer_agreement
 
     else if action is merc and app.session.get("merchant") is false
       ###
@@ -50,12 +57,18 @@ views.Profile = View.extend
       ###
       app.navigate @context.merchant_agreement, {trigger: false}
 
-      @empty @agreement.$el
+      if @wizard
+        @wizard.destroy()
+        delete @wizard
+      @wizard = new views.Wizard _.extend @context, {wizard_reader: true}
+      @wizard.show()
 
-      @agreement.show()
-      @agreement.setData @agreement_text, @context.merchant_agreement
+      #@empty @agreement.$el
 
-      @listenTo @agreement.model, "sync", @setupPayment
+      #@agreement.show()
+      #@agreement.setData @agreement_text, @context.merchant_agreement
+
+      #@listenTo @agreement.model, "sync", @setupPayment
 
     else if action is trello
       ###
@@ -63,27 +76,6 @@ views.Profile = View.extend
       ###
       app.navigate @context.trello_auth_url, {trigger: true}
 
-    else if action is bills
-      ###
-        navigate to view bills
-      ###
-      unless @get?.length > 0
-        navigateTo = @context.bills
-        # show bills
-        @empty @bills.$el
-      else
-        navigateTo = "#{@context.bills}/#{@get.join("/")}"
-        # show bill
-        [billId] = @get
-        if billId?
-          billView = new views.Bill {collection: @bills.collection, billId}
-          @empty billView.$el
-        else
-          notFound = new views.NotFound
-          @empty notFound.$el
-
-
-      app.navigate navigateTo, {trigger: false}
     else
       ###
         hide agreement and navigate back to profile
@@ -107,7 +99,7 @@ views.Profile = View.extend
 
       @agreement = new views.Agreement
       @cc        = new views.CC
-      @bills     = new views.Bills
+      #@bills     = new views.Bills
 
     @context.from = "none"
     @context.to = "none"
@@ -127,14 +119,27 @@ views.Profile = View.extend
 
     @informationBox = @$ ".informationBox"
 
-    @adminConnections = new views.AdminConnections _.extend(@context, {el: @$("#admin-connections")})
-    @adminFinance = new views.AdminFinance _.extend(@context, {el: @$("#admin-finance")})
+    unless @connections
+      @connections = new collections.Connections
+
+    @adminConnections = new views.AdminConnections _.extend(@context, {el: @$("#admin-connections"), collection: @connections})
+    @adminFinance = new views.AdminFinance _.extend(@context, {el: @$("#admin-finance"), collection: @connections})
+
+    @connections.fetch()
 
     @readerRunway = new views.ReaderRunways _.extend(@context, {el: @$("#reader-runway")})
     @readerFinance = new views.ReaderFinance _.extend(@context, {el: @$("#reader-finance")})
 
-    @writerRunway = new views.WriterRunways _.extend(@context, {el: @$("#writer-runway")})
-    @writerFinance = new views.WriterFinance _.extend(@context, {el: @$("#writer-finance")})
+    unless @finance_writer
+      @finance_writer = new collections.Connections
+      @finance_writer.url = "/api/runway/writer"
+
+    @writerRunway = new views.WriterRunways _.extend(@context, {el: @$("#writer-runway"), collection: @finance_writer})
+    @writerFinance = new views.WriterFinance _.extend(@context, {el: @$("#writer-finance"), collection: @finance_writer})
+
+    @finance_writer.fetch()
+
+    @bills = new views.Bills _.extend(@context, {el: @$("#reader-bills")})
 
     # Append CC modal
     if @cc

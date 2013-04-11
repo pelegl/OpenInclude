@@ -45,7 +45,7 @@ module.exports =
     delete req.body._id
     delete req.body.__v
 
-    Connection.findByIdAndUpdate(id, req.body, (result, connection) ->
+    Connection.findByIdAndUpdate(id, { data: req.body.data }, (result, connection) ->
       if result
         res.json {success: false, error: result}
       else
@@ -108,9 +108,9 @@ module.exports =
           date = moment(item.date).format("YYYY-MM-DD")
           if not result.hasOwnProperty(date)
             result[date] = {}
-          if not result[date].hasOwnProperty(item.connection.reader.name)
-            result[date][item.connection.reader.name] = []
-          result[date][item.connection.reader.name].push(item)
+          if not result[date].hasOwnProperty(item.connection.writer.name)
+            result[date][item.connection.writer.name] = []
+          result[date][item.connection.writer.name].push(item)
           result
         , {})
 

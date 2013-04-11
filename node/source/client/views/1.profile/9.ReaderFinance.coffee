@@ -1,7 +1,6 @@
 class views.ReaderFinance extends View
   initialize: (context) ->
-    @context = context
-    super @context
+    super context
 
     @finance_reader = new models.Runway
     @finance_reader.url = "/api/finance/reader"
