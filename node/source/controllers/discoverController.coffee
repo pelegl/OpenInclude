@@ -43,7 +43,9 @@ class DiscoverController extends require('./basicController')
     ###
     languages = {}
     module_ids   = []
-        
+
+    #console.log "Started processing output", new Date()
+
     async.forEach output, (repository, callback) =>
       {language, _id} = repository._source
       languages[language] = language
@@ -53,6 +55,7 @@ class DiscoverController extends require('./basicController')
       workflow = {}
       # pull languages color
       workflow.color = (callback) =>
+        #console.log "started processing color", new Date()
         names = Object.keys languages
         Language.find {name: {$in: names}}, (err, languages)=>
           return callback err if err?
@@ -60,14 +63,17 @@ class DiscoverController extends require('./basicController')
           async.forEach languages, (language, async_callback)=>
             result[language.name] = language
             async_callback null
-          , => callback null, result
+          , =>
+            console.log "question color fetched", new Date()
+            callback null, result
       
       # pull questions statistics
       ###
         Change question statistics
       ###
-
+      ###
       workflow.questions = (callback) =>
+        console.log "started processing question statistics", new Date()
         StackOverflow.questionsStatistics module_ids, (err, statistics)=>
           return callback err if err?
 
@@ -75,19 +81,22 @@ class DiscoverController extends require('./basicController')
           async.forEach statistics, (module, async_callback)=>
             result[module._id] = module
             async_callback null
-          , => callback null, result
+          , =>
+            console.log "question statistics fetched", new Date()
+            callback null, result
+      ###
 
-      workflow.map = ['color', 'questions', (callback, results)=>
+      workflow.map = ['color', (callback, results)=>
+         #console.log "started aggregating", new Date()
          {color, questions} = results
          async.map output, (module, async_callback)=>           
+
            module.color    = color[module._source.language]?.color || "cccccc" #gray for non-specified color
-           if (q = questions[module._source._id])?
-             module.asked    = q.asked
-             module.answered = q.answered
-           else
-             module.asked    = 0
-             module.answered = 0                       
+           module.asked    = module._source.so_questions_asked
+           module.answered = module._source.so_questions_answered
+
            async_callback null, module
+
          , callback            
       ]
       
@@ -95,8 +104,10 @@ class DiscoverController extends require('./basicController')
         throw err if err?
         
         output = data.map
-      
-        #### Return processed data    
+
+        #console.log "output sent", new Date()
+
+        #### Return processed data
         # XHR         
         return @res.json {searchData: output, maxScore} if @req.xhr      
         # Direct request --- ie search engine hit
@@ -132,7 +143,6 @@ class DiscoverController extends require('./basicController')
         min_similarity: 0.5
         prefix_length: 3
         ignore_tf: true
-        min_word_len: 2
 
 
     ###
@@ -146,17 +156,25 @@ class DiscoverController extends require('./basicController')
     ###
 
     options =
-      size: 25
+      size: 80
     
-    #TODO: add variable size and offset handling
+    #TODO: add variable size and offset han#dling
 
-    #console.log query
+    console.log "request started", new Date()
 
     savedData = []
     esClient.search('mongomodules', 'module', {query}, options)
-    .on('data', (data) => savedData.push data)
-    .on('done', => @_searchOutput savedData)
+    .on('data', (data) =>
+        console.log "received data", new Date()
+        savedData.push data
+    )
+    .on('done', =>
+        console.log "search completed", new Date()
+        @_searchOutput savedData
+    )
     .on('error', (error)=>
+      console.error error
+
       if @req.xhr      
         @res.json error, 500
       else

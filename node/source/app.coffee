@@ -78,6 +78,10 @@ startApp = ->
     ]
   }, (err, results)=>
     unless err
+      # perform background jobs once in a while
+      require('./background_jobs')(app)
+      # start app
+
       port = app.get('port')
       host = app.get('host')
       app.listen port, host, ->              

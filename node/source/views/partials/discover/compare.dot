@@ -24,11 +24,11 @@
                 <td><a href='/modules/{{= encodeURIComponent(project._source.language)}}/{{=project._source.owner}}|{{=project._source.module_name}}'>{{! project._source.module_name }}</a></td>
                 <td>
                   <span class='color' style='background: #{{=project.color}}'></span>
-                  {{! project._source.language }}
+                  {{= project._source.language }}
                 </td>
-                <td>{{! project.lastCommitHuman }}</td>
-                <td>{{! project._source.watchers }}</td>
-                <td>{{! project.asked }}</td>
+                <td>{{= project.lastCommitHuman }}</td>
+                <td>{{= project._source.watchers }}</td>
+                <td>{{= project.asked }}</td>
                 <td>
                   {{? project.asked > 0}}
                     {{= Math.round(project.answered/project.asked*100) }}%

@@ -27,16 +27,10 @@ definition =
   followers: Number
   module_name : String  
   openinclude_followers: [{type: ObjectId, ref: 'User'}]
-  github_subscriptions: [{
-    url : String
-    updated_at : Date
-    created_at : Date
-    name       : String
-    events     : []
-    active     : Boolean
-    config     : {}
-    id         : Number
-  }]
+  so_questions_asked:    Number
+  so_questions_answered: Number
+  language_color:        String
+
 
 ts_ago = (days, toSeconds=true)->
   # edge date

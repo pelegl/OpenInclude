@@ -2,18 +2,24 @@ views.MetaView = Backbone.View.extend
   events:
     'submit .navbar-search' : 'searchSubmit'
 
-  searchSubmit: (e)->
-    e.preventDefault()
+  searchSubmit: (e, action)->
+    e.preventDefault() if e?
 
     q = encodeURIComponent @$("[name=q]").val()
     location = window.location.pathname
-    pathname = $(e.currentTarget).attr "action"
+    pathname = action or $(e.currentTarget).attr "action"
     trigger = if location is pathname then false else true
 
     app.navigate "#{pathname}?q=#{q}", {trigger}
     app.view.fetchSearchData q unless trigger
 
     false
+
+  getQuery: ->
+    return @$(".search-query[name=q]").val()
+
+  setQuery: (val) ->
+    @$(".search-query[name=q]").val decodeURIComponent(val)
 
   initialize: ->
     console.log '[__metaView__] Init'

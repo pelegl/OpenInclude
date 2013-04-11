@@ -50,7 +50,7 @@ statics =
       
     
 index = [ 
-  [{module_id : 1, id: 1}, {unique: true}]
+  [{module_id : 1, id: 1}, {unique: true}],
   [{module_id : 1, created_at: 1}]
 ]
 
