@@ -11,8 +11,8 @@ async = require 'async'
   Stripe
 ###
 ObjectId = require('mongoose').Schema.Types.ObjectId
-#api_key = 'sk_test_07bvlXeoFTA2bKM42Vt0O9SY'
-api_key = "sk_test_HkMUKw1bjVE6Sxo218IiMNWP"
+api_key = 'sk_test_07bvlXeoFTA2bKM42Vt0O9SY'
+#api_key = "sk_test_HkMUKw1bjVE6Sxo218IiMNWP"
 
 stripe = require("stripe")(api_key)
 
@@ -95,7 +95,7 @@ statics =
     user.get_payment_method "Stripe", (err, method) ->
       if method
         stripe.charges.create
-          amount: amount
+          amount: amount * 100
           currency: "usd"
           customer: method.id
         , (error, charge) ->
