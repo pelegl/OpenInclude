@@ -85,6 +85,9 @@ exports.set = (app)->
   app.get "/api/finance/writer/:from/:to", app.Controllers.runway.search_writer
 
   app.post "/api/runway/:connection", app.Controllers.runway.create
+
+  ## Payments ##
+  app.post "/api/payment/charge", app.Controllers.payment.charge
   
   ###
   oAuth interaction

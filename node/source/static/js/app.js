@@ -764,7 +764,7 @@ collections.Tasks = Backbone.Collection.extend({
 
 collections.Bills = Backbone.Collection.extend({
   model: models.Bill,
-  urlRoot: "/profile/bills",
+  urlRoot: "/profile/bills2",
   initialize: function(models, options) {
     if (models == null) {
       models = [];
@@ -897,12 +897,20 @@ InlineForm = (function(_super) {
     if (!data) {
       data = Backbone.Syphon.serialize(event.currentTarget);
     }
+    if (!this.validate(data)) {
+      alert(this.validation);
+      return;
+    }
     this.$("[type=submit]").addClass("disabled").text("Updating information...");
     this.model.save(data, {
       success: _.bind(this.success, this),
       error: _.bind(this.success, this)
     });
     return false;
+  };
+
+  InlineForm.prototype.validate = function(data) {
+    return true;
   };
 
   InlineForm.prototype.success = function(model, response, options) {
@@ -981,14 +989,15 @@ views.DateRangeObject = {
 
 views.DateRangeFunction = function(start, end) {
   if (start > end) {
-    $('.daterange .value').html("All time");
-    $('.daterange .from').html("none");
-    return $('.daterange .to').html("none");
+    this.$('.daterange .value').html("All time");
+    this.$('.daterange .from').html("none");
+    this.$('.daterange .to').html("none");
   } else {
-    $('.daterange .value').html(start.toString('MMMM d, yyyy') + ' - ' + end.toString('MMMM d, yyyy'));
-    $('.daterange .from').html(start.toString('yyyy-MM-dd'));
-    return $('.daterange .to').html(end.toString('yyyy-MM-dd'));
+    this.$('.daterange .value').html(start.toString('MMMM d, yyyy') + ' - ' + end.toString('MMMM d, yyyy'));
+    this.$('.daterange .from').html(start.toString('yyyy-MM-dd'));
+    this.$('.daterange .to').html(end.toString('yyyy-MM-dd'));
   }
+  return this.filter();
 };
 
 
@@ -1197,7 +1206,7 @@ views.Bill = Backbone.View.extend({
 });
 
 
-views.Bills = Backbone.View.extend({
+views.BillsDeprecated = Backbone.View.extend({
   className: "bills",
   initialize: function() {
     this.collection = new collections.Bills;
@@ -1367,7 +1376,7 @@ views.WriterRunways = (function(_super) {
 
   WriterRunways.prototype.updateData = function() {
     this.context.active_tab = "writer-runway";
-    return this.runways_writer.fetch();
+    return this.collection.fetch();
   };
 
   WriterRunways.prototype.initialize = function(context) {
@@ -1399,15 +1408,17 @@ views.WriterFinance = (function(_super) {
   }
 
   WriterFinance.prototype.events = {
-    'click #writer-filter': 'filterWriter',
+    'click #writer-filter': 'filter',
     'click #writer-csv': 'getCSV'
   };
 
-  WriterFinance.prototype.filterWriter = function(e) {
+  WriterFinance.prototype.filter = function(e) {
     var a, bb, data,
       _this = this;
-    e.preventDefault();
-    e.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     this.context.from = this.$("#writer_from").text() || "none";
     this.context.to = this.$("#writer_to").text() || "none";
     this.context.active_tab = "writer-finance";
@@ -1452,7 +1463,9 @@ views.WriterFinance = (function(_super) {
 
   WriterFinance.prototype.initialize = function(context) {
     WriterFinance.__super__.initialize.call(this, context);
-    return this.listenTo(this.collection, "sync", this.render);
+    this.listenTo(this.collection, "sync", this.render);
+    this.context.from = "none";
+    return this.context.to = "none";
   };
 
   WriterFinance.prototype.render = function() {
@@ -1460,7 +1473,7 @@ views.WriterFinance = (function(_super) {
     this.context.finance_writer = this.collection.toJSON();
     html = tpl['member/writer_finance'](this.context);
     this.$el.html(html);
-    this.$('.daterange').daterangepicker(views.DateRangeObject, views.DateRangeFunction);
+    this.$('.daterange').daterangepicker(views.DateRangeObject, _.bind(views.DateRangeFunction, this));
     return this;
   };
 
@@ -1533,6 +1546,36 @@ views.Wizard = (function(_super) {
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
+views.Bills = (function(_super) {
+
+  __extends(Bills, _super);
+
+  function Bills() {
+    return Bills.__super__.constructor.apply(this, arguments);
+  }
+
+  Bills.prototype.initialize = function(context) {
+    Bills.__super__.initialize.call(this, context);
+    this.collection = new collections.Bills;
+    this.listenTo(this.collection, "sync", this.render);
+    return this.collection.fetch();
+  };
+
+  Bills.prototype.render = function() {
+    var html;
+    this.context.bills = this.collection.toJSON();
+    html = tpl['bills/table'](this.context);
+    this.$el.html(html);
+    return this;
+  };
+
+  return Bills;
+
+})(View);
+
+var __hasProp = {}.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+
 views.ConnectionForm = (function(_super) {
 
   __extends(ConnectionForm, _super);
@@ -1544,6 +1587,14 @@ views.ConnectionForm = (function(_super) {
   ConnectionForm.prototype.el = "#new-connection-inline";
 
   ConnectionForm.prototype.view = "member/new_connection";
+
+  ConnectionForm.prototype.validate = function(data) {
+    if (data.reader === data.writer) {
+      this.validation = "Reader can not be same as writer";
+      return false;
+    }
+    return true;
+  };
 
   ConnectionForm.prototype.initialize = function(context) {
     var $ids, $reader, $writer;
@@ -1696,7 +1747,7 @@ views.AdminConnections = (function(_super) {
 
   AdminConnections.prototype.updateData = function() {
     this.context.active_tab = "admin-connections";
-    return this.context.collection.fetch();
+    return this.collection.fetch();
   };
 
   AdminConnections.prototype.initialize = function(context) {
@@ -1734,14 +1785,38 @@ views.AdminFinance = (function(_super) {
   }
 
   AdminFinance.prototype.events = {
-    'click #admin-filter': 'filterAdmin'
+    'click #admin-filter': 'filter',
+    'click #chaaaaaarge': 'onwardsMyMightyStallion'
   };
 
-  AdminFinance.prototype.filterAdmin = function(e) {
-    var a, bb, data,
-      _this = this;
+  AdminFinance.prototype.onwardsMyMightyStallion = function(e) {
+    var id;
     e.preventDefault();
     e.stopPropagation();
+    id = e.currentTarget.attributes['rel'].value;
+    return $.ajax({
+      url: '/api/payment/charge',
+      type: 'post',
+      data: {
+        id: id
+      },
+      context: this,
+      success: function(data, status, xhr) {
+        return this.collection.fetch();
+      },
+      error: function(xhr, status, error) {
+        return alert(xhr.responseText);
+      }
+    });
+  };
+
+  AdminFinance.prototype.filter = function(e) {
+    var a, bb, data,
+      _this = this;
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     this.context.admin_from = this.$("#admin_from").text() || "none";
     this.context.admin_to = this.$("#admin_to").text() || "none";
     this.context.active_tab = "admin-finance";
@@ -1785,7 +1860,9 @@ views.AdminFinance = (function(_super) {
 
   AdminFinance.prototype.initialize = function(context) {
     AdminFinance.__super__.initialize.call(this, context);
-    return this.listenTo(this.collection, "sync", this.render);
+    this.listenTo(this.collection, "sync", this.render);
+    this.context.admin_from = "none";
+    return this.context.admin_to = "none";
   };
 
   AdminFinance.prototype.render = function() {
@@ -1793,7 +1870,7 @@ views.AdminFinance = (function(_super) {
     this.context.connections = this.collection.toJSON();
     html = tpl['member/admin_finance'](this.context);
     this.$el.html(html);
-    this.$('.daterange').daterangepicker(views.DateRangeObject, views.DateRangeFunction);
+    this.$('.daterange').daterangepicker(views.DateRangeObject, _.bind(views.DateRangeFunction, this));
     return this;
   };
 
@@ -1923,7 +2000,7 @@ views.Profile = View.extend({
     }
   },
   setAction: function(action) {
-    var billId, billView, bills, dev, merc, navigateTo, notFound, trello, _ref;
+    var bills, dev, merc, trello;
     dev = this.clearHref(this.context.developer_agreement);
     merc = this.clearHref(this.context.merchant_agreement);
     trello = this.clearHref(this.context.trello_auth_url);
@@ -1968,31 +2045,6 @@ views.Profile = View.extend({
       return app.navigate(this.context.trello_auth_url, {
         trigger: true
       });
-    } else if (action === bills) {
-      /*
-        navigate to view bills
-      */
-
-      if (!(((_ref = this.get) != null ? _ref.length : void 0) > 0)) {
-        navigateTo = this.context.bills;
-        this.empty(this.bills.$el);
-      } else {
-        navigateTo = "" + this.context.bills + "/" + (this.get.join("/"));
-        billId = this.get[0];
-        if (billId != null) {
-          billView = new views.Bill({
-            collection: this.bills.collection,
-            billId: billId
-          });
-          this.empty(billView.$el);
-        } else {
-          notFound = new views.NotFound;
-          this.empty(notFound.$el);
-        }
-      }
-      return app.navigate(navigateTo, {
-        trigger: false
-      });
     } else {
       /*
         hide agreement and navigate back to profile
@@ -2017,7 +2069,6 @@ views.Profile = View.extend({
       this.context["private"] = true;
       this.agreement = new views.Agreement;
       this.cc = new views.CC;
-      this.bills = new views.Bills;
     }
     this.context.from = "none";
     this.context.to = "none";
@@ -2064,6 +2115,9 @@ views.Profile = View.extend({
       collection: this.finance_writer
     }));
     this.finance_writer.fetch();
+    this.bills = new views.Bills(_.extend(this.context, {
+      el: this.$("#reader-bills")
+    }));
     if (this.cc) {
       this.cc.setElement(this.$(".setupPayment .dropdown-menu"));
       this.cc.$el.prev().dropdown();

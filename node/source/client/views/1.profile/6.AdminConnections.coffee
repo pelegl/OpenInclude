@@ -10,7 +10,7 @@ class views.AdminConnections extends View
 
   updateData: ->
     @context.active_tab = "admin-connections"
-    @context.collection.fetch()
+    @collection.fetch()
 
   initialize: (context) ->
     super context

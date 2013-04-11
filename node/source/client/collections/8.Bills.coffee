@@ -1,6 +1,6 @@
 collections.Bills = Backbone.Collection.extend
   model: models.Bill
-  urlRoot: "/profile/bills"
+  urlRoot: "/profile/bills2"
   initialize: (models=[], options={})->
     @options = options
 

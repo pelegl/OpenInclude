@@ -1,11 +1,12 @@
 class views.WriterFinance extends View
   events:
-    'click #writer-filter': 'filterWriter'
+    'click #writer-filter': 'filter'
     'click #writer-csv': 'getCSV'
 
-  filterWriter: (e) ->
-    e.preventDefault()
-    e.stopPropagation()
+  filter: (e) ->
+    if e
+      e.preventDefault()
+      e.stopPropagation()
 
     @context.from = @$("#writer_from").text() or "none"
     @context.to = @$("#writer_to").text() or "none"
@@ -51,10 +52,12 @@ class views.WriterFinance extends View
     super context
 
     @listenTo @collection, "sync", @render
+    @context.from = "none"
+    @context.to = "none"
 
   render: ->
     @context.finance_writer = @collection.toJSON()
     html = tpl['member/writer_finance'](@context)
     @$el.html html
-    @$('.daterange').daterangepicker views.DateRangeObject, views.DateRangeFunction
+    @$('.daterange').daterangepicker views.DateRangeObject, _.bind(views.DateRangeFunction, @)
     @

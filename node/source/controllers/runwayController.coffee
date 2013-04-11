@@ -108,9 +108,9 @@ module.exports =
           date = moment(item.date).format("YYYY-MM-DD")
           if not result.hasOwnProperty(date)
             result[date] = {}
-          if not result[date].hasOwnProperty(item.connection.reader.name)
-            result[date][item.connection.reader.name] = []
-          result[date][item.connection.reader.name].push(item)
+          if not result[date].hasOwnProperty(item.connection.writer.name)
+            result[date][item.connection.writer.name] = []
+          result[date][item.connection.writer.name].push(item)
           result
         , {})
 

@@ -15,7 +15,7 @@ class views.WriterRunways extends View
 
   updateData: ->
     @context.active_tab = "writer-runway"
-    @runways_writer.fetch()
+    @collection.fetch()
 
   initialize: (context) ->
     super context

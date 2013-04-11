@@ -19,12 +19,7 @@
                                 <div>
                                     <div class='status'>
                                         {{? it.user.merchant && it.user.groups.indexOf("reader") >= 0 }}
-                                        {{? it.user.has_stripe }}
-                                        <a href='{{= it.bills }}' class='btn btn-success btn-mini backbone'>View
-                                            Bills</a>
-                                        {{??}}
-                                        <button class='btn btn-info btn-mini setupPayment'>setup payment method</button>
-                                        {{?}}
+                                        <i class='icon-ok'></i>
                                         {{??}}
                                         <a href='{{= it.merchant_agreement }}'
                                            class='btn btn-success btn-mini backbone'>Sign Up</a>
@@ -93,6 +88,7 @@
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="#reader-runway" data-toggle="tab">Runway</a></li>
                                     <li><a href="#reader-finance" data-toggle="tab">Finance</a></li>
+                                    <li><a href="#reader-bills" data-toggle="tab">Bills</a></li>
                                 </ul>
                             </li>
                             {{?}}
@@ -120,6 +116,8 @@
                                  id="reader-runway"></div>
                             <div class="tab-pane{{? it.active_tab == 'reader-finance'}} active{{?}}"
                                  id="reader-finance"></div>
+                            <div class="tab-pane{{? it.active_tab == 'reader-bills'}} active{{?}}"
+                                 id="reader-bills"></div>
                             {{?}}
                             {{? it.user.groups.indexOf("writer") >= 0 }}
                             <div class="tab-pane{{? it.active_tab == 'writer-runway'}} active{{?}}"

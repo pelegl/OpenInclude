@@ -76,27 +76,6 @@ views.Profile = View.extend
       ###
       app.navigate @context.trello_auth_url, {trigger: true}
 
-    else if action is bills
-      ###
-        navigate to view bills
-      ###
-      unless @get?.length > 0
-        navigateTo = @context.bills
-        # show bills
-        @empty @bills.$el
-      else
-        navigateTo = "#{@context.bills}/#{@get.join("/")}"
-        # show bill
-        [billId] = @get
-        if billId?
-          billView = new views.Bill {collection: @bills.collection, billId}
-          @empty billView.$el
-        else
-          notFound = new views.NotFound
-          @empty notFound.$el
-
-
-      app.navigate navigateTo, {trigger: false}
     else
       ###
         hide agreement and navigate back to profile
@@ -120,7 +99,7 @@ views.Profile = View.extend
 
       @agreement = new views.Agreement
       @cc        = new views.CC
-      @bills     = new views.Bills
+      #@bills     = new views.Bills
 
     @context.from = "none"
     @context.to = "none"
@@ -159,6 +138,8 @@ views.Profile = View.extend
     @writerFinance = new views.WriterFinance _.extend(@context, {el: @$("#writer-finance"), collection: @finance_writer})
 
     @finance_writer.fetch()
+
+    @bills = new views.Bills _.extend(@context, {el: @$("#reader-bills")})
 
     # Append CC modal
     if @cc

@@ -3,6 +3,8 @@ agreement_text = require("../util").strings.agreement
 basic = require './basicController'
 get_models = require('../conf').get_models
 
+_ = require "underscore"
+
 [User, Stripe, Bill] = get_models ["User", "Stripe", "Bill"]
 
 class ProfileController extends basic
@@ -165,6 +167,19 @@ class ProfileController extends basic
 
     else
       @res.send 'Not Permitted', 403
+
+  bills2: ->
+    req = @req
+    res = @res
+    Bill.find().populate("from_user to_user").exec((result, bills) ->
+      bills = _.reduce(bills, (result, item) ->
+        if item.from_user._id = req.user._id
+          result.push(item)
+        result
+      , [])
+
+      res.json bills
+    )
 
 # Здесь отдаем функцию - каждый раз когда вызывается наш контроллер - создается новый экземпляр - это мы вставим в рутер
 module.exports = (req, res)->
