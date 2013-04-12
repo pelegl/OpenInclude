@@ -10,7 +10,6 @@ views.Menu = Backbone.View.extend
     @listenTo app, "route", @navigate
 
   navigate: ->
-    {parse}    = help.qs
     {pathname} = window.location
 
     # forEach ---
