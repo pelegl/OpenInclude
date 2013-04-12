@@ -75,11 +75,13 @@ class ProfileController extends basic
       {givenName, lastName, number, expiration, cvv} = @req.body.card
       [exp_month, exp_year] = expiration.split "/"
 
-      @req.user.merchant = true
-      @req.user.groups.push "reader"
-      @req.user.save()
+      req = @req
 
       Stripe.addCustomer @req.user, "Stripe payment method for #{givenName} #{lastName}", number, exp_month, exp_year, cvv, "#{givenName} #{lastName}", (err, result)=>
+        unless err
+          req.user.merchant = true
+          req.user.groups.push "reader"
+          req.user.save()
         @res.json {
         success: if err? then false else true
         err
