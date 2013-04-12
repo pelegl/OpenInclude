@@ -38,7 +38,7 @@ class views.DiscoverChart extends View
     @height     = @width*9/16
 
     @xScale     = d3.scale.linear().domain([0,5.25]).range([0, @width])
-    @yScale     = d3.scale.linear().domain([0,1]).range([@height, 0])
+    @yScale     = d3.scale.linear().domain([-1,1]).range([@height, 0])
 
     @colorScale = d3.scale.category20c()
 
