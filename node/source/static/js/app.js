@@ -1497,13 +1497,13 @@ views.Wizard = (function(_super) {
   Wizard.prototype.view = "member/wizard";
 
   Wizard.prototype.events = {
-    'click .next': "nextStep",
-    'click .prev': "prevStep",
+    'click .next': "dostep",
+    'click .prev': "dostep",
     'click .close-inline': "hide",
     'submit form': 'submit'
   };
 
-  Wizard.prototype.nextStep = function(e) {
+  Wizard.prototype.dostep = function(e) {
     var step, stepDiv;
     e.preventDefault();
     e.stopPropagation();
@@ -1512,13 +1512,10 @@ views.Wizard = (function(_super) {
     if (stepDiv) {
       $(this.step).hide();
       this.step = stepDiv;
-      return $(this.step).show();
+      $(this.step).show();
+      this.$("#wizard-nav li").css("background-color", "inherit");
+      return this.$("#wizard-nav li[rel=" + step + "]").css("background-color", "white");
     }
-  };
-
-  Wizard.prototype.prevStep = function(e) {
-    e.preventDefault();
-    return e.stopPropagation();
   };
 
   Wizard.prototype.initialize = function(context) {
@@ -2115,9 +2112,10 @@ views.Profile = View.extend({
       collection: this.finance_writer
     }));
     this.finance_writer.fetch();
-    this.bills = new views.Bills(_.extend(this.context, {
-      el: this.$("#reader-bills")
+    this.wizard = new views.Wizard(_.extend(this.context, {
+      wizard_reader: true
     }));
+    this.wizard.show();
     if (this.cc) {
       this.cc.setElement(this.$(".setupPayment .dropdown-menu"));
       this.cc.$el.prev().dropdown();

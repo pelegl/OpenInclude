@@ -25,7 +25,7 @@
                 <ul class="finance-list">
                     {{ _.each(finances, function(finance) { }}
                     {{ bill = finance.worked * (finance.charged + finance.charged * finance.fee / 100); amount += bill; }}
-                    <li>{{= finance.memo }} = ${{= bill }}</li>
+                    <li>{{= finance.memo }} = ${{= bill }}{{? finance.paid }} <b>PAID</b>{{?}}</li>
                     {{ }); }}
                 </ul>
                 {{ }); }}

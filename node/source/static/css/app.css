@@ -735,6 +735,9 @@ footer {
   background-color: white;
   margin-bottom: 15px;
 }
+#wizard-nav li {
+  padding: 5px;
+}
 .bill {
   padding: 20px;
   background: #ffffff;

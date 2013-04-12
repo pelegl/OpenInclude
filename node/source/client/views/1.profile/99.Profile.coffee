@@ -139,7 +139,8 @@ views.Profile = View.extend
 
     @finance_writer.fetch()
 
-    @bills = new views.Bills _.extend(@context, {el: @$("#reader-bills")})
+    @wizard = new views.Wizard _.extend @context, {wizard_reader: true}
+    @wizard.show()
 
     # Append CC modal
     if @cc

@@ -1,8 +1,14 @@
+<ul id="wizard-nav" class="inline">
+    <li rel="step-1" style="background-color: white">Terms of service</li><li>→</li>
+    <li rel="step-2">Terms of payment</li><li>→</li>
+    <li rel="step-3">Payment information</li>
+</ul>
+
 <div id="step-1">
     <div class="header">Terms of Service</div>
     <div class="content">Do you agree?</div>
     <div class="controls">
-        <button class="btn btn-danger prev pull-left close-inline">I do not agree</button>
+        <button class="btn btn-danger pull-left close-inline">I do not agree</button>
         <button class="btn btn-success next pull-right" rel="step-2">I agree</button>
     </div>
 </div>

@@ -3,12 +3,13 @@ class views.Wizard extends InlineForm
   view: "member/wizard"
 
   events:
-    'click .next': "nextStep"
-    'click .prev': "prevStep"
+    'click .next': "dostep"
+    'click .prev': "dostep"
+
     'click .close-inline': "hide"
     'submit form': 'submit'
 
-  nextStep: (e) ->
+  dostep: (e) ->
     e.preventDefault()
     e.stopPropagation()
 
@@ -19,9 +20,8 @@ class views.Wizard extends InlineForm
       @step = stepDiv
       $(@step).show()
 
-  prevStep: (e) ->
-    e.preventDefault()
-    e.stopPropagation()
+      @$("#wizard-nav li").css "background-color", "inherit"
+      @$("#wizard-nav li[rel=#{step}]").css "background-color", "white"
 
   initialize: (context) ->
     if context.wizard_reader
