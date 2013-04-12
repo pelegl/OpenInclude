@@ -8,7 +8,7 @@
     <div class="header">Terms of Service</div>
     <div class="content">Do you agree?</div>
     <div class="controls">
-        <button class="btn btn-danger pull-left close-inline">I do not agree</button>
+        <button class="btn btn-danger pull-left close-inline">Cancel</button>
         <button class="btn btn-success next pull-right" rel="step-2">I agree</button>
     </div>
 </div>
@@ -17,7 +17,7 @@
     <div class="header">Terms of Payment</div>
     <div class="content">Do you agree?</div>
     <div class="controls">
-        <button class="btn btn-danger prev pull-left" rel="step-1">I do not agree</button>
+        <button class="btn btn-danger pull-left close-inline">Cancel</button>
         <button class="btn btn-success next pull-right" rel="step-3">I agree</button>
     </div>
 </div>

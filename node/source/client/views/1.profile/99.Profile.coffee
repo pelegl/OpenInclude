@@ -139,9 +139,6 @@ views.Profile = View.extend
 
     @finance_writer.fetch()
 
-    @wizard = new views.Wizard _.extend @context, {wizard_reader: true}
-    @wizard.show()
-
     # Append CC modal
     if @cc
       @cc.setElement @$(".setupPayment .dropdown-menu")

@@ -21,7 +21,7 @@ class views.AdminFinance extends View
         alert xhr.responseText
     )
 
-  filter: (e) ->
+  filter: (e, render = true) ->
     if e
       e.preventDefault()
       e.stopPropagation()
@@ -30,7 +30,8 @@ class views.AdminFinance extends View
     @context.admin_to = @$("#admin_to").text() or "none"
     @context.active_tab = "admin-finance"
     @context.admin_filter = @$("#admin_filter").text()
-    @render()
+    if render
+      @render()
 
     data = "\"Writer\";\"Reader\";\"Pending\"\n"
     _.each(@context.connections, (finance) =>
@@ -76,4 +77,5 @@ class views.AdminFinance extends View
     html = tpl['member/admin_finance'](@context)
     @$el.html html
     @$('.daterange').daterangepicker views.DateRangeObject, _.bind(views.DateRangeFunction, @)
+    @filter(null, false)
     @

@@ -3,7 +3,7 @@ class views.WriterFinance extends View
     'click #writer-filter': 'filter'
     'click #writer-csv': 'getCSV'
 
-  filter: (e) ->
+  filter: (e, render = true) ->
     if e
       e.preventDefault()
       e.stopPropagation()
@@ -13,7 +13,8 @@ class views.WriterFinance extends View
     @context.active_tab = "writer-finance"
     @context.writer_filter = @$("#writer_filter").text()
 
-    @render()
+    if render
+      @render()
 
     data = "\"Client\";\"Paid\";\"Pending\"\n"
     _.each(@context.finance_writer, (finance) =>
@@ -44,7 +45,7 @@ class views.WriterFinance extends View
 
     bb = new Blob([data], {type: "text/csv"});
 
-    a.download = "Report for #{@context.writer_filter}.csv"
+    a.download = "Writer finance report for #{@context.writer_filter}.csv"
     a.href = window.URL.createObjectURL(bb)
     a.dataset.downloadurl = ["text/csv", a.download, a.href].join(':')
 
@@ -60,4 +61,5 @@ class views.WriterFinance extends View
     html = tpl['member/writer_finance'](@context)
     @$el.html html
     @$('.daterange').daterangepicker views.DateRangeObject, _.bind(views.DateRangeFunction, @)
+    @filter(null, false)
     @
