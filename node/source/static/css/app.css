@@ -479,6 +479,23 @@ footer {
   color: black;
   font-weight: bold;
 }
+.tos .content {
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  height: 300px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+.paymentInfo .content {
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+.tos .btn + .btn,
+.paymentInfo .btn + .btn {
+  margin-left: 10px;
+}
 .stackQAHistory,
 .commitHistory,
 .starsHistory {

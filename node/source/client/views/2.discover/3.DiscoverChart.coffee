@@ -156,7 +156,7 @@ class views.DiscoverChart extends View
 
     if languages.length > 0
       data = @collection.filter (module)=>
-        return $.inArray(module.get("_source").language, languages) isnt -1
+        return $.inArray(module.get("language"), languages) isnt -1
     else
       data = []
 
@@ -167,7 +167,7 @@ class views.DiscoverChart extends View
       radius: @radiusScale doc.radius()
       color:  doc.color()
       name:   doc.name()
-      source: doc.get("_source")
+      source: doc.toJSON()
       key:    doc.key()
       }
 

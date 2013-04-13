@@ -9,9 +9,8 @@ models.Discovery = Backbone.Model.extend
 
   x : -> # sets X coordinate on our graph
     # Getting initial values
-    self = @get('_source')
     ####
-    lastCommit = new Date(self.pushed_at).getTime()
+    lastCommit = new Date(@get("pushed_at")).getTime()
     currentDate = new Date().getTime()
     difference_ms = currentDate - lastCommit # dates difference
     datesDifference = Math.round(difference_ms/help.oneDay)
@@ -51,8 +50,7 @@ models.Discovery = Backbone.Model.extend
     Sets radius of the circles
   ###
   radius: ->
-    {watchers} = @get('_source')
-    return watchers
+    return @get("watchers")
 
   ###
     Color of the bubble
@@ -65,7 +63,7 @@ models.Discovery = Backbone.Model.extend
     name
   ###
   name: ->
-    return @get("_source").module_name
+    return @get("module_name")
 
   ###
     Key
@@ -77,7 +75,7 @@ models.Discovery = Backbone.Model.extend
     last commit - human
   ###
   lastCommitHuman: ->
-    return humanize.relativeTime(new Date(@get('_source').pushed_at).getTime()/1000)
+    return humanize.relativeTime(new Date(@get('pushed_at')).getTime()/1000)
 
   ###
     overwrite toJSON, so we can add attributes from functions for hbs

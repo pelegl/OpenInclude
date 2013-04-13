@@ -62,6 +62,8 @@ class views.AdminFinance extends View
     window.URL = window.webkitURL || window.URL;
     a = document.getElementById "admin-csv"
 
+    return unless a?
+
     if a.href
       window.URL.revokeObjectURL(a.href)
     unless a.dataset?

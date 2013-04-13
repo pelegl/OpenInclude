@@ -38,6 +38,8 @@ class views.WriterFinance extends View
     window.URL = window.webkitURL || window.URL;
     a = document.getElementById "writer-csv"
 
+    return unless a?
+
     if a.href
       window.URL.revokeObjectURL(a.href)
     unless a.dataset?

@@ -21,17 +21,17 @@
 		<tbody>
 			{{~ it.projects :project}}
             <tr data-id="{{= project._id }}">
-                <td><a href='/modules/{{= encodeURIComponent(project._source.language)}}/{{=project._source.owner}}|{{=project._source.module_name}}'>{{! project._source.module_name }}</a></td>
+                <td><a href='/modules/{{= encodeURIComponent(project.language)}}/{{=project.owner}}|{{=project.module_name}}'>{{! project.module_name }}</a></td>
                 <td>
                   <span class='color' style='background: #{{=project.color}}'></span>
-                  {{= project._source.language }}
+                  {{= project.language }}
                 </td>
                 <td>{{= project.lastCommitHuman }}</td>
-                <td>{{= project._source.watchers }}</td>
-                <td>{{= project.asked }}</td>
+                <td>{{= project.watchers }}</td>
+                <td>{{= project.so_questions_asked }}</td>
                 <td>
-                  {{? project.asked > 0}}
-                    {{= Math.round(project.answered/project.asked*100) }}%
+                  {{? project.so_questions_asked > 0}}
+                    {{= Math.round(project.so_questions_answered/project.so_questions_asked*100) }}%
                   {{??}}
                     -
                   {{?}}

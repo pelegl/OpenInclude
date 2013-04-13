@@ -2,7 +2,7 @@
 {esClient, model} = require '../conf'
 async             = require 'async'
 #### Models
-[Language, StackOverflow] = model ["Language", "StackOverflow"]
+[Module, Language, StackOverflow] = model ["Module", "Language", "StackOverflow"]
 
 toObjectId = require('mongoose').mongo.BSONPure.ObjectID.fromString
 
@@ -35,6 +35,8 @@ class DiscoverController extends require('./basicController')
       output = data.hits.hits
     else
       output = []
+
+    console.log output.length
     
     ###
       Process output ---
@@ -43,61 +45,41 @@ class DiscoverController extends require('./basicController')
     ###
     languages = {}
     module_ids   = []
-
-    #console.log "Started processing output", new Date()
+    score = {}
 
     async.forEach output, (repository, callback) =>
-      {language, _id} = repository._source
-      languages[language] = language
-      module_ids.push toObjectId(_id)
+      {_id} = repository._source
+      module_ids.push _id
+      score[_id] = repository._score
       callback null
     , =>      
       workflow = {}
-      # pull languages color
-      workflow.color = (callback) =>
-        #console.log "started processing color", new Date()
-        names = Object.keys languages
-        Language.find {name: {$in: names}}, (err, languages)=>
+
+      workflow.modules = (callback)=>
+        console.log module_ids
+
+        Module.find({_id: {$in: module_ids}}).lean().exec callback
+
+      workflow.languages = (callback)=>
+        Module.find({_id: {$in: module_ids}}).distinct "language", (err, language_names)=>
           return callback err if err?
-          result = {}
-          async.forEach languages, (language, async_callback)=>
-            result[language.name] = language
-            async_callback null
-          , =>
-            console.log "question color fetched", new Date()
-            callback null, result
-      
-      # pull questions statistics
-      ###
-        Change question statistics
-      ###
-      ###
-      workflow.questions = (callback) =>
-        console.log "started processing question statistics", new Date()
-        StackOverflow.questionsStatistics module_ids, (err, statistics)=>
-          return callback err if err?
+          Language.find {name: {$in: language_names}}, (err, languages)=>
+            return callback err if err?
+            lang_map = {}
+            async.forEach languages, (language, async_callback)=>
+              lang_map[language.name] = language; async_callback()
+            ,=> callback null, lang_map
 
-          result = {}
-          async.forEach statistics, (module, async_callback)=>
-            result[module._id] = module
-            async_callback null
-          , =>
-            console.log "question statistics fetched", new Date()
-            callback null, result
-      ###
 
-      workflow.map = ['color', (callback, results)=>
-         #console.log "started aggregating", new Date()
-         {color, questions} = results
-         async.map output, (module, async_callback)=>           
+      workflow.map = ['modules', 'languages', (callback, results)=>
 
-           module.color    = color[module._source.language]?.color || "cccccc" #gray for non-specified color
-           module.asked    = module._source.so_questions_asked
-           module.answered = module._source.so_questions_answered
+        {languages, modules} = results
 
+        async.map modules, (module, async_callback)=>
+           module.color    = languages[module.language]?.color || "cccccc" #gray for non-specified color
+           module._score   = score[module._id.toString()]
            async_callback null, module
-
-         , callback            
+        , callback
       ]
       
       async.auto workflow, (err, data)=>
@@ -118,60 +100,27 @@ class DiscoverController extends require('./basicController')
   
 
   search: ->
-    ###
-      Multi-match query ---
-    ###
-    ###
-    query =
-      custom_filters_score:
-        query:
-          multi_match:
-            query: @context.discover_search_query || ""
-            use_dis_max: true
-            fields: ["description", "module_name^2", "owner^2"]
-        filters: [
-          {filter:{numeric_range: {watchers: {from: 2500, to: 5000} }}, boost: 1.25 }
-          {filter:{numeric_range: {watchers: {from: 5000, to: 7500} }}, boost: 1.5 }
-          {filter:{numeric_range: {watchers: {from: 7500, to: 10000} }}, boost: 1.75 }
-          {filter:{numeric_range: {watchers: {from: 10000} }}, boost: 2 }
-        ]
-    ###
+
     query =
       fuzzy_like_this:
         like_text: @context.discover_search_query || ""
-        fields: ["description", "module_name", "owner"]
+        fields: ["module_name", "owner", "description"]
         min_similarity: 0.5
         prefix_length: 3
         ignore_tf: true
 
 
-    ###
-        filters: [
-          {filter:{numeric_range: {watchers: {from: 2500, to: 5000} }}, boost: 1.25 }
-          {filter:{numeric_range: {watchers: {from: 5000, to: 7500} }}, boost: 1.5 }
-          {filter:{numeric_range: {watchers: {from: 7500, to: 10000} }}, boost: 1.75 }
-          {filter:{numeric_range: {watchers: {from: 10000, to: 20000} }}, boost: 2 }
-          {filter:{numeric_range: {watchers: {from: 20000} }}, boost: 2.25 }
-        ]
-    ###
+    console.log JSON.stringify(query)
+
 
     options =
       size: 80
     
-    #TODO: add variable size and offset han#dling
-
-    console.log "request started", new Date()
 
     savedData = []
     esClient.search('mongomodules', 'module', {query}, options)
-    .on('data', (data) =>
-        console.log "received data", new Date()
-        savedData.push data
-    )
-    .on('done', =>
-        console.log "search completed", new Date()
-        @_searchOutput savedData
-    )
+    .on('data', (data) =>savedData.push data)
+    .on('done', =>@_searchOutput savedData)
     .on('error', (error)=>
       console.error error
 

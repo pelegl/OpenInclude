@@ -54,12 +54,12 @@ views.DiscoverComparison = Backbone.View.extend
 
     @context =
       headers : [
-        {name: "Project Name", key: "_source.module_name"}
-        {name: "Language", key: "_source.language"}
-        {name: "Last Commit", key: "_source.pushed_at"}
-        {name: "Stars on GitHub", key: "_source.watchers"}
-        {name: "Questions on StackOverflow", key: "asked"}
-        {name: "Percentage answered", key: "answered"}
+        {name: "Project Name", key: "module_name"}
+        {name: "Language", key: "language"}
+        {name: "Last Commit", key: "pushed_at"}
+        {name: "Stars on GitHub", key: "watchers"}
+        {name: "Questions on StackOverflow", key: "so_questions_asked"}
+        {name: "Percentage answered", key: "so_questions_answered"}
       ]
     @render()
 
