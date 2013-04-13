@@ -6765,6 +6765,27 @@ footer {
 .container.profile .personalInformation .accountType .status a {
   vertical-align: top;
 }
+.wizard-nav {
+  height: 30px;
+  line-height: 30px;
+  background: white;
+}
+.wizard-nav .bar {
+  font-size: 14px;
+  width: 33.333333333333336%;
+  background: inherit;
+  color: black;
+  text-shadow: none;
+}
+.wizard-nav .bar.active {
+  background: #0E90D2;
+  color: white;
+}
+.wizard-nav .bar.active .badge {
+  background: white;
+  color: black;
+  font-weight: bold;
+}
 .stackQAHistory,
 .commitHistory,
 .starsHistory {

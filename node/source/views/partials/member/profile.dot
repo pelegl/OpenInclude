@@ -1,4 +1,5 @@
-<div class='container profile'>    <div class='row'>
+<div class='container profile'>
+    <div class='row'>
         <div class='span12'>
             <div class='row'>
                 <div class='span3'>
@@ -24,7 +25,7 @@
                                            class='btn btn-success btn-mini backbone'>Sign Up</a>
                                         {{?}}
                                     </div>
-                                    <p>Client</p>
+                                    <p>Reader</p>
                                 </div>
                             </div>
                             <div class='type'>
@@ -37,20 +38,7 @@
                                            class='btn btn-success btn-mini backbone'>Sign Up</a>
                                         {{?}}
                                     </div>
-                                    <p>Developer</p>
-                                </div>
-                            </div>
-                            <div class='type'>
-                                <div>
-                                    <div class='status'>
-                                        {{? it.user.trello_id }}
-                                        <i class='icon-ok'></i>
-                                        {{??}}
-                                        <a href='{{= it.trello_auth_url }}'
-                                           class='btn btn-success btn-mini'>Authorize</a>
-                                        {{?}}
-                                    </div>
-                                    <p>Trello</p>
+                                    <p>Writer</p>
                                 </div>
                             </div>
                         </div>
@@ -58,16 +46,14 @@
                         {{?}}
                         <div class='contactData'>
                             <div class='contact'>
-                                <i class='icon-envelope'></i> <a class='muted'
-                                                                 href="mailto:{{= it.user.github_email }}">{{!
-                                it.user.github_email }}</a>
+                                <i class='icon-envelope'></i> <a class='muted' href="mailto:{{= it.user.github_email }}">{{! it.user.github_email }}</a>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class='span9'>
 
-                    <div id="runway-tabs" class="row">
+                    <div id="runway-tabs" class="row-fluid">
 
                         <ul id="runways" class="nav nav-tabs">
                             {{? it.user.groups.indexOf("admin") >= 0 }}
@@ -130,7 +116,7 @@
 
                     </div>
 
-                    <div id="tos" class='row'>
+                    <div id="tos" class='row-fluid'>
                     </div>
                 </div>
 

@@ -20,8 +20,7 @@ class views.Wizard extends InlineForm
       @step = stepDiv
       $(@step).show()
 
-      @$("#wizard-nav li").css "background-color", "inherit"
-      @$("#wizard-nav li[rel=#{step}]").css "background-color", "white"
+      @$(".wizard-nav .active").last().next().addClass "active"
 
   initialize: (context) ->
     if context.wizard_reader
