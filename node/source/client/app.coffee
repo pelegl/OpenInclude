@@ -25,7 +25,7 @@
     admin_url           : "admin"
     bills 			        : "/profile/bills"
     users_with_stripe   : "admin/users_with_stripe"
-    blog_url            : "/blog"
+    blog_url            : "blog"
 
     
   class App extends Backbone.Router
@@ -142,6 +142,10 @@
       get    = opts[1..] if opts?.length > 1
       @view = new views.AdminBoard prevView: @view, action: action, get: get
 
+    blog: (action, subaction) ->
+      console.log "Blog"
+      @reRoute()
+
   routes = [
     {key: "(!/)"                                                  , name: "index"}
     {key: "(!/)#{conf.discover_url}(?:querystring)"               , name: "discover"}
@@ -155,6 +159,7 @@
     {key: "(!/)#{conf.dashboard_url}/project/:id"                 , name: "project"}
     {key: "(!/)#{conf.dashboard_url}/project/:project/task/:task" , name: "task"}
     {key: "(!/)#{conf.admin_url}(/:action)(/:subaction)"          , name: "admin"}
+    {key: "(!/)#{conf.blog_url}(/:action)(/:subaction)"           , name: "blog"}
   ]
 
   $(document).ready ->
@@ -177,6 +182,8 @@
       app.init()
       
       $(document).delegate "a", "click", (e)->
+        if e.currentTarget.getAttribute("nobackbone")
+          return
         href = e.currentTarget.getAttribute('href')
         return true unless href
                           
