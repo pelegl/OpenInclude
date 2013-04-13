@@ -12,7 +12,7 @@ marked = require "marked"
 definition =
   date:
     type: Date
-    default: new Date()
+    default: Date.now
 
   title: String
   content: String

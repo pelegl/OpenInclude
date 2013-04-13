@@ -12,3 +12,8 @@ node/build
 .idea
 node/source/static/js/templates-dot.js
 node/source/static/js/app.js
+node/source/static/js/app.min.js
+node/source/static/js/app.map.js
+node/source/static/js/modules.min.js
+source/static/css/app.concat.css
+source/static/css/app.min.css

@@ -1,5 +1,5 @@
 {{~ it._menu: menu }}
     <li {{? menu.isActive }} class='active' {{?}}>
-    <a href='{{= menu.url}}'>{{= menu.text }}</a>
+    <a href='{{= menu.url}}' {{~ menu.attributes :attribute }}{{= attribute }}="enabled"{{~}}>{{= menu.text }}</a>
     </li>
 {{~}}

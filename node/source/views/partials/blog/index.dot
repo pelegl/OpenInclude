@@ -2,10 +2,24 @@
     <h1>Blog</h1>
     {{~ it.posts :post }}
     <div class="post well well-small">
-        <h1><a href="/blog/view/{{= post._id }}">{{= post.title }}</a> <small>{{= it.moment(post.date).format("MM/DD/YYYY") }}</small></h1>
+        <h1><a href="/blog/view/{{= post._id }}" nobackbone="true">{{= post.title }}</a> <small>{{= it.moment(post.date).format("MM/DD/YYYY") }}</small></h1>
         <div class="content">
             {{= post.htmlContent }}
         </div>
     </div>
     {{~}}
+
+    <div class="pagination center">
+        <ul>
+            {{? it.page > 1 }}
+            <li><a href="/blog/index/{{= it.page - 1 }}" nobackbone="enabled">&laquo;</a></li>
+            {{?}}
+            {{ for (i = 1; i <= it.limit; i++) { }}
+            <li {{? i == it.page }}class="active"{{?}}><a href="/blog/index/{{= i }}" nobackbone="enabled">{{= i }}</a></li>
+            {{ } }}
+            {{? it.page < it.limit }}
+            <li><a href="/blog/index/{{= it.page + 1 }}" nobackbone="enabled">&raquo;</a></li>
+            {{?}}
+        </ul>
+    </div>
 </div>

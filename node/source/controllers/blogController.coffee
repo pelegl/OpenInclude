@@ -7,17 +7,29 @@ marked = require "marked"
 
 class BlogController extends basic
   index: ->
-    BlogPost.find({publish: true}).sort("-date").exec((result, posts) =>
-      unless result
-        @context.title = "Blog"
-        @context.posts = posts
-        @context.moment = require "moment"
-        @context.body = @_view "blog/index", @context
-        @res.render 'base', @context
+    BlogPost.count({publish: true}, (result, count) =>
+      query = BlogPost.find({publish: true}).sort("-date")
+      if @get? and @get[0]
+        query.skip(5 * (@get[0] - 1)).limit(5)
       else
-        @context.title = "Error"
-        @context.body = "Error: #{result}"
-        @res.render 'base', @context
+        query.limit(5)
+      query.exec((result, posts) =>
+        unless result
+          @context.title = "Blog"
+          @context.posts = posts
+          @context.moment = require "moment"
+          if @get?
+            @context.page = parseInt(@get[0])
+          else
+            @context.page = 1
+          @context.limit = Math.ceil(count / 5)
+          @context.body = @_view "blog/index", @context
+          @res.render 'base', @context
+        else
+          @context.title = "Error"
+          @context.body = "Error: #{result}"
+          @res.render 'base', @context
+      )
     )
 
   view: ->
