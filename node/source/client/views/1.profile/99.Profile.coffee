@@ -139,6 +139,13 @@ views.Profile = View.extend
 
     @finance_writer.fetch()
 
+    unless @posts
+      @posts = new collections.BlogPosts
+
+    @blog = new views.Blog _.extend(@context, {el: @$("#admin-blog"), collection: @posts})
+
+    @posts.fetch()
+
     # Append CC modal
     if @cc
       @cc.setElement @$(".setupPayment .dropdown-menu")

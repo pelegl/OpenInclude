@@ -1,0 +1,21 @@
+<div class="well well-small">
+    <button id="new-post" class="btn btn-success">Write new post</button>
+</div>
+
+<div id="new-post-inline" class="well well-small">
+</div>
+
+<table class="table table-bordered table-hover" style="background-color: #ffffff">
+    <tr>
+        <th>Date</th>
+        <th>Title</th>
+        <th>Is published?</th>
+    </tr>
+    {{~ it.posts :post }}
+    <tr>
+        <td>{{= moment(post.date).format("MM/DD/YYYY") }}</td>
+        <td><a href="/profile/blog/{{= post._id }}">{{= post.title }}</a></td>
+        <td>{{= post.publish ? "Yes": "No" }}</td>
+    </tr>
+    {{~}}
+</table>

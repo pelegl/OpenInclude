@@ -1,0 +1,10 @@
+<form method='post' action='' class='inline-popover'>
+    <input type="text" name="title" class="input-block-level" placeholder="Title"/>
+    <textarea name="content" class="input-block-level" placeholder="Post content"></textarea>
+    <input type="checkbox" name="publish">Is published?</input>
+
+    <div>
+        <a class="btn pull-left close-inline">Close</a>
+        <button type='submit' class="btn btn-primary pull-left" style='margin-left: 20px'>Confirm</button>
+    </div>
+</form>

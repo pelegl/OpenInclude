@@ -33,22 +33,30 @@ class views.AdminFinance extends View
     if render
       @render()
 
-    data = "\"Writer\";\"Reader\";\"Pending\"\n"
+    data = "Writer,Reader,Pending,Paid\n"
     _.each(@context.connections, (finance) =>
       charge = 0
+      paid = false
       _.each(finance.runways, (runway) =>
         m = moment(runway.date)
-        f = moment(@context.from)
-        t = moment(@context.to)
-        if @context.from != "none" && @context.to != "none" && !((m.isAfter(f, 'day') || m.isSame(f, 'day')) && (m.isBefore(t, 'day')) || m.isSame(t, 'day'))
+        f = moment(@context.admin_from)
+        t = moment(@context.admin_to)
+        if @context.admin_from != "none" && @context.admin_to != "none" && !((m.isAfter(f, 'day') || m.isSame(f, 'day')) && (m.isBefore(t, 'day')) || m.isSame(t, 'day'))
           return
-        worked = parseInt(runway.worked);
-        price = worked * (runway.charged + runway.charged * runway.fee / 100);
-        charge += price;
+        worked = parseInt(runway.worked)
+        price = worked * (runway.charged + runway.charged * runway.fee / 100)
+        charge += price
+        if runway.paid
+          paid = true
       )
 
-      if charge > 0
-        data += "\"#{finance.writer.name}\";\"#{finance.reader.name}\";\"#{charge}\"\n"
+      if paid
+        pending = 0
+      else
+        pending = charge
+        charge = 0
+      unless pending is 0 and charge is 0
+        data += "#{finance.writer.name},#{finance.reader.name},#{pending},#{charge}\n"
     )
 
     window.URL = window.webkitURL || window.URL;

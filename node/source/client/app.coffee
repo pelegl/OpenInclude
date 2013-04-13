@@ -25,6 +25,7 @@
     admin_url           : "admin"
     bills 			        : "/profile/bills"
     users_with_stripe   : "admin/users_with_stripe"
+    blog_url            : "/blog"
 
     
   class App extends Backbone.Router

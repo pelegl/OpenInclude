@@ -16,7 +16,7 @@ class views.WriterFinance extends View
     if render
       @render()
 
-    data = "\"Client\";\"Paid\";\"Pending\"\n"
+    data = "Client,Paid,Pending\n"
     _.each(@context.finance_writer, (finance) =>
       paid = 0
       pending = 0
@@ -32,7 +32,7 @@ class views.WriterFinance extends View
           pending += runway.charged
       )
 
-      data += "\"#{finance.writer.name}\";\"#{paid}\";\"#{pending}\"\n"
+      data += "#{finance.writer.name},#{paid},#{pending}\n"
     )
 
     window.URL = window.webkitURL || window.URL;

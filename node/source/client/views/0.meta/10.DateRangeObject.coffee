@@ -6,6 +6,8 @@ views.DateRangeObject =
       #'Last month': [Date.parse('last month').addDays(-Date.parse('last month').getDate() + 1), Date.parse('today').addDays(-Date.parse('today').getDate())]
 
 views.DateRangeFunction = (start, end) ->
+  unless start and end
+    return
   if start > end
     @$('.daterange .value').html("All time");
     @$('.daterange .from').html("none");
