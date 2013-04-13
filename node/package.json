@@ -45,7 +45,8 @@
     "fivebeans": "git://github.com/AVVS/fivebeans.git",
     "eventemitter2": "~0.4.11",
     "dot": "1.0.x",
-    "moment": "*"
+    "moment": "*",
+    "marked": "0.2.x"
   },
   "devDependencies": {
     "coffee-trace": "~1.3.4",

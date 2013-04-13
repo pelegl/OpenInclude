@@ -88,6 +88,12 @@ exports.set = (app)->
 
   ## Payments ##
   app.post "/api/payment/charge", app.Controllers.payment.charge
+
+  ## Blog ##
+  app.get "/api/blog/post", app.Controllers.blog.list
+  app.post "/api/blog/post", app.Controllers.blog.create
+
+  app.get "/blog*", app.Controllers.blog
   
   ###
   oAuth interaction

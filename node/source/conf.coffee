@@ -134,6 +134,7 @@ exports.urls =
   admin_url:            "/admin"
   bills:                "#{profile_url}/bills"
   users_with_stripe:    "#{admin_url}/users_with_stripe"
+  blog_url:             "/blog"
 
 ###
   Export controllers to the app

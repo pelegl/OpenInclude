@@ -1,0 +1,11 @@
+<div class="container blog">
+    <h1>Blog</h1>
+    {{~ it.posts :post }}
+    <div class="post well well-small">
+        <h1>{{= post.title }} <small>{{= it.moment(post.date).format("MM/DD/YYYY") }}</small></h1>
+        <div class="content">
+            {{= post.htmlContent }}
+        </div>
+    </div>
+    {{~}}
+</div>

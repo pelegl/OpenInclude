@@ -40,6 +40,7 @@ class BasicController
     @context._menu = [
       {url: @context.discover_url, text: "discover"}
       {url: @context.how_to_url,   text:"how to"}
+      {url: @context.blog_url, text: "blog"}
     ]
     # admin
     #if @req.user?.group_id is 'admin'
