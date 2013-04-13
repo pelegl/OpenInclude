@@ -59,6 +59,7 @@
     "grunt-contrib-concat": "*",
     "grunt-contrib-cssmin": "*",
     "grunt-contrib-coffee": "*",
+    "grunt-contrib-uglify": "*",
     "grunt-dotjs": "*"
   }
 }

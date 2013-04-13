@@ -1,0 +1,8 @@
+<div class="container post">
+    <div class="post well well-small">
+        <h1>{{= it.post.title }} <small>{{= it.moment(it.post.date).format("MM/DD/YYYY") }}</small></h1>
+        <div class="content">
+            {{= it.post.htmlContent }}
+        </div>
+    </div>
+</div>
