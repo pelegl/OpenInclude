@@ -5,3 +5,7 @@ class views.NewPost extends InlineForm
   initialize: (context) ->
     @model = new models.Post
     super context
+
+  render: ->
+    super
+    @$('textarea').markItUp(mySettings);

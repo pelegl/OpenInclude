@@ -94,6 +94,8 @@ exports.set = (app)->
   app.post "/api/blog/post", app.Controllers.blog.create
 
   app.get "/blog*", app.Controllers.blog
+
+  app.post "/markdown", app.Controllers.blog.markdown
   
   ###
   oAuth interaction
