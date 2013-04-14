@@ -2,21 +2,13 @@
   Config
 ###
 {esClient} = require '../conf'
-
+fs         = require 'fs'
 ###
   Tasks
   TODO: complete the tasks
 ###
 
-mapping =
-  module:
-    properties:
-      description:
-        type: "string"
-      module_name:
-        type: "string"
-      owner:
-        type: "string"
+mapping = JSON.parse fs.readFileSync '../../es/config/mappings/mongomodules/module.json', 'utf-8'
 
 esClient.putMapping "mongomodules", "module", mapping, (err, data)->
   console.log err, data
