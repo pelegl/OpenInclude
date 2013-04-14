@@ -37,7 +37,7 @@
             toLabel: 'To',
             weekLabel: 'W',
             customRangeLabel: 'Custom Range',
-            daysOfWeek: Date.CultureInfo.shortestDayNames,
+            daysOfWeek: ["Su","Mo","Tu","We","Th","Fr","Sa"],
             monthNames: Date.CultureInfo.monthNames,
             firstDay: 0
         };
@@ -104,7 +104,7 @@
                 '</div>' +
               '</div>';
 
-        this.container = $(DRPTemplate).appendTo('body');
+        this.container = $(DRPTemplate).appendTo(options.element || 'body');
 
         if (hasOptions) {
 

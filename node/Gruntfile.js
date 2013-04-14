@@ -67,6 +67,7 @@ module.exports = function (grunt) {
                         "source/static/js/dot.js",
                         "source/static/js/templates-dot.js",
                         "source/static/js/moment.js",
+                        "source/static/js/moment-en.js",
                         "source/static/markitup/jquery.markitup.js",
                         "source/static/markitup/sets/markdown/set.js"
                     ]

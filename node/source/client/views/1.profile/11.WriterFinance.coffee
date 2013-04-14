@@ -62,6 +62,8 @@ class views.WriterFinance extends View
     @context.finance_writer = @collection.toJSON()
     html = tpl['member/writer_finance'](@context)
     @$el.html html
-    @$('.daterange').daterangepicker views.DateRangeObject, _.bind(views.DateRangeFunction, @)
+    options = views.DateRangeObject
+    options.element = @$el
+    @$('.daterange').daterangepicker options, _.bind(views.DateRangeFunction, @)
     @filter(null, false)
     @

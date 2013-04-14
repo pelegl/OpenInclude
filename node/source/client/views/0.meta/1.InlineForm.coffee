@@ -2,7 +2,7 @@ class InlineForm extends Backbone.View
   events:
     'submit form': "submit"
     'click button[type=submit]': "preventPropagation"
-    'click .close-inline': "hide"
+    'click .close-inline': "hideButton"
     'keypress textarea.typeahead': "typeahead"
 
   preventPropagation: (event) ->
@@ -19,7 +19,6 @@ class InlineForm extends Backbone.View
 
     @tah = new views.TypeAhead @context
     @buf = ""
-    @render()
 
   typeahead: (event) ->
     code = event.which or event.keyCode or event.charCode
@@ -85,13 +84,19 @@ class InlineForm extends Backbone.View
       return false
 
   show: ->
+    @render()
     @$el.show()
     @$("form input:first-child").focus()
+
+  hideButton: (event) ->
+    @hide(event)
+    @trigger "hidden"
 
   hide: (event) ->
     if event
       event.preventDefault()
       event.stopPropagation()
+    @$el.empty()
     @$el.hide()
 
   render: ->

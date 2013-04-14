@@ -1,9 +1,11 @@
 views.DateRangeObject =
     ranges:
       'All time': ['tomorrow', 'today']
-      'This week': ['monday', 'today']
+      'This week': [moment().startOf("week").toDate(), 'today']
       #'Last week': [Date.parse('monday').addWeeks(-1), Date.parse('monday').addDays(-1)]
       #'Last month': [Date.parse('last month').addDays(-Date.parse('last month').getDate() + 1), Date.parse('today').addDays(-Date.parse('today').getDate())]
+    locale:
+      firstDay: 1
 
 views.DateRangeFunction = (start, end) ->
   unless start and end

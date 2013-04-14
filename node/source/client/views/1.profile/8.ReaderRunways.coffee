@@ -10,7 +10,7 @@ class views.ReaderRunways extends View
     limit = parseInt(e.currentTarget.attributes['data-limit'].value)
     current = parseInt(e.currentTarget.attributes['data-current'].value)
 
-    model = @runways_reader.get(suffix)
+    model = @collection.get(suffix)
 
     @editForm = new views.AlterRunwayForm _.extend(@context, {limit: limit, model: model, current: current, el: "#alter-runway-inline-#{suffix}"})
     @listenTo @editForm, "success", @updateData
@@ -18,18 +18,15 @@ class views.ReaderRunways extends View
 
   updateData: ->
     @context.active_tab = "reader-runway"
-    @runways_reader.fetch()
+    @collection.fetch()
 
   initialize: (context) ->
     super context
 
-    @runways_reader = new collections.Connections
-    @runways_reader.url = "/api/runway/reader"
-    @listenTo @runways_reader, "sync", @render
-    @runways_reader.fetch()
+    @listenTo @collection, "sync", @render
 
   render: ->
-    @context.runways_reader = @runways_reader.toJSON()
+    @context.runways_reader = @collection.toJSON()
     html = tpl['member/reader_runway'](@context)
     @$el.html html
     @

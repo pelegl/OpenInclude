@@ -40,16 +40,9 @@ views.Profile = View.extend
       ###
       app.navigate @context.developer_agreement, {trigger: false}
 
-      if @wizard
-        @wizard.destroy()
-        delete @wizard
-      @wizard = new views.Wizard _.extend @context, {wizard_reader: false}
+      @wizard.setType "writer"
       @wizard.show()
-
-      #@empty @agreement.$el
-
-      #@agreement.show()
-      #@agreement.setData @agreement_text, @context.developer_agreement
+      @tabs.hide()
 
     else if action is merc and app.session.get("merchant") is false
       ###
@@ -57,18 +50,9 @@ views.Profile = View.extend
       ###
       app.navigate @context.merchant_agreement, {trigger: false}
 
-      if @wizard
-        @wizard.destroy()
-        delete @wizard
-      @wizard = new views.Wizard _.extend @context, {wizard_reader: true}
+      @wizard.setType "reader"
       @wizard.show()
-
-      #@empty @agreement.$el
-
-      #@agreement.show()
-      #@agreement.setData @agreement_text, @context.merchant_agreement
-
-      #@listenTo @agreement.model, "sync", @setupPayment
+      @tabs.hide()
 
     else if action is trello
       ###
@@ -108,6 +92,10 @@ views.Profile = View.extend
     @listenTo @model, "sync", @render
     @model.fetch()
 
+  toggleTabs: ->
+    app.navigate @context.profile_url, {trigger: true}
+    @tabs.show()
+
   render: ->
     console.log "Rendering profile view"
 
@@ -119,32 +107,38 @@ views.Profile = View.extend
 
     @informationBox = @$ ".informationBox"
 
-    unless @connections
-      @connections = new collections.Connections
+    unless @collections
+      @collections = {}
+      @collections['admin-connections'] = new collections.Connections
+      @collections['admin-finance'] = @collections['admin-connections']
+      @collections['admin-blog'] = new collections.BlogPosts
 
-    @adminConnections = new views.AdminConnections _.extend(@context, {el: @$("#admin-connections"), collection: @connections})
-    @adminFinance = new views.AdminFinance _.extend(@context, {el: @$("#admin-finance"), collection: @connections})
+      @collections['reader-runway'] = new collections.Connections
+      @collections['reader-runway'].url = "/api/runway/reader"
 
-    @connections.fetch()
+      @collections['reader-finance'] = new models.Runway
+      @collections['reader-finance'].url = "/api/finance/reader"
 
-    @readerRunway = new views.ReaderRunways _.extend(@context, {el: @$("#reader-runway")})
-    @readerFinance = new views.ReaderFinance _.extend(@context, {el: @$("#reader-finance")})
+      @collections['writer-runway'] = new collections.Connections
+      @collections['writer-runway'].url = "/api/runway/writer"
 
-    unless @finance_writer
-      @finance_writer = new collections.Connections
-      @finance_writer.url = "/api/runway/writer"
+      @collections['writer-finance'] = @collections['writer-runway']
 
-    @writerRunway = new views.WriterRunways _.extend(@context, {el: @$("#writer-runway"), collection: @finance_writer})
-    @writerFinance = new views.WriterFinance _.extend(@context, {el: @$("#writer-finance"), collection: @finance_writer})
+    @adminConnections = new views.AdminConnections _.extend(@context, {el: @$("#admin-connections"), collection: @collections['admin-connections']})
+    @adminFinance = new views.AdminFinance _.extend(@context, {el: @$("#admin-finance"), collection: @collections['admin-finance']})
+    @adminBlog = new views.Blog _.extend(@context, {el: @$("#admin-blog"), collection: @collections['admin-blog']})
 
-    @finance_writer.fetch()
+    @readerRunway = new views.ReaderRunways _.extend(@context, {el: @$("#reader-runway"), collection: @collections['reader-runway']})
+    @readerFinance = new views.ReaderFinance _.extend(@context, {el: @$("#reader-finance"), collection: @collections['reader-finance']})
 
-    unless @posts
-      @posts = new collections.BlogPosts
+    @writerRunway = new views.WriterRunways _.extend(@context, {el: @$("#writer-runway"), collection: @collections['writer-runway']})
+    @writerFinance = new views.WriterFinance _.extend(@context, {el: @$("#writer-finance"), collection: @collections['writer-finance']})
 
-    @blog = new views.Blog _.extend(@context, {el: @$("#admin-blog"), collection: @posts})
+    @wizard = new views.Wizard @context
+    @listenTo @wizard, "success", @toggleTabs
+    @listenTo @wizard, "hidden", @toggleTabs
 
-    @posts.fetch()
+    @tabs = @$("#runway-tabs")
 
     # Append CC modal
     if @cc
@@ -153,5 +147,10 @@ views.Profile = View.extend
 
     if @context.private
       @setAction @options.action
+
+    @$('a[data-toggle="tab"]').on('shown', (e) =>
+      id = e.target.attributes['href'].value;
+      @collections[id.replace("#", "")].fetch();
+    )
 
     @

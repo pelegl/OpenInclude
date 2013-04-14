@@ -29,7 +29,7 @@
 
 <div id="step-3" style="display: none" class='paymentInfo'>
     <div class="content">
-        {{? it.wizard_reader }}
+        {{? it.reader }}
         <form role="menu" method='post' action='{{=it.update_credit_card}}'>
             <legend>Payment Information - Credit Card</legend>
             <div class='row-fluid'>
@@ -42,8 +42,8 @@
                         <input type='text' id='ccNumber' class='span6' name='card[number]' placeholder="Card Number" />
                     </div>
                     <div class='controls-row'>
-                        <input type='text' id='ccExpiration' class='span3' name='card[expiration]' placeholder="MM/YYYY" />
-                        <input type='text' id='ccCVV' class='span3'  name='card[cvv]' placeholder="CVV" />
+                        <input type='text' id='ccExpiration' class='span3' name='card[expiration]' placeholder="MM/YY" required pattern="[0-9]{2}/[0-9]{2}" />
+                        <input type='text' id='ccCVV' class='span3'  name='card[cvv]' placeholder="CVV" pattern="[0-9]{3}" />
                     </div>
                     <div class='controls-row'>
                         <button class="btn btn-danger pull-left close-inline">Cancel</button>

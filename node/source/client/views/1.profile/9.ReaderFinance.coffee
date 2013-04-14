@@ -1,15 +1,22 @@
 class views.ReaderFinance extends View
+  filter: (e, render = true) ->
+    if e
+      e.preventDefault()
+      e.stopPropagation()
+
+    if render
+      @render()
+
   initialize: (context) ->
     super context
 
-    @finance_reader = new models.Runway
-    @finance_reader.url = "/api/finance/reader"
-    @listenTo @finance_reader, "sync", @render
-    @finance_reader.fetch()
+    @listenTo @collection, "sync", @render
 
   render: ->
-    @context.finance_reader = @finance_reader.toJSON()
+    @context.finance_reader = @collection.toJSON()
     html = tpl['member/reader_finance'](@context)
     @$el.html html
-    @$('.daterange').daterangepicker views.DateRangeObject, views.DateRangeFunction
+    options = views.DateRangeObject
+    options.element = @$el
+    @$('.daterange').daterangepicker options, _.bind(views.DateRangeFunction, @)
     @

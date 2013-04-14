@@ -11,8 +11,9 @@ async = require 'async'
   Stripe
 ###
 ObjectId = require('mongoose').Schema.Types.ObjectId
-api_key = 'sk_test_07bvlXeoFTA2bKM42Vt0O9SY'
+#api_key = 'sk_test_07bvlXeoFTA2bKM42Vt0O9SY'
 #api_key = "sk_test_HkMUKw1bjVE6Sxo218IiMNWP"
+api_key = "sk_test_u8z4kB4SVupeHQ8zZQZ7Bw0N"
 
 stripe = require("stripe")(api_key)
 
@@ -65,7 +66,20 @@ statics =
           ###
             Update existing customer
           ###
-          stripe.customers.update existing_payment_method.id, {card: token.id}, customer_callback
+          stripe.customers.update existing_payment_method.id, {card: token.id}, (err, customer) ->
+            unless err
+              customer_callback err, customer
+            else
+              if err.name is "invalid_request_error"
+                # either client does not exist or other error
+                results.existing_payment_method = null
+                # try to create a customer
+                stripe.customers.create
+                  description: desc
+                  card: token.id
+                , customer_callback
+              else
+                customer_callback err, customer
     ]
 
     ###
@@ -78,6 +92,7 @@ statics =
           paymentMethod =
             service: "Stripe"
             id: findOrUpdateCustomer.id
+          user.payment_methods = []
           user.payment_methods.push paymentMethod
           user.save payment_method_callback
         else
