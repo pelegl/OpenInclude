@@ -109,12 +109,13 @@ class DiscoverController extends require('./basicController')
           use_dis_max: true
           tie_breaker: 0.7
           boost: 1.2
+          default_operator: "AND"
     else
       query =
         match_all: {}
 
 
-    console.log JSON.stringify(query)
+    #console.log JSON.stringify(query)
 
 
     options =
