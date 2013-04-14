@@ -10,5 +10,7 @@ fs         = require 'fs'
 
 mapping = JSON.parse fs.readFileSync '../../es/config/mappings/mongomodules/module.json', 'utf-8'
 
-esClient.putMapping "mongomodules", "module", mapping, (err, data)->
+esClients.createIndex "mongomodules", (err, data)->
   console.log err, data
+  esClient.putMapping "mongomodules", "module", mapping, (err, data)->
+    console.log err, data
