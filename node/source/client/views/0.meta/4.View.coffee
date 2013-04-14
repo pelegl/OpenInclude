@@ -6,6 +6,8 @@ class View extends @Backbone.View
   constructor:(opts={})->
     @context = _.extend {}, app.conf
 
+    opts.prevView?.remove()
+
     unless opts.el?
       opts.el = $("<section class='contents' />")
       if app.meta.$('.contents').length > 0

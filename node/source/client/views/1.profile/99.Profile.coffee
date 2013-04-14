@@ -104,8 +104,8 @@ views.Profile = View.extend
     @context.from = "none"
     @context.to = "none"
 
-    @listenTo @model, "change", @render
     @listenTo @model, "sync", @render
+
     @model.fetch()
 
   render: ->

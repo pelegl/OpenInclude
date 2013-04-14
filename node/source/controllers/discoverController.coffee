@@ -101,13 +101,17 @@ class DiscoverController extends require('./basicController')
 
   search: ->
 
-    query =
-      fuzzy_like_this:
-        like_text: @context.discover_search_query || ""
-        fields: ["module_name", "owner", "description"]
-        min_similarity: 0.5
-        prefix_length: 3
-        ignore_tf: true
+    if @context.discover_search_query.length > 2
+      query =
+        query_string:
+          query: @context.discover_search_query
+          fields: ["module_name^2", "owner", "description"]
+          use_dis_max: true
+          tie_breaker: 0.7
+          boost: 1.2
+    else
+      query =
+        match_all: {}
 
 
     console.log JSON.stringify(query)

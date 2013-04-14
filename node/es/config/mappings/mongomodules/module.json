@@ -1,0 +1,20 @@
+{
+    "module" : {
+        "_all" : {"enabled": false},
+        "properties": {
+            "description": {
+                "type" : "string",
+
+            },
+            "language": {
+                "type" : "string"
+            },
+            "module_name" : {
+                "type" : "string"
+            },
+            "owner" : {
+                "type" : "string"
+            }
+        }
+    }
+}

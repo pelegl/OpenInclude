@@ -291,3 +291,7 @@ index.indexing.slowlog.threshold.index.trace: 500ms
 #monitor.jvm.gc.ConcurrentMarkSweep.warn: 10s
 #monitor.jvm.gc.ConcurrentMarkSweep.info: 5s
 #monitor.jvm.gc.ConcurrentMarkSweep.debug: 2s
+
+
+################################## Indices Configs ###########################
+
