@@ -5,6 +5,7 @@
 
 ###
   Tasks
+  TODO: complete the tasks
 ###
 
 mapping =
@@ -16,8 +17,6 @@ mapping =
         type: "string"
       owner:
         type: "string"
-
-
 
 esClient.putMapping "mongomodules", "module", mapping, (err, data)->
   console.log err, data
