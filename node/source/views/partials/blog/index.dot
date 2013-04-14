@@ -8,8 +8,8 @@
                 <header class='clearfix'>
                     <h2><a href="/blog/view/{{= post._id }}" class='title' data-nobackbone >{{= post.title }}</a></h2>
                     <time>{{= it.moment(post.date).format("LL") }}</time>
-                    <a class='author' href='#'>
-                        <img alt='AP' /> author placeholder
+                    <a class='author' href='/profile/view/{{= post.author.name }}'>
+                        <img alt='AP' /> {{= post.author.name }}
                     </a>
                 </header>
                 <section class='body'>

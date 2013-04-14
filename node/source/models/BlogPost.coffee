@@ -10,6 +10,8 @@ marked = require "marked"
 ###
 
 definition =
+  author: Object
+
   date:
     type: Date
     default: Date.now
@@ -17,6 +19,7 @@ definition =
   title: String
   content: String
   publish: Boolean
+  tags: [String]
 
 methods = {}
 

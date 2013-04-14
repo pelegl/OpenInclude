@@ -4,6 +4,8 @@
 
 basic = require "./basicController"
 marked = require "marked"
+moment = require "moment"
+_ = require "underscore"
 
 class BlogController extends basic
   index: ->
@@ -50,6 +52,21 @@ module.exports = (req,res)->
   new BlogController req, res
 
 module.exports.create = (req, res) ->
+  req.body.author =
+    id: req.user._id
+    name: req.user.github_username
+    avatar: req.user.github_avatar_url
+
+  if req.body.date
+    unless moment(req.body.date)
+      delete req.body.date
+
+  if req.body.tags
+    req.body.tags = req.body.tags.split(",")
+    req.body.tags = _.map(req.body.tags, (tag) ->
+      return tag.trim()
+    )
+
   post = new BlogPost(req.body)
   post.save((result, post) ->
     unless result

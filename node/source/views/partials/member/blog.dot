@@ -2,7 +2,7 @@
     <button id="new-post" class="btn btn-success">Write new post</button>
 </div>
 
-<div id="new-post-inline" class="well well-small">
+<div id="new-post-inline" class="well well-small" style="display: none">
 </div>
 
 <table class="table table-bordered table-hover" style="background-color: #ffffff">
