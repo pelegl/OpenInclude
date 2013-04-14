@@ -182,7 +182,7 @@
       app.init()
       
       $(document).delegate "a", "click", (e)->
-        if e.currentTarget.getAttribute("nobackbone")
+        if e.currentTarget.getAttribute("data-nobackbone")
           return
         href = e.currentTarget.getAttribute('href')
         return true unless href

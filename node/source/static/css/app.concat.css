@@ -7099,6 +7099,58 @@ footer {
 .bill .controls > .btn {
   margin-left: 10px;
 }
+.blog-post {
+  background: #fff;
+  border: 1px solid #ccc;
+  margin-bottom: 50px;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.blog-post header {
+  padding: 10px 30px 22px;
+  border-bottom: 1px solid #ccc;
+}
+.blog-post header .title {
+  display: block;
+  margin-bottom: 5px;
+  color: #FBC21A;
+}
+.blog-post header img {
+  width: 25px;
+  border-radius: 5px;
+  margin: -1px 4px 0 8px;
+  background: #ccc;
+}
+text-decoration:none .blog-post header .author.no-link:hover {
+  color: #399dd8;
+}
+.blog-post .body {
+  white-space: normal;
+  word-wrap: break-word;
+  background: #f8f8f8;
+  padding: 20px 30px;
+  line-height: 23px;
+  border-radius: 0 0 3px 3px;
+}
+.blog-post .body img {
+  display: block;
+  max-width: 80%;
+  margin: 20px auto;
+}
+.blog-post .body iframe {
+  display: block;
+  margin: 0 auto 20px auto;
+}
+.blog-post .body pre {
+  background: #333;
+}
+.blog-post .body pre code {
+  color: #f4f4f4;
+}
 
 /*!
  * Datepicker for Bootstrap
