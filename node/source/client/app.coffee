@@ -182,10 +182,10 @@
       app.init()
       
       $(document).delegate "a", "click", (e)->
-        if e.currentTarget.getAttribute("nobackbone")
-          return
-        href = e.currentTarget.getAttribute('href')
-        return true unless href
+        $this = $(e.currentTarget)
+
+        return true if $this.data("nobackbone")?
+        return true unless (href = $this.attr('href'))
                           
         if href[0] is '/' and ! /^\/auth\/.*/i.test(href)
           uri = if Backbone.history._hasPushState then \

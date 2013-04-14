@@ -1,25 +1,37 @@
 <div class="container blog">
-    <h1>Blog</h1>
-    {{~ it.posts :post }}
-    <div class="post well well-small">
-        <h1><a href="/blog/view/{{= post._id }}" nobackbone="true">{{= post.title }}</a> <small>{{= it.moment(post.date).format("MM/DD/YYYY") }}</small></h1>
-        <div class="content">
-            {{= post.htmlContent }}
-        </div>
-    </div>
-    {{~}}
+    <h1>OpenInclude Blog</h1>
+    <div class='row'>
+        <div class='span9'>
 
-    <div class="pagination center">
-        <ul>
-            {{? it.page > 1 }}
-            <li><a href="/blog/index/{{= it.page - 1 }}" nobackbone="enabled">&laquo;</a></li>
-            {{?}}
-            {{ for (i = 1; i <= it.limit; i++) { }}
-            <li {{? i == it.page }}class="active"{{?}}><a href="/blog/index/{{= i }}" nobackbone="enabled">{{= i }}</a></li>
-            {{ } }}
-            {{? it.page < it.limit }}
-            <li><a href="/blog/index/{{= it.page + 1 }}" nobackbone="enabled">&raquo;</a></li>
-            {{?}}
-        </ul>
+            {{~ it.posts :post }}
+            <article class='blog-post'>
+                <header class='clearfix'>
+                    <h2><a href="/blog/view/{{= post._id }}" class='title' data-nobackbone >{{= post.title }}</a></h2>
+                    <time>{{= it.moment(post.date).format("LL") }}</time>
+                    <a class='author' href='#'>
+                        <img alt='AP' /> author placeholder
+                    </a>
+                </header>
+                <section class='body'>
+                    {{= post.htmlContent }}
+                </section>
+            </article>
+            {{~}}
+
+            <div class="pagination center">
+                <ul>
+                    {{? it.page > 1 }}
+                    <li><a href="/blog/index/{{= it.page - 1 }}" data-nobackbone >&laquo;</a></li>
+                    {{?}}
+                    {{ for (i = 1; i <= it.limit; i++) { }}
+                    <li {{? i == it.page }}class="active"{{?}}><a href="/blog/index/{{= i }}" data-nobackbone >{{= i }}</a></li>
+                    {{ } }}
+                    {{? it.page < it.limit }}
+                    <li><a href="/blog/index/{{= it.page + 1 }}" data-nobackbone >&raquo;</a></li>
+                    {{?}}
+                </ul>
+            </div>
+
+        </div>
     </div>
 </div>

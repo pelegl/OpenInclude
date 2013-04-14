@@ -14,4 +14,7 @@ class View extends @Backbone.View
         app.meta.$el.append(opts.el)
     else
       $(window).scrollTop 0
+
+    opts.prevView?.remove()
+
     super opts

@@ -1,8 +1,18 @@
 <div class="container post">
-    <div class="post well well-small">
-        <h1>{{= it.post.title }} <small>{{= it.moment(it.post.date).format("MM/DD/YYYY") }}</small></h1>
-        <div class="content">
-            {{= it.post.htmlContent }}
+    <div class='row'>
+        <div class='span9'>
+            <article class='blog-post'>
+                <header class='clearfix'>
+                    <h1><a href="/blog/view/{{= it.post._id }}" class='title' data-nobackbone >{{= it.post.title }}</a></h1>
+                    <time>{{= it.moment(it.post.date).format("LL") }}</time>
+                    <a class='author' href='#'>
+                        <img alt='AP' /> author placeholder
+                    </a>
+                </header>
+                <section class='body'>
+                    {{= it.post.htmlContent }}
+                </section>
+            </article>
         </div>
     </div>
 </div>
