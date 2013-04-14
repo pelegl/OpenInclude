@@ -4,7 +4,7 @@
         "properties": {
             "description": {
                 "type" : "string",
-
+                "analyzer": "snowball"
             },
             "language": {
                 "type" : "string"
