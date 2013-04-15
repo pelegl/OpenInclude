@@ -19,7 +19,9 @@ definition =
   title: String
   content: String
   publish: Boolean
-  tags: [String]
+  tags:
+    type: [String]
+    default: []
 
 methods = {}
 

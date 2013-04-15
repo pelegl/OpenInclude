@@ -16,4 +16,5 @@
 <script type="text/javascript" src="/static/js/moment.js"></script>
 <script type="text/javascript" src="/static/js/moment-en.js"></script>
 <script type="text/javascript" src="/static/epiceditor/js/epiceditor.js"></script>
+<script type="text/javascript" src="/static/js/jqcloud-1.0.3.js"></script>
 <script type="text/javascript" src="/static/js/app.js"></script>

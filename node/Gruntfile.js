@@ -20,8 +20,7 @@ module.exports = function (grunt) {
                     "source/static/css/app.css",
                     "source/static/css/datepicker.css",
                     "source/static/css/daterangepicker.css",
-                    "source/static/markitup/skins/simple/style.css",
-                    "source/static/markitup/sets/markdown/style.css"
+                    "source/static/css/jqcloud.css"
                 ],
                 dest: "source/static/css/app.concat.css"
             }
@@ -68,7 +67,8 @@ module.exports = function (grunt) {
                         "source/static/js/templates-dot.js",
                         "source/static/js/moment.js",
                         "source/static/js/moment-en.js",
-                        "source/static/epiceditor/js/epiceditor.js"
+                        "source/static/epiceditor/js/epiceditor.js",
+                        "source/static/js/jqcloud-1.0.3.js"
                     ]
                 }
             },
