@@ -6,13 +6,13 @@ class views.AlterRunwayForm extends InlineForm
     @model = context.model
     super context
 
-  submit: (event) ->
-    event.preventDefault()
-    event.stopPropagation()
-
-    data = Backbone.Syphon.serialize event.currentTarget
-    if parseInt(data.data) < @context.limit
-      alert "Runway must be higher than or equal to #{@context.limit}"
+  validate: (data) ->
+    if !parseInt(data.data)
+      @validation = "Only positive integers are accepted"
       return false
-    else
-      super event
+
+    if parseInt(data.data) < 0 or parseInt(data.data) < @context.limit
+      @validation =  "Runway must be higher than or equal to #{@context.limit}"
+      return false
+
+    true

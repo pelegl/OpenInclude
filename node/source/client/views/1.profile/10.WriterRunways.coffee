@@ -9,8 +9,12 @@ class views.WriterRunways extends View
     suffix = e.currentTarget.attributes['rel'].value
     limit = parseInt(e.currentTarget.attributes['data-limit'].value)
 
+    @button = $(e.currentTarget)
+    @button.hide()
+
     @trackForm = new views.TrackTimeForm _.extend(@context, {suffix: suffix, limit: limit, el: "#track-time-inline-#{suffix}"})
     @listenTo @trackForm, "success", @updateData
+    @listenTo @trackForm, "hidden", => @button.show()
     @trackForm.show()
 
   updateData: ->

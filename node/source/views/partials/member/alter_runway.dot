@@ -1,8 +1,8 @@
 <form method='post' action='' class='inline-popover'>
-    <input type="text" name="data" class="input-block-level" placeholder="New runway"/>
+    <input type="text" name="data" class="input-block-level" placeholder="{{= it.model.get('data') || 'Change the hours of work before required checkin' }}"/>
 
     <div>
-        <a class="btn pull-left close-inline">Close</a>
-        <button type='submit' class="btn btn-primary pull-left" style='margin-left: 20px'>Confirm</button>
+        <button type='submit' class="btn btn-primary pull-left">Confirm</button>
+        <a class="btn pull-left close-inline" style='margin-left: 20px'>Cancel</a>
     </div>
 </form>

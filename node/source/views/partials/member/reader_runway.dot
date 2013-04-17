@@ -16,10 +16,10 @@
 
     <tr>
         <td><a href="/profile/view/{{= runway.writer.name }}">{{= runway.writer.name }}</a></td>
-        <td>{{= runway.charged + runway.charged * runway.fee / 100 }}</td>
-        <td>{{= worked }} / {{= runway.data }}</td>
+        <td>${{= runway.charged + runway.charged * runway.fee / 100 }}/hr</td>
+        <td>{{= worked }} / {{= runway.data }} hours</td>
         <td>
-            <button id="alter-runway" rel="{{= runway._id }}" data-limit="{{= worked }}" data-current="{{= runway.data }}" class="btn btn-small btn-success">Alter</button>
+            <button id="alter-runway" rel="{{= runway._id }}" data-limit="{{= worked }}" data-current="{{= runway.data }}" class="btn btn-small btn-success">Edit</button>
             <div id="alter-runway-inline-{{= runway._id }}" style="margin-top: 15px; display: none"></div>
         </td>
     </tr>

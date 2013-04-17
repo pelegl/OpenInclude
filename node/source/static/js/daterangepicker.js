@@ -178,7 +178,7 @@
                 list += '</ul>';
                 this.container.find('.ranges').prepend(list);
             }
-            
+
             if (typeof options.dateLimit == 'object')
                 this.dateLimit = options.dateLimit;
 
@@ -273,6 +273,7 @@
         this.updateView();
         this.updateCalendars();
 
+        return this;
     };
 
     DateRangePicker.prototype = {
@@ -388,6 +389,7 @@
 
         clickRange: function (e) {
             var label = e.target.innerHTML;
+
             if (label == this.locale.customRangeLabel) {
                 this.container.find('.calendar').show();
             } else {
@@ -713,12 +715,16 @@
     };
 
     $.fn.daterangepicker = function (options, cb) {
+      var picker;
       this.each(function() {
         var el = $(this);
         if (!el.data('daterangepicker'))
-          el.data('daterangepicker', new DateRangePicker(el, options, cb));
+        {
+            picker = new DateRangePicker(el, options, cb);
+            el.data('daterangepicker', picker);
+        }
       });
-      return this;
+      return picker;
     };
 
 } (window.jQuery);

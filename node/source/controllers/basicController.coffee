@@ -40,7 +40,6 @@ class BasicController
     @context._menu = [
       {url: @context.discover_url, text: "discover"}
       {url: @context.how_to_url,   text:"how to"}
-      {url: @context.blog_url, text: "blog", attributes: ['data-nobackbone']}
     ]
     # admin
     #if @req.user?.group_id is 'admin'
@@ -52,6 +51,8 @@ class BasicController
                           {url: @context.logout_url, text: "sign out"}
     else
       @context._menu.push {url: @context.signin_url, text: "sign in"}
+
+    @context._menu.push {url: @context.blog_url, text: "blog", attributes: ['data-nobackbone']}
 
     if @req.path.length > 1
       @context._menu.forEach (link)=>

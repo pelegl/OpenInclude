@@ -7,7 +7,9 @@
                         <img src="http://www.gravatar.com/avatar/{{= it.user.github_avatar_url }}?s=210"
                              class='avatar'/>
 
+                        {{? it.user.github_display_name != it.user.github_username }}
                         <h3>{{! it.user.github_display_name }}</h3>
+                        {{?}}
                         <h4><a href='https://github.com/{{! it.user.github_username }}' target="_blank" class='muted'>{{!
                             it.user.github_username }}</a></h4>
                         <hr/>
@@ -44,20 +46,24 @@
                         </div>
                         <hr/>
                         {{?}}
+                        {{? it.user.github_email }}
                         <div class='contactData'>
                             <div class='contact'>
                                 <i class='icon-envelope'></i> <a class='muted' href="mailto:{{= it.user.github_email }}">{{! it.user.github_email }}</a>
                             </div>
                         </div>
+                        {{?}}
                     </div>
                 </div>
+                {{? it.private }}
                 <div class='span9'>
 
                     <div id="runway-tabs" class="row-fluid">
 
                         <ul id="runways" class="nav nav-tabs">
                             {{? it.user.groups.indexOf("admin") >= 0 }}
-                            <li class="dropdown">
+                            {{ if (!it.active_tab) it.active_tab = "admin-connections"; }}
+                            <li class="dropdown active">
                                 <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Admin
                                     <b class="caret"></b></a>
                                 <ul class="dropdown-menu" role="menu">
@@ -68,7 +74,7 @@
                             </li>
                             {{?}}
                             {{? it.user.groups.indexOf("reader") >= 0 }}
-                            <li class="dropdown">
+                            <li class="dropdown{{? !it.active_tab }} active{{ it.active_tab = "reader-runway"; }}{{?}}">
                                 <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Reader
                                     <b class="caret"></b></a>
                                 <ul class="dropdown-menu" role="menu">
@@ -78,7 +84,7 @@
                             </li>
                             {{?}}
                             {{? it.user.groups.indexOf("writer") >= 0 }}
-                            <li class="dropdown">
+                            <li class="dropdown{{? !it.active_tab }} active{{ it.active_tab = "writer-runway"; }}{{?}}">
                                 <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Writer
                                     <b class="caret"></b></a>
                                 <ul class="dropdown-menu" role="menu">
@@ -119,6 +125,7 @@
                     <div id="tos" class='row-fluid'>
                     </div>
                 </div>
+                {{?}}
 
             </div>
         </div>
