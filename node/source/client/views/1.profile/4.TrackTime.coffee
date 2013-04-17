@@ -8,13 +8,13 @@ class views.TrackTimeForm extends InlineForm
 
     super context
 
-  submit: (event) ->
-    event.preventDefault()
-    event.stopPropagation()
-
-    data = Backbone.Syphon.serialize event.currentTarget
-    if parseInt(data.worked) > @context.limit
-      alert "Time limit exceeded!"
+  validate: (data) ->
+    if !parseInt(data.worked) or parseInt(data.worked) < 0
+      @validation =  "Only positive integers are accepted as amount"
       return false
-    else
-      super event
+
+    if parseInt(data.worked) > @context.limit
+      @validation = "Time limit exceeded!"
+      return false
+
+    true

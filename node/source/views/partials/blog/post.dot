@@ -5,13 +5,18 @@
                 <header class='clearfix'>
                     <h1><a href="/blog/view/{{= it.post._id }}" class='title' data-nobackbone >{{= it.post.title }}</a></h1>
                     <time>{{= it.moment(it.post.date).format("LL") }}</time>
-                    <a class='author' href='#'>
-                        <img alt='AP' /> author placeholder
+                    <a class='author' href='/profile/view/{{= it.post.author.name }}'>
+                        <img src="http://www.gravatar.com/avatar/{{= it.post.author.avatar }}?s=30" width="30" height="30" alt='' /> {{= it.post.author.name }}
                     </a>
                 </header>
                 <section class='body'>
                     {{= it.post.htmlContent }}
                 </section>
+                {{? it.post.tags }}
+                <section class="tags">
+                    {{~ it.post.tags :tag }}<a href="/blog/tag/{{= tag }}">{{= tag}}</a>&nbsp;{{~}}
+                </section>
+                {{?}}
             </article>
         </div>
     </div>

@@ -28,6 +28,8 @@ class views.AdminFinance extends View
 
     @context.admin_from = @$("#admin_from").text() or "none"
     @context.admin_to = @$("#admin_to").text() or "none"
+    @context.admin_start = @datepicker.startDate
+    @context.admin_end = @datepicker.endDate
     @context.active_tab = "admin-finance"
     @context.admin_filter = @$("#admin_filter").text()
     if render
@@ -88,6 +90,6 @@ class views.AdminFinance extends View
     @$el.html html
     options = views.DateRangeObject
     options.element = @$el
-    @$('.daterange').daterangepicker options, _.bind(views.DateRangeFunction, @)
+    @datepicker = @$('.daterange').daterangepicker _.extend(options, {startDate: @context.admin_start, endDate: @context.admin_end}), _.bind(views.DateRangeFunction, @)
     @filter(null, false)
     @

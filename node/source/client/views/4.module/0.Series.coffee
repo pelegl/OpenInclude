@@ -27,6 +27,9 @@ class views.Series extends Backbone.View
   render: ->
     console.log "[__ render series __]"
 
+    if @collection.length is 0
+      return
+
     @width = @$el.width() - @margin.right - @margin.left
     @height = 300 - @margin.top - @margin.bottom
 

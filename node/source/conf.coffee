@@ -229,7 +229,7 @@ passport_init = exports.passport_init = () ->
 
       user = new User(
         github_id: profile.id
-        github_display_name: profile.displayName
+        github_display_name: profile.displayName or profile.username
         github_username: profile.username
         github_avatar_url: profile._json.gravatar_id
         github_email: profile._json.email

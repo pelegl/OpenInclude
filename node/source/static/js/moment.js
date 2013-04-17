@@ -1231,12 +1231,6 @@
 
         day : function (input) {
             var day = this._isUTC ? this._d.getUTCDay() : this._d.getDay();
-            if (!this._isUTC)
-            {
-                day -= this._lang._week.dow;
-                if (day < 0)
-                    day = this._lang._week.doy - this._lang._week.dow;
-            }
             if (input != null) {
                 if (typeof input === 'string') {
                     input = this.lang().weekdaysParse(input);
@@ -1294,7 +1288,9 @@
 
             // weeks are a special case
             if (units === 'week') {
-                this.day(0);
+                // make sure it's locale aware
+                var dow = this.lang()._week.dow;
+                (this.day() < dow) ? this.day(dow - 7) : this.day(dow);
             }
 
             return this;

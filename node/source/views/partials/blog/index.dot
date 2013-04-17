@@ -1,5 +1,5 @@
 <div class="container blog">
-    <h1>OpenInclude Blog</h1>
+    <h1>OpenInclude Blog{{? it.tag }} <small>by {{= it.tag }}</small>{{?}}</h1>
     <div class='row'>
         <div class='span9'>
 
@@ -9,12 +9,17 @@
                     <h2><a href="/blog/view/{{= post._id }}" class='title' data-nobackbone >{{= post.title }}</a></h2>
                     <time>{{= it.moment(post.date).format("LL") }}</time>
                     <a class='author' href='/profile/view/{{= post.author.name }}'>
-                        <img alt='AP' /> {{= post.author.name }}
+                        <img src="http://www.gravatar.com/avatar/{{= post.author.avatar }}?s=30" width="30" height="30" alt='' /> {{= post.author.name }}
                     </a>
                 </header>
                 <section class='body'>
                     {{= post.htmlContent }}
                 </section>
+                {{? post.tags }}
+                <section class="tags">
+                    {{~ post.tags :tag }}<a href="/blog/tag/{{= tag }}">{{= tag}}</a>&nbsp;{{~}}
+                </section>
+                {{?}}
             </article>
             {{~}}
 
@@ -33,5 +38,18 @@
             </div>
 
         </div>
+
+        <div id="cloud" class="span3" style="height: 550px">
+
+        </div>
     </div>
 </div>
+
+{{? it.cloud }}
+<script>
+    $(function() {
+        var cloud = {{= JSON.stringify(it.cloud) }};
+        $("#cloud").jQCloud(cloud);
+    });
+</script>
+{{?}}

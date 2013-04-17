@@ -1,10 +1,13 @@
 <table class="table table-bordered table-hover" style="background-color: #ffffff">
-    <tr>
-        <th>Reader</th>
-        <th>Hourly rate</th>
-        <th>Runway</th>
-        <th>Actions</th>
-    </tr>
+    <thead>
+        <tr>
+            <th>Reader</th>
+            <th>Hourly rate</th>
+            <th>Runway</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
     {{~ it.runways_writer :runway }}
     {{
     worked = 0;
@@ -15,8 +18,8 @@
     }}
     <tr>
         <td><a href="/profile/view/{{= runway.reader.name }}">{{= runway.reader.name }}</a></td>
-        <td>{{= runway.charged }}</td>
-        <td>{{= worked }} / {{= runway.data }}</td>
+        <td>${{= runway.charged }}/hr</td>
+        <td>{{= worked }} / {{= runway.data }} hours</td>
         <td>
             {{? worked >= runway.data }}
             Allowed time limit exceeded.
@@ -27,4 +30,5 @@
         </td>
     </tr>
     {{~}}
+    </tbody>
 </table>

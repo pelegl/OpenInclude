@@ -6,16 +6,22 @@
 </div>
 
 <table class="table table-bordered table-hover" style="background-color: #ffffff">
-    <tr>
-        <th>Date</th>
-        <th>Title</th>
-        <th>Is published?</th>
-    </tr>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Title</th>
+            <th>Is published?</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
     {{~ it.posts :post }}
     <tr>
         <td>{{= moment(post.date).format("MM/DD/YYYY") }}</td>
-        <td><a href="/profile/blog/{{= post._id }}">{{= post.title }}</a></td>
+        <td><a href="/profile/blog/{{= post._id }}" data-target="edit" data-id="{{= post._id }}">{{= post.title }}</a></td>
         <td>{{= post.publish ? "Yes": "No" }}</td>
+        <td><button class="btn btn-danger delete-post" data-id="{{= post._id }}">Delete</button></td>
     </tr>
     {{~}}
+    </tbody>
 </table>

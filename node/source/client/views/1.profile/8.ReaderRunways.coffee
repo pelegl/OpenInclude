@@ -10,15 +10,20 @@ class views.ReaderRunways extends View
     limit = parseInt(e.currentTarget.attributes['data-limit'].value)
     current = parseInt(e.currentTarget.attributes['data-current'].value)
 
+    @button = $(e.currentTarget)
+    @button.hide()
+
     model = @collection.get(suffix)
 
     @editForm = new views.AlterRunwayForm _.extend(@context, {limit: limit, model: model, current: current, el: "#alter-runway-inline-#{suffix}"})
     @listenTo @editForm, "success", @updateData
+    @listenTo @editForm, "hidden", => @button.show()
     @editForm.show()
 
   updateData: ->
     @context.active_tab = "reader-runway"
     @collection.fetch()
+    @button.show()
 
   initialize: (context) ->
     super context

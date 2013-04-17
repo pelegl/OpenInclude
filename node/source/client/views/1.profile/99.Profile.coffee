@@ -100,6 +100,8 @@ views.Profile = View.extend
     console.log "Rendering profile view"
 
     @context.user = @model.toJSON()
+    unless @context.active_tab
+      @context.active_tab = "admin-connections"
 
     html = tpl['member/profile'](@context)
     @$el.html html
@@ -107,38 +109,41 @@ views.Profile = View.extend
 
     @informationBox = @$ ".informationBox"
 
-    unless @collections
-      @collections = {}
-      @collections['admin-connections'] = new collections.Connections
-      @collections['admin-finance'] = @collections['admin-connections']
-      @collections['admin-blog'] = new collections.BlogPosts
+    if @context.private
 
-      @collections['reader-runway'] = new collections.Connections
-      @collections['reader-runway'].url = "/api/runway/reader"
+      unless @collections
+        @collections = {}
+        @collections['admin-connections'] = new collections.Connections
+        @collections['admin-finance'] = @collections['admin-connections']
+        @collections['admin-blog'] = new collections.BlogPosts
 
-      @collections['reader-finance'] = new models.Runway
-      @collections['reader-finance'].url = "/api/finance/reader"
+        @collections['reader-runway'] = new collections.Connections
+        @collections['reader-runway'].url = "/api/runway/reader"
 
-      @collections['writer-runway'] = new collections.Connections
-      @collections['writer-runway'].url = "/api/runway/writer"
+        @collections['reader-finance'] = new models.Runway
+        @collections['reader-finance'].url = "/api/finance/reader"
 
-      @collections['writer-finance'] = @collections['writer-runway']
+        @collections['writer-runway'] = new collections.Connections
+        @collections['writer-runway'].url = "/api/runway/writer"
 
-    @adminConnections = new views.AdminConnections _.extend(@context, {el: @$("#admin-connections"), collection: @collections['admin-connections']})
-    @adminFinance = new views.AdminFinance _.extend(@context, {el: @$("#admin-finance"), collection: @collections['admin-finance']})
-    @adminBlog = new views.Blog _.extend(@context, {el: @$("#admin-blog"), collection: @collections['admin-blog']})
+        @collections['writer-finance'] = @collections['writer-runway']
 
-    @readerRunway = new views.ReaderRunways _.extend(@context, {el: @$("#reader-runway"), collection: @collections['reader-runway']})
-    @readerFinance = new views.ReaderFinance _.extend(@context, {el: @$("#reader-finance"), collection: @collections['reader-finance']})
+      @adminConnections = new views.AdminConnections _.extend(@context, {el: @$("#admin-connections"), collection: @collections['admin-connections']})
+      @adminFinance = new views.AdminFinance _.extend(@context, {el: @$("#admin-finance"), collection: @collections['admin-finance']})
+      @adminBlog = new views.Blog _.extend(@context, {el: @$("#admin-blog"), collection: @collections['admin-blog']})
 
-    @writerRunway = new views.WriterRunways _.extend(@context, {el: @$("#writer-runway"), collection: @collections['writer-runway']})
-    @writerFinance = new views.WriterFinance _.extend(@context, {el: @$("#writer-finance"), collection: @collections['writer-finance']})
+      @readerRunway = new views.ReaderRunways _.extend(@context, {el: @$("#reader-runway"), collection: @collections['reader-runway']})
+      @readerFinance = new views.ReaderFinance _.extend(@context, {el: @$("#reader-finance"), collection: @collections['reader-finance']})
 
-    @wizard = new views.Wizard @context
-    @listenTo @wizard, "success", @toggleTabs
-    @listenTo @wizard, "hidden", @toggleTabs
+      @writerRunway = new views.WriterRunways _.extend(@context, {el: @$("#writer-runway"), collection: @collections['writer-runway']})
+      @writerFinance = new views.WriterFinance _.extend(@context, {el: @$("#writer-finance"), collection: @collections['writer-finance']})
 
-    @tabs = @$("#runway-tabs")
+      @wizard = new views.Wizard @context
+      @listenTo @wizard, "success", @toggleTabs
+      @listenTo @wizard, "hidden", @toggleTabs
+
+      @tabs = @$("#runway-tabs")
+      @collections[@context.active_tab].fetch()
 
     # Append CC modal
     if @cc
