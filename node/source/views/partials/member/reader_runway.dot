@@ -1,10 +1,13 @@
 <table class="table table-bordered table-hover" style="background-color: #ffffff">
-    <tr>
-        <th>Writer</th>
-        <th>Hourly rate</th>
-        <th>Runway</th>
-        <th>Actions</th>
-    </tr>
+    <thead>
+        <tr>
+            <th>Writer</th>
+            <th>Hourly rate</th>
+            <th>Runway</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
     {{~ it.runways_reader :runway }}
     {{
     worked = 0;
@@ -24,4 +27,5 @@
         </td>
     </tr>
     {{~}}
+    </tbody>
 </table>

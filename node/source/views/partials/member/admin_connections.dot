@@ -1,18 +1,22 @@
 <table class="table table-bordered table-hover" style="background-color: #ffffff">
-    <tr>
-        <th>Reader</th>
-        <th>Hourly charged</th>
-        <th>Writer</th>
-        <th>Hourly paid</th>
-    </tr>
-    {{~ it.connections :connection }}
-    <tr>
-        <td><a href="/profile/view/{{= connection.reader.name }}">{{= connection.reader.name }}</a></td>
-        <td>{{= connection.charged + connection.charged * connection.fee / 100 }}</td>
-        <td><a href="/profile/view/{{= connection.writer.name }}">{{= connection.writer.name }}</a></td>
-        <td>{{= connection.charged }}</td>
-    </tr>
-    {{~}}
+    <thead>
+        <tr>
+            <th>Reader</th>
+            <th>Hourly charged</th>
+            <th>Writer</th>
+            <th>Hourly paid</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{~ it.connections :connection }}
+        <tr>
+            <td><a href="/profile/view/{{= connection.reader.name }}">{{= connection.reader.name }}</a></td>
+            <td>{{= connection.charged + connection.charged * connection.fee / 100 }}</td>
+            <td><a href="/profile/view/{{= connection.writer.name }}">{{= connection.writer.name }}</a></td>
+            <td>{{= connection.charged }}</td>
+        </tr>
+        {{~}}
+    </tbody>
 </table>
 <div>
     <div style="margin-bottom: 20px"><a href="#" id="new-connection" class="btn btn-small btn-success">New connection</a></div>

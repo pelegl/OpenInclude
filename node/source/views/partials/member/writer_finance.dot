@@ -9,11 +9,14 @@
     <a id="writer-csv" class="btn btn-success">CSV</a>
 </div>
 <table class="table table-bordered table-hover" style="background-color: #ffffff">
-    <tr>
-        <th>Reader</th>
-        <th>Paid</th>
-        <th>Pending</th>
-    </tr>
+    <thead>
+        <tr>
+            <th>Reader</th>
+            <th>Paid</th>
+            <th>Pending</th>
+        </tr>
+    </thead>
+    <tbody>
     {{~ it.finance_writer :finance }}
     {{
         paid = 0;
@@ -35,4 +38,5 @@
         <td>{{= pending }}</td>
     </tr>
     {{~}}
+    </tbody>
 </table>

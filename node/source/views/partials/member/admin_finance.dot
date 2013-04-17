@@ -9,11 +9,14 @@
     <a id="admin-csv" class="btn btn-success">CSV</a>
 </div>
 <table class="table table-bordered table-hover" style="background-color: #ffffff">
-    <tr>
-        <th>Reader → Writer</th>
-        <th>Amount</th>
-        <th></th>
-    </tr>
+    <thead>
+        <tr>
+            <th>Reader → Writer</th>
+            <th>Amount</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
     {{~ it.connections :connection }}
     {{
         charge = 0;
@@ -79,4 +82,5 @@
     </tr>
     {{?}}
     {{~}}
+    </tbody>
 </table>
