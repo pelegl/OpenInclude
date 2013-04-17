@@ -7135,6 +7135,9 @@ footer {
 text-decoration:none .blog-post header .author.no-link:hover {
   color: #399dd8;
 }
+.blog-post header .tags {
+  display: inline-block;
+}
 .blog-post .body {
   white-space: normal;
   word-wrap: break-word;

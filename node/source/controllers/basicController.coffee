@@ -52,7 +52,7 @@ class BasicController
     else
       @context._menu.push {url: @context.signin_url, text: "sign in"}
 
-    @context._menu.push {url: @context.blog_url, text: "blog", attributes: ['data-nobackbone']}
+    @context._menu.push {url: @context.blog_url, text: "blog", attributes: ['nobackbone']}
 
     if @req.path.length > 1
       @context._menu.forEach (link)=>

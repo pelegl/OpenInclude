@@ -1,5 +1,5 @@
 <div class="container blog">
-    <h1>OpenInclude Blog{{? it.tag }} <small>by {{= it.tag }}</small>{{?}}</h1>
+    <h1>OpenInclude Blog{{? it.tag }} <small>Category: {{= it.tag }}</small>{{?}}</h1>
     <div class='row'>
         <div class='span9'>
 
@@ -11,15 +11,22 @@
                     <a class='author' href='/profile/view/{{= post.author.name }}'>
                         <img src="http://www.gravatar.com/avatar/{{= post.author.avatar }}?s=30" width="30" height="30" alt='' /> {{= post.author.name }}
                     </a>
+                    <!-- tags -->
+                    {{? post.tags }}
+                    <ul class="unstyled inline tags pull-right">
+                        <li>Categories:</li>
+                        {{~ post.tags :tag }}
+                        <li>
+                            <a href="/blog/tag/{{= tag }}" data-nobackbone>[{{= tag}}]</a>
+                        </li>
+                        {{~}}
+                    </ul>
+                    {{?}}
+                    <!-- tags end -->
                 </header>
                 <section class='body'>
                     {{= post.htmlContent }}
                 </section>
-                {{? post.tags }}
-                <section class="tags">
-                    {{~ post.tags :tag }}<a href="/blog/tag/{{= tag }}">{{= tag}}</a>&nbsp;{{~}}
-                </section>
-                {{?}}
             </article>
             {{~}}
 
