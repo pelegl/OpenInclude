@@ -35,7 +35,21 @@ views.Discover = View.extend
     @fetchSearchData q
 
   fetchSearchData: (query) ->
-    @chart.collection.fetch query
+    @chart.emptyDots()
+    @chart.collection.fetch(
+      beforeSend: =>
+        @chart.progress 0, 100
+
+      data:
+        q: query
+      success: (a, r) =>
+        @chart.collection.maxScore = r.maxScore
+        @chart.collection.groupedModules = _.groupBy r.searchData, (module)=>
+          return module.language
+        @chart.collection.reset r.searchData
+        @chart.stopProgress()
+        @chart.progress 100, 100
+    )
 
   populateComparison: ->
     @comparisonData.reset @chartData.getBestMatch()

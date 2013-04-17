@@ -21,7 +21,7 @@ collections.Discovery = Backbone.Collection.extend
 
   filters: {}
 
-  fetch: ->
+  fetch2: ->
     [query, opts...] = Array::slice.apply arguments
     query = query ? ""
 
