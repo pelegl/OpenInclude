@@ -67,13 +67,14 @@ views.Repo = View.extend
     # create collection and associated chart
     @collections.githubEvents = ge = new collections.GithubEvents options
 
-    @charts.githubCommits      = new views.Series {el: @$(".commitHistory"), collection: ge, types: ["PushEvent"], title: "Commits over time"}
+    @charts.githubCommits      = new views.Series {el: @$(".commitHistory"), collection: ge, types: ["PushEvent"] , title: "Commits over time"}
     @charts.githubWatchers     = new views.Series {el: @$(".starsHistory"),  collection: ge, types: ["WatchEvent"], title: "Watchers over time"}
 
   render: ->
+    console.log "[__ render repo view __]"
     @context.module = @model.toJSON()
 
     html = tpl['module/view'](@context)
     @$el.html html
-    @$el.attr 'view-id', 'module-list'
+    @$el.attr 'view-id', 'repo'
     @

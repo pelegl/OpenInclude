@@ -25,6 +25,7 @@ class views.Series extends Backbone.View
     @render()
 
   render: ->
+    console.log "[__ render series __]"
 
     @width = @$el.width() - @margin.right - @margin.left
     @height = 300 - @margin.top - @margin.bottom
@@ -44,7 +45,6 @@ class views.Series extends Backbone.View
       .append("g")
       .attr("transform", "translate(" + @margin.left + "," + @margin.top + ")")
 
-
     data = @collection.filter (item)=>
       return item.get("type") in @types
 
@@ -52,11 +52,12 @@ class views.Series extends Backbone.View
     data.forEach (d)=>
       d.y = ++prev
 
-    @x.domain d3.extent data, (d)=> return d.x()
-    @x.nice d3.time.day
+    if data.length > 0
+      @x.domain d3.extent data, (d)=> return d.x()
+      @x.nice d3.time.day
 
-    @y.domain d3.extent data, (d)=> return d.y
-    @y.nice()
+      @y.domain d3.extent data, (d)=> return d.y
+      @y.nice()
 
     @svg.append("g")
       .attr("class", "x axis")

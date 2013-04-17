@@ -28,3 +28,5 @@ views.MetaView = Backbone.View.extend
     @tasks     = new collections.Tasks
 
     @menu      = new views.Menu el: @$(".navigationMenu")
+
+    @placeholder = @$("#view-wrapper")

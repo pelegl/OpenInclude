@@ -76,7 +76,7 @@ collections.StackOverflowQuestions = Backbone.Collection.extend
       args.push _.first(qSeries).get("timestamp") if qSeries.length > 0
       normalizeSeries.apply this, args
 
-
+    return askedQs if _.last(askedQs).get("amount") is 0
     return askedQs.concat(answeredQs)
 
   keys: ->

@@ -89,25 +89,23 @@
         meta.setQuery qs.q
 
       @reRoute()
-      @view = new views.Discover prevView:@view
+      @view = new views.Discover
+        prevView:@view
     
     language_list: ->
       @reRoute()
       @view = new views.Languages
-        el: $('.contents')
-        prevView:@view
+        prevView: @view
     
     repo_list: (language) ->
       @reRoute()
       @view = new views.ModuleList
-        el: $('.contents')
         prevView: @view
         language: language
       
     repo: (language, repo)->
       @reRoute()
       @view = new views.Repo
-        el: $('.contents')
         prevView: @view
         language: language
         repo: repo

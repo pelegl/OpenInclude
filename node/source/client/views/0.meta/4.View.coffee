@@ -11,7 +11,7 @@ class View extends @Backbone.View
       if app.meta.$('.contents').length > 0
         app.meta.$('.contents').replaceWith(opts.el)
       else
-        app.meta.$el.append(opts.el)
+        app.meta.placeholder.append(opts.el)
     else
       $(window).scrollTop 0
 
