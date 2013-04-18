@@ -76,7 +76,10 @@ collections.StackOverflowQuestions = Backbone.Collection.extend
       args.push _.first(qSeries).get("timestamp") if qSeries.length > 0
       normalizeSeries.apply this, args
 
-    return askedQs if _.last(askedQs).get("amount") is 0
+    if _.last(askedQs).get("amount") is 0
+      @statistics.keys = @statistics.keys.slice(0,1)
+      return askedQs
+
     return askedQs.concat(answeredQs)
 
   keys: ->
