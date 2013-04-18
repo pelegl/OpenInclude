@@ -46,14 +46,29 @@ views.Repo = View.extend
     ###
       Setup listeners
     ###
-    @listenTo @collections.stackOverflow, "sync", @charts.stackOverflow.render
-    @listenTo @collections.githubEvents,  "sync", @charts.githubCommits.render
-    @listenTo @collections.githubEvents,  "sync", @charts.githubWatchers.render
+    @listenTo @collections.stackOverflow, "sync", @charts.stackOverflow.renderChart
+    @listenTo @collections.githubEvents,  "sync", @charts.githubCommits.renderChart
+    @listenTo @collections.githubEvents,  "sync", @charts.githubWatchers.renderChart
     ###
       Start fetching data
     ###
-    @collections.stackOverflow.fetch()
-    @collections.githubEvents.fetch()
+    @collections.stackOverflow.fetch(
+      beforeSend: =>
+        @charts.stackOverflow.progress 0, 100
+      success: (a, r) =>
+        @charts.stackOverflow.stopProgress()
+        @charts.stackOverflow.progress 100, 100
+    )
+    @collections.githubEvents.fetch(
+      beforeSend: =>
+        @charts.githubCommits.progress 0, 100
+        @charts.githubWatchers.progress 0, 100
+      success: (a, r) =>
+        @charts.githubCommits.stopProgress()
+        @charts.githubCommits.progress 100, 100
+        @charts.githubWatchers.stopProgress()
+        @charts.githubWatchers.progress 100, 100
+    )
 
   initSO: ->
     options = {@language, @owner, @repo}
