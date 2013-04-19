@@ -4,7 +4,7 @@
             <th>Writer</th>
             <th>Hourly rate</th>
             <th>Runway</th>
-            <th>Actions</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
