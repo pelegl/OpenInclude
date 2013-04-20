@@ -106,27 +106,20 @@ statics =
     async.auto Tasks, (err, results) =>
       callback err, user
 
-  billCustomer: (fromuser, user, amount, callback) ->
-    user.get_payment_method "Stripe", (err, method) ->
+  billCustomer: (bill, callback) ->
+    bill.from_user.get_payment_method "Stripe", (err, method) ->
       if method
         stripe.charges.create
-          amount: amount * 100
+          amount: bill.amount * 100
           currency: "usd"
           customer: method.id
         , (error, charge) ->
-          bill = undefined
-          billObj = undefined
           unless error
-            bill =
-              charge_id: charge.id
-              amount: amount
-              from_user: fromuser._id
-              to_user: user._id
-              isPaid: charge.paid
-              date: new Date()
+            bill.charge_id = charge.id
+            bill.isPaid = true
+            bill.date = Date.now()
 
-            billObj = new Bill(bill)
-            billObj.save (err, succ) ->
+            bill.save (err, succ) ->
               callback err, succ
           else
             callback error, null

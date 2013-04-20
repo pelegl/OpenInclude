@@ -2,6 +2,7 @@
 <script type="text/javascript" src="/static/js/jquery.nicescroll.js"></script>
 <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/static/js/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-switch.js"></script>
 <script type="text/javascript" src="/static/js/date.js"></script>
 <script type="text/javascript" src="/static/js/daterangepicker.js"></script>
 <script type="text/javascript" src="/static/js/cookie.js"></script>
@@ -17,4 +18,8 @@
 <script type="text/javascript" src="/static/js/moment-en.js"></script>
 <script type="text/javascript" src="/static/epiceditor/js/epiceditor.js"></script>
 <script type="text/javascript" src="/static/js/jqcloud-1.0.3.js"></script>
+
+<script src="/static/webshims/js-webshim/dev/extras/modernizr-custom.js"></script>
+<script src="/static/webshims/js-webshim/dev/polyfiller.js"></script>
+
 <script type="text/javascript" src="/static/js/app.js"></script>

@@ -20,7 +20,8 @@ module.exports = function (grunt) {
                     "source/static/css/app.css",
                     "source/static/css/datepicker.css",
                     "source/static/css/daterangepicker.css",
-                    "source/static/css/jqcloud.css"
+                    "source/static/css/jqcloud.css",
+                    "source/static/css/bootstrap-switch.css"
                 ],
                 dest: "source/static/css/app.concat.css"
             }

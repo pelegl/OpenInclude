@@ -56,7 +56,31 @@ class PaymentController extends basic
 module.exports = (req,res)->
   new PaymentController req, res
 
+# new, charge by bill
 module.exports.charge = (req, res) ->
+  Bill.findById(req.body.id).populate("from_user to_user").exec((result, bill) ->
+    if result or not bill then return res.json {success: false, error: result}
+
+    Stripe.billCustomer bill, (err, charge) ->
+      if not err
+        stripeObj =
+          chargeid: charge.id
+          date: charge.created
+        billed = new Stripe(stripeObj)
+        billed.save (error, stripe) =>
+          unless error
+            res.send charge
+            res.statusCode = 201
+          else
+            res.send error
+            res.statusCode = 500
+      else
+        res.send err
+        res.statusCode = 500
+  )
+
+# deprecated, used for direct charging connections
+module.exports.charge2 = (req, res) ->
   Connection.findById(req.body.id).populate("runways").exec((result, connection) ->
     if result then return res.json {success: false, error: "Connection not found"}
 

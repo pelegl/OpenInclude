@@ -200,3 +200,16 @@
           return false
         
 )(window)
+
+$.webshims.debug = true
+$.webshims.setOptions(
+  basePath: "/static/webshims/js-webshim/dev/shims/"
+)
+$.webshims.polyfill "forms forms-ext"
+
+$.webshims.ready("forms forms-ext", ->
+  $('body').on('firstinvalid', 'form', (e) ->
+    $.webshims.validityAlert.showFor e.target
+    return false;
+  )
+)

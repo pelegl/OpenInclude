@@ -2,6 +2,7 @@ class views.AdminFinance extends View
   events:
     'click #admin-filter': 'filter'
     'click #chaaaaaarge': 'onwardsMyMightyStallion'
+    'switch-change #toggle-paid': 'togglePaid'
 
   onwardsMyMightyStallion: (e) ->
     e.preventDefault()
@@ -20,6 +21,10 @@ class views.AdminFinance extends View
       error: (xhr, status, error) ->
         alert xhr.responseText
     )
+
+  togglePaid: (e, data) ->
+    @context.show_paid = data.value
+    @render()
 
   filter: (e, render = true) ->
     if e
@@ -91,5 +96,6 @@ class views.AdminFinance extends View
     options = views.DateRangeObject
     options.element = @$el
     @datepicker = @$('.daterange').daterangepicker _.extend(options, {startDate: @context.admin_start, endDate: @context.admin_end}), _.bind(views.DateRangeFunction, @)
+    @$(".switch").bootstrapSwitch()
     @filter(null, false)
     @

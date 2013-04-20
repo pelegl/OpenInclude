@@ -46,7 +46,8 @@
     "eventemitter2": "~0.4.11",
     "dot": "1.0.x",
     "moment": "*",
-    "marked": "0.2.x"
+    "marked": "0.2.x",
+    "cron": "*"
   },
   "devDependencies": {
     "coffee-trace": "~1.3.4",

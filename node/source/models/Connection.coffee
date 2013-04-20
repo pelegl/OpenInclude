@@ -16,6 +16,7 @@ definition =
   fee: Number
   data: Number
   runways:[{type: ObjectId, ref: "Runway"}]
+  bills:[{type: ObjectId, ref: "Bill"}]
 
 methods = {}
 

@@ -6,12 +6,16 @@
         <span id="admin_from" class="from" style="display: none"></span>
         <span id="admin_to" class="to" style="display: none"></span>
     </div>
-    <a id="admin-csv" class="btn btn-success">CSV</a>
+    <a id="admin-csv" class="btn btn-success pull-left">CSV</a>
+    <div id="toggle-paid" class="switch" style="margin-top: 1px; margin-left: 20px" data-on-label="Paid" data-off-label="New">
+        <input type="checkbox" {{? it.show_paid }}checked{{?}}/>
+    </div>
 </div>
 <table class="table table-bordered table-hover" style="background-color: #ffffff">
     <thead>
         <tr>
             <th>Reader → Writer</th>
+            <th>Description</th>
             <th>Amount</th>
             <th></th>
         </tr>
@@ -19,68 +23,33 @@
     <tbody>
     {{~ it.connections :connection }}
     {{
-        charge = 0;
         paid_money = 0;
 
-        runways = [];
+        bills = [];
         paid = [];
 
-        for (r in connection.runways)
+        for (r in connection.bills)
         {
-            runway = connection.runways[r];
+            bill = connection.bills[r];
 
-            m = moment(runway.date);
+            m = moment(bill.date);
             f = moment(it.admin_from);
             t = moment(it.admin_to);
 
             if (it.admin_from != "none" && it.admin_to != "none" && !((m.isAfter(f, 'day') || m.isSame(f, 'day')) && (m.isBefore(t, 'day')) || m.isSame(t, 'day'))) continue;
-            if (runway.paid) paid.push(runway); else runways.push(runway);
+            if (bill.isPaid) paid.push(bill); else bills.push(bill);
         }
 
-        for (r in runways)
-        {
-            runway = runways[r];
-            worked = parseInt(runway.worked);
-            price = worked * (runway.charged + runway.charged * runway.fee / 100);
-            charge += price;
-        }
-
-        for (r in paid)
-        {
-            runway = paid[r];
-            worked = parseInt(runway.worked);
-            price = worked * (runway.charged + runway.charged * runway.fee / 100);
-            paid_money += price;
-        }
+        if (it.show_paid) bills = paid;
     }}
-    {{? charge > 0 }}
+    {{~}}
+    {{~ bills :bill }}
     <tr>
-        <td>
-            <a href="/profile/view/{{= connection.reader.name }}">{{= connection.reader.name }}</a> → <a href="/profile/view/{{= connection.writer.name }}">{{= connection.writer.name }}</a>
-            <ul class="finance-list">
-                {{~ runways :runway }}
-                <li>→ {{= runway.memo || "No memo" }} <b>for</b> {{= runway.worked }} <b>hours</b> = ${{= worked * (runway.charged + runway.charged * runway.fee / 100) }}</li>
-                {{~}}
-            </ul>
-        </td>
-        <td>${{= charge }}</td>
+        <td><a href="/profile/view/{{= connection.reader.name }}">{{= connection.reader.name }}</a> → <a href="/profile/view/{{= connection.writer.name }}">{{= connection.writer.name }}</a></td>
+        <td>{{= bill.description || "No memo" }}</td>
+        <td>${{= bill.amount }}</td>
         <td><button id="chaaaaaarge" class="btn btn-primary" rel="{{= connection._id }}">Charge</button></td>
     </tr>
-    {{?}}
-    {{? paid_money > 0 }}
-    <tr>
-        <td>
-            <a href="/profile/view/{{= connection.reader.name }}">{{= connection.reader.name }}</a> → <a href="/profile/view/{{= connection.writer.name }}">{{= connection.writer.name }}</a>
-            <ul class="finance-list">
-                {{~ paid :runway }}
-                <li>→ {{= runway.memo || "No memo" }} <b>for</b> {{= runway.worked }} <b>hours</b> = ${{= worked * (runway.charged + runway.charged * runway.fee / 100) }}</li>
-                {{~}}
-            </ul>
-        </td>
-        <td>${{= paid_money }}</td>
-        <td>Paid</td>
-    </tr>
-    {{?}}
     {{~}}
     </tbody>
 </table>

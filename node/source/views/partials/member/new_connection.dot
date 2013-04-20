@@ -1,10 +1,10 @@
 <form method='post' action='' class='inline-popover'>
-    <input type="text" name="reader" class="input-block-level" placeholder="Reader" required />
-    <input type="text" name="writer" class="input-block-level" placeholder="Writer" required />
+    <input type="text" name="reader" class="input-block-level" placeholder="Reader" required data-errormessage="Reader is required" />
+    <input type="text" name="writer" class="input-block-level" placeholder="Writer" required data-errormessage="Writer is required"/>
     <input type="hidden" name="reader_id" />
     <input type="hidden" name="writer_id" />
-    <input type="text" name="charged" class="input-block-level" placeholder="Writer rate" required />
-    <input type="text" name="fee" class="input-block-level" placeholder="% fee" required />
+    <input type="text" name="charged" class="input-block-level" placeholder="Writer rate" required data-errormessage="Writer rate is required"/>
+    <input type="text" name="fee" class="input-block-level" placeholder="% fee" required data-errormessage="Fee is required"/>
 
     <div>
         <a class="btn pull-left close-inline">Close</a>
