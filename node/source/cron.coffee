@@ -19,6 +19,10 @@ weekly_billing_job =  new cron {
   }
 Jobs.push weekly_billing_job
 
+## perform billing ""
+
+weekly_billing()
+
 
 ###
   Exports

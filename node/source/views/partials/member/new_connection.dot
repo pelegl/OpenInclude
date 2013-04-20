@@ -1,4 +1,5 @@
 <form method='post' action='' class='inline-popover'>
+
     <input type="text" name="reader" class="input-block-level" placeholder="Reader" required autocomplete="off" data-errormessage="Reader is required" />
     <input type="text" name="writer" class="input-block-level" placeholder="Writer" required autocomplete="off" data-errormessage="Writer is required"/>
     <input type="hidden" name="reader_id" />
@@ -10,4 +11,5 @@
         <a class="btn pull-left close-inline">Close</a>
         <button type='submit' class="btn btn-primary pull-left" style='margin-left: 20px'>Confirm</button>
     </div>
+
 </form>
