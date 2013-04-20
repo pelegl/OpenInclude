@@ -6,7 +6,7 @@ class views.DiscoverChart extends View
     @listenTo @collection, "filter", @renderChart
 
     @margin =
-      top:        55
+      top:        100
       right:      19.5
       bottom:     60
       left:       50
@@ -245,7 +245,7 @@ class views.DiscoverChart extends View
 
       preventCollision(times) if --times > 0
 
-    preventCollision(2)
+    preventCollision(4)
 
     @dot = @dots.selectAll(".dot")
       .data(data, (d)-> return d.key)
