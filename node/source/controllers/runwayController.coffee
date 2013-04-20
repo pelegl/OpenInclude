@@ -29,15 +29,22 @@ module.exports =
     )
 
   create_connection: (req, res) ->
-    req.body.writer = {id: req.body.writer_id, name: req.body.writer}
-    req.body.reader = {id: req.body.reader_id, name: req.body.reader}
-    connection = new Connection(req.body)
-
-    connection.save((result, data) ->
+    Connection.findOne({"reader.id": req.body.reader_id, "writer.id": req.body.writer_id}, (result, connection) ->
       if result
-        res.json({success: false, error: result})
-      else
-        res.json({success: true})
+        return res.json {success: false, error: result}
+      if connection
+        return res.json {success: false, error: "This connection already exists"}
+
+      req.body.writer = {id: req.body.writer_id, name: req.body.writer}
+      req.body.reader = {id: req.body.reader_id, name: req.body.reader}
+      connection = new Connection(req.body)
+
+      connection.save((result, data) ->
+        if result
+          res.json({success: false, error: result})
+        else
+          res.json({success: true})
+      )
     )
 
   update_connection: (req, res) ->

@@ -4,6 +4,11 @@ views.Profile = View.extend
   events:
     'click a.backbone'             : "processAction"
     'click .setupPayment > button' : "update_cc_events"
+    'click a[data-toggle=tab]'     : "makeTabUrl"
+
+  makeTabUrl: (e) ->
+    url = e.currentTarget.attributes['href'].value.replace("#", "")
+    app.navigate "/profile/#{url}", {trigger: false}
 
   update_cc_events: (e) ->
     @cc.delegateEvents()
@@ -64,8 +69,10 @@ views.Profile = View.extend
       ###
         hide agreement and navigate back to profile
       ###
-      @informationBox.children().detach()
-      app.navigate @context.profile_url, {trigger: false}
+      #@informationBox.children().detach()
+      #app.navigate @context.profile_url, {trigger: false}
+      @context.active_tab = action.replace("/", "")
+      return
 
   initialize: (options) ->
     console.log '[__profileView__] Init'
@@ -99,9 +106,10 @@ views.Profile = View.extend
   render: ->
     console.log "Rendering profile view"
 
+    if @context.private
+      @setAction @options.action
+
     @context.user = @model.toJSON()
-    unless @context.active_tab
-      @context.active_tab = "admin-connections"
 
     html = tpl['member/profile'](@context)
     @$el.html html
@@ -110,6 +118,9 @@ views.Profile = View.extend
     @informationBox = @$ ".informationBox"
 
     if @context.private
+
+      unless @context.active_tab
+        @context.active_tab = "admin-connections"
 
       unless @collections
         @collections = {}
@@ -149,9 +160,6 @@ views.Profile = View.extend
     if @cc
       @cc.setElement @$(".setupPayment .dropdown-menu")
       @cc.$el.prev().dropdown()
-
-    if @context.private
-      @setAction @options.action
 
     @$('a[data-toggle="tab"]').on('shown', (e) =>
       id = e.target.attributes['href'].value;

@@ -64,7 +64,7 @@
                             {{? it.user.groups.indexOf("admin") >= 0 }}
                             {{ if (!it.active_tab) it.active_tab = "admin-connections"; }}
                             <li class="dropdown active">
-                                <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Admin
+                                <a href="" class="dropdown-toggle" role="button" data-toggle="dropdown" data-target="#">Admin
                                     <b class="caret"></b></a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="#admin-connections" data-toggle="tab">Connections</a></li>
@@ -75,7 +75,7 @@
                             {{?}}
                             {{? it.user.groups.indexOf("reader") >= 0 }}
                             <li class="dropdown{{? !it.active_tab }} active{{ it.active_tab = "reader-runway"; }}{{?}}">
-                                <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Reader
+                                <a href="" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Reader
                                     <b class="caret"></b></a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="#reader-runway" data-toggle="tab">Runway</a></li>
@@ -85,7 +85,7 @@
                             {{?}}
                             {{? it.user.groups.indexOf("writer") >= 0 }}
                             <li class="dropdown{{? !it.active_tab }} active{{ it.active_tab = "writer-runway"; }}{{?}}">
-                                <a href="/profile" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Writer
+                                <a href="" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Writer
                                     <b class="caret"></b></a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="#writer-runway" data-toggle="tab">Runway</a></li>

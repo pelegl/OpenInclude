@@ -14,7 +14,9 @@ definition =
   writer: Object
   charged: Number
   fee: Number
-  data: Number
+  data:
+    type: Number
+    default: 0
   runways:[{type: ObjectId, ref: "Runway"}]
   bills:[{type: ObjectId, ref: "Bill"}]
 
