@@ -15,6 +15,7 @@ class views.NewPost extends InlineForm
 
   render: ->
     @context.post = @model.toJSON()
+
     super
 
     opts =
