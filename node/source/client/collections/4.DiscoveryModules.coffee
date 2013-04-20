@@ -29,5 +29,5 @@ collections.Discovery = Backbone.Collection.extend
     $.getJSON "#{collection.url}?q=#{query}" , (r)->
       collection.maxScore = r.maxScore
       collection.groupedModules = _.groupBy r.searchData, (module)=>
-        return module.language
+        return module.fields.language
       collection.reset r.searchData
