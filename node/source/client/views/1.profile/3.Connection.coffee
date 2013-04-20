@@ -13,11 +13,15 @@ class views.ConnectionForm extends InlineForm
     @model = new models.Connection
     super context
 
+  show: ->
+    super
+
     $reader = @$("input[name=reader]")
     $writer = @$("input[name=writer]")
     $ids = {}
     $ids['reader'] = @$("input[name=reader_id]")
     $ids['writer'] = @$("input[name=writer_id]")
+
 
     $reader.add($writer).typeahead
       source: (query, process)->
