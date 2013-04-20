@@ -1,6 +1,6 @@
 {
   "name": "OpenInclude",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "OpenInclude - opensource aggregation tool",
   "main": "app.coffee",
@@ -54,8 +54,6 @@
     "ncp": "*",
     "fs-extra": "~0.5.0",
     "grunt": "0.4.x",
-    "grunt-contrib-watch": "~0.3.1",    
-    "grunt-contrib-handlebars": "0.5.x",
     "grunt-contrib-less": "0.5.x",
     "grunt-contrib-concat": "*",
     "grunt-contrib-cssmin": "*",

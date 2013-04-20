@@ -36,7 +36,7 @@
                     -
                   {{?}}
                 <td>
-                    <button type="button" class='fade btn btn-mini btn-danger'><i class='icon icon-remove'></i></button>
+                    <button type="button" class='fade btn btn-mini'><i class='icon icon-remove'></i></button>
                 </td>
             </tr>
 			{{~}}

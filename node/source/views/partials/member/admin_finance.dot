@@ -11,7 +11,7 @@
         <input type="checkbox" {{? it.show_paid }}checked{{?}}/>
     </div>
 </div>
-<table class="table table-bordered table-hover" style="background-color: #ffffff">
+<table class="table table-striped table-hover" style="background-color: #ffffff">
     <thead>
         <tr>
             <th>Reader → Writer</th>
@@ -22,34 +22,42 @@
     </thead>
     <tbody>
     {{~ it.connections :connection }}
-    {{
-        paid_money = 0;
+        {{
+            paid_money = 0;
 
-        bills = [];
-        paid = [];
+            bills = [];
+            paid = [];
 
-        for (r in connection.bills)
-        {
-            bill = connection.bills[r];
+            for (r in connection.bills)
+            {
+                bill = connection.bills[r];
 
-            m = moment(bill.date);
-            f = moment(it.admin_from);
-            t = moment(it.admin_to);
+                m = moment(bill.date);
+                f = moment(it.admin_from);
+                t = moment(it.admin_to);
 
-            if (it.admin_from != "none" && it.admin_to != "none" && !((m.isAfter(f, 'day') || m.isSame(f, 'day')) && (m.isBefore(t, 'day')) || m.isSame(t, 'day'))) continue;
-            if (bill.isPaid) paid.push(bill); else bills.push(bill);
-        }
+                if (it.admin_from != "none" && it.admin_to != "none" && !((m.isAfter(f, 'day') || m.isSame(f, 'day')) && (m.isBefore(t, 'day')) || m.isSame(t, 'day'))) continue;
+                if (bill.isPaid) paid.push(bill); else bills.push(bill);
+            }
 
-        if (it.show_paid) bills = paid;
-    }}
-    {{~}}
-    {{~ bills :bill }}
-    <tr>
-        <td><a href="/profile/view/{{= connection.reader.name }}">{{= connection.reader.name }}</a> → <a href="/profile/view/{{= connection.writer.name }}">{{= connection.writer.name }}</a></td>
-        <td>{{= bill.description || "No memo" }}</td>
-        <td>${{= bill.amount }}</td>
-        <td><button id="chaaaaaarge" class="btn btn-primary" rel="{{= connection._id }}">Charge</button></td>
-    </tr>
+            if (it.show_paid) bills = paid;
+        }}
+
+        {{~ bills :bill }}
+        <tr>
+            <td><a href="/profile/view/{{= connection.reader.name }}">{{= connection.reader.name }}</a> → <a href="/profile/view/{{= connection.writer.name }}">{{= connection.writer.name }}</a></td>
+            <td>{{= bill.description || "No memo" }}</td>
+            <td>${{= bill.amount }}</td>
+            <td>
+                {{? !it.show_paid }}
+                <button id="chaaaaaarge" class="btn btn-primary btn-mini" data-connection="{{= connection._id }}" data-bill="{{= bill._id}}">Charge</button>
+                {{??}}
+                <span class='label label-info'>charged</span>
+                {{?}}
+            </td>
+        </tr>
+        {{~}}
+
     {{~}}
     </tbody>
 </table>

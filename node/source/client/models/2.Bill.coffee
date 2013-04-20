@@ -1,26 +1,18 @@
 models.Bill = Backbone.Model.extend
-  ###
-   user
-   amount
-   description
-  ###
   idAttribute: "_id"
-  urlRoot:     "/profile/bills"
-  validate: (attrs, options)->
-    errors = []
-    unless attrs.bill
-      errors.push "Internal error - error 001"
-    else
-      # user
-      unless attrs.bill.user
-        errors.push "Missing user information - error 002"
-      # amount
-      unless attrs.bill.amount
-        errors.push {name: "amount", msg: "Please, specify amount"}
-      else if ! /^[0-9]+(\.[0-9]+)?\$?$/.test attrs.bill.amount
-        errors.push {name: "amount", msg: "Amount should only contain digits and a dot"}
-      # description
-      unless attrs.bill.description
-        errors.push {name: "description", msg: "Please, specify bill description"}
 
-    return errors if errors.length > 0
+  url: ->
+    return "/api/payment/#{@get('id')}"
+
+  charge: (success, error) ->
+    console.log "[__ charge __]", this
+
+    ## updating document
+    callback = (data, status, xhr)=>
+      success @set(data)
+
+    ## returning error
+    callback_error = (model, xhr, options)=>
+      error xhr.responseText
+
+    @save {isPaid: true}, {success: callback, error: callback_error, patch: true}

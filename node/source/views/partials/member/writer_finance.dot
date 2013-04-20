@@ -8,7 +8,7 @@
     </div>
     <a id="writer-csv" class="btn btn-success">CSV</a>
 </div>
-<table class="table table-bordered table-hover" style="background-color: #ffffff">
+<table class="table table-striped table-hover" style="background-color: #ffffff">
     <thead>
         <tr>
             <th>Reader</th>

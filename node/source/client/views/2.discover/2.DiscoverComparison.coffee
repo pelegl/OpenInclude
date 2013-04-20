@@ -3,7 +3,7 @@ views.DiscoverComparison = Backbone.View.extend
     "click [data-sort]" : "sortComparison"
     "mouseenter tbody tr" : "fadeIn"
     "mouseleave tbody tr" : "fadeOut"
-    "click tbody tr .btn-danger": "remove"
+    "click tbody tr .btn": "remove"
 
   fadeIn:  (e)-> @fade true, e
   fadeOut: (e)-> @fade false, e

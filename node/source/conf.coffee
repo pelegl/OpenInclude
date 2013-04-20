@@ -277,6 +277,12 @@ exports.logout = (req, res) ->
   req.logout()
   res.redirect "back"
 
+
+exports.is_admin = (req,res,next)->
+  unless req.user?.is_superuser()
+    return res.send "Unauthorized", 403
+  next()
+
 exports.is_authenticated = (request, response, next) ->
   unless request.isAuthenticated()
     return response.redirect signin_url

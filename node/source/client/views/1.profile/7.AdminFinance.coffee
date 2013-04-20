@@ -8,23 +8,21 @@ class views.AdminFinance extends View
     e.preventDefault()
     e.stopPropagation()
 
-    id = e.currentTarget.attributes['rel'].value
+    $this         = $(e.currentTarget)
+    connectionId  = $this.data("connection")
+    billId        = $this.data("bill")
 
-    $.ajax(
-      url: '/api/payment/charge'
-      type: 'post'
-      data:
-        id: id
-      context: @
-      success: (data, status, xhr) ->
-        @collection.fetch()
-      error: (xhr, status, error) ->
-        alert xhr.responseText
-    )
+    connection = @collection.get     connectionId
+    bill       = connection.get_bill billId
+
+    # process charge
+    bill.charge @renderBills, (errorText)->
+      alert errorText
+
 
   togglePaid: (e, data) ->
     @context.show_paid = data.value
-    @render()
+    @renderBills()
 
   filter: (e, render = true) ->
     if e
@@ -85,17 +83,29 @@ class views.AdminFinance extends View
   initialize: (context) ->
     super context
 
+    _.bindAll this
+
     @listenTo @collection, "sync", @render
     @context.admin_from = "none"
     @context.admin_to = "none"
+
+  renderBills: ->
+    html = tpl['member/admin_finance'](@context)
+    exchange = $("<div />").append(html).find(".table").html()
+    @$(".table").html exchange
+    @
 
   render: ->
     @context.connections = @collection.toJSON()
     html = tpl['member/admin_finance'](@context)
     @$el.html html
+
     options = views.DateRangeObject
     options.element = @$el
     @datepicker = @$('.daterange').daterangepicker _.extend(options, {startDate: @context.admin_start, endDate: @context.admin_end}), _.bind(views.DateRangeFunction, @)
+
     @$(".switch").bootstrapSwitch()
+
     @filter(null, false)
     @
+

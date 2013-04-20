@@ -1,4 +1,4 @@
-{STATIC_URL, modules_url, github_auth, get_models, is_authenticated, github_auth_url, trello_auth_url, trello_auth, logout, signin_url, is_not_authenticated, dashboard_url} = require './conf'
+{STATIC_URL, is_admin, modules_url, github_auth, get_models, is_authenticated, github_auth_url, trello_auth_url, trello_auth, logout, signin_url, is_not_authenticated, dashboard_url} = require './conf'
 
 exports.set = (app)->
 
@@ -26,11 +26,6 @@ exports.set = (app)->
   app.post '/share-idea', app.Controllers.idea
   
   ###
-  Payment
-  ###
-#  app.get '/payment', app.Controllers.payment
-  app.get '/payment/*', app.Controllers.payment
-  ###
   Profile interaction
   ###
   app.get signin_url, is_not_authenticated, app.Controllers.profile
@@ -39,7 +34,7 @@ exports.set = (app)->
   app.get  '/profile*',         is_authenticated, app.Controllers.profile
   app.get  '/profile/view_bills/:id',is_authenticated, app.Controllers.profile
   
-  app.get '/admin*', app.Controllers.admin
+  app.get  '/admin*', app.Controllers.admin
   app.post '/admin*', app.Controllers.admin
   ###
   Session interaction
@@ -74,26 +69,29 @@ exports.set = (app)->
 
 
   ## Runway ##
-  app.get "/api/connection", app.Controllers.runway.connections
-  app.post "/api/connection", app.Controllers.runway.create_connection
-  app.put "/api/connection", app.Controllers.runway.update_connection
+  app.get "/api/connection",  is_admin, app.Controllers.runway.connections
+  app.post "/api/connection", is_admin, app.Controllers.runway.create_connection
+  app.put "/api/connection",  is_admin, app.Controllers.runway.update_connection
 
   app.get "/api/runway/reader", app.Controllers.runway.reader
   app.get "/api/runway/writer", app.Controllers.runway.writer
 
-  app.get "/api/finance/reader", app.Controllers.runway.finance_reader
+  app.get "/api/finance/reader",           app.Controllers.runway.finance_reader
   app.get "/api/finance/writer/:from/:to", app.Controllers.runway.search_writer
 
-  app.post "/api/runway/:connection", app.Controllers.runway.create
+  app.post "/api/runway/:connection", is_admin, app.Controllers.runway.create
 
   ## Payments ##
-  app.post "/api/payment/charge", app.Controllers.payment.charge
+  app.patch "/api/payment/:id",  is_admin, app.Controllers.payment.patch
+
+
+
 
   ## Blog ##
-  app.get "/api/blog/post", app.Controllers.blog.list
-  app.post "/api/blog/post", app.Controllers.blog.create
-  app.put "/api/blog/post", app.Controllers.blog.update
-  app.delete "/api/blog/post/:id", app.Controllers.blog.delete
+  app.get    "/api/blog/post", is_admin,     app.Controllers.blog.list
+  app.post   "/api/blog/post", is_admin,     app.Controllers.blog.create
+  app.put    "/api/blog/post", is_admin,     app.Controllers.blog.update
+  app.delete "/api/blog/post/:id", is_admin, app.Controllers.blog.delete
 
   app.get "/blog*", app.Controllers.blog
 

@@ -1,65 +1,23 @@
 {get_models,esClient} = require '../conf'
 
 [Stripe,User,Bill,Connection] = get_models ["Stripe","User","Bill","Connection"]
-basic = require('./basicController')
-_ = require "underscore"
+basic                         = require('./basicController')
+_                             = require "underscore"
 
-class PaymentController extends basic
-  constructor: (@req, @res)->
-    @context =
-      title : "payment" 
-    super
-  
-  index: ->  	
-    @context.body = @_view 'payment/index', @context    
-    @res.render 'base', @context
-  
 
-  test: ->
-    User.get_user "261220" ,(err,user) =>
-  	  Stripe.billCustomer "513da86c8288483a69000003",user, 1000, (err,billed) ->
-			    console.log err
-			    console.log billed  
-    	
-    #adds a customer
-  addCustomer:->
-#  	if req.user
-#  		user = 
-	    Stripe.addCustomer '261220',"Tom Hanks","371449635398431","4","2014","222",(err,customer)=>
-	    	if not err
-	    		console.log customer
-	    		@res.send customer
-	    		@res.statusCode = 201
-	    	else
-	    		console.log err
-	    		@res.send err
-	    		@res.statusCode = 500
-	#Bills a customer	
-  billCustomer: ->
-    Stripe.billCustomer "261220", "500", (err, charge) =>
-      if not err
-        stripeObj =
-          chargeid: charge.id
-          date: charge.created
-        billed = new Stripe(stripeObj)
-        billed.save (error, stripe) =>
-          unless error
-            @res.send charge
-            @res.statusCode = 201
-          else
-            @res.send error
-            @res.statusCode = 500
-      else
-        @res.send err
-        @res.statusCode = 500
-		
-module.exports = (req,res)->
-  new PaymentController req, res
+exports.patch = (req,res) ->
+  {isPaid} = req.body
+
+  return charge(req,res) if isPaid is true
+
+  res.send "Error", 500
+
 
 # new, charge by bill
-module.exports.charge = (req, res) ->
-  Bill.findById(req.body.id).populate("from_user to_user").exec((result, bill) ->
-    if result or not bill then return res.json {success: false, error: result}
+exports.charge = charge = (req, res) ->
+
+  Bill.findById(req.params.id).populate("from_user to_user").exec((result, bill) ->
+    if result or not bill or bill.isPaid then return res.json {success: false, error: result}, 400
 
     Stripe.billCustomer bill, (err, charge) ->
       if not err
@@ -69,6 +27,10 @@ module.exports.charge = (req, res) ->
         billed = new Stripe(stripeObj)
         billed.save (error, stripe) =>
           unless error
+            # switch back to ids, so we dont expose sensetive information to the client
+            charge.from_user = charge.populated('from_user')
+            charge.to_user   = charge.populated('to_user')
+            # send charge details back
             res.send charge
             res.statusCode = 201
           else
@@ -80,7 +42,7 @@ module.exports.charge = (req, res) ->
   )
 
 # deprecated, used for direct charging connections
-module.exports.charge2 = (req, res) ->
+exports.charge2 = (req, res) ->
   Connection.findById(req.body.id).populate("runways").exec((result, connection) ->
     if result then return res.json {success: false, error: "Connection not found"}
 
