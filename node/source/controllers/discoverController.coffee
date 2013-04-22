@@ -35,8 +35,6 @@ class DiscoverController extends require('./basicController')
       output = data.hits.hits
     else
       output = []
-
-    console.log output.length
     
     ###
       Process output ---
@@ -47,8 +45,21 @@ class DiscoverController extends require('./basicController')
     module_ids   = []
     score = {}
 
+    ###
+        { _index: 'comments-v2-index',
+      _type: 'module_v2',
+      _id: '5133d0c6a4c2892c0f000f4c',
+      _score: 0.0019432604,
+      fields:
+       { owner: 'cloudera',
+         language: 'Python',
+         module_name: 'hue',
+         stars: 243,
+         description: 'Hue is a browser-based desktop interface for interacting with Hadoop. It supports a file browser, job tracker interface, majors query editors, and more.' } }
+    ###
+
     async.forEach output, (repository, callback) =>
-      {_id} = repository._source
+      {_id} = repository
       module_ids.push _id
       score[_id] = repository._score
       callback null
@@ -56,8 +67,6 @@ class DiscoverController extends require('./basicController')
       workflow = {}
 
       workflow.modules = (callback)=>
-        console.log module_ids
-
         Module.find({_id: {$in: module_ids}}).lean().exec callback
 
       workflow.languages = (callback)=>
@@ -105,25 +114,23 @@ class DiscoverController extends require('./basicController')
       query =
         query_string:
           query: @context.discover_search_query
-          fields: ["module_name^2", "owner", "description"]
+          fields: ["module_name^2", "owner", "description", "comments"]
           use_dis_max: true
           tie_breaker: 0.7
           boost: 1.2
           default_operator: "AND"
+
     else
       query =
         match_all: {}
 
-
-    #console.log JSON.stringify(query)
-
-
     options =
       size: 80
-    
+
+    fields = []
 
     savedData = []
-    esClient.search('mongomodules', 'module', {query}, options)
+    esClient.search('comments-v2-index', 'module_v2', {query, fields, min_score: 0.5}, options)
     .on('data', (data) =>savedData.push data)
     .on('done', =>@_searchOutput savedData)
     .on('error', (error)=>

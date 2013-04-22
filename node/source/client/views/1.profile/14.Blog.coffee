@@ -50,7 +50,7 @@ class views.Blog extends View
     html = tpl['member/blog'](@context)
     @$el.html html
 
-    if @form
+    if @form?
       @stopListening @form
       delete @form
 

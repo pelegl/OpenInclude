@@ -9,17 +9,17 @@
     </thead>
     <tbody>
     {{~ it.runways_writer :runway }}
-    {{
-    worked = 0;
-    for (r in runway.runways)
-    {
-    worked += parseInt(runway.runways[r].worked);
-    }
-    }}
+        {{
+            var worked = 0;
+            for (var r in runway.runways)
+            {
+            worked += parseInt(runway.runways[r].worked);
+            }
+        }}
     <tr>
         <td><a href="/profile/view/{{= runway.reader.name }}">{{= runway.reader.name }}</a></td>
         <td>${{= runway.charged }}/hr</td>
-        <td>{{= worked }} / {{= runway.data }} hours</td>
+        <td>{{= worked }} / {{= runway.data || 0 }} hours</td>
         <td>
             {{? worked >= runway.data }}
             Allowed time limit exceeded.
