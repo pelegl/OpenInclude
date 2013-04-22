@@ -30,16 +30,17 @@
             </article>
             {{~}}
 
+            {{ if (it.tag) part = "/blog/tag/" + it.tag + "/"; else part = "/blog/index/"; }}
             <div class="pagination center">
                 <ul>
                     {{? it.page > 1 }}
-                    <li><a href="/blog/index/{{= it.page - 1 }}" data-nobackbone >&laquo;</a></li>
+                    <li><a href="{{= part }}{{= it.page - 1 }}" data-nobackbone >&laquo;</a></li>
                     {{?}}
                     {{ for (i = 1; i <= it.limit; i++) { }}
-                    <li {{? i == it.page }}class="active"{{?}}><a href="/blog/index/{{= i }}" data-nobackbone >{{= i }}</a></li>
+                    <li {{? i == it.page }}class="active"{{?}}><a href="{{= part }}{{= i }}" data-nobackbone >{{= i }}</a></li>
                     {{ } }}
                     {{? it.page < it.limit }}
-                    <li><a href="/blog/index/{{= it.page + 1 }}" data-nobackbone >&raquo;</a></li>
+                    <li><a href="{{= part }}{{= it.page + 1 }}" data-nobackbone >&raquo;</a></li>
                     {{?}}
                 </ul>
             </div>

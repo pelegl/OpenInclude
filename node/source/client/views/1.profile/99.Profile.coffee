@@ -71,7 +71,8 @@ views.Profile = View.extend
       ###
       #@informationBox.children().detach()
       #app.navigate @context.profile_url, {trigger: false}
-      @context.active_tab = action.replace("/", "")
+      unless action is "/null"
+        @context.active_tab = action.replace("/", "")
       return
 
   initialize: (options) ->
