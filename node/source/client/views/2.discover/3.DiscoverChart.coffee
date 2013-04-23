@@ -1,7 +1,4 @@
-class views.DiscoverChart extends View
-  stopLoader: false
-  _progress: 0
-
+class views.DiscoverChart extends views.Chart
   initialize: ->
     @listenTo @collection, "filter", @renderChart
 
@@ -35,56 +32,6 @@ class views.DiscoverChart extends View
     @$el.append @popupView.$el
     # render chart
     @renderChartReal() if @collection.models.length > 0
-
-  createMeter: ->
-    unless @meter
-      @arc = d3.svg.arc()
-        .startAngle(0)
-        .innerRadius(60)
-        .outerRadius(80)
-
-      className = @$el.attr "class"
-
-      @meter = @svg.append("g")
-        .attr("class", "progress-meter")
-        .attr("transform", "translate(" + @width / 2 + "," + @height / 2 + ")")
-
-      @meter.append("path")
-        .attr("class", "background")
-        .attr("d", @arc.endAngle(2 * Math.PI))
-
-      @foreground = @meter.append("path")
-        .attr("class", "foreground")
-
-      @text = @meter.append("text")
-        .attr("text-anchor", "middle")
-        .attr("dy", ".35em")
-
-  progress: (loaded, total) ->
-    if loaded is 0
-      @stopLoader = false
-      @_progress = 0
-      @createMeter()
-
-    twoPi = 2 * Math.PI
-    formatPercent = d3.format(".0%");
-
-    i = d3.interpolate(@_progress, loaded / total)
-
-    d3.transition().tween("progress", =>
-      (t) =>
-        @_progress = i(t);
-        if @_progress >= 100
-          @_progress = 0
-        @foreground.attr("d", @arc.endAngle(twoPi * @_progress))
-        #@text.text(formatPercent(@_progress))
-    )
-
-    unless @stopLoader
-      setTimeout(_.bind(@progress, @, loaded + 1, total), 100)
-
-  stopProgress: ->
-    @stopLoader = true
 
   render: ->
     @width      = @$el.width() - @margin.right - @margin.left
@@ -203,12 +150,6 @@ class views.DiscoverChart extends View
   ###
     Render chart
   ###
-
-  renderChart: ->
-    if @meter
-      transform = @meter.attr("transform")
-      @meter.transition().each("end", => @renderChartReal()).attr("transform", "#{transform} scale(0)").remove()
-      delete @meter
 
   renderChartReal: ->
     @setRadiusScale()
