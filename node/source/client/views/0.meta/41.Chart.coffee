@@ -38,19 +38,28 @@ class views.Chart extends View
     twoPi = 2 * Math.PI
     step = twoPi / 12
 
-    if @_progress is 0
-      @loader[11].attr("r", 15)
-    else
-      @loader[@_progress - 1].attr("r", 15).style("fill", d3.rgb(200, 200, 200))
+    radius = (i for [0..11])
+    colors  = []
 
-    @loader[@_progress].attr("r", 20).style("fill", d3.rgb(100, 100, 100))
+    start = @_progress-5
+    max_radius = 20
+    for i in [@_progress-5 .. @_progress]
+      percent = (i - start)/6
+      x = if i < 0 then 12+i else i
+
+      radius[x] = percent*max_radius
+      colors[x]  = percent * 200
+
+    for i in [0..11]
+      color = colors[i] || 0
+      @loader[i].attr("r", radius[i]).style("fill", d3.rgb(color,color,color))
+
 
     @_progress += 1
-    if @_progress > 11
-      @_progress = 0
+    @_progress = 0 if @_progress > 11
 
     unless @stopLoader
-      setTimeout(_.bind(@progress, @, loaded + 1, total), 500)
+      setTimeout(_.bind(@progress, @, loaded + 1, total), 100)
 
   stopProgress: ->
     @stopLoader = true
