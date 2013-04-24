@@ -31,7 +31,6 @@ class views.Chart extends View
 
   progress: (loaded, total) ->
     if loaded is 0
-      @stopLoader = false
       @_progress = 0
       @createMeter()
 
@@ -54,16 +53,23 @@ class views.Chart extends View
       color = colors[i] || 0
       @loader[i].attr("r", radius[i]).style("fill", d3.rgb(color,color,color))
 
-
     @_progress += 1
     @_progress = 0 if @_progress > 11
 
-    unless @stopLoader
-      setTimeout(_.bind(@progress, @, loaded + 1, total), 100)
+    if loaded is 0
+      if @timer
+        clearInterval(@timer)
+      @timer = setInterval(_.bind(@progress, @, loaded + 1, total), 100)
 
   stopProgress: ->
-    @stopLoader = true
+    if @timer
+      clearInterval(@timer)
     @_progress = 0
+    if @meter
+      @meter.transition().duration(100)
+        .attr("r", 0)
+        .remove()
+      delete @meter
 
   renderChart: ->
     if @meter

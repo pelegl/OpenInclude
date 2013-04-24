@@ -38,10 +38,12 @@ views.Discover = View.extend
     @chart.emptyDots()
     @chart.collection.fetch(
       beforeSend: =>
+        @chart.stopProgress()
         @chart.progress 0, 100
 
       data:
         q: query
+
       success: (a, r) =>
         @chart.collection.maxScore = r.maxScore
         @chart.collection.groupedModules = _.groupBy r.searchData, (module)=>
