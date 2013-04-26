@@ -23,7 +23,10 @@ views.Discover = View.extend
     @chart          = new views.DiscoverChart { el: @$("#searchChart"), collection: @chartData }
     @comparison     = new views.DiscoverComparison { el: @$("#moduleComparison"), collection: @comparisonData }
 
-    if qs.q? then @fetchSearchData qs.q
+    if qs.q?
+      @fetchSearchData qs.q
+    else
+      app.setTitle "Open Include | Discover Open Source Modules"
 
     @listenTo @chartData, "reset", @populateComparison
 
@@ -35,6 +38,7 @@ views.Discover = View.extend
     @fetchSearchData q
 
   fetchSearchData: (query) ->
+    app.setTitle "Open Include | Discover Open Source Modules | #{query}"
     @chart.emptyDots()
     @chart.collection.fetch(
       beforeSend: =>

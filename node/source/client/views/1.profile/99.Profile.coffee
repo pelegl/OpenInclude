@@ -122,6 +122,7 @@ views.Profile = View.extend
 
       unless @context.active_tab
         @context.active_tab = "admin-connections"
+        app.setTitle "OpenInclude | Admin | Connections"
 
       unless @collections
         @collections = {}
@@ -139,6 +140,18 @@ views.Profile = View.extend
         @collections['writer-runway'].url = "/api/runway/writer"
 
         @collections['writer-finance'] = @collections['writer-runway']
+
+      unless @titles
+        @titles = {}
+
+        @titles['admin-connections'] = "OpenInclude | Admin | Connections"
+        @titles['admin-finance'] = "OpenInclude | Admin | Finance"
+        @titles['admin-blog'] = "OpenInclude | Admin | Blog"
+        @titles['reader-runway'] = "OpenInclude | Reader | Runways"
+        @titles['reader-finance'] = "OpenInclude | Reader | Finances"
+        @titles['writer-runway'] = "OpenInclude | Writer | Runways"
+        @titles['writer-finance'] = "OpenInclude | Writer | Finances"
+
 
       @adminConnections = new views.AdminConnections _.extend(@context, {el: @$("#admin-connections"), collection: @collections['admin-connections']})
       @adminFinance = new views.AdminFinance _.extend(@context, {el: @$("#admin-finance"), collection: @collections['admin-finance']})
@@ -164,7 +177,8 @@ views.Profile = View.extend
 
     @$('a[data-toggle="tab"]').on('shown', (e) =>
       id = e.target.attributes['href'].value;
-      @collections[id.replace("#", "")].fetch();
+      @collections[id.replace("#", "")].fetch()
+      app.setTitle @titles[id.replace("#", "")]
     )
 
     @
