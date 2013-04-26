@@ -122,7 +122,7 @@ views.Profile = View.extend
 
       unless @context.active_tab
         @context.active_tab = "admin-connections"
-        app.setTitle "OpenInclude | Admin | Connections"
+        app.setTitle "Open Include | Admin | Connections"
 
       unless @collections
         @collections = {}
@@ -144,13 +144,13 @@ views.Profile = View.extend
       unless @titles
         @titles = {}
 
-        @titles['admin-connections'] = "OpenInclude | Admin | Connections"
-        @titles['admin-finance'] = "OpenInclude | Admin | Finance"
-        @titles['admin-blog'] = "OpenInclude | Admin | Blog"
-        @titles['reader-runway'] = "OpenInclude | Reader | Runways"
-        @titles['reader-finance'] = "OpenInclude | Reader | Finances"
-        @titles['writer-runway'] = "OpenInclude | Writer | Runways"
-        @titles['writer-finance'] = "OpenInclude | Writer | Finances"
+        @titles['admin-connections'] = "Open Include | Admin | Connections"
+        @titles['admin-finance'] = "Open Include | Admin | Finance"
+        @titles['admin-blog'] = "Open Include | Admin | Blog"
+        @titles['reader-runway'] = "Open Include | Reader | Runways"
+        @titles['reader-finance'] = "Open Include | Reader | Finances"
+        @titles['writer-runway'] = "Open Include | Writer | Runways"
+        @titles['writer-finance'] = "Open Include | Writer | Finances"
 
 
       @adminConnections = new views.AdminConnections _.extend(@context, {el: @$("#admin-connections"), collection: @collections['admin-connections']})
