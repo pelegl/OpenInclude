@@ -20,7 +20,11 @@
       "email": "atskiisotona@gmail.com",
       "url"  : "http://dgorbunov.ru"
     }
-  ],  
+  ],
+  "scripts" : {
+    "staging": "sudo PORT=80 staging=1 forever start -c coffee source/app.coffee",
+    "dev"    : "PORT=8900 forever start -c coffee source/app.coffee"
+  },
   "dependencies": {
     "express": "*",
     "async": "*",
