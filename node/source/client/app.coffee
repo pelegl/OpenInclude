@@ -31,6 +31,10 @@
   class App extends Backbone.Router
     conf: conf
 
+    setTitle: (title) ->
+      if title?
+        $("title").html(title)
+
     init: ->
       if !Backbone.history._hasPushState        
         hash = Backbone.history.getHash()
