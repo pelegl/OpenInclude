@@ -14,7 +14,7 @@ TrelloStrategy = require('passport-trello').Strategy
 poolSize = 20
 
 if !process.env.mongo
-  exports.db = db = mongoose.createConnection 'localhost', 'openInclude', { server: { poolSize }}
+  exports.db = db = mongoose.createConnection '54.235.108.134', 'openInclude', { server: { poolSize }}
 else
   exports.db = db = mongoose.createConnection process.env.mongo, { server: { poolSize }}
 
@@ -64,7 +64,7 @@ String.prototype.capitalize = ->
   Elastic search module
 ###
 serverOptions =
-  host: process.env.esHost || 'localhost'
+  host: process.env.esHost || '54.235.108.134'
   port: 9200    
   secure: false
 
