@@ -130,7 +130,7 @@ module.exports.list = (req, res) ->
   )
 
 module.exports.update = (req, res) ->
-  id = req.body._id
+  id = req.params.id
   delete req.body._id
   delete req.body.__v
 

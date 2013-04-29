@@ -90,7 +90,7 @@ exports.set = (app)->
   ## Blog ##
   app.get    "/api/blog/post", is_admin,     app.Controllers.blog.list
   app.post   "/api/blog/post", is_admin,     app.Controllers.blog.create
-  app.put    "/api/blog/post", is_admin,     app.Controllers.blog.update
+  app.put    "/api/blog/post/:id", is_admin, app.Controllers.blog.update
   app.delete "/api/blog/post/:id", is_admin, app.Controllers.blog.delete
 
   app.get "/blog*", app.Controllers.blog
