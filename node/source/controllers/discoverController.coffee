@@ -25,7 +25,8 @@ class DiscoverController extends require('./basicController')
     super
   
   index: ->
-    @context.body = @_view 'discover/index', @context    
+    @context.body = @_view 'discover/index', @context
+    @context.title = "Open Include | Discover Open Source Modules"
     @res.render 'base', @context
 
   _searchOutput: (savedData) ->    

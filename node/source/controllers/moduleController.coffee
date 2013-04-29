@@ -67,7 +67,8 @@ class ModuleController extends require('./basicController')
            
           @context.prepopulation  = JSON.stringify output
           @context.languages      = output.languages
-          @context.body           = @_view 'module/index', @context    
+          @context.body           = @_view 'module/index', @context
+          @context.title          = "Open Include | Discover Open Source Modules"
           
           @res.render 'base', @context
       else

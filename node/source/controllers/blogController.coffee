@@ -39,6 +39,7 @@ class BlogController extends basic
               {text: tag._id, weight: tag.value, link: {href: "/blog/tag/#{tag._id}", "data-nobackbone": "enabled"}}
             )
             @context.body = @_view "blog/index", @context
+            @context.title = "Open Include | Blog"
             @res.render 'base', @context
           else
             @context.title = "Error"
