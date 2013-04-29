@@ -33,7 +33,7 @@
 
     setTitle: (title) ->
       if title?
-        $("title").html(title)
+        $("title").html decodeURI(title)
 
     init: ->
       if !Backbone.history._hasPushState        

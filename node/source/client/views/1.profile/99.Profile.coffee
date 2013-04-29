@@ -120,9 +120,9 @@ views.Profile = View.extend
 
     if @context.private
 
+      app.setTitle "Open Include | Admin | Connections"
       unless @context.active_tab
         @context.active_tab = "admin-connections"
-        app.setTitle "Open Include | Admin | Connections"
 
       unless @collections
         @collections = {}
