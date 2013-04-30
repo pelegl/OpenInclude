@@ -11,7 +11,7 @@ class IdeaController extends require('./basicController')
     mailOptions =
       from: @req.user?.github_email || @req.body.email
       to: 'start@openinclude.com'
-      subject: 'OpenInclude - Share your ideas'
+      subject: "OpenInclude - Share your ideas. From: #{@req.user?.github_username || @req.body.email }"
       text: @req.body.ideas
 
     transport.sendMail(mailOptions)

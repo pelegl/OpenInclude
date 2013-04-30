@@ -20,7 +20,11 @@
       "email": "atskiisotona@gmail.com",
       "url"  : "http://dgorbunov.ru"
     }
-  ],  
+  ],
+  "scripts" : {
+    "staging": "sudo PORT=80 staging=1 forever start -c coffee source/app.coffee",
+    "dev"    : "PORT=8900 forever start -c coffee source/app.coffee"
+  },
   "dependencies": {
     "express": "*",
     "async": "*",
@@ -35,7 +39,7 @@
     "underscore": "*",
     "humanize": "*",        
     "passport": "0.x",
-    "passport-github": "0.x",
+    "passport-github": "git://github.com/artillery/passport-github.git",
     "passport-oauth": "0.x",
     "passport-trello": "0.x",
     "nodemailer": "0.x",

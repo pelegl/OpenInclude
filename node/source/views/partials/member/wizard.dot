@@ -14,7 +14,7 @@
 <div id="step-1" class='tos'>
     <div class="content">Lorem ipsum - terms of service</div>
     <div class="controls">
-        <button class="btn btn-danger pull-left close-inline">Cancel</button>
+        <button class="btn pull-left close-inline">Cancel</button>
         <button class="btn btn-primary next pull-left" rel="step-2">I agree</button>
     </div>
 </div>
@@ -22,7 +22,7 @@
 <div id="step-2" class='tos' style="display: none">
     <div class="content">Lorem ipsum - terms of payment - terms of payment</div>
     <div class="controls">
-        <button class="btn btn-danger pull-left close-inline">Cancel</button>
+        <button class="btn pull-left close-inline">Cancel</button>
         <button class="btn btn-primary next pull-left" rel="step-3">I agree</button>
     </div>
 </div>
@@ -46,7 +46,7 @@
                         <input type='text' id='ccCVV' class='span3'  name='card[cvv]' placeholder="CVV" pattern="[0-9]{3}" />
                     </div>
                     <div class='controls-row'>
-                        <button class="btn btn-danger pull-left close-inline">Cancel</button>
+                        <button class="btn pull-left close-inline">Cancel</button>
                         <button type='submit' class="btn btn-primary pull-left">Confirm</button>
                     </div>
                 </div>
@@ -57,7 +57,7 @@
             <legend>Payment Information - Paypal</legend>
             <input type="text" name="paypal" placeholder="Paypal email" />
             <div class='controls-row'>
-                <button class="btn btn-danger pull-left close-inline">Cancel</button>
+                <button class="btn pull-left close-inline">Cancel</button>
                 <button type='submit' class="btn btn-primary pull-left">Confirm</button>
             </div>
         </form>
