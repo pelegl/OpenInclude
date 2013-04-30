@@ -28,6 +28,7 @@ class views.Wizard extends InlineForm
   render: ->
     super()
     @step = document.getElementById "step-1"
+    @$(".content").niceScroll()
 
   setType: (type) ->
     if @model
