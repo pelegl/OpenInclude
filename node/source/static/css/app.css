@@ -498,13 +498,23 @@ footer {
   background-color: white;
   border: 1px solid #DDDDD;
   margin-bottom: 15px;
-  max-height: 300px;
 }
 .tos .content .content-wrapper {
   overflow-x: hidden;
   overflow-y: scroll;
-  font-family: "Times New Roman", "Arial", "Helvetica Neue";
+  font-size: 12px;
+  line-height: 16px;
   height: 300px;
+  text-align: justify;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  padding: 10px;
+}
+.tos .content .content-wrapper ul {
+  margin-left: 10px;
 }
 #tos .header {
   font-size: 125%;

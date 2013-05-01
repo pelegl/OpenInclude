@@ -33,6 +33,8 @@ startApp = ->
     app.engine "dot", conf.dotJs
     app.set "view engine", "dot"
     app.set 'views'       , "#{root}/views/layouts"
+
+    app.use express.compress()
     app.use '/static'     , express.static "#{root}/static"
         
     app.use (req,res,next)->
