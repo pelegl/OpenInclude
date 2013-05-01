@@ -28,16 +28,19 @@ class views.Wizard extends InlineForm
   render: ->
     super()
     @step = document.getElementById "step-1"
-    @$(".content").niceScroll()
+    #@$(".content .content-wrapper").niceScroll()
 
   setType: (type) ->
     if @model
       @stopListening @model
       delete @model
+
     if type is "reader"
       @model     = new models.CreditCard
       @model.url = app.conf.update_credit_card
       @context.reader = true
+
     if type is "writer"
       @model = new models.CreditCard
       @model.url = "/profile/update_paypal"
+      @context.reader = false

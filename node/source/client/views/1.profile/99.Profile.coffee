@@ -107,8 +107,8 @@ views.Profile = View.extend
   render: ->
     console.log "Rendering profile view"
 
-    if @context.private
-      @setAction @options.action
+    #if @context.private
+    #  @setAction @options.action
 
     @context.user = @model.toJSON()
 
@@ -169,6 +169,8 @@ views.Profile = View.extend
 
       @tabs = @$("#runway-tabs")
       @collections[@context.active_tab].fetch()
+
+      @setAction @options.action
 
     # Append CC modal
     if @cc

@@ -494,9 +494,21 @@ footer {
   border-radius: 3px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
-  height: 300px;
+  padding: 15px;
+  background-color: white;
+  border: 1px solid #DDDDD;
+  margin-bottom: 15px;
+  max-height: 300px;
+}
+.tos .content .content-wrapper {
   overflow-x: hidden;
   overflow-y: scroll;
+  font-family: "Times New Roman", "Arial", "Helvetica Neue";
+  height: 300px;
+}
+#tos .header {
+  font-size: 125%;
+  margin-bottom: 15px;
 }
 .paymentInfo .content {
   border-radius: 3px;
@@ -776,16 +788,6 @@ footer {
 .daterange .caret {
   margin-left: 2px;
   margin-top: 8px;
-}
-#tos .header {
-  font-size: 125%;
-  margin-bottom: 15px;
-}
-#tos .content {
-  padding: 8px;
-  border: 1px solid #DDDDD;
-  background-color: white;
-  margin-bottom: 15px;
 }
 #wizard-nav li {
   padding: 5px;
