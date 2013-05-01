@@ -123,14 +123,14 @@
             You, or you on behalf of your company, are agreeing to pay all invoices in a timely manner.<br/>
             Your information and work requested is protected by strict confidentiality.
         </p>
-        <p>Yes, I UNDERSTAND & ACCEPT the terms and conditions of this Agreement.</p>
+        <p>Yes, I UNDERSTAND & ACCEPT the terms and conditions of this Agreement. <a href='/static/pdf/reader_agreement.pdf' data-nobackbone class='pull-right'>download agreement</a></p>
         {{??}}
         <p>
             You are assigning all of the Work Product you perform or create to OpenInclude.com.<br/>
             You will perform only preapproved work and provide quality services while doing so.<br/>
             You are agreeing to strict confidentiality of the work performed.
         </p>
-        <p>Yes, I UNDERSTAND & ACCEPT the terms and conditions of this Agreement.</p>
+        <p>Yes, I UNDERSTAND & ACCEPT the terms and conditions of this Agreement. <a href='/static/pdf/writer_agreement.pdf' data-nobackbone class='pull-right'>download agreement</a></p>
         {{?}}
     </div>
     <div class="controls">
