@@ -24,7 +24,7 @@
   "scripts" : {
     "staging": "sudo PORT=80 httpsPort=443 staging=1 forever start -c coffee source/app.coffee",
     "dev"    : "PORT=8900 forever start -c coffee source/app.coffee",
-    "start"  : "sudo PORT=80 httpsPort=443 NODE_ENV=production HOST=openinclude.com forever start -c coffee source/app.coffee"
+    "start"  : "sudo PORT=80 httpsPort=443 NODE_ENV=production forever start -c coffee source/app.coffee"
   },
   "dependencies": {
     "express": "*",

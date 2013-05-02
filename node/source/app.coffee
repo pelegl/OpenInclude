@@ -79,7 +79,7 @@ startApp = ->
   
   app.configure "production", ->
     app.set 'port', process.env.PORT || 80
-    app.set 'host', process.env.HOST || 'openinclude.com'
+    app.set 'host', '0.0.0.0'
     app.use express.errorHandler {dumpExceptions: false, showStack: false}
     app.use (err,req,res,next)->
       res.send "Error", 500
@@ -114,7 +114,7 @@ startApp = ->
 
       http.createServer(app).listen port, host
       https.createServer(credentials, app).listen httpsPort, host, ->
-        console.log "[__app__] Listening #{host}:#{port}"
+        console.log "[__app__] Listening #{host}:#{httpsPort}"
     else
       console.log err
 
