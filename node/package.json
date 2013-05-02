@@ -22,7 +22,7 @@
     }
   ],
   "scripts" : {
-    "staging": "sudo PORT=80 staging=1 forever start -c coffee source/app.coffee",
+    "staging": "sudo PORT=80 httpsPort=443 staging=1 forever start -c coffee source/app.coffee",
     "dev"    : "PORT=8900 forever start -c coffee source/app.coffee"
   },
   "dependencies": {

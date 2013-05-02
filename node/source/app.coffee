@@ -3,6 +3,25 @@
 ###
 express       = require 'express'
 connect       = require 'connect'
+https         = require 'https'
+http          = require 'http'
+fs            = require 'fs'
+certpath      = "#{__dirname}/../../certificates"
+
+httpsPort     = process.env.httpsPort || 8443
+
+files = [
+  "DigiCertCA.crt"
+  "TrustedRoot.crt"
+]
+
+ca            = (fs.readFileSync("#{certpath}/#{file}") for file in files)
+privateKey    =  fs.readFileSync("#{certpath}/openinclude_com.key").toString()
+certificate   =  fs.readFileSync("#{certpath}/openinclude_com.crt").toString()
+
+credentials   = {key: privateKey, cert: certificate, ca}
+
+
 
 secret        = "dsakldaSAKDLJkasl192a12"
 
@@ -35,6 +54,14 @@ startApp = ->
     app.set 'views'       , "#{root}/views/layouts"
 
     app.use express.compress()
+    app.use (req,res,next)->
+      unless req.secure
+        loc = "https://#{req.host}:#{httpsPort}#{req.url}"
+        console.log loc
+        res.redirect 301, loc
+      else
+        next()
+
     app.use '/static'     , express.static "#{root}/static"
         
     app.use (req,res,next)->
@@ -86,7 +113,9 @@ startApp = ->
 
       port = app.get('port')
       host = app.get('host')
-      app.listen port, host, ->              
+
+      http.createServer(app).listen port, host
+      https.createServer(credentials, app).listen httpsPort, host, ->
         console.log "[__app__] Listening #{host}:#{port}"
     else
       console.log err
@@ -114,8 +143,4 @@ if cluster.isMaster
   ###
     Master worker --- cron job
   ###
-  require("./cron")
-
-
-  
-
+  require("./cron") unless process.env.NODE_ENV isnt "production"
