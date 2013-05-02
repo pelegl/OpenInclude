@@ -78,11 +78,9 @@ startApp = ->
     
   
   app.configure "production", ->
-    app.set 'port', 4444
-    app.set 'host', '127.0.0.1'
-    app.use express.errorHandler
-      dumpExceptions: false
-      showStack: false
+    app.set 'port', process.env.PORT || 80
+    app.set 'host', process.env.HOST || 'openinclude.com'
+    app.use express.errorHandler {dumpExceptions: false, showStack: false}
     app.use (err,req,res,next)->
       res.send "Error", 500
   
