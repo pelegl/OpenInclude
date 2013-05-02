@@ -53,14 +53,14 @@
             <p>10.  Side Agreements.</p>
             <p>10.1 Despite Section 11.7, Client may enter into side or supplemental agreements, such as non-disclosure, assignment of rights, etc., with OpenInclude.com Users, however, the terms and conditions of this Agreement will supersede and govern any restriction or expansion of OpenInclude.com’s rights or obligations.</p>
             <p>10.2 Client shall make all payments relating to, or in any way connected with the Work Product only to OpenInclude.com. Any action that encourages or solicits complete or partial payment outside of OpenInclude.com or without OpenInclude.com’s written permission is a violation of this Agreement.  Client shall not attempt to circumvent the payment system under any circumstances.</p>
-            <p>10. Miscellaneous.</p>
-            <p>10.1 Assignment or Amendment. This Agreement is not assignable by Client. This Agreement shall be assignable by OpenInclude.com without limitation or consent of User. No alteration, modification, amendment, or other change of this Agreement shall be binding on OpenInclude.com unless in writing, approved and executed by an authorized officer of OpenInclude.com.</p>
-            <p>10.2 Governing Law. Any dispute arising under or in connection with this Agreement or related to any matter which is the subject of this Agreement shall be subject to the exclusive jurisdiction of the state and/or federal courts located in the Commonwealth of Massachusetts, USA.  Further, this Agreement has been entered into and this Agreement shall be governed by the substantive laws of the Commonwealth of Massachusetts, USA without regard to its conflict of laws principles.  Each of the parties consents to the exclusive jurisdiction of the courts of the Commonwealth of Massachusetts, USA in connection with any dispute arising under this Agreement and hereby waives, to the maximum extent permitted by law, any objection, including any objection based on forum non coveniens, to the bringing of any such proceeding in such jurisdictions.</p>
-            <p>10.3 Invalidity. The terms of this Agreement shall be severable so that if any term, clause, or provision shall be considered invalid or unenforceable for any reason, such invalidity or unenforceability shall not affect the remaining terms, clauses, and provisions, the parties intending that if any such term, clause, or provision were held to be invalid prior to the execution, they would have executed an agreement containing all the remaining terms, clauses and provisions of this Agreement.</p>
-            <p>10.4 Waiver of Breach. The waiver by either party hereto of any breach of the terms and conditions will not be considered a modification of any provision, nor shall such a waiver act to bar the enforcement of any subsequent breach.</p>
-            <p>10.5  Return of Property. All of OpenInclude.com’s property or property of OpenInclude.com’s clients in the possession or control of User including, but not limited to specifications, documentation, and source code as well as all material developed or derived by User in performing its duties under this Agreement must be returned by User to OpenInclude.com or client on demand, or at the termination of this Agreement whichever shall come first.</p>
-            <p>10.6  Notices: Consent to Electronic Notice.  You hereby consent to the use of (a) electronic means to complete this Agreement and to deliver any notices pursuant to this Agreement; and (b) electronic records to store information related to this Agreement or your use of the Site. Notices hereunder shall be invalid unless made in writing and given (a) by OpenInclude.com via email (in each case to the address that you provide), (b) a posting on the Site or (c) by you via email to OpenInclude.com. The date of receipt will be deemed the date on which such notice is transmitted.</p>
-            <p>10.7   Entire Agreement. With the exception of any authorized written communications regarding OpenInclude.com duties or payments, this Agreement sets forth the entire agreement and understanding of the parties relating to its subject matter and cancels and supersedes any prior or contemporaneous discussions, agreements, representations, warranties, and other communications between them.</p>
+            <p>11. Miscellaneous.</p>
+            <p>11.1 Assignment or Amendment. This Agreement is not assignable by Client. This Agreement shall be assignable by OpenInclude.com without limitation or consent of User. No alteration, modification, amendment, or other change of this Agreement shall be binding on OpenInclude.com unless in writing, approved and executed by an authorized officer of OpenInclude.com.</p>
+            <p>11.2 Governing Law. Any dispute arising under or in connection with this Agreement or related to any matter which is the subject of this Agreement shall be subject to the exclusive jurisdiction of the state and/or federal courts located in the Commonwealth of Massachusetts, USA.  Further, this Agreement has been entered into and this Agreement shall be governed by the substantive laws of the Commonwealth of Massachusetts, USA without regard to its conflict of laws principles.  Each of the parties consents to the exclusive jurisdiction of the courts of the Commonwealth of Massachusetts, USA in connection with any dispute arising under this Agreement and hereby waives, to the maximum extent permitted by law, any objection, including any objection based on forum non coveniens, to the bringing of any such proceeding in such jurisdictions.</p>
+            <p>11.3 Invalidity. The terms of this Agreement shall be severable so that if any term, clause, or provision shall be considered invalid or unenforceable for any reason, such invalidity or unenforceability shall not affect the remaining terms, clauses, and provisions, the parties intending that if any such term, clause, or provision were held to be invalid prior to the execution, they would have executed an agreement containing all the remaining terms, clauses and provisions of this Agreement.</p>
+            <p>11.4 Waiver of Breach. The waiver by either party hereto of any breach of the terms and conditions will not be considered a modification of any provision, nor shall such a waiver act to bar the enforcement of any subsequent breach.</p>
+            <p>11.5  Return of Property. All of OpenInclude.com’s property or property of OpenInclude.com’s clients in the possession or control of User including, but not limited to specifications, documentation, and source code as well as all material developed or derived by User in performing its duties under this Agreement must be returned by User to OpenInclude.com or client on demand, or at the termination of this Agreement whichever shall come first.</p>
+            <p>11.6  Notices: Consent to Electronic Notice.  You hereby consent to the use of (a) electronic means to complete this Agreement and to deliver any notices pursuant to this Agreement; and (b) electronic records to store information related to this Agreement or your use of the Site. Notices hereunder shall be invalid unless made in writing and given (a) by OpenInclude.com via email (in each case to the address that you provide), (b) a posting on the Site or (c) by you via email to OpenInclude.com. The date of receipt will be deemed the date on which such notice is transmitted.</p>
+            <p>11.7  Entire Agreement. With the exception of any authorized written communications regarding OpenInclude.com duties or payments, this Agreement sets forth the entire agreement and understanding of the parties relating to its subject matter and cancels and supersedes any prior or contemporaneous discussions, agreements, representations, warranties, and other communications between them.</p>
         {{??}}
             <p>USER Agreement</p>
             <p>THIS USER AGREEMENT is a contract by and between you (“User” or “you”) and Deterministic Programming, Inc., a Delaware Corporation, with a mailing address of One Broadway, 14th Floor, Cambridge, MA 02142, and accessible through OpenInclude.com (“OpenInclude.com”, “we”, or ‘us”).  You must read, agree with and accept all of the terms and conditions contained in this Agreement in order to provide your consulting services and to use our website located at www.openinclude.com and any associated subdomains (collectively, the "Site").</p>
@@ -118,18 +118,18 @@
         {{?}}
         </div>
         {{? it.reader }}
-        <p>
-            You are receiving all assignable Work Product performed or created under this Agreement.<br/>
-            You, or you on behalf of your company, are agreeing to pay all invoices in a timely manner.<br/>
-            Your information and work requested is protected by strict confidentiality.
-        </p>
+        <ul>
+            <li>You are receiving all assignable Work Product performed or created under this Agreement.</li>
+            <li>You, or you on behalf of your company, are agreeing to pay all invoices in a timely manner.</li>
+            <li>Your information and work requested is protected by strict confidentiality.</li>
+        </ul>
         <p>Yes, I UNDERSTAND & ACCEPT the terms and conditions of this Agreement. <a href='/static/pdf/reader_agreement.pdf' data-nobackbone class='pull-right'>download agreement</a></p>
         {{??}}
-        <p>
-            You are assigning all of the Work Product you perform or create to OpenInclude.com.<br/>
-            You will perform only preapproved work and provide quality services while doing so.<br/>
-            You are agreeing to strict confidentiality of the work performed.
-        </p>
+        <ul>
+            <li>You are assigning all of the Work Product you perform or create to OpenInclude.com.</li>
+            <li>You will perform only preapproved work and provide quality services while doing so.</li>
+            <li>You are agreeing to strict confidentiality of the work performed.</li>
+        </ul>
         <p>Yes, I UNDERSTAND & ACCEPT the terms and conditions of this Agreement. <a href='/static/pdf/writer_agreement.pdf' data-nobackbone class='pull-right'>download agreement</a></p>
         {{?}}
     </div>
@@ -141,7 +141,7 @@
 
 <div id="step-2" class='tos' style="display: none">
     <div class="content">
-        <div class='content-wrapper'>
+        <div class='content-wrapper larger'>
         {{? it.reader }}
             <p>The reader will directly manage the writer, maintaining clear expectations and milestones through the project management tool of choice (we recommend Basecamp).</p>
             <p>The reader approves credit card payment weekly for the amount of runway spent in the past week for each connection.</p>

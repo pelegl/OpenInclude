@@ -186,6 +186,7 @@
       $(document).delegate "a", "click", (e)->
         $this = $(e.currentTarget)
 
+        return true if e.metaKey is true
         return true if $this.data("nobackbone")?
         return true unless (href = $this.attr('href'))
                           

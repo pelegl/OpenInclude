@@ -513,6 +513,9 @@ footer {
   -webkit-border-radius: 3px;
   padding: 10px;
 }
+.tos .content .content-wrapper.larger {
+  font-size: 14px;
+}
 .tos .content .content-wrapper ul {
   margin-left: 10px;
 }
