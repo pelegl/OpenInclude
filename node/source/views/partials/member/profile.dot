@@ -4,8 +4,7 @@
             <div class='row'>
                 <div class='span3'>
                     <div class='personalInformation'>
-                        <img src="http://www.gravatar.com/avatar/{{= it.user.github_avatar_url }}?s=210"
-                             class='avatar'/>
+                        <img src="https://secure.gravatar.com/avatar/{{= it.user.github_avatar_url }}?s=210" class='avatar'/>
 
                         {{? it.user.github_display_name != it.user.github_username }}
                         <h3>{{! it.user.github_display_name }}</h3>

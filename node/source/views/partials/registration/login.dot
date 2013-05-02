@@ -6,7 +6,7 @@
 		    <a href="{{= it.github_auth_url}}" class="github-auth">Authenticate with GitHub</a>
             {{??}}
             <div class='welcome-back'>
-                <img src='http://www.gravatar.com/avatar/{{= it.user.github_avatar_url }}?s=80' />
+                <img src='https://secure.gravatar.com/avatar/{{= it.user.github_avatar_url }}?s=80' />
                 <p class='name'>
                     Hi, {{! it.user.github_display_name }}!
                     <span class='controls clearfix'>

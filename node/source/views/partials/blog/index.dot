@@ -9,7 +9,7 @@
                     <h2><a href="/blog/view/{{= post._id }}" class='title' data-nobackbone >{{= post.title }}</a></h2>
                     <time>{{= it.moment(post.date).format("LL") }}</time>
                     <a class='author' href='/profile/view/{{= post.author.name }}'>
-                        <img src="http://www.gravatar.com/avatar/{{= post.author.avatar }}?s=30" width="30" height="30" alt='' /> {{= post.author.name }}
+                        <img src="https://secure.gravatar.com/avatar/{{= post.author.avatar }}?s=30" width="30" height="30" alt='' /> {{= post.author.name }}
                     </a>
                     <!-- tags -->
                     {{? post.tags }}
