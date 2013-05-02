@@ -120,7 +120,7 @@ startApp = ->
 
 forkApp = ->
   if process.env.NODE_ENV is "production"
-    if cluster.isMaster
+    if cluster.isMaster and numCPUs > 1
       i = 0
       ###
         Fork for production - to use multiple cores
