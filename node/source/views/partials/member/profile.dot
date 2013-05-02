@@ -121,16 +121,6 @@
 
                     </div>
 
-                    <div id="tos" class='row-fluid tos'>
-                        <div class='span12'>
-                            <div class='content'>
-                                <p>Reader — approver of work, a paying client</p>
-                                <p>Writer — contractor, someone creating digital content</p>
-                                <p>Runway — amount of time or money to be spent (maximum) before a checkin, and approval for more runway</p>
-                                <p>Connection — reader / writer relationship</p>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 {{?}}
 
