@@ -5,6 +5,8 @@ views.Index = View.extend
     @render()
 
   render:->
+    app.setTitle @context.title
+
     html = tpl['index'](@context, null, @context.partials)
     @$el.html html
     @$el.attr 'view-id', 'index'
