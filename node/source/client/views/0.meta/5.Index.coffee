@@ -1,7 +1,7 @@
 views.Index = View.extend
   initialize:->
     console.log '[__indexView__] Init'
-    @context.title = "Home Page"
+    @context.title = "Open Include | Open Source Discovery and Integration"
     @render()
 
   render:->

@@ -25,7 +25,7 @@ class BasicController
     @app = @req.app
 
     config =
-      title:        "Home Page"
+      title:        "Open Include | Open Source Discovery and Integration"
       STATIC_URL:   STATIC_URL
       user:         @req.user
 

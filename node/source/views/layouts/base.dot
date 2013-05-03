@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="keywords" content="Open Include" />
   <meta name="description" content="Open Include" />
-  <title>{{=it.title}} - Open Include</title>
+  <title>{{=it.title}}</title>
   {{#def.partials['css']}}  
   {{#def.partials['scripts']}}
 </head>
