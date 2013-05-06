@@ -15,6 +15,8 @@ api_key  = "sk_test_HkMUKw1bjVE6Sxo218IiMNWP"   # Bills key
 #api_key = 'sk_test_07bvlXeoFTA2bKM42Vt0O9SY'   # v@aminev key
 #api_key = "sk_test_u8z4kB4SVupeHQ8zZQZ7Bw0N"
 
+api_key = "sk_live_2Cw8Uw9hoTersIgjuykq3Apu" if process.env.NODE_ENV is 'production'
+
 stripe = require("stripe")(api_key)
 
 definition =
