@@ -53,3 +53,22 @@ class SessionController extends BasicController
 
 module.exports = (req,res)->
   new SessionController req, res
+
+module.exports.profile_update = (req, res) ->
+  User.findById req.params.id, (error, user) ->
+    if error or not user then return res.json {success: false, error: error}
+
+    if req.param('type') is 'reader'
+      user.info_reader = req.param('about')
+      user.skills_reader = req.param('skill-list').split(',')
+      user.links_reader = req.param('links').split(',')
+    else
+      user.info_writer = req.param('about')
+      user.skills_writer = req.param('skill-list').split(',')
+      user.links_writer = req.param('links').split(',')
+
+    user.save (error, result) ->
+      if error
+        res.json {success: false, error: error}
+      else
+        res.json {success: true}

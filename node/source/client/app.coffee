@@ -60,7 +60,7 @@
       @view = new views.Index prevView:@view
 
     profile: (action, opts...) ->
-      @reRoute() 
+      @reRoute()
       if app.session.get("is_authenticated") is true
         if action is 'view'
           @view = new views.Profile { prevView: @view, model: app.session, action: "/#{action}", profile: opts[0] }
@@ -180,7 +180,7 @@
     
     app.session.once "sync", =>
 
-      Backbone.history.start {pushState: true}        
+      Backbone.history.start {pushState: true}
       app.init()
       
       $(document).delegate "a", "click", (e)->

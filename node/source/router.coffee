@@ -40,6 +40,7 @@ exports.set = (app)->
   Session interaction
   ###
   app.get '/session*', app.Controllers.session
+  app.put '/session/profile/:id', app.Controllers.session.profile_update
   
   
   ###
@@ -84,9 +85,6 @@ exports.set = (app)->
   ## Payments ##
   app.patch "/api/payment/:id",  is_admin, app.Controllers.payment.patch
 
-
-
-
   ## Blog ##
   app.get    "/api/blog/post", is_admin,     app.Controllers.blog.list
   app.post   "/api/blog/post", is_admin,     app.Controllers.blog.create
@@ -96,6 +94,9 @@ exports.set = (app)->
   app.get "/blog*", app.Controllers.blog
 
   app.post "/markdown", app.Controllers.blog.markdown
+
+  ## Misc ##
+  app.get "/api/skills", app.Controllers.profile.skills
   
   ###
   oAuth interaction

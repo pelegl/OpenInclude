@@ -20,7 +20,7 @@
                                 <div>
                                     <div class='status'>
                                         {{? it.user.merchant && it.user.groups.indexOf("reader") >= 0 }}
-                                        <i class='icon-ok'></i>
+                                        <button id="edit_reader" class="btn btn-small btn-info">Edit</button>
                                         {{??}}
                                         <a href='{{= it.merchant_agreement }}'
                                            class='btn btn-success btn-mini backbone'>Sign Up</a>
@@ -33,7 +33,7 @@
                                 <div>
                                     <div class='status'>
                                         {{? it.user.employee && it.user.groups.indexOf("writer") >= 0 }}
-                                        <i class='icon-ok'></i>
+                                        <button id="edit_writer" class="btn btn-small btn-info">Edit</button>
                                         {{??}}
                                         <a href='{{= it.developer_agreement }}'
                                            class='btn btn-success btn-mini backbone'>Sign Up</a>
@@ -121,7 +121,34 @@
 
                     </div>
 
-                    <div id='tos'></div>
+                    <div id="tos" class='row-fluid'></div>
+                    <div id="add-skills-inline" class='row-fluid' style="display: none"></div>
+                </div>
+                {{??}}
+                <div class='span9'>
+                    <p>Looking for skills</p>
+                    <div>
+                    {{~ it.user.skills_reader :skill }}
+                    <span class="skill">{{= skill }}</span>
+                    {{~}}
+                    </div>
+
+                    <p>Has skills</p>
+                    <div>
+                        {{~ it.user.skills_writer :skill }}
+                        <span class="skill">{{= skill }}</span>
+                        {{~}}
+                    </div>
+
+                    <p>As reader says:</p>
+                    <div>
+                        {{= it.user.info_reader || "" }}
+                    </div>
+
+                    <p>As writer says:</p>
+                    <div>
+                        {{= it.user.info_writer || "" }}
+                    </div>
 
                 </div>
                 {{?}}
