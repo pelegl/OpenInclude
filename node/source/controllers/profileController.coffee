@@ -189,10 +189,10 @@ module.exports = (req, res)->
 
 module.exports.skills = (req, res) ->
   term = req.param("term")
-  Skill.find({"name": new RegExp(term, "ig")}).select("name").sort("name").exec((error, result) ->
+  Skill.find({_id: new RegExp(term, "ig")}).select("name").sort("name").limit(10).exec((error, result) ->
     unless error
       result = _.reduce result, (data, item) ->
-        data.push item.name
+        data.push item._id
         data
       , []
       res.json result

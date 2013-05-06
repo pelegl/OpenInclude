@@ -57,7 +57,6 @@ startApp = ->
     app.use (req,res,next)->
       unless req.secure
         loc = "https://#{req.host}:#{httpsPort}#{req.url}"
-        console.log loc
         res.redirect 301, loc
       else
         next()

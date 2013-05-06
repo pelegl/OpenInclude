@@ -2,7 +2,7 @@ ObjectId  = require('mongoose').Schema.Types.ObjectId
 
 
 definition =
-  name: String
+  _id: String
 
 methods = {}
 statics = {}
