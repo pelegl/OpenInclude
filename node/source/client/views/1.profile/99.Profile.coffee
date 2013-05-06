@@ -5,6 +5,19 @@ views.Profile = View.extend
     'click a.backbone'             : "processAction"
     'click .setupPayment > button' : "update_cc_events"
     'click a[data-toggle=tab]'     : "makeTabUrl"
+    'click #edit_reader'           : "editProfile"
+    'click #edit_writer'           : "editWriter"
+
+  editProfile: (e, type = "reader") ->
+    e.preventDefault()
+    e.stopPropagation()
+
+    @tabs.hide()
+    @edit.setType(type)
+    @edit.show()
+
+  editWriter: (e) ->
+    @editProfile(e, "writer")
 
   makeTabUrl: (e) ->
     url = e.currentTarget.attributes['href'].value.replace("#", "")
@@ -111,6 +124,7 @@ views.Profile = View.extend
       @setAction @options.action
 
     @context.user = @model.toJSON()
+    @context.userModel = @model
 
     html = tpl['member/profile'](@context)
     @$el.html html
@@ -121,8 +135,15 @@ views.Profile = View.extend
     if @context.private
 
       app.setTitle "Open Include | Admin | Connections"
+      user = @model.toJSON()
+
       unless @context.active_tab
-        @context.active_tab = "admin-connections"
+        if user.groups.indexOf("admin") >= 0
+          @context.active_tab = "admin-connections"
+        if user.groups.indexOf("reader") >= 0
+          @context.active_tab = "reader-runway"
+        if user.groups.indexOf("writer") >= 0
+          @context.active_tab = "writer-runway"
 
       unless @collections
         @collections = {}
@@ -167,8 +188,13 @@ views.Profile = View.extend
       @listenTo @wizard, "success", @toggleTabs
       @listenTo @wizard, "hidden", @toggleTabs
 
+      @edit = new views.AddSkills @context
+      @listenTo @edit, "success", @toggleTabs
+      @listenTo @edit, "hidden", @toggleTabs
+
       @tabs = @$("#runway-tabs")
-      @collections[@context.active_tab].fetch()
+      if @context.active_tab
+        @collections[@context.active_tab].fetch()
 
     # Append CC modal
     if @cc

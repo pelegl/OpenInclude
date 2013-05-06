@@ -5,7 +5,7 @@ get_models = require('../conf').get_models
 
 _ = require "underscore"
 
-[User, Stripe, Bill] = get_models ["User", "Stripe", "Bill"]
+[User, Stripe, Bill, Skill] = get_models ["User", "Stripe", "Bill", "Skill"]
 
 class ProfileController extends basic
 
@@ -186,3 +186,16 @@ class ProfileController extends basic
 # Здесь отдаем функцию - каждый раз когда вызывается наш контроллер - создается новый экземпляр - это мы вставим в рутер
 module.exports = (req, res)->
   new ProfileController req, res
+
+module.exports.skills = (req, res) ->
+  term = req.param("term")
+  Skill.find({"name": new RegExp(term, "ig")}).select("name").sort("name").exec((error, result) ->
+    unless error
+      result = _.reduce result, (data, item) ->
+        data.push item.name
+        data
+      , []
+      res.json result
+    else
+      res.json {success: false, error: error}
+  )

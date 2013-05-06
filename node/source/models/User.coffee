@@ -49,6 +49,15 @@ definition =
 
   groups: [String]
 
+  skills_reader: [String]
+  skills_writer: [String]
+
+  info_reader: String
+  info_writer: String
+
+  links_reader: [String]
+  links_writer: [String]
+
   payment_methods:
     type: [PaymentMethod]
     default: []  
@@ -59,7 +68,7 @@ methods =
     return {@github_id, @github_display_name, @github_username, @github_avatar_url, @_id, @github_email}
 
   public_info: ->
-    return {@github_id, @group_id, @groups, @has_stripe, @payment_methods, @merchant, @employee, @github_display_name, @github_email, @github_username, @github_avatar_url, @trello_id, @_id, is_authenticated: true}
+    return {@github_id, @group_id, @groups, @has_stripe, @payment_methods, @merchant, @employee, @github_display_name, @github_email, @github_username, @github_avatar_url, @trello_id, @_id, @skills_reader, @skills_writer, @info_reader, @info_writer, @links_reader, @links_writer, is_authenticated: true}
 
   get_payment_method: (service, callback) ->
     async.detect @payment_methods, (method, async_detect)=>
