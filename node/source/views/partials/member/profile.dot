@@ -9,10 +9,10 @@
                         {{? it.user.github_display_name != it.user.github_username }}
                         <h3>{{! it.user.github_display_name }}</h3>
                         {{?}}
-                        <h4><a href='https://github.com/{{! it.user.github_username }}' target="_blank" class='muted'>{{!
-                            it.user.github_username }}</a></h4>
+                        <h4><a href='https://github.com/{{! it.user.github_username }}' target="_blank" class='muted'>{{!it.user.github_username }}</a></h4>
                         <hr/>
                         {{? it.private }}
+                        <a href='/profile/view/{{! it.user.github_username }}'>See your profile as others do</a>
                         <h4>Account type</h4>
 
                         <div class='accountType'>

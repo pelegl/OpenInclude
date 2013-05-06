@@ -1,7 +1,8 @@
 conf               = require '../conf'
 moment             = require "moment"
 _                  = require 'underscore'
-[Bill, Connection] = conf.get_models ["Bill", "Connection"]
+
+[Bill, Connection, Runway] = conf.get_models ["Bill", "Connection", "Runway"]
 
 issue_bills = ->
   ###
@@ -64,7 +65,7 @@ issue_bills = ->
     )
   )
 
-issue_bills() if process.argv[3] is 'do'
+issue_bills() if process.argv[2] is 'do'
 
 ###
   Public API
