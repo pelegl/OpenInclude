@@ -140,4 +140,4 @@ if cluster.isMaster
   ###
     Master worker --- cron job
   ###
-  require("./cron") unless process.env.NODE_ENV isnt "production"
+  require("./cron") if process.env.NODE_ENV is "production"
