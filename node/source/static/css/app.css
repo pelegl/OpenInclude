@@ -140,6 +140,12 @@ footer {
   padding: 0;
   width: 100%;
 }
+footer .copyright a {
+  line-height: 40px;
+  font-weight: normal;
+  padding: 0 10px;
+  color: #ccc;
+}
 .fluid-column-2 {
   width: 100%;
 }
