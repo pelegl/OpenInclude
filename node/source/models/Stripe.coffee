@@ -111,9 +111,6 @@ statics =
   billCustomer: (bill, callback) ->
     bill.from_user.get_payment_method "Stripe", (err, method) ->
       if method
-
-        console.log bill.amount*100, method.id
-
         stripe.charges.create
           amount: bill.amount * 100
           currency: "usd"
