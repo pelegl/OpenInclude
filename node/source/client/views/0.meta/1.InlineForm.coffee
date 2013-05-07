@@ -54,6 +54,8 @@ class InlineForm extends Backbone.View
           @tah.updateQuery @buf, event.target.selectionEnd
 
   submit: (event, data = null) ->
+    console.log "submit form", this, event
+
     event.preventDefault()
     event.stopPropagation()
 

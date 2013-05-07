@@ -178,10 +178,10 @@
                     </div>
                     <div class='controls-row'>
                         <input type='text' id='ccExpiration' class='span3' name='card[expiration]' placeholder="MM/YY" required pattern="[0-9]{2}/[0-9]{2}" />
-                        <input type='text' id='ccCVV' class='span3'  name='card[cvv]' placeholder="CVV" pattern="[0-9]{3}" />
+                        <input type='text' id='ccCVV' class='span3'  name='card[cvv]' placeholder="CVV" pattern="[0-9]{4}" />
                     </div>
                     <div class='controls-row'>
-                        <button class="btn pull-left close-inline">Cancel</button>
+                        <button class="btn pull-left close-inline" type='button'>Cancel</button>
                         <button type='submit' class="btn btn-primary pull-left">Confirm</button>
                     </div>
                 </div>
@@ -192,7 +192,7 @@
             <legend>Payment Information - Paypal</legend>
             <input type="text" name="paypal" placeholder="Paypal email" />
             <div class='controls-row'>
-                <button class="btn pull-left close-inline">Cancel</button>
+                <button class="btn pull-left close-inline" type='button'>Cancel</button>
                 <button type='submit' class="btn btn-primary pull-left">Confirm</button>
             </div>
         </form>

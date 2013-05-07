@@ -3,10 +3,9 @@ class views.Wizard extends InlineForm
   view: "member/wizard"
 
   events:
-    'click .next': "dostep"
-    'click .prev': "dostep"
-
+    'click .next,.prev': "dostep"
     'click .close-inline': "hideButton"
+
     'submit form': 'submit'
 
   dostep: (e) ->
@@ -21,6 +20,13 @@ class views.Wizard extends InlineForm
       $(@step).show()
 
       @$(".wizard-nav .active").last().next().addClass "active"
+
+      console.log "step changed"
+
+  submit: ->
+    console.log "submit triggered"
+
+    super
 
   initialize: (context) ->
     super context

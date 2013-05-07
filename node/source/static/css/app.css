@@ -472,6 +472,12 @@ footer .copyright a {
   float: right;
   display: inline-block;
 }
+.container.profile .personalInformation .accountType .status .agreement {
+  padding-right: 10px;
+  font-size: 12px;
+  line-height: 26px;
+  display: inline-block;
+}
 .container.profile .personalInformation .accountType .status a {
   vertical-align: top;
 }

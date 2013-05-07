@@ -75,7 +75,6 @@
     
     login: ->
       @reRoute()
-      console.log "login", app.session.get("is_authenticated") is true
       if app.session.get("is_authenticated") is true
         app.navigate '/profile', {trigger: true}    
       else

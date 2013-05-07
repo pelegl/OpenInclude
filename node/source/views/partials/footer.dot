@@ -1,15 +1,4 @@
-<footer>
-    <div class='container'>
-        <div class='row'>
-            <div class='span12'>
-                <div class='copyright text-right'>
-                    <a href='/static/pdf/reader_agreement.pdf' target="_blank" data-nobackbone >Reader Agreement</a>
-                    <a href='/static/pdf/writer_agreement.pdf' target="_blank" data-nobackbone >Writer Agreement</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
+<footer><!-- some content later --></footer>
 
 <script type="text/javascript">
 

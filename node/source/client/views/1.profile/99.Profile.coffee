@@ -46,6 +46,7 @@ views.Profile = View.extend
 
   setAction: (action)->
 
+
     dev           = @clearHref @context.developer_agreement
     merc          = @clearHref @context.merchant_agreement
     trello		    = @clearHref @context.trello_auth_url
