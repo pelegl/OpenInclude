@@ -23,20 +23,21 @@
     <tbody>
     {{~ it.connections :connection }}
         {{
-            paid_money = 0;
+            var paid_money = 0;
 
-            bills = [];
-            paid = [];
+            var bills = [];
+            var paid = [];
 
-            for (r in connection.bills)
+            for (var r in connection.bills)
             {
-                bill = connection.bills[r];
+                var bill = connection.bills[r];
 
-                m = moment(bill.date);
-                f = moment(it.admin_from);
-                t = moment(it.admin_to);
+                var m = moment(bill.date);
+                var f = moment(it.admin_from);
+                var t = moment(it.admin_to);
 
                 if (it.admin_from != "none" && it.admin_to != "none" && !((m.isAfter(f, 'day') || m.isSame(f, 'day')) && (m.isBefore(t, 'day')) || m.isSame(t, 'day'))) continue;
+
                 if (bill.isPaid) paid.push(bill); else bills.push(bill);
             }
 

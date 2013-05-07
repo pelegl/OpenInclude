@@ -16,14 +16,17 @@ exports.patch = (req,res) ->
 # new, charge by bill
 exports.charge = charge = (req, res) ->
 
-  Bill.findById(req.params.id).populate("from_user to_user").exec((result, bill) ->
-    if result or not bill or bill.isPaid then return res.json {success: false, error: result}, 400
+  Bill.findById(req.params.id).populate("from_user to_user").exec (err, bill) ->
+    return res.json {success: false, error: err}, 400 if err or !bill
+    return res.json {success: false, error: "Bill was already paid"}, 400 if bill.isPaid
 
     Stripe.billCustomer bill, (err, charge) ->
       if not err
+
         stripeObj =
           chargeid: charge.id
           date: charge.created
+
         billed = new Stripe(stripeObj)
         billed.save (error, stripe) =>
           unless error
@@ -39,7 +42,6 @@ exports.charge = charge = (req, res) ->
       else
         res.send err
         res.statusCode = 500
-  )
 
 # deprecated, used for direct charging connections
 exports.charge2 = (req, res) ->

@@ -6,18 +6,16 @@ class views.AdminFinance extends View
 
   onwardsMyMightyStallion: (e) ->
     e.preventDefault()
-    e.stopPropagation()
 
     $this         = $(e.currentTarget)
     connectionId  = $this.data("connection")
     billId        = $this.data("bill")
 
-    connection = @collection.get     connectionId
+    connection = @collection.get connectionId
     bill       = connection.get_bill billId
 
     # process charge
-    bill.charge @renderBills, (errorText)->
-      alert errorText
+    bill.charge @renderBills, alert
 
 
   togglePaid: (e, data) ->
@@ -90,6 +88,10 @@ class views.AdminFinance extends View
     @context.admin_to = "none"
 
   renderBills: ->
+    @context.connections = @collection.toJSON()
+
+    console.log @collection
+
     html = tpl['member/admin_finance'](@context)
     exchange = $("<div />").append(html).find(".table").html()
     @$(".table").html exchange

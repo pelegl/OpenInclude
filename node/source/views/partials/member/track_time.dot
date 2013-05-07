@@ -1,5 +1,5 @@
 <form method='post' action='' class='inline-popover'>
-    <input type="text" name="worked" class="input-block-level" placeholder="Amount worked" required data-errormessage="Time is required"/>
+    <input type="text" name="worked" class="input-block-level" placeholder="Hours worked" required data-errormessage="Time is required"/>
     <input type="text" name="memo" class="input-block-level" placeholder="Memo"/>
 
     <div>

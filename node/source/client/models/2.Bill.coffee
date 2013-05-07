@@ -5,11 +5,15 @@ models.Bill = Backbone.Model.extend
     return "/api/payment/#{@get('id')}"
 
   charge: (success, error) ->
-    console.log "[__ charge __]", this
+    #console.log "[__ charge __]", this
 
     ## updating document
-    callback = (data, status, xhr)=>
-      success @set(data)
+    callback = (model, response, options)=>
+      @set response
+
+      console.log @collection
+
+      success()
 
     ## returning error
     callback_error = (model, xhr, options)=>

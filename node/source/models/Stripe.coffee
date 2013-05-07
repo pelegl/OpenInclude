@@ -20,14 +20,9 @@ api_key = "sk_live_2Cw8Uw9hoTersIgjuykq3Apu" if process.env.NODE_ENV is 'product
 stripe = require("stripe")(api_key)
 
 definition =
-  date: Date #date of payment
-  rate: Number #payment rate
-  fee: Number
-#fee to our system
-hours: Number #hours
-client: ObjectId #client that paid
-receivepayment: Number #developer or project manager that receives the payment
-chargeid: String
+  billId: {type: ObjectId, ref: 'Bill'}
+  chargeid: String
+
 
 
 statics =
@@ -121,8 +116,8 @@ statics =
             bill.isPaid = true
             bill.date = Date.now()
 
-            bill.save (err, succ) ->
-              callback err, succ
+            bill.save callback
+
           else
             callback error, null
       else
