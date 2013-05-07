@@ -15,7 +15,10 @@ class InlineForm extends Backbone.View
   initialize: (context = {}) ->
     @context = _.extend {}, context, app.conf
 
+    _.bindAll this
     _.extend @, Backbone.Events
+
+    @listenTo this, "fail", @fail
 
     @tah = new views.TypeAhead @context
     @buf = ""
@@ -53,11 +56,12 @@ class InlineForm extends Backbone.View
         if @buf.length > 0
           @tah.updateQuery @buf, event.target.selectionEnd
 
-  submit: (event, data = null) ->
-    console.log "submit form", this, event
+  fail: ->
+    submit = @$("[type=submit]")
+    submit.removeClass("disabled").text submit.data("app-text")
 
+  submit: (event, data = null) ->
     event.preventDefault()
-    event.stopPropagation()
 
     unless data
       data = Backbone.Syphon.serialize event.currentTarget
@@ -66,8 +70,11 @@ class InlineForm extends Backbone.View
       alert @validation
       return
 
-    @$("[type=submit]").addClass("disabled").text("Updating information...")
-    @model.save data, {success: _.bind(@success, @), error: _.bind(@success, @)}
+    submit = @$("[type=submit]")
+    submit.data "app-text", submit.text()
+    submit.addClass("disabled").text("Updating information...")
+
+    @model.save data, {@success, error: @success }
 
     false
 
@@ -80,8 +87,8 @@ class InlineForm extends Backbone.View
       @trigger "success"
       return true
     else
-      console.log(response)
-      alert "An error occured"
+      #console.log(response)
+      alert "An error occured #{response.err.name}"
       @trigger "fail"
       return false
 
