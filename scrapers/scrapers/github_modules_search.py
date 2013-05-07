@@ -1,11 +1,13 @@
 # -*- coding: utf8 -*-
 import cStringIO as StringIO
+import os
 from pprint import pprint
 import re
 import math
 
 from twisted.internet import reactor, task
 from twisted.internet.task import LoopingCall
+from twisted.plugin import pickle
 from twisted.web.client import getPage
 from twisted.python.util import println
 from lxml import etree
@@ -13,14 +15,14 @@ import time
 from twisted.web.error import Error
 import txmongo
 from twisted.internet import defer
-
+import config
 
 @defer.inlineCallbacks
 def save_to_mongo(repo):
-    mongo = yield txmongo.MongoConnection()
+    mongo = yield txmongo.MongoConnection(config.DB_HOST)
 
-    foo = mongo.foo  # `foo` database
-    modules = foo.modules  # `test` collection
+    db = mongo[config.DB_NAME]
+    modules = db[config.DB_MODULES_COLLECTION]
 
     for r in repo:
         yield modules.insert(r)
@@ -60,8 +62,7 @@ class scraper():
     star_op = '>'
     max_results = 1000
     results_per_page = 10
-    pages_limit = 1#max_results / results_per_page
-
+    pages_limit = max_results / results_per_page
 
     url_tmp = 'https://github.com/search?p=%(page)d&q=stars%%3A%(stars)s&s=updated&type=Repositories'
     headers = {
@@ -77,6 +78,13 @@ class scraper():
     def __init__(self):
         self.curr_star = self.stars_max
         self.curr_page = 1
+
+    prev_state_file = 'modules_loader_state.pcl'
+
+    def load_prev_state(self, new_ind=False):
+        if not new_ind and os.path.exists(self.prev_state_file):
+            with open(self.prev_state_file, 'rb') as pcl_file:
+                startModuleIndex = pickle.load(pcl_file)
 
     def get_stars_interval(self):
         if self.stars_interval != 0:
