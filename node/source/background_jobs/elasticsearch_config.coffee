@@ -3,7 +3,8 @@
 ###
 {Schema}       = require 'mongoose'
 {esClient, db} = require '../conf'
-fs         = require 'fs'
+async          = require 'async'
+fs             = require 'fs'
 ###
   Tasks
   TODO: complete the tasks
@@ -20,23 +21,27 @@ esClient.createIndex "mongomodules", (err, data)->
 
 module = db.model 'modules2', new Schema({}), 'modules2'
 
-esClient.createIndex "modules-v3", (err, data)->
+#esClient.createIndex "modules-v3", (err, data)->
+#  return console.error err if err?
+#  console.log data
+
+module.find (err, modules)->
   return console.error err if err?
-  console.log data
+  i = 0
+  commands = []
 
-  module.find (err, modules)->
-    return console.error err if err?
-    i = 0
-    commands = []
+  async.forEach modules, (module, async_callback)=>
 
-    async.forEach modules, (module, async_callback)=>
-      commands.push { "index" : { "_index" :'modules-v3', "_type" : "module_v2", _id: module._id} }
-      commands.push {module_name: module.module_name, language: module.language, owner: module.username, description: module.description, stars: module.watchers}
-      async_callback null
-    , =>
+    commands.splice -1, 0, [
+      { "index" : { "_index" :'modules-v3', "_type" : "module_v2", _id: module._id} }
+      {module_name: module.module_name, language: module.language, owner: module.username, description: module.description, stars: module.watchers}
+    ]
 
-      esClient.bulk(commands, {})
-        .on('data', (data)=> console.log data     )
-        .on('done', (done)=> console.log done     )
-        .on('error',(error)=> console.error error )
-        .exec()
+    async_callback null
+  , =>
+
+    esClient.bulk(commands, {})
+      .on('data', (data)=> console.log data     )
+      .on('done', (done)=> console.log done     )
+      .on('error',(error)=> console.error error )
+      .exec()
