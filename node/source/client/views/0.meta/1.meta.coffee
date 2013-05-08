@@ -1,6 +1,12 @@
 views.MetaView = Backbone.View.extend
   events:
     'submit .navbar-search' : 'searchSubmit'
+    'click  [data-shareideas]' : 'shareIdea'
+
+
+  shareIdea: ->
+    app.shareIdeas.toggleShow()
+    false
 
   searchSubmit: (e, action)->
     e.preventDefault() if e?

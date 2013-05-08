@@ -113,8 +113,8 @@ exports.admin_url         = admin_url         = '/admin'
 exports.bills             = bills 			      = "#{profile_url}/bills"
 exports.users_with_stripe = users_with_stripe = "#{admin_url}/users_with_stripe"
 
-exports.merchant_agreement        = merchant_agreement  = "#{profile_url}/merchant_agreement"
-exports.developer_agreement       = developer_agreement = "#{profile_url}/developer_agreement"
+exports.merchant_agreement        = merchant_agreement  = "#{profile_url}/reader_agreement"
+exports.developer_agreement       = developer_agreement = "#{profile_url}/writer_agreement"
 exports.update_credit_card        = update_credit_card  = "#{profile_url}/update_credit_card"
 
 # Transitioning to exports.urls = {}
@@ -128,8 +128,8 @@ exports.urls =
   how_to_url:           "/how-to"
   modules_url:          "/modules"
   dashboard_url:        "/dashboard"
-  merchant_agreement:   "#{profile_url}/merchant_agreement"
-  developer_agreement:  "#{profile_url}/developer_agreement"
+  merchant_agreement:   "#{profile_url}/reader_agreement"
+  developer_agreement:  "#{profile_url}/writer_agreement"
   update_credit_card:   "#{profile_url}/update_credit_card"
   admin_url:            "/admin"
   bills:                "#{profile_url}/bills"

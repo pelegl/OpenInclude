@@ -61,9 +61,6 @@ class DiscoverController extends require('./basicController')
 
     async.forEach output, (repository, callback) =>
 
-      console.log repository
-
-
       {_id} = repository
       module_ids.push _id
       score[_id] = repository._score

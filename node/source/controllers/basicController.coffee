@@ -38,21 +38,21 @@ class BasicController
 
   _buildMenu: ->
     @context._menu = [
-      {url: @context.discover_url, text: "discover"}
-      {url: @context.how_to_url,   text:"how to"}
+      {url: @context.discover_url, text: "Discover"}
+      {url: @context.how_to_url,   text:"How To"}
     ]
     # admin
     #if @req.user?.group_id is 'admin'
     #  @context._menu.push {url: @context.admin_url, text:"admin"}
     # rest
     if @req.user?
-      @context._menu.push {url: @context.profile_url, text: "profile"},
+      @context._menu.push {url: @context.profile_url, text: "Profile"},
                           #{url: @context.dashboard_url, text: "dashboard"},
-                          {url: @context.logout_url, text: "sign out"}
+                          {url: @context.logout_url, text: "Sign Out"}
     else
-      @context._menu.push {url: @context.signin_url, text: "sign in"}
+      @context._menu.push {url: @context.signin_url, text: "Sign In"}
 
-    @context._menu.push {url: @context.blog_url, text: "blog", attributes: ['nobackbone']}
+    @context._menu.push {url: @context.blog_url, text: "Blog", attributes: ['nobackbone']}
 
     if @req.path.length > 1
       @context._menu.forEach (link)=>

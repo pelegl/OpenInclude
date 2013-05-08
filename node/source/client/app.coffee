@@ -16,8 +16,8 @@
     discover_url        : "discover"
     how_to_url          : "how-to"
     modules_url         : 'modules'
-    merchant_agreement  : '/profile/merchant_agreement'
-    developer_agreement : '/profile/developer_agreement'
+    merchant_agreement  : '/profile/reader_agreement'
+    developer_agreement : '/profile/writer_agreement'
     update_credit_card  : '/profile/update_credit_card'
     dashboard_url       : "dashboard"
     create_project_url  : "dashboard/project/create"
