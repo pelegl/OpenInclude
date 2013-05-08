@@ -1,18 +1,41 @@
 <form method='post' action='' class='inline-popover'>
 
-    <label for="skills-autocomplete">{{? it.type == "reader" }}Skills I'm looking for:{{??}}Skills I have:{{?}}</label>
-        <input type="text" id="skills-autocomplete" class="input-block-level" placeholder="Start typing and then select skill from provided list" autocomplete="off" />
+    <div class='row-fluid'>
+        <div class='span8'>
+
+        </div>
+        <div class='span4'>
+            <label for="skills-autocomplete">
+                {{? it.type == "reader" }}
+                    Skills I'm looking for:
+                {{??}}
+                    My skills:
+                {{?}}
+            </label>
+            <ul id='skill-list'>
+                {{~ it.skills: skill }}
+                <li class='tagit label label-info' data-value='{{= skill }}'>
+                    {{skill}}<i>&times;</i>
+                </li>
+                {{~}}
+                <li class='tagit-new'>
+                    <input type="text" id="skills-autocomplete" autocomplete="off" />
+                </li>
+            </ul>
+        </div>
+    </div>
+
 
     <input type="hidden" name="skill-list" />
     <input type="hidden" name="type" value="{{= it.type }}" />
 
-    <div id="skill-list"></div>
+
 
     <label for="about">About me:</label>
     <textarea id="about" name="about" class="input-block-level"></textarea>
 
     <label for="about">Links:</label>
-    <textarea id="about" name="links" class="input-block-level"></textarea>
+    <textarea id="textlinks" name="links" class="input-block-level"></textarea>
 
     <div>
         <a class="btn pull-left close-inline">Close</a>

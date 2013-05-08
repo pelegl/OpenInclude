@@ -62,6 +62,7 @@ views.Profile = View.extend
       @wizard.setType "writer"
       @wizard.show()
       @tabs.hide()
+      @edit.hide()
 
     else if action is merc and app.session.get("merchant") is false
       ###
@@ -72,6 +73,7 @@ views.Profile = View.extend
       @wizard.setType "reader"
       @wizard.show()
       @tabs.hide()
+      @edit.hide()
 
     else if action is trello
       ###
@@ -191,7 +193,7 @@ views.Profile = View.extend
 
       @edit = new views.AddSkills @context
       @listenTo @edit, "success", @toggleTabs
-      @listenTo @edit, "hidden", @toggleTabs
+      @listenTo @edit, "hidden",  @toggleTabs
 
       @tabs = @$("#runway-tabs")
       if @context.active_tab

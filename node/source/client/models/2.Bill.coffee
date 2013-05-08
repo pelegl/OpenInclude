@@ -10,9 +10,6 @@ models.Bill = Backbone.Model.extend
     ## updating document
     callback = (model, response, options)=>
       @set response
-
-      console.log @collection
-
       success()
 
     ## returning error
