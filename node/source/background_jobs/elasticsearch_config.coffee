@@ -71,15 +71,11 @@ esClient.createIndex "modules-v3", (err, data)->
       async.forEach modules, (module_data, async_callback)=>
 
         {module_name, language, watchers, username, description} = module_data
-        commands.splice -1, 0, { "index" : { "_index" :'modules-v3', "_type" : "module_v2", _id: module_data._id} }, {module_name, language, owner: username, description, stars: watchers}
+        data = {module_name, language, owner: username, description, stars: watchers}
 
-        async_callback null
-      , =>
+        esClient.index 'modules-v3', 'module_v2', data, module_data._id, async_callback
 
-        console.log "Bulk commands - #{commands.length}"
+      , (err) =>
+        console.log err if err?
+        console.log "finished"
 
-        esClient.bulk(commands, {})
-          .on('data', (data)=> console.log data     )
-          .on('done', (done)=> console.log done     )
-          .on('error',(error)=> console.error error )
-          .exec()
