@@ -8,17 +8,17 @@
         <div class='row-fluid'>
             <div class='span6'>
                 <div class='well front-page'>
-                   <h4>For business managers:</h4>
-                   <p>
-                        We find the right fit of open source libraries to reach your goals, and connect you with vetted experts already working with us to build your project.
-                   </p>
+                    <h4>For developers:</h4>
+                    <p>
+                        A tool suite to help you choose the exact library for the needs at hand.  A way to visualize modules, exposing you to new libraries.  Collaborate with innovative companies to build software together.
+                    </p>
                 </div>
             </div>
             <div class='span6'>
                 <div class='well front-page'>
-                    <h4>For developers:</h4>
+                    <h4>For business managers:</h4>
                     <p>
-                        A tool suite to help you choose the exact library for the needs at hand.  A way to visualize modules, exposing you to new libraries.  Collaborate with innovative companies to build software together.
+                        We find the right fit of open source libraries to reach your goals, and connect you with vetted experts already working with us to build your project.
                     </p>
                 </div>
             </div>

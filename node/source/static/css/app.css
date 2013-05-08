@@ -70,6 +70,9 @@ header.navbar .navbar-inner .navbar-search input:focus {
 header.navbar .navbar-inner .nav a {
   line-height: 25px;
 }
+.low-margin {
+  margin-bottom: 10px;
+}
 section.contents {
   /*
   .features {    
@@ -187,7 +190,6 @@ footer .copyright a {
   position: relative;
 }
 .discover .searchChart {
-  margin-top: 35px;
   border-radius: 3px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
@@ -195,6 +197,7 @@ footer .copyright a {
   padding: 10px;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
+  margin-bottom: 10px;
 }
 .discover.container .search {
   background: #ffffff;
@@ -293,7 +296,7 @@ footer .copyright a {
   margin-right: 5px;
 }
 .discover .moduleComparison {
-  margin-top: 30px;
+  margin-top: 10px;
   background: #ffffff;
   border-radius: 3px;
   -moz-border-radius: 3px;
@@ -312,7 +315,6 @@ footer .copyright a {
   color: #666;
 }
 .discover .filter {
-  margin-top: 35px;
   border-radius: 3px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;

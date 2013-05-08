@@ -38,6 +38,8 @@ views.Discover = View.extend
     @fetchSearchData q
 
   fetchSearchData: (query) ->
+    _gaq.push ['_trackEvent', 'Discovery', 'Search', query]
+
     app.setTitle "Open Include | Discover Open Source Modules | #{query}"
     @chart.emptyDots()
     @chart.collection.fetch(
