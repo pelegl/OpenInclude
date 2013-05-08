@@ -1,7 +1,7 @@
 <div class='container profile'>
 	<div class='row'>
 		<div class='span12'>
-			<h2>Discovery Tool</h2>
+			<h2 id='discovery'>Discovery Tool</h2>
 			<p>
                 Open source modules presented and visualized for use in your project. Whether you're building a mashup or a Minimum Viable Product -- stand on the shoulders of giants. Reuse code from the public domain.  Browse and explore modules from github using Open Include's <a href='/discover'>discovery</a> tool.
 			</p>
@@ -18,7 +18,7 @@
 			<p>
 			  Open Include is, first, a resource for developers. When on the lookout for a great idea, developers can connect with startups working with Open Include. Collaborate to bring business vision to reality.
 			</p>
-            <h2>Marketplace</h2>
+            <h2 id='marketpkace'>Marketplace</h2>
             <p>
                 When on the lookout for a great idea, developers can connect with startups working with Open Include. Collaborate to bring business vision to reality.
             </p>
