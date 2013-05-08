@@ -1,21 +1,6 @@
 <div class='container profile'>
 	<div class='row'>
 		<div class='span12'>
-
-            <h2>Marketplace</h2>
-            <p>
-                When on the lookout for a great idea, developers can connect with startups working with Open Include. Collaborate to bring business vision to reality.
-            </p>
-            <p>
-                We have a number of startups we work with, and connect experts in specific modules and libraries with projects that are integrating those into a bigger project.  Interested in working with a startup, and make money on the side - <a href='#' data-shareideas>contact us</a> or sign up as a <a href='{{= it.developer_agreement}}'>writer</a>.
-            </p>
-            <p>
-                If you're a business manager of a startup, or are looking for technical help to bring a project to life, <a href='#' data-shareideas>let us know</a>, or sign up as a <a href='{{= it.merchant_agreement}}'>reader</a>.
-            </p>
-            <p>
-                In the Open Include ecosystem, a connection between a reader and writer is the core -- readers are clients, startups, business managers paying for work to be completed.  Writers are coders, technologist, open source experts building for the reader.
-            </p>
-
 			<h2>Discovery Tool</h2>
 			<p>
                 Open source modules presented and visualized for use in your project. Whether you're building a mashup or a Minimum Viable Product -- stand on the shoulders of giants. Reuse code from the public domain.  Browse and explore modules from github using Open Include's <a href='/discover'>discovery</a> tool.
@@ -33,8 +18,19 @@
 			<p>
 			  Open Include is, first, a resource for developers. When on the lookout for a great idea, developers can connect with startups working with Open Include. Collaborate to bring business vision to reality.
 			</p>
-
-
+            <h2>Marketplace</h2>
+            <p>
+                When on the lookout for a great idea, developers can connect with startups working with Open Include. Collaborate to bring business vision to reality.
+            </p>
+            <p>
+                We have a number of startups we work with, and connect experts in specific modules and libraries with projects that are integrating those into a bigger project.  Interested in working with a startup, and make money on the side - <a href='#' data-shareideas>contact us</a> or sign up as a <a href='{{= it.developer_agreement}}'>writer</a>.
+            </p>
+            <p>
+                If you're a business manager of a startup, or are looking for technical help to bring a project to life, <a href='#' data-shareideas>let us know</a>, or sign up as a <a href='{{= it.merchant_agreement}}'>reader</a>.
+            </p>
+            <p>
+                In the Open Include ecosystem, a connection between a reader and writer is the core -- readers are clients, startups, business managers paying for work to be completed.  Writers are coders, technologist, open source experts building for the reader.
+            </p>
 		</div>
 	</div>
 </div>
