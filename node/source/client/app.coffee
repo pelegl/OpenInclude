@@ -152,7 +152,7 @@
     {key: "(!/)#{conf.discover_url}(?:querystring)"               , name: "discover"}
     {key: "(!/)#{conf.signin_url}"                                , name: "login"}
     {key: "(!/)#{conf.profile_url}(/:action)(/:profile)"          , name: "profile"}
-    {key: "(!/)#{conf.how_to_url}"                                , name: "how-to"}
+    {key: "(!/)#{conf.how_to_url}(#:anchor)"                      , name: "how-to"}
     {key: "(!/)#{conf.modules_url}"                               , name: "language_list"}
     {key: "(!/)#{conf.modules_url}/:language"                     , name: "repo_list"}
     {key: "(!/)#{conf.modules_url}/:language/:repo"               , name: "repo"}
@@ -194,6 +194,8 @@
             e.currentTarget.getAttribute('href').slice(1) else \
             "!/"+e.currentTarget.getAttribute('href').slice(1)
           
+          console.log uri
+
           app.navigate uri, {trigger:true}
           return false
 
