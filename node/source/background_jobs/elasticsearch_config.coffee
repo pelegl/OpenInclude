@@ -30,11 +30,11 @@ module.find (err, modules)->
   i = 0
   commands = []
 
-  async.forEach modules, (module, async_callback)=>
+  async.forEach modules, (module_data, async_callback)=>
 
     commands.splice -1, 0, [
-      { "index" : { "_index" :'modules-v3', "_type" : "module_v2", _id: module._id} }
-      {module_name: module.module_name, language: module.language, owner: module.username, description: module.description, stars: module.watchers}
+      { "index" : { "_index" :'modules-v3', "_type" : "module_v2", _id: module_data._id} }
+      {module_name: module_data.module_name, language: module_data.language, owner: module_data.username, description: module_data.description, stars: module_data.watchers}
     ]
 
     async_callback null
