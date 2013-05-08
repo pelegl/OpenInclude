@@ -73,7 +73,7 @@ esClient.createIndex "modules-v3", (err, data)->
         {module_name, language, watchers, username, description} = module_data
         data = {module_name, language, owner: username, description, stars: watchers}
 
-        esClient.index 'modules-v3', 'module_v2', data, module_data._id, async_callback
+        esClient.index 'modules-v3', 'module_v2', data, module_data._id.toString(), async_callback
 
       , (err) =>
         console.log err if err?

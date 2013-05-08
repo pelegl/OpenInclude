@@ -146,9 +146,10 @@ index = [
   [{stars : -1}]
 ]
 
-exports.index      = index
-exports.options  = options
-exports.virtuals = virtuals
-exports.definition = definition
-exports.statics = statics
-exports.methods = methods
+exports.modelName   = "modules2"
+exports.index       = index
+exports.options     = options
+exports.virtuals    = virtuals
+exports.definition  = definition
+exports.statics     = statics
+exports.methods     = methods

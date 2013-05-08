@@ -60,6 +60,10 @@ class DiscoverController extends require('./basicController')
     ###
 
     async.forEach output, (repository, callback) =>
+
+      console.log repository
+
+
       {_id} = repository
       module_ids.push _id
       score[_id] = repository._score
@@ -115,7 +119,7 @@ class DiscoverController extends require('./basicController')
       query =
         query_string:
           query: @context.discover_search_query
-          fields: ["module_name^2", "owner", "description", "comments"]
+          fields: ["module_name^2", "owner", "description"]
           use_dis_max: true
           tie_breaker: 0.7
           boost: 1.2
@@ -131,7 +135,7 @@ class DiscoverController extends require('./basicController')
     fields = []
 
     savedData = []
-    esClient.search('comments-v2-index', 'module_v2', {query, fields, min_score: 0.5}, options)
+    esClient.search('modules-v3', 'module_v2', {query, fields, min_score: 0.5}, options)
     .on('data', (data) =>savedData.push data)
     .on('done', =>@_searchOutput savedData)
     .on('error', (error)=>
