@@ -21,27 +21,61 @@ esClient.createIndex "mongomodules", (err, data)->
 
 module = db.model 'modules2', new Schema({}), 'modules2'
 
-#esClient.createIndex "modules-v3", (err, data)->
-#  return console.error err if err?
-#  console.log data
+###
+  modules_v2 mapping
+###
+mapping =
+  modules_v2:
+    _all :
+      enabled: false
+    properties:
+      stars:
+        type: "string"
+      description:
+        analyzer: "snowball"
+        type: "string"
+      owner:
+        analyzer: "suggest_analyzer"
+        type: "string"
+      language:
+        type: "string"
+      source_files:
+        properties:
+          file_name:
+            type: "string"
+        comments:
+          analyzer: "snowball"
+          type: "string"
+        file_type:
+          type: "string"
+      module_name:
+        analyzer: "suggest_analyzer"
+        type: "string"
 
-module.find (err, modules)->
+
+esClient.createIndex "modules-v3", (err, data)->
   return console.error err if err?
-  i = 0
-  commands = []
+  console.log data
 
-  async.forEach modules, (module_data, async_callback)=>
+  esClient.putMapping "modules-v3", "modules_v2", mapping, (err, data)->
+    console.error if err?
+    console.log data
 
-    commands.splice -1, 0, [
-      { "index" : { "_index" :'modules-v3', "_type" : "module_v2", _id: module_data._id} }
-      {module_name: module_data.module_name, language: module_data.language, owner: module_data.username, description: module_data.description, stars: module_data.watchers}
-    ]
+    module.find().lean().exec (err, modules)->
+      return console.error err if err?
+      i = 0
+      commands = []
 
-    async_callback null
-  , =>
+      async.forEach modules, (module_data, async_callback)=>
 
-    esClient.bulk(commands, {})
-      .on('data', (data)=> console.log data     )
-      .on('done', (done)=> console.log done     )
-      .on('error',(error)=> console.error error )
-      .exec()
+        {module_name, language, watchers, username, description} = module_data
+        commands.splice -1, 0, { "index" : { "_index" :'modules-v3', "_type" : "module_v2", _id: module_data._id} }, {module_name, language, owner: username, description, stars: watchers}
+
+        async_callback null
+      , =>
+
+        esClient.bulk(commands, {})
+          .on('data', (data)=> console.log data     )
+          .on('done', (done)=> console.log done     )
+          .on('error',(error)=> console.error error )
+          .exec()
