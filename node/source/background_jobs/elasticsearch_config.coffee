@@ -25,7 +25,7 @@ module = db.model 'modules2', new Schema({}), 'modules2'
   modules_v2 mapping
 ###
 mapping =
-  modules_v2:
+  module_v2:
     _all :
       enabled: false
     properties:
@@ -52,37 +52,34 @@ mapping =
         analyzer: "suggest_analyzer"
         type: "string"
 
-###
+
 esClient.createIndex "modules-v3", (err, data)->
   return console.error err if err?
   console.log data
 
-  esClient.putMapping "modules-v3", "modules_v2", mapping, (err, data)->
+  esClient.putMapping "modules-v3", "module_v2", mapping, (err, data)->
     console.error if err?
     console.log data
 
-###
+    module.find().lean().exec (err, modules)->
+      return console.error err if err?
+      i = 0
+      commands = []
 
+      console.log "Modules found : #{modules.length}"
 
-module.find().lean().exec (err, modules)->
-  return console.error err if err?
-  i = 0
-  commands = []
+      async.forEach modules, (module_data, async_callback)=>
 
-  console.log "Modules found : #{modules.length}"
+        {module_name, language, watchers, username, description} = module_data
+        commands.splice -1, 0, { "index" : { "_index" :'modules-v3', "_type" : "module_v2", _id: module_data._id} }, {module_name, language, owner: username, description, stars: watchers}
 
-  async.forEach modules, (module_data, async_callback)=>
+        async_callback null
+      , =>
 
-    {module_name, language, watchers, username, description} = module_data
-    commands.splice -1, 0, { "index" : { "_index" :'modules-v3', "_type" : "module_v2", _id: module_data._id} }, {module_name, language, owner: username, description, stars: watchers}
+        console.log "Bulk commands - #{commands.length}"
 
-    async_callback null
-  , =>
-
-    console.log "Bulk commands - #{commands.length}"
-
-    esClient.bulk(commands, {})
-      .on('data', (data)=> console.log data     )
-      .on('done', (done)=> console.log done     )
-      .on('error',(error)=> console.error error )
-      .exec()
+        esClient.bulk(commands, {})
+          .on('data', (data)=> console.log data     )
+          .on('done', (done)=> console.log done     )
+          .on('error',(error)=> console.error error )
+          .exec()
