@@ -81,6 +81,7 @@ class InlineForm extends Backbone.View
   validate: (data) ->
     true
 
+
   success: (model, response, options) ->
     if response.success is true
       @hide()

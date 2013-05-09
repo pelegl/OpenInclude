@@ -2,10 +2,10 @@
   Config
 ###
 {get_models} = require '../conf'
-ObjectId  = require('mongoose').Schema.Types.ObjectId
-async     = require 'async'
-_         = require 'underscore'
-[Bill] = get_models ["Bill"]
+ObjectId     = require('mongoose').Schema.Types.ObjectId
+async        = require 'async'
+_            = require 'underscore'
+[Bill]       = get_models ["Bill"]
 ###
   Definition
 ###
@@ -65,10 +65,22 @@ definition =
 
 methods =
   information: ->
-    return {@github_id, @github_display_name, @github_username, @github_avatar_url, @_id, @github_email}
+    return {
+      @github_id, @github_display_name, @github_username,
+      @github_avatar_url, @_id, @github_email, @skills_reader,
+      @skills_writer, @info_reader, @info_writer,
+      @links_reader, @links_writer
+    }
 
   public_info: ->
-    return {@github_id, @group_id, @groups, @has_stripe, @payment_methods, @merchant, @employee, @github_display_name, @github_email, @github_username, @github_avatar_url, @trello_id, @_id, @skills_reader, @skills_writer, @info_reader, @info_writer, @links_reader, @links_writer, is_authenticated: true}
+    return {
+      @github_id, @group_id, @groups, @has_stripe,
+      @payment_methods, @merchant, @employee, @github_display_name,
+      @github_email, @github_username, @github_avatar_url, @trello_id, @_id,
+      @skills_reader, @skills_writer, @info_reader, @info_writer, @links_reader,
+      @links_writer, is_authenticated: true, @skills_reader, @skills_writer,
+      @info_reader, @info_writer, @links_reader, @links_writer
+    }
 
   get_payment_method: (service, callback) ->
     async.detect @payment_methods, (method, async_detect)=>

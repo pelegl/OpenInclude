@@ -55,20 +55,29 @@ module.exports = (req,res)->
   new SessionController req, res
 
 module.exports.profile_update = (req, res) ->
-  User.findById req.params.id, (error, user) ->
-    if error or not user then return res.json {success: false, error: error}
+  return res.json {success: false}, 403 if req.params.id isnt req.user._id.toString()
 
+  {user} = req
+
+  try
+    ## update data ##
     if req.param('type') is 'reader'
-      user.info_reader = req.param('about')
-      user.skills_reader = req.param('skill-list').split(',')
-      user.links_reader = req.param('links').split(',')
+      user.info_reader   = req.body['about']
+      user.skills_reader = JSON.parse req.body['skill-list']
+      user.links_reader  = JSON.parse req.body['link-list']
     else
-      user.info_writer = req.param('about')
-      user.skills_writer = req.param('skill-list').split(',')
-      user.links_writer = req.param('links').split(',')
+      user.info_writer    = req.body['about']
+      user.skills_writer  = JSON.parse req.body['skill-list']
+      user.links_writer   = JSON.parse req.body['link-list']
 
-    user.save (error, result) ->
-      if error
-        res.json {success: false, error: error}
-      else
-        res.json {success: true}
+  catch e
+    console.log e
+    ## catch invalid data ##
+    return res.json {success: false, e}, 400
+
+  ## update user ##
+  user.save (error, result) ->
+    if error
+      res.json {success: false, error: error}
+    else
+      res.json { success: true, user: user.public_info() }

@@ -573,7 +573,8 @@ footer .copyright a {
 #skill-list {
   list-style: none;
   margin-bottom: 20px;
-  padding: 5px;
+  padding: 3px;
+  margin-left: 0;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   background: white;
@@ -605,6 +606,27 @@ footer .copyright a {
 .tagit i {
   margin-left: 5px;
   cursor: pointer;
+}
+.about-me {
+  width: 100%;
+  height: 250px;
+  resize: none;
+}
+.links-list ul {
+  margin-left: 0;
+}
+.links-list ul .link {
+  margin-left: 3px;
+  margin-bottom: 5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+}
+.links-list ul .link > i {
+  cursor: pointer;
+  float: left;
+  margin-right: 10px;
 }
 .stackQAHistory,
 .commitHistory,

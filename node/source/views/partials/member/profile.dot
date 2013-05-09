@@ -126,29 +126,67 @@
                 </div>
                 {{??}}
                 <div class='span9'>
-                    <p>Looking for skills</p>
-                    <div>
-                    {{~ it.user.skills_reader :skill }}
-                    <span class="skill">{{= skill }}</span>
-                    {{~}}
-                    </div>
 
-                    <p>Has skills</p>
-                    <div>
-                        {{~ it.user.skills_writer :skill }}
-                        <span class="skill">{{= skill }}</span>
-                        {{~}}
-                    </div>
+                    {{? it.user.groups.indexOf("writer") >= 0 }}
+                    <div class='row-fluid'>
+                        <div class='span8'>
+                            <h4>Short biography:</h4>
+                            <p>
+                                {{! it.user.info_writer || "No information" }}
+                            </p>
+                        </div>
+                        <div class='span4'>
+                            {{? it.user.skills_writer.length > 0 }}
+                            <h5>Has skills:</h5>
+                            <ul class='skill-list'>
+                                {{~ it.user.skills_writer: skill }}
+                                <li class='tagit label label-info' >{{! skill}}</li>
+                                {{~}}
+                            </ul>
+                            {{?}}
 
-                    <p>As reader says:</p>
-                    <div>
-                        {{= it.user.info_reader || "" }}
-                    </div>
+                            {{? it.user.links_writer.length > 0 }}
+                            <h5>Important links:</h5>
+                            <ul class='unstyled'>
+                                {{~ it.user.links_writer: link }}
+                                <li class='link'><a href='{{! link}}' >{{! link}}</a></li>
+                                {{~}}
+                            </ul>
+                            {{?}}
 
-                    <p>As writer says:</p>
-                    <div>
-                        {{= it.user.info_writer || "" }}
+                        </div>
                     </div>
+                    {{?}}
+
+                    {{? it.user.groups.indexOf("reader") >= 0 }}
+                    <div class='row-fluid'>
+                        <div class='span8'>
+                            <h4>Company information:</h4>
+                            <p>
+                                {{! it.user.info_reader || "No information" }}
+                            </p>
+                        </div>
+                        <div class='span4'>
+                            {{? it.user.skills_reader.length > 0 }}
+                            <h5>Looking for skills:</h5>
+                            <ul class='skill-list'>
+                                {{~ it.user.skills_reader: skill }}
+                                <li class='tagit label label-info'>{{! skill}}</li>
+                                {{~}}
+                            </ul>
+                            {{?}}
+
+                            {{? it.user.links_reader.length > 0 }}
+                            <h5>Important links:</h5>
+                            <ul class='unstyled'>
+                                {{~ it.user.links_reader: link }}
+                                <li class='link'><a href='{{! link}}' >{{! link}}</a></li>
+                                {{~}}
+                            </ul>
+                            {{?}}
+                        </div>
+                    </div>
+                    {{?}}
 
                 </div>
                 {{?}}
