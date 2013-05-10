@@ -64,7 +64,7 @@ String.prototype.capitalize = ->
   Elastic search module
 ###
 serverOptions =
-  host: process.env.esHost || '54.235.108.134'
+  host: process.env.esHost || '54.225.224.68'
   port: 9200    
   secure: false
 

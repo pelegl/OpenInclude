@@ -132,7 +132,7 @@ class DiscoverController extends require('./basicController')
     fields = []
 
     savedData = []
-    esClient.search('modules-v3', 'module_v2', {query, fields, min_score: 0.5}, options)
+    esClient.search('modules-v4', 'module_v2', {query, fields, min_score: 0.5}, options)
     .on('data', (data) =>savedData.push data)
     .on('done', =>@_searchOutput savedData)
     .on('error', (error)=>

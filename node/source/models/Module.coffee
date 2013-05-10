@@ -146,7 +146,7 @@ index = [
   [{stars : -1}]
 ]
 
-exports.modelName   = "modules2"
+exports.modelName   = "modules"
 exports.index       = index
 exports.options     = options
 exports.virtuals    = virtuals
