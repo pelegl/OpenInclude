@@ -1,6 +1,6 @@
 {
   "name": "OpenInclude",
-  "version": "0.1.0",
+  "version": "1.0.0RC2",
   "private": true,
   "description": "OpenInclude - opensource aggregation tool",
   "main": "app.coffee",
