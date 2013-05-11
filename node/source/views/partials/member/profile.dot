@@ -1,0 +1,197 @@
+<div class='container profile'>
+    <div class='row'>
+        <div class='span12'>
+            <div class='row'>
+                <div class='span3'>
+                    <div class='personalInformation'>
+                        <img src="https://secure.gravatar.com/avatar/{{= it.user.github_avatar_url }}?s=210" class='avatar'/>
+
+                        {{? it.user.github_display_name != it.user.github_username }}
+                        <h3>{{! it.user.github_display_name }}</h3>
+                        {{?}}
+                        <h4><a href='https://github.com/{{! it.user.github_username }}' target="_blank" class='muted'>{{!it.user.github_username }}</a></h4>
+                        <hr/>
+                        {{? it.private }}
+                        <a href='/profile/view/{{! it.user.github_username }}'>See your profile as others do</a>
+                        <h4>Account type</h4>
+
+                        <div class='accountType'>
+                            <div class='type'>
+                                <div>
+                                    <div class='status'>
+                                        {{? it.user.merchant && it.user.groups.indexOf("reader") >= 0 }}
+                                        <a href='/static/pdf/reader_agreement.pdf' target="_blank" data-nobackbone class='agreement'>agreement</a>
+                                        <button id="edit_reader" class="btn btn-small btn-info">Edit</button>
+                                        {{??}}
+                                        <a href='{{= it.merchant_agreement }}' class='btn btn-success btn-small backbone'>Sign Up</a>
+                                        {{?}}
+                                    </div>
+                                    <p>Reader</p>
+                                </div>
+                            </div>
+                            <div class='type'>
+                                <div>
+                                    <div class='status'>
+                                        {{? it.user.employee && it.user.groups.indexOf("writer") >= 0 }}
+                                        <a href='/static/pdf/writer_agreement.pdf' target="_blank" data-nobackbone class='agreement'>agreement</a>
+                                        <button id="edit_writer" class="btn btn-small btn-info">Edit</button>
+                                        {{??}}
+                                        <a href='{{= it.developer_agreement }}' class='btn btn-success btn-small backbone'>Sign Up</a>
+                                        {{?}}
+                                    </div>
+                                    <p>Writer</p>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                        {{?}}
+                        {{? it.user.github_email }}
+                        <div class='contactData'>
+                            <div class='contact'>
+                                <i class='icon-envelope'></i> <a class='muted' href="mailto:{{= it.user.github_email }}">{{! it.user.github_email }}</a>
+                            </div>
+                        </div>
+                        {{?}}
+                    </div>
+                </div>
+                {{? it.private }}
+                <div class='span9'>
+
+                    <div id="runway-tabs" class="row-fluid">
+
+                        <ul id="runways" class="nav nav-tabs">
+                            {{? it.user.groups.indexOf("admin") >= 0 }}
+                            {{ if (!it.active_tab) it.active_tab = "admin-connections"; }}
+                            <li class="dropdown active">
+                                <a href="" class="dropdown-toggle" role="button" data-toggle="dropdown" data-target="#">Admin
+                                    <b class="caret"></b></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#admin-connections" data-toggle="tab">Connections</a></li>
+                                    <li><a href="#admin-finance" data-toggle="tab">Finance</a></li>
+                                    <li><a href="#admin-blog" data-toggle="tab">Blog</a></li>
+                                </ul>
+                            </li>
+                            {{?}}
+                            {{? it.user.groups.indexOf("reader") >= 0 }}
+                            <li class="dropdown{{? !it.active_tab }} active{{ it.active_tab = "reader-runway"; }}{{?}}">
+                                <a href="" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Reader
+                                    <b class="caret"></b></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#reader-runway" data-toggle="tab">Runway</a></li>
+                                    <li><a href="#reader-finance" data-toggle="tab">Finance</a></li>
+                                </ul>
+                            </li>
+                            {{?}}
+                            {{? it.user.groups.indexOf("writer") >= 0 }}
+                            <li class="dropdown{{? !it.active_tab }} active{{ it.active_tab = "writer-runway"; }}{{?}}">
+                                <a href="" class="dropdown-toggle" data-toggle="dropdown" data-target="#">Writer
+                                    <b class="caret"></b></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#writer-runway" data-toggle="tab">Runway</a></li>
+                                    <li><a href="#writer-finance" data-toggle="tab">Finance</a></li>
+                                </ul>
+                            </li>
+                            {{?}}
+                        </ul>
+
+                        <div class="tab-content">
+                            {{? it.user.groups.indexOf("admin") >= 0 }}
+                            <div class="tab-pane{{? it.active_tab == 'admin-connections'}} active{{?}}"
+                                 id="admin-connections"></div>
+                            <div class="tab-pane{{? it.active_tab == 'admin-finance'}} active{{?}}"
+                                 id="admin-finance"></div>
+                            <div class="tab-pane{{? it.active_tab == 'admin-blog'}} active{{?}}"
+                                 id="admin-blog"></div>
+                            {{?}}
+                            {{? it.user.groups.indexOf("reader") >= 0 }}
+                            <div class="tab-pane{{? it.active_tab == 'reader-runway'}} active{{?}}"
+                                 id="reader-runway"></div>
+                            <div class="tab-pane{{? it.active_tab == 'reader-finance'}} active{{?}}"
+                                 id="reader-finance"></div>
+                            <div class="tab-pane{{? it.active_tab == 'reader-bills'}} active{{?}}"
+                                 id="reader-bills"></div>
+                            {{?}}
+                            {{? it.user.groups.indexOf("writer") >= 0 }}
+                            <div class="tab-pane{{? it.active_tab == 'writer-runway'}} active{{?}}"
+                                 id="writer-runway"></div>
+                            <div class="tab-pane{{? it.active_tab == 'writer-finance'}} active{{?}}"
+                                 id="writer-finance"></div>
+                            {{?}}
+                        </div>
+
+                    </div>
+
+                    <div id="tos" class='row-fluid'></div>
+                    <div id="add-skills-inline" class='row-fluid' style="display: none"></div>
+                </div>
+                {{??}}
+                <div class='span9'>
+
+                    {{? it.user.groups.indexOf("writer") >= 0 }}
+                    <div class='row-fluid'>
+                        <div class='span8'>
+                            <h4>Short biography:</h4>
+                            <p>
+                                {{! it.user.info_writer || "No information" }}
+                            </p>
+                        </div>
+                        <div class='span4'>
+                            {{? it.user.skills_writer.length > 0 }}
+                            <h5>Has skills:</h5>
+                            <ul class='skill-list'>
+                                {{~ it.user.skills_writer: skill }}
+                                <li class='tagit label label-info' >{{! skill}}</li>
+                                {{~}}
+                            </ul>
+                            {{?}}
+
+                            {{? it.user.links_writer.length > 0 }}
+                            <h5>Important links:</h5>
+                            <ul class='unstyled'>
+                                {{~ it.user.links_writer: link }}
+                                <li class='link'><a href='{{! link}}' >{{! link}}</a></li>
+                                {{~}}
+                            </ul>
+                            {{?}}
+
+                        </div>
+                    </div>
+                    {{?}}
+
+                    {{? it.user.groups.indexOf("reader") >= 0 }}
+                    <div class='row-fluid'>
+                        <div class='span8'>
+                            <h4>Company information:</h4>
+                            <p>
+                                {{! it.user.info_reader || "No information" }}
+                            </p>
+                        </div>
+                        <div class='span4'>
+                            {{? it.user.skills_reader.length > 0 }}
+                            <h5>Looking for skills:</h5>
+                            <ul class='skill-list'>
+                                {{~ it.user.skills_reader: skill }}
+                                <li class='tagit label label-info'>{{! skill}}</li>
+                                {{~}}
+                            </ul>
+                            {{?}}
+
+                            {{? it.user.links_reader.length > 0 }}
+                            <h5>Important links:</h5>
+                            <ul class='unstyled'>
+                                {{~ it.user.links_reader: link }}
+                                <li class='link'><a href='{{! link}}' >{{! link}}</a></li>
+                                {{~}}
+                            </ul>
+                            {{?}}
+                        </div>
+                    </div>
+                    {{?}}
+
+                </div>
+                {{?}}
+
+            </div>
+        </div>
+    </div>
+</div>

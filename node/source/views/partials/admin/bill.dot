@@ -1,0 +1,40 @@
+<div class='row-fluid billing'>
+    <div class='span12'>
+        <div class='customer'>
+            <img src='https://secure.gravatar.com/avatar/{{= it.user.github_avatar_url }}?s=40' />
+            <p class='name'>{{! it.user.github_display_name }}</p>
+        </div>
+        <form method='POST' action='{{= it.bills_action }}' class='form-horizontal'>
+            <legend>
+                Issue a bill
+                <span class="help-inline error"></span>
+            </legend>
+            <input type='hidden' class='span6' name='bill[user]' value='{{= it.user._id }}' >
+
+            <div class='control-group'>
+                <label class='control-label' for='billAmount'>Amount</label>
+                <div class='controls'>
+                    <input type='number' id="billAmount" class='span6' name='bill[amount]' placeholder="1$" />
+                </div>
+            </div>
+
+            <div class='control-group'>
+                <label class='control-label' for='billDescription'>Description</label>
+                <div class='controls'>
+                    <input type='text' id="billDescription" class='span6' name='bill[description]' placeholder="Enter a custom description for the customer" />
+                </div>
+            </div>
+
+            <div class='control-group'>
+                <div class='controls'>
+                    <button type='submit' class="btn btn-primary pull-left">Issue bill</button>
+                </div>
+            </div>
+
+        </form>
+        <hr />
+        <div class='bills'>
+        {{#def.partials["bills/table"]}}
+        </div>
+    </div>
+</div>

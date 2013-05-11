@@ -1,0 +1,25 @@
+<script type="text/javascript" src="/static/js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.nicescroll.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap-switch.js"></script>
+<script type="text/javascript" src="/static/js/date.js"></script>
+<script type="text/javascript" src="/static/js/daterangepicker.js"></script>
+<script type="text/javascript" src="/static/js/cookie.js"></script>
+<script type="text/javascript" src="/static/js/d3.min.js"></script>
+<script type="text/javascript" src="/static/js/humanize.js"></script>
+<script type="text/javascript" src="/static/js/underscore.js"></script>
+<script type="text/javascript" src="/static/js/backbone.min.js"></script>
+<script type="text/javascript" src="/static/js/backbone.paginator.js"></script>
+<script type="text/javascript" src="/static/js/backbone.syphon.js"></script>
+<script type="text/javascript" src="/static/js/dot.js"></script>
+<script type="text/javascript" src="/static/js/templates-dot.js"></script>
+<script type="text/javascript" src="/static/js/moment.js"></script>
+<script type="text/javascript" src="/static/js/moment-en.js"></script>
+<script type="text/javascript" src="/static/epiceditor/js/epiceditor.js"></script>
+<script type="text/javascript" src="/static/js/jqcloud-1.0.3.js"></script>
+
+<script src="/static/webshims/js-webshim/dev/extras/modernizr-custom.js"></script>
+<script src="/static/webshims/js-webshim/dev/polyfiller.js"></script>
+
+<script type="text/javascript" src="/static/js/app.js"></script>

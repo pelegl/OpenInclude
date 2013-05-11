@@ -1,0 +1,21 @@
+<div class='container admin'>
+	<div class='row'>
+		<div class='span12'>
+            <h2>Admin Panel</h2>
+            <hr>
+            <div class='fluid-column-2 clearfix'>
+                <div class='column-left'>
+                    <h3>Actions</h3>
+                    <ul class='nav'>
+                        <li><a href='/{{= it.users_with_stripe}}' class='backbone'>View Users with Stripe</a></li>
+                    </ul>
+                </div>
+                <div class='column-right'>
+                    <div class='informationBox'>
+                        {{= it.informationBox || "" }}
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+</div>

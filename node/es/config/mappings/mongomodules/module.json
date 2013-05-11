@@ -1,0 +1,20 @@
+{
+    "module" : {
+        "_all" : {"enabled": false},
+        "properties": {
+            "description": {
+                "type" : "string",
+                "analyzer": "snowball"
+            },
+            "language": {
+                "type" : "string"
+            },
+            "module_name" : {
+                "type" : "string"
+            },
+            "owner" : {
+                "type" : "string"
+            }
+        }
+    }
+}

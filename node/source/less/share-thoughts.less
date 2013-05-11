@@ -1,0 +1,61 @@
+@share-textarea-width: 350px;
+
+
+.share-ideas {
+  position: fixed;
+  height: 30px;
+  width: 180px;
+  background: #106CAA;
+  top: 215px;
+  left: -85px;
+  .transform(rotate(270deg));
+  .border-radius(0px 0px 5px 5px);
+  line-height: 25px;
+  padding: 0 10px;
+  color: #efefef;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  text-decoration: none;
+  .transition(left 0.3s ease-out);  
+  &:hover, &:active, &:focus {
+    color: #fff;
+    text-decoration: none;
+  }
+}
+
+
+#shareYourThoughts {  
+  position: fixed;
+  z-index: 1000;
+  top: 130px;
+  //left: -560px;  // 516 + 44px initially
+  left: -@share-textarea-width - 44;
+  .transition(left 0.3s ease-out);
+  background: @white;
+  .border-radius(0 0 5px 0);
+  .box-shadow(0 3px 3px, 30%);
+
+  .close {
+    margin-bottom: 10px;
+  }
+
+  textarea {
+    resize: none;
+  }
+}
+
+.show { 
+  #shareYourThoughts {
+    left: 0;
+    border-top: 1px solid #ccc;
+  }
+  .share-ideas {
+    //left: 475px; // 516 - 39
+    left: @share-textarea-width - 41;
+  }
+}
+
+#ideas, #email {
+  width: @share-textarea-width; //516px initially
+}

@@ -1,0 +1,8 @@
+<div class="search">
+  <form class="search-form" action="{{=it.discover_search_action}}" method="GET">
+    <div class="input-append input-block-level">
+      <input type="text" name="q" placeholder="Discover an open source project" value="{{! it.discover_search_query }}" class='input-block-level'>
+      <button type="submit" class='btn btn-primary'>search</button>
+    </div>
+  </form>   
+</div>

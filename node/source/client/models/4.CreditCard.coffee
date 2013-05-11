@@ -1,0 +1,1 @@
+models.CreditCard = Backbone.Model.extend {}

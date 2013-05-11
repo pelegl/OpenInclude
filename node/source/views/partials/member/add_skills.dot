@@ -1,0 +1,60 @@
+<form method='post' action='/' class='inline-popover'>
+
+    <div class='row-fluid'>
+        <div class='span8'>
+            <label for="about">
+                {{? it.type == "reader" }}
+                Company information:
+                {{??}}
+                About me:
+                {{?}}
+            </label>
+            <textarea id="about" name="about" class="about-me">
+                {{! it.about_me }}
+            </textarea>
+        </div>
+        <div class='span4'>
+            <div class='skill-list'>
+                <label for="skills-autocomplete">
+                    {{? it.type == "reader" }}
+                    Skills I'm looking for:
+                    {{??}}
+                    My skills:
+                    {{?}}
+                </label>
+                <ul id='skill-list'>
+                    {{~ it.skills: skill }}
+                    <li class='tagit label label-info' data-value='{{= skill }}'>
+                        {{= skill}}<i>&times;</i>
+                    </li>
+                    {{~}}
+                    <li class='tagit-new'>
+                        <input type="text" id="skills-autocomplete" autocomplete="off" />
+                    </li>
+                </ul>
+            </div>
+            <div class='links-list'>
+                <label for="new_link">Important links:</label>
+                <ul class='unstyled'>
+                    {{~ it.links: link }}
+                        <li class='link' data-value='{{= link }}'><i>&times;</i><a href='{{= link}}' >{{= link}}</a></li>
+                    {{~}}
+                    <li class='link-new'>
+                        <input type="text" class='input-block-level' id="new_link" name='new_link' placeholder="http://example.com" />
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" name="skill-list" />
+    <input type="hidden" name="link-list"  />
+
+    <input type="hidden" name="type" value="{{= it.type }}" />
+
+    <div>
+        <a class="btn pull-left close-inline">Close</a>
+        <button type='submit' class="btn btn-primary pull-left" style='margin-left: 20px'>Update</button>
+    </div>
+
+</form>

@@ -1,0 +1,59 @@
+<div class='container'>
+  <div class='row'>
+    <div class='span12 text-center features'>
+        <div><img src='/static/images/logo_front.png' alt='Open Include Logo'/></div>
+        <p class='lead text-center'>A <a href="/how-to#discovery">tool for developers</a>, a <a href='/how-to#marketplace'>marketplace for talent</a>.</p>
+        <h3 class="text-center">Software for startups, using open source.</h3>
+
+        <div class='row-fluid'>
+            <div class='span6'>
+                <div class='well front-page'>
+                    <h4>For developers:</h4>
+                    <p>
+                        A tool suite to help you choose the exact library for the needs at hand.  A way to visualize modules, exposing you to new libraries.  Collaborate with innovative companies to build software together.
+                    </p>
+                </div>
+            </div>
+            <div class='span6'>
+                <div class='well front-page'>
+                    <h4>For business managers:</h4>
+                    <p>
+                        We find the right fit of open source libraries to reach your goals, and connect you with vetted experts already working with us to build your project.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!--
+        <div class="features text-center">
+        <ul>
+          <li>
+            <a href="/{{= it.discover_url }}">
+              <div class="box"><img src="{{=it.STATIC_URL}}images/icon-discover.png" alt="">
+                <h2>Discover</h2>
+                <p>quality open source projects</p>
+              </div>
+            </a> 
+          </li>
+          <li>
+            <a href="/{{= it.how_to_url }}">
+              <div class="box"><img src="{{=it.STATIC_URL}}images/icon-demo.png" alt="">
+                <h2>Demo</h2>
+                <p>on our virtual machines</p>
+              </div>
+            </a>
+          </li>
+          <li>
+            <a href="/{{= it.how_to_url }}">
+              <div class="box"><img src="{{=it.STATIC_URL}}images/icon-integrate.png" alt="">
+                <h2>Integrate</h2>
+                <p>into your current work</p>
+              </div>
+            </a> 
+          </li>
+      </div> -->
+
+
+    </div>
+  </div>
+</div>

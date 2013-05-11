@@ -1,0 +1,8 @@
+{
+  "name": "OpenInclude",
+  "version": "0.0.0",  
+  "dependencies": {    
+    "bootstrap": "*",
+    "jquery"   : "~1.9.1"
+  }
+}

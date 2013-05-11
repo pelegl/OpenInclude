@@ -1,0 +1,63 @@
+<div class="container blog">
+    <h1>OpenInclude Blog{{? it.tag }} <small>Category: {{= it.tag }}</small>{{?}}</h1>
+    <div class='row'>
+        <div class='span9'>
+
+            {{~ it.posts :post }}
+            <article class='blog-post'>
+                <header class='clearfix'>
+                    <h2><a href="/blog/view/{{= post._id }}" class='title' data-nobackbone >{{= post.title }}</a></h2>
+                    <time>{{= it.moment(post.date).format("LL") }}</time>
+                    <a class='author' href='/profile/view/{{= post.author.name }}'>
+                        <img src="https://secure.gravatar.com/avatar/{{= post.author.avatar }}?s=30" width="30" height="30" alt='' /> {{= post.author.name }}
+                    </a>
+                    <!-- tags -->
+                    {{? post.tags }}
+                    <ul class="unstyled inline tags pull-right">
+                        <li>Categories:</li>
+                        {{~ post.tags :tag }}
+                        <li>
+                            <a href="/blog/tag/{{= tag }}" data-nobackbone>[{{= tag}}]</a>
+                        </li>
+                        {{~}}
+                    </ul>
+                    {{?}}
+                    <!-- tags end -->
+                </header>
+                <section class='body'>
+                    {{= post.htmlContent }}
+                </section>
+            </article>
+            {{~}}
+
+            {{ if (it.tag) part = "/blog/tag/" + it.tag + "/"; else part = "/blog/index/"; }}
+            <div class="pagination center">
+                <ul>
+                    {{? it.page > 1 }}
+                    <li><a href="{{= part }}{{= it.page - 1 }}" data-nobackbone >&laquo;</a></li>
+                    {{?}}
+                    {{ for (i = 1; i <= it.limit; i++) { }}
+                    <li {{? i == it.page }}class="active"{{?}}><a href="{{= part }}{{= i }}" data-nobackbone >{{= i }}</a></li>
+                    {{ } }}
+                    {{? it.page < it.limit }}
+                    <li><a href="{{= part }}{{= it.page + 1 }}" data-nobackbone >&raquo;</a></li>
+                    {{?}}
+                </ul>
+            </div>
+
+        </div>
+
+        <div id="cloud" class="span3" style="height: 550px">
+
+        </div>
+    </div>
+</div>
+
+{{? it.cloud }}
+<script>
+    $(function() {
+        var cloud = {{= JSON.stringify(it.cloud) }};
+        $("#cloud").jQCloud(cloud);
+    });
+</script>
+{{?}}

@@ -1,0 +1,18 @@
+<h3>Filter</h3>
+{{~ it.filters :filter}}
+<div class='filterBox'>
+    <h4>{{=filter.name}}
+        <a href='#' class='pull-right' data-reset='{{=filter.key}}'>select all</a>
+        <a href='#' class='pull-right' data-clear='{{=filter.key}}'>select none</a>
+    </h4>
+    <ul class='unstyled'>			
+        {{~ filter.languages :language}}
+            <li>
+                <label class='checkbox'>
+                    <span style="background:#{{= language.color}}" class="color"></span><input type='checkbox' name='{{=filter.key}}' value="{{! language.name }}" /> {{! language.name }}
+                </label>
+            </li>
+        {{~}}
+    </ul>
+</div>
+{{~}}

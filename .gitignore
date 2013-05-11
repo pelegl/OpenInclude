@@ -5,3 +5,15 @@
 local_settings.py
 *.bak
 *.db
+node/node_modules
+node/source/tmp
+node/components
+node/build
+*.idea
+node/source/static/js/templates-dot.js
+node/source/static/js/app.js
+node/source/static/js/app.min.js
+node/source/static/js/app.map.js
+node/source/static/js/modules.min.js
+node/source/static/css/app.concat.css
+node/source/static/css/app.min.css

@@ -1,2 +1,0 @@
-PATH=/home/ubuntu/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
-*/10 * * * * /home/ubuntu/OpenInclude/deployment/job.sh

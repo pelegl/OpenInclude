@@ -1,0 +1,15 @@
+<form method='post' action='' class='inline-popover'>
+
+    <input type='text' class='input-block-level' name='task[name]' required placeholder="Task name" />
+    <textarea class="input-block-level" name='task[description]' required placeholder="Description"></textarea>
+    <input type="text" class="input-block-level" name="task[label]" placeholder="Task label" />
+    <input type="text" class="input-block-level" name="task[due]" placeholder="Due date" />
+    <input type="text" class="input-block-level" name="task[duration]" placeholder="Maximum duration" />
+    <input type="text" class="input-block-level" name="task[price]" placeholder="Price" />
+  
+    <div>
+        <a class="btn pull-left close-inline">Close</a>
+        <button type='submit' class="btn btn-primary pull-left" style='margin-left: 20px'>Confirm</button>
+    </div>
+        
+</form>

@@ -1,0 +1,4 @@
+<div class="bills">
+    <h2> Bills </h2>
+    {{#def.partials["bills/table"]}}
+</div>

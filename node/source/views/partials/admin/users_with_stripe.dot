@@ -1,0 +1,27 @@
+<div class='row-fluid'>
+  <div class='span12'>
+      <h3>Users with stripe added</h3>
+      <table class="table table-striped table-bordered userList">
+          <thead>
+            <tr>
+                <th>User</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{~it.users :user}}
+            <tr>
+                <td>
+                    <a href='/profile/view/{{= user.github_username }}' target="_blank" >
+                        <img src="https://secure.gravatar.com/avatar/{{= user.github_avatar_url }}?s=40" class='avatar'  />
+                        {{! user.github_username }}
+                    </a>
+                </td>
+                <td>
+                    <a href='/admin/issue_bill/{{= user.github_username }}' class='btn btn-success btn-mini backbone'>Issue Bill</a>
+                </td>
+            </tr>
+            {{~}}
+          </tbody>
+      </table>
+  </div>
+</div>

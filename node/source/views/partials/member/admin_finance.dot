@@ -1,0 +1,64 @@
+<div class="runway-date">
+    <div class="daterange pull-left">
+        <i class="icon-calendar icon-large"></i>
+        <span id="admin_filter" class="value">{{= it.admin_filter || "All time" }}</span>
+        <b class="caret"></b>
+        <span id="admin_from" class="from" style="display: none"></span>
+        <span id="admin_to" class="to" style="display: none"></span>
+    </div>
+    <a id="admin-csv" class="btn btn-success pull-left">CSV</a>
+    <div id="toggle-paid" class="switch" style="margin-top: 1px; margin-left: 20px" data-on-label="Paid" data-off-label="New">
+        <input type="checkbox" {{? it.show_paid }}checked{{?}}/>
+    </div>
+</div>
+<table class="table table-striped table-hover" style="background-color: #ffffff">
+    <thead>
+        <tr>
+            <th>Reader → Writer</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    {{~ it.connections :connection }}
+        {{
+            var paid_money = 0;
+
+            var bills = [];
+            var paid = [];
+
+            for (var r in connection.bills)
+            {
+                var bill = connection.bills[r];
+
+                var m = moment(bill.date);
+                var f = moment(it.admin_from);
+                var t = moment(it.admin_to);
+
+                if (it.admin_from != "none" && it.admin_to != "none" && !((m.isAfter(f, 'day') || m.isSame(f, 'day')) && (m.isBefore(t, 'day')) || m.isSame(t, 'day'))) continue;
+
+                if (bill.isPaid) paid.push(bill); else bills.push(bill);
+            }
+
+            if (it.show_paid) bills = paid;
+        }}
+
+        {{~ bills :bill }}
+        <tr>
+            <td><a href="/profile/view/{{= connection.reader.name }}">{{= connection.reader.name }}</a> → <a href="/profile/view/{{= connection.writer.name }}">{{= connection.writer.name }}</a></td>
+            <td>{{= bill.description || "No memo" }}</td>
+            <td>${{= bill.amount }}</td>
+            <td>
+                {{? !it.show_paid }}
+                <button id="chaaaaaarge" class="btn btn-primary btn-mini" data-connection="{{= connection._id }}" data-bill="{{= bill._id}}">Charge</button>
+                {{??}}
+                <span class='label label-info'>charged</span>
+                {{?}}
+            </td>
+        </tr>
+        {{~}}
+
+    {{~}}
+    </tbody>
+</table>

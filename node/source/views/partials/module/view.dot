@@ -1,0 +1,35 @@
+<div class='container module'>
+  <div class='row'>
+    <div class='span12' data-repo='{{= it.prepopulate || "" }}'>
+      <!--
+      {{? !it.module.starred}}
+        <button class='btn pull-right toolbar' data-action='star'><i class='icon-star'></i> Star</button>
+      {{??}}
+        <button class='btn pull-right toolbar' data-action='star'><i class='icon-star-empty'></i> Unstar</button>
+      {{?}}
+      -->
+      <h2>
+          {{=it.module.owner}}/{{=it.module.module_name}}
+          <small>
+              <a href="{{=it.module.url}}" class='muted' target="_blank"> {{! it.module.url}}</a>
+          </small>
+      </h2>
+
+      <hr />
+      <div class='row'>
+        <div class='span6'>
+          <!-- stacked bar chart #52 weeks history -->
+          <div class='commitHistory'></div>
+        </div>
+        <div class='span6'>
+          <!-- bar chart #52 weeks history -->
+          <div class='starsHistory'></div>
+        </div>
+      </div>      
+      <div>
+        <!-- multi series - new questions, new answers #52 week history -->
+        <div class='stackQAHistory'></div>
+      </div>
+    </div>
+  </div>  
+</div>

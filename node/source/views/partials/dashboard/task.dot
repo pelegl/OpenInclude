@@ -1,0 +1,18 @@
+<h3>{{= it.task.name }}</h3>
+<h4>{{= it.task.description }} <small>{{= it.task.label}}</small></h4>
+{{? it.task.person }}
+<h5><a href="/profile/view/{{= it.task.person.link }}">{{= it.task.person.name }}</a> is working on this!</h5>
+{{?}}
+
+<span class="task-worked">Worked: <span id="timer">{{= it.task.logged }}</span></span>
+<span class="task-runway">Maximum: {{= it.task.duration }}</span>
+
+<span class="task-due pull-right">Deadline: {{= moment(it.task.due).calendar() }}</span>
+
+<ul class="task-comments">
+    {{~ it.task.comments :comment}}
+    <li>{{= comment.text }} by <a href="/profile/view/{{= comment.author_link}}">{{= comment.author }}</a> on {{= moment(comment.date).calendar() }}</li>
+    {{~}}
+</ul>
+<a href="#" id="task-add-comment-button" class="btn btn-small btn-success">Add comment</a> {{? !it.task.person && it.task.duration > it.task.logged }}<a href="" id="task-check-in" class="btn btn-small">Check in</a>{{?}}
+<div id="task-add-comment-{{= it.task._id}}" style="margin-top: 10px"></div>

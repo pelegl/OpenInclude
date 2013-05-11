@@ -1,0 +1,5 @@
+{{~ it._menu: menu }}
+    <li {{? menu.isActive }} class='active' {{?}}>
+    <a href='{{= menu.url}}' {{~ menu.attributes :attribute }}data-{{= attribute }}{{~}}>{{= menu.text }}</a>
+    </li>
+{{~}}

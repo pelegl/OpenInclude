@@ -1,0 +1,37 @@
+{spawn, exec} = require 'child_process'
+{ncp} = require 'ncp'
+fs    = require 'fs-extra'
+
+dir         = __dirname
+build_dir   = 'build'
+source_dir  = 'source'
+
+filter = (name)->
+  
+  return false if /.*\.coffee$/.test name
+  return false if name is "#{dir}/#{source_dir}/templates"
+  return false if name is "#{dir}/#{source_dir}/less"
+  true 
+
+ncp_task = (callback) ->
+  ncp source_dir, build_dir, {filter}, (err) ->
+    return console.error err if err?
+    console.log "Build completed"
+    callback() if callback?  
+
+task 'build', 'Generate the library from the src', ->
+  fs.removeSync build_dir
+  
+  coffee = spawn '/usr/bin/coffee', ['-c', '-b', '-o', 'build', 'source']
+  coffee.stdout.on 'data', (data) -> console.log data.toString().trim()
+  
+  ncp_task ->
+    process.exit 0
+
+task 'watch', 'Generate the library from the src and watch for changes', ->
+  fs.removeSync build_dir
+  
+  coffee = spawn 'node_modules/.bin/coffee', ['-c', '-b', '-w', '-o', 'build', 'source']
+  coffee.stdout.on 'data', (data) -> console.log data.toString().trim()
+  
+  ncp_task()
