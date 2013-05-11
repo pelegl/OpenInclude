@@ -14,7 +14,7 @@
     github_auth_url     : "/auth/github"
     trello_auth_url     : "/auth/trello"
     discover_url        : "discover"
-    how_to_url          : "how-to"
+    how_to_url          : "about"
     modules_url         : 'modules'
     merchant_agreement  : '/profile/reader_agreement'
     developer_agreement : '/profile/writer_agreement'
@@ -69,7 +69,7 @@
       else
         app.navigate '/profile/login', {trigger: true}       
     
-    'how-to': ->
+    about: ->
       @reRoute()      
       @view = new views.HowTo prevView:@view
     
@@ -152,7 +152,7 @@
     {key: "(!/)#{conf.discover_url}(?:querystring)"               , name: "discover"}
     {key: "(!/)#{conf.signin_url}"                                , name: "login"}
     {key: "(!/)#{conf.profile_url}(/:action)(/:profile)"          , name: "profile"}
-    {key: "(!/)#{conf.how_to_url}(#:anchor)"                      , name: "how-to"}
+    {key: "(!/)#{conf.how_to_url}(#:anchor)"                      , name: "about"}
     {key: "(!/)#{conf.modules_url}"                               , name: "language_list"}
     {key: "(!/)#{conf.modules_url}/:language"                     , name: "repo_list"}
     {key: "(!/)#{conf.modules_url}/:language/:repo"               , name: "repo"}

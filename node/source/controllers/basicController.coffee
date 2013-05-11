@@ -39,7 +39,7 @@ class BasicController
   _buildMenu: ->
     @context._menu = [
       {url: @context.discover_url, text: "Discover"}
-      {url: @context.how_to_url,   text:"How To"}
+      {url: @context.how_to_url,   text: "About"}
     ]
     # admin
     #if @req.user?.group_id is 'admin'

@@ -19,7 +19,7 @@ class IdeaController extends require('./basicController')
       from: 'nobody@openinclude.com'
       "reply-to": from
       to: 'start@openinclude.com'
-      subject: "OpenInclude - Share your ideas. From: #{from}"
+      subject: "Open Include - Share your ideas. From: #{from}"
       text: @req.body.ideas
 
     transport.sendMail(mailOptions)
