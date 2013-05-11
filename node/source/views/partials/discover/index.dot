@@ -1,5 +1,5 @@
 <div class='container discover'>
-    <h5 class='low-margin'>Type the function of the module you're looking for.  (ex. <a href='/discover?q=machine learning'>machine learning</a>)</h5>
+    <p class='low-margin'>Type the function of the module you're looking for.  (ex. <a href='/discover?q=machine learning'>machine learning</a>)</p>
 	<div class='row'>
 		<div class='span8'>
 		    {{#def.partials['discover/chart']}}

@@ -1,5 +1,5 @@
 <div class="container blog">
-    <h1>OpenInclude Blog{{? it.tag }} <small>Category: {{= it.tag }}</small>{{?}}</h1>
+    <h1>Open Include Blog{{? it.tag }} <small>Category: {{= it.tag }}</small>{{?}}</h1>
     <div class='row'>
         <div class='span9'>
 

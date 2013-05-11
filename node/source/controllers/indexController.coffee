@@ -15,8 +15,8 @@ class IndexController extends BasicController
     @context.body = @_view 'registration/login', @context    
     @res.render 'base', @context
 
-  'how-to': ->
-    @context.title = "How to"
+  about: ->
+    @context.title = "Open Include | About"
     @context.body = @_view 'how-to', @context    
     @res.render 'base', @context
 

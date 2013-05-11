@@ -2,7 +2,7 @@ views.HowTo = View.extend
 
   initialize:->
     console.log '[__HowToView__] Init'
-    app.setTitle "OpenInclude | How To"
+    app.setTitle "Open Include | About"
     @render()
 
   render:->
