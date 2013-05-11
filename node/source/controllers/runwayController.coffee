@@ -76,29 +76,35 @@ module.exports =
     )
 
   create: (req, res) ->
-    Connection.findById(req.params.connection, (result, connection) ->
-      if result
-        res.json {success: false, error: result}
+    Connection.findById req.params.connection, (error, connection) ->
+      if error
+        res.json {success: false, error}
       else
-        runway = new Runway(
-          date: new Date()
-          worked: req.body.worked
-          charged: connection.charged
-          fee: connection.fee
-          memo: req.body.memo
-          connection: connection._id
-        )
 
-        runway.save((result, runway) ->
-          if result
-            res.json {success: false, error: result}
+        user = req.user
+        unless user._id.toString() == connection.writer.id
+          return res.json {success: false}, 403
+
+
+        ## runway ##
+        runway = new Runway
+          date:    new Date()
+          worked:  req.body.worked
+          charged: connection.charged
+          fee:     connection.fee
+          memo:    req.body.memo
+          connection: connection._id
+
+
+        runway.save (error, runway) ->
+          if error
+            res.json {success: false, error}
           else
             connection.runways.push(runway)
             connection.save()
 
             res.json {success: true}
-        )
-    )
+
 
   finance_reader: (req, res) ->
     Runway.find().populate("connection", null, {"reader.id": "" + req.user._id}).exec((result, runways) ->

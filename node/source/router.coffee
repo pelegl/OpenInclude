@@ -51,7 +51,7 @@ exports.set = (app)->
   app.get "/project/parent/:parent/:child", app.Controllers.project.parent
 
   app.post "/project", app.Controllers.project.create
-  app.put "/project/:id", app.Controllers.project.update
+  app.put  "/project/:id", app.Controllers.project.update
   app.delete "/project/:id", app.Controllers.project.delete
   
   ###
@@ -70,9 +70,9 @@ exports.set = (app)->
 
 
   ## Runway ##
-  app.get "/api/connection",  is_admin, app.Controllers.runway.connections
-  app.post "/api/connection", is_admin, app.Controllers.runway.create_connection
-  app.put "/api/connection",  is_admin, app.Controllers.runway.update_connection
+  app.get  "/api/connection",  is_admin, app.Controllers.runway.connections
+  app.post "/api/connection",  is_admin, app.Controllers.runway.create_connection
+  app.put  "/api/connection",  is_admin, app.Controllers.runway.update_connection
 
   app.get "/api/runway/reader", app.Controllers.runway.reader
   app.get "/api/runway/writer", app.Controllers.runway.writer
@@ -80,7 +80,7 @@ exports.set = (app)->
   app.get "/api/finance/reader",           app.Controllers.runway.finance_reader
   app.get "/api/finance/writer/:from/:to", app.Controllers.runway.search_writer
 
-  app.post "/api/runway/:connection", is_admin, app.Controllers.runway.create
+  app.post "/api/runway/:connection", app.Controllers.runway.create
 
   ## Payments ##
   app.patch "/api/payment/:id",  is_admin, app.Controllers.payment.patch
