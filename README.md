@@ -11,6 +11,7 @@ OpenInclude
 * sudo npm install -g forever
 * sudo npm install -g grunt-cli
 
+#### how to launch the app
     $ git clone https://github.com/skier31415/OpenInclude
     $ cd OpenInclude/node
     $ npm install
