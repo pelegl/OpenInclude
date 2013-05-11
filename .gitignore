@@ -9,7 +9,7 @@ node/node_modules
 node/source/tmp
 node/components
 node/build
-.idea
+*.idea
 node/source/static/js/templates-dot.js
 node/source/static/js/app.js
 node/source/static/js/app.min.js

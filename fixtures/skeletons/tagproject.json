@@ -1,8 +1,0 @@
-    {
-        "pk": %(id)s, 
-        "model": "tag.projecttag", 
-        "fields": {
-            "project": %(proj)s, 
-            "tag": %(tag)s
-        }
-    },
