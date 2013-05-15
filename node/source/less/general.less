@@ -10,7 +10,7 @@ body {
     min-height: 100%;
     height: 100%;
     position: relative;
-    padding-bottom: 150px;
+    padding-bottom: 50px;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
 }
@@ -52,13 +52,30 @@ header.navbar {
 }
 
 section.contents {
+  // 667px height
   .features {
-      padding-top: 50px;
-     .front-page {
+    position:relative;
+    height: 667px;
+    padding-top: 20px;
+    .features-inner {
+        position: absolute;
+        top: 50%;
+        margin-top: -334px;
+        width: 100%;
+    }
+
+    .front-page {
        height: 150px;
        max-width: 300px;
        margin: 20px auto 20px;
-     }
+    }
+
+    .form-search {
+      margin-top: 50px;
+      margin-bottom: -50px;
+      position: relative;
+    }
+
   }
   /*
   .features {    

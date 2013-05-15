@@ -3,17 +3,19 @@
 		<div class='span12'>
 			<h2 id='discovery'>Discovery Tool</h2>
 			<p>
-                Open source modules presented and visualized for use in your project. Whether you're building a mashup or a Minimum Viable Product -- stand on the shoulders of giants. Reuse code from the public domain.  Browse and explore modules from github using Open Include's <a href='/discover'>discovery</a> tool.
-			</p>
+                Open source modules presented and visualized for use in your project. Whether you're building a mashup or a Minimum Viable Product -- stand on the shoulders of giants. Reuse code from the public domain. Browse and explore modules from github using Open Include's <a href='/discover'>discovery</a> tool.
+
+            </p>
             <ul class='unstyled' style='margin-left:10px'>
                 <li><strong>Sample searches:</strong></li>
-                <li><a href='/discover?q=natural language processing'>natural language processing</a></li>
                 <li><a href='/discover?q=machine learning'>machine learning</a></li>
-                <li><a href='/discover?q=neural net'>neural network</a></li>
+                <li><a href='/discover?q=natural language processing'>natural language processing</a></li>
                 <li><a href='/discover?q=tag cloud'>tag cloud</a></li>
+                <li><a href='/discover?q=game engine'>game engine</a></li>
+                <li><a href='/discover?q=neural network'>neural network</a></li>
             </ul>
             <p>
-                The visualizer shows relevance to the search term, relative time that the module was last updated, and popularity (denoted by size of the bubble).  Click on a bubble to add to the comparison list.  Click into the module to view trends of commits, watchers, and questions & answers on Stack Overflow, over time.
+                The visualizer shows relevance to the search term, relative time that the module was last updated, and popularity (denoted by size of the bubble). Click on a bubble to add to the comparison list. Click into the module to view trends of commits, watchers, and questions & answers on Stack Overflow, over time.
             </p>
 			<p>
 			  Open Include is, first, a resource for developers. When on the lookout for a great idea, developers can connect with startups working with Open Include. Collaborate to bring business vision to reality.

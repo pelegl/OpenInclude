@@ -1,6 +1,7 @@
 views.MetaView = Backbone.View.extend
   events:
     'submit .navbar-search' : 'searchSubmit'
+    'submit .features .form-search' : 'searchSubmit'
     'click  [data-shareideas]' : 'shareIdea'
 
 
@@ -11,7 +12,9 @@ views.MetaView = Backbone.View.extend
   searchSubmit: (e, action)->
     e.preventDefault() if e?
 
-    q = encodeURIComponent @$("[name=q]").val()
+    $this = $(e.currentTarget)
+
+    q = encodeURIComponent $("[name=q]", $this).val()
     location = window.location.pathname
     pathname = action or $(e.currentTarget).attr "action"
     trigger = if location is pathname then false else true
