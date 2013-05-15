@@ -14,9 +14,9 @@ TrelloStrategy = require('passport-trello').Strategy
 poolSize = 20
 
 if !process.env.mongo
-  exports.db = db = mongoose.createConnection '54.235.108.134', 'openInclude', { server: { poolSize }}
+  exports.db = db = mongoose.createConnection '54.235.108.134', 'openInclude', { server: { poolSize }, keepAlive: true}
 else
-  exports.db = db = mongoose.createConnection process.env.mongo, { server: { poolSize }}
+  exports.db = db = mongoose.createConnection process.env.mongo, { server: { poolSize }, keepAlive: true}
 
 
 

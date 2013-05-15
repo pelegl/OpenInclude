@@ -65,7 +65,7 @@ issue_bills = ->
     )
   )
 
-issue_bills() if process.argv[2] is 'do'
+issue_bills() if require.main is module
 
 ###
   Public API

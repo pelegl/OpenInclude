@@ -83,10 +83,15 @@ methods =
     }
 
   get_payment_method: (service, callback) ->
-    async.detect @payment_methods, (method, async_detect)=>
-      async_detect method.service is service
-    ,(method)=>
-      callback null, method
+    if arguments.length == 2
+      async.detect @payment_methods, (method, async_detect)=>
+        async_detect method.service is service
+      ,(method)=>
+        callback null, method
+    else
+      return _.detect @payment_methods, (method)->
+        return method.service is service
+
 
   is_superuser: ->
     return @group_id is 'admin'
