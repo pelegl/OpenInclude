@@ -8,7 +8,7 @@
             <div>
                 <form class="form-search" action='/discover' method='get' accept-charset="utf-8">
                     <div class="input-append">
-                        <input type="text" class="span6 search-query" value='machine learning' name='q'>
+                        <input type="text" class="span6 search-query" placeholder='machine learning' name='q'>
                         <button type="submit" class="btn">Search</button>
                     </div>
                 </form>
