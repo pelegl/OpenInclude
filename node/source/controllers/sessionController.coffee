@@ -29,7 +29,7 @@ class SessionController extends BasicController
         paypal = user.paypal || "not signed up"
         stripe = user.get_payment_method("Stripe")
         stripe = if stripe? then "signed up" else "not signed up"
-        email = user.github_email || 'no email'
+        email = user.github_email || null
 
         async_callback null, {username: user.github_username, email, paypal, stripe}
 

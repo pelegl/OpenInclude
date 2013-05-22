@@ -11,7 +11,13 @@
         {{~ it.users: user }}
             <tr>
                 <td><a href='/profile/view/{{= user.username }}'>{{= user.username }}</a></td>
-                <td><a href='mailto:{{= user.email }}'>{{= user.email }}</a></td>
+                <td>
+                    {{? user.email }}
+                    <a href='mailto:{{= user.email }}'>{{= user.email }}</a>
+                    {{??}}
+                    no email
+                    {{?}}
+                </td>
                 <td>{{= user.paypal }}</a></td>
                 <td>{{= user.stripe }}</a></td>
             </tr>
