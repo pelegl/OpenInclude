@@ -151,8 +151,10 @@ views.Profile = View.extend
       unless @collections
         @collections = {}
         @collections['admin-connections'] = new collections.Connections
-        @collections['admin-finance'] = @collections['admin-connections']
-        @collections['admin-blog'] = new collections.BlogPosts
+        @collections['admin-finance']   = @collections['admin-connections']
+        @collections['admin-blog']      = new collections.BlogPosts
+        @collections['admin-users']     = new collections.Users
+        @collections['admin-users'].url = "/session/user_list"
 
         @collections['reader-runway'] = new collections.Connections
         @collections['reader-runway'].url = "/api/runway/reader"
@@ -171,15 +173,19 @@ views.Profile = View.extend
         @titles['admin-connections'] = "Open Include | Admin | Connections"
         @titles['admin-finance'] = "Open Include | Admin | Finance"
         @titles['admin-blog'] = "Open Include | Admin | Blog"
+        @titles['admin-users'] = "Open Include | Admin | Users"
+
         @titles['reader-runway'] = "Open Include | Reader | Runways"
         @titles['reader-finance'] = "Open Include | Reader | Finances"
+
         @titles['writer-runway'] = "Open Include | Writer | Runways"
         @titles['writer-finance'] = "Open Include | Writer | Finances"
 
 
-      @adminConnections = new views.AdminConnections _.extend(@context, {el: @$("#admin-connections"), collection: @collections['admin-connections']})
-      @adminFinance = new views.AdminFinance _.extend(@context, {el: @$("#admin-finance"), collection: @collections['admin-finance']})
-      @adminBlog = new views.Blog _.extend(@context, {el: @$("#admin-blog"), collection: @collections['admin-blog']})
+      @adminConnections = new views.AdminConnections _.extend(@context, {el: @$("#admin-connections"),  collection: @collections['admin-connections']})
+      @adminFinance     = new views.AdminFinance     _.extend(@context, {el: @$("#admin-finance"),      collection: @collections['admin-finance']})
+      @adminBlog        = new views.Blog             _.extend(@context, {el: @$("#admin-blog"),         collection: @collections['admin-blog']})
+      @adminUsers       = new views.AdminUsers       _.extend(@context, {el: @$("#admin-users"),        collection: @collections['admin-users']})
 
       @readerRunway = new views.ReaderRunways _.extend(@context, {el: @$("#reader-runway"), collection: @collections['reader-runway']})
       @readerFinance = new views.ReaderFinance _.extend(@context, {el: @$("#reader-finance"), collection: @collections['reader-finance']})

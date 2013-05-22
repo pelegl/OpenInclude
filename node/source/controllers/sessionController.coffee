@@ -1,7 +1,8 @@
-{esClient, get_models} = require '../conf'
-BasicController = require './basicController'
-_ = require 'underscore'
-[User] = get_models ["User"]
+{esClient, get_models}  = require '../conf'
+BasicController         = require './basicController'
+_                       = require 'underscore'
+async                   = require 'async'
+[User]                  = get_models ["User"]
 
 class SessionController extends BasicController
   
@@ -16,7 +17,26 @@ class SessionController extends BasicController
       @res.json @req.user.public_info()
     else
       @res.json {is_authenticated: false}
-  
+
+
+  user_list: ->
+    @res.json {success: false}, 400 unless @req.user?.is_superuser
+
+    User.find {}, "github_username github_email payment_methods paypal", (err, users)=>
+      return @res.json {err, success: false}, 500 if err?
+      async.map users, (user, async_callback)=>
+
+        paypal = user.paypal || "not signed up"
+        stripe = user.get_payment_method("Stripe")
+        stripe = if stripe? then "signed up" else "not signed up"
+        email = user.github_email || 'no email'
+
+        async_callback null, {username: user.github_username, email, paypal, stripe}
+
+      ,(err, data)=>
+        return @res.json {success: false, err} if err?
+        @res.json data
+
   users_with_stripe: ->
     return @res.json {success: false}, 403 unless @req.user?.is_superuser()
     # get users with payment method

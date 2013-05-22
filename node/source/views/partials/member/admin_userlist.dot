@@ -1,0 +1,20 @@
+<table class='table table-striped'>
+    <thead>
+        <tr>
+            <th>Github username</th>
+            <th>Github email</th>
+            <th>Paypal e-mail</th>
+            <th>Reader?</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{~ it.users: user }}
+            <tr>
+                <td><a href='/profile/view/{{= user.username }}'>{{= user.username }}</a></td>
+                <td><a href='mailto:{{= user.email }}'>{{= user.email }}</a></td>
+                <td>{{= user.paypal }}</a></td>
+                <td>{{= user.stripe }}</a></td>
+            </tr>
+        {{~}}
+    </tbody>
+</table>

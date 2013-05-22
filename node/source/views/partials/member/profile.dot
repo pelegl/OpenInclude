@@ -63,12 +63,12 @@
                             {{? it.user.groups.indexOf("admin") >= 0 }}
                             {{ if (!it.active_tab) it.active_tab = "admin-connections"; }}
                             <li class="dropdown active">
-                                <a href="" class="dropdown-toggle" role="button" data-toggle="dropdown" data-target="#">Admin
-                                    <b class="caret"></b></a>
+                                <a href="" class="dropdown-toggle" role="button" data-toggle="dropdown" data-target="#">Admin<b class="caret"></b></a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li><a href="#admin-connections" data-toggle="tab">Connections</a></li>
                                     <li><a href="#admin-finance" data-toggle="tab">Finance</a></li>
                                     <li><a href="#admin-blog" data-toggle="tab">Blog</a></li>
+                                    <li><a href="#admin-users" data-toggle="tab">Users</a></li>
                                 </ul>
                             </li>
                             {{?}}
@@ -96,12 +96,10 @@
 
                         <div class="tab-content">
                             {{? it.user.groups.indexOf("admin") >= 0 }}
-                            <div class="tab-pane{{? it.active_tab == 'admin-connections'}} active{{?}}"
-                                 id="admin-connections"></div>
-                            <div class="tab-pane{{? it.active_tab == 'admin-finance'}} active{{?}}"
-                                 id="admin-finance"></div>
-                            <div class="tab-pane{{? it.active_tab == 'admin-blog'}} active{{?}}"
-                                 id="admin-blog"></div>
+                            <div class="tab-pane{{? it.active_tab == 'admin-connections'}} active{{?}}"id="admin-connections"></div>
+                            <div class="tab-pane{{? it.active_tab == 'admin-finance'}} active{{?}}"id="admin-finance"></div>
+                            <div class="tab-pane{{? it.active_tab == 'admin-blog'}} active{{?}}"id="admin-blog"></div>
+                            <div class="tab-pane{{? it.active_tab == 'admin-users'}} active{{?}}"id="admin-users"></div>
                             {{?}}
                             {{? it.user.groups.indexOf("reader") >= 0 }}
                             <div class="tab-pane{{? it.active_tab == 'reader-runway'}} active{{?}}"
